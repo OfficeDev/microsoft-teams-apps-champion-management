@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "championmanagement",
+    "id": "5099a3ef-113f-4baf-bb6a-a73b1dd286f8",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,"developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": ""
+      }
+      ,"webApiPermissionRequests": [
+        {
+           "resource": "Microsoft Graph",
+           "scope": "User.ReadWrite"
+        },
+        {
+          "resource": "Microsoft Graph",
+          "scope": "Sites.ReadWrite.All"
+       },
+       {
+        "resource": "Microsoft Graph",
+        "scope": "Sites.Manage.All"
+       }
+      ]
+
+  },
+  "paths": {
+    "zippedPackage": "solution/cmp.sppkg"
+  }
+
+
+}

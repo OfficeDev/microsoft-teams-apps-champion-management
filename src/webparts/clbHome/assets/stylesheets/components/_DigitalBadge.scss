@@ -1,0 +1,101 @@
+@import "../../../../../../node_modules/office-ui-fabric-react/dist/sass/_References.scss";
+
+.DigitalBadge {
+  .container {
+    max-width: 700px;
+    margin: 0px auto;
+    text-align: center;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2), 0px 0px 50px 0px rgba(0, 0, 0, 0.1);
+  }
+  .contentSection {
+    padding: 10px;
+    .bannerimage {
+      max-width: 100%;
+    }
+  }
+
+  .row {
+    @include ms-Grid-row;
+    padding: 20px;
+  }
+
+  .column {
+    @include ms-Grid-col;
+    @include ms-sm12;
+  }
+
+  .title {
+    @include ms-font-xxl;
+  }
+
+  .description {
+    @include ms-font-l;
+    line-height: 1.5;
+    strong {
+      font-weight: 600;
+    }
+  }
+
+  .profileContainer {
+    position: relative;
+    margin-top: 32px;
+
+    #profileImage {
+      display: block;
+      margin: 0 auto;
+      border-radius: 50%;
+    }
+
+    #badgeImage {
+      @extend #profileImage;
+    }
+    .profiletext {
+      position: absolute;
+      z-index: 999;
+      margin: 0 auto;
+      left: 0;
+      right: 0;
+      top: 40%;
+      text-align: center;
+      /* width: 69%; */
+      font-size: 32px;
+    }
+  }
+
+  .applySpinnerContainer {
+    margin-top: 32px;
+  }
+
+  .messagingContainer {
+    @extend .applySpinnerContainer;
+    [class*="ms-MessageBar-innerText"] {
+      font-size: 14px;
+      line-height: 1.5 !important;
+    }
+  }
+
+  .buttonContainer {
+    margin-top: 24px;
+
+    button {
+      margin: 8px;
+      .ms-Button-flexContainer{
+        .ms-Button-textContainer{
+          .ms-Button-description{
+            line-height: 1.5!important;
+          }
+        }
+      }
+     
+    }
+    
+  }
+
+  [id="profileCanvas"] {
+    display: none;
+  }
+
+  [id="profileCanvasDownload"] {
+    @extend [id="profileCanvas"];
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "inclusionPath": "sites",
+  "sitename": "ChampionManagementPlatform",
+   "lists": [
+    {
+      "listName": "Member List",
+      "columns": [
+        {
+          "name": "FirstName",
+          "type": "text"
+        },
+        {
+          "name": "LastName",
+          "type": "text"
+        },
+        {
+          "name": "Region",
+          "type": "choice"
+        },
+        {
+          "name": "Country",
+          "type": "choice"
+        },
+        {
+          "name": "Role",
+          "type": "choice"
+        },
+        {
+          "name": "Status",
+          "type": "choice"
+        },
+        {
+          "name": "FocusArea",
+          "type": "choice"
+        },
+        {
+          "name": "Group",
+          "type": "choice"
+        }
+      ]
+    },
+    {
+      "listName": "Events List",
+      "columns": [
+        {
+          "name": "Points",
+          "type": "number"
+        },
+        {
+          "name": "Description",
+          "type": "choice"
+        },
+        {
+          "name": "IsActive",
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "listName": "Event Track Details",
+      "columns": [
+        {
+          "name": "MemberId",
+          "type": "number"
+        },
+        {
+          "name": "EventId",
+          "type": "number"
+        },
+        {
+          "name": "Count",
+          "type": "number"
+        },
+        {
+          "name": "DateofEvent",
+          "type": "dateTime"
+        }
+      ]
+    }
+  ],
+  "eventsMasterData": [
+    {
+      "Title": "Event Moderator",
+      "Points": 10,
+      "Description": "Event Moderator"
+    },
+    {
+      "Title": "Office Hours",
+      "Points": 10,
+      "Description": "Office Hours"
+    },
+    {
+      "Title": "Blogs",
+      "Points": 10,
+      "Description": "Blogs"
+    },
+    {
+      "Title": "Training",
+      "Points": 10,
+      "Description": "Training"
+    }
+  ]
+}

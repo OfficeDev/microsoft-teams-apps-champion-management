@@ -1,0 +1,325 @@
+.Championleaderboard {
+    display: flex !important;
+    .sidenav {
+        background-color: #33344a;
+        width: 295px;
+        min-height: 100vh;
+        .profilepic {
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+            margin-top: 5rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .championname {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+        .pointcircle {
+            background-color: #333;
+            border-style: solid;
+            border-color: #fa9917;
+            height: 200px;
+            width: 200px;
+            border-radius: 50%;
+            margin-top: 2.2rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            .insidecircle {
+                text-align: center;
+                color: white;
+                margin: 2rem;
+            }
+            .score {
+                font-weight: 800;
+                font-size: 14px;
+                margin: auto;
+            }
+            .monthlypoints {
+                font-size: 14px;
+            }
+            .line {
+                height: 2px;
+                width: auto;
+                background-color: #39f;
+                margin: 1rem;
+            }
+            .globalrank {
+                font-size: 14px;
+            }
+            .bold {
+                font-size: 14px;
+                font-weight: 800;
+            }
+        }
+        .pointsscale {
+            text-align: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            #star {
+                color: #f3ca3e;
+                vertical-align: bottom;
+                margin-right: 4px;
+            }
+            & {
+                color: white;
+            }
+        }
+        .points {
+            text-align: center;
+            font-size: 12px;
+            color: white;
+        }
+        .bc-btn {
+            display: block;
+            margin: 4rem auto;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .bc-form {
+            margin: 1rem;
+            border: 1px solid white;
+            border-radius: 6px;
+            padding: 1rem;
+            .bc-label {
+                color: white;
+            }
+            .sub-btn {
+                text-align: center;
+                margin: 1rem auto;
+                display: block;
+            }
+        }
+        .back-btn {
+            margin-top: 80%;
+            .back {
+                position: relative;
+                margin: auto;
+                display: block;
+            }
+        }
+    }
+    .ms-Button-flexContainer {
+        display: block !important;
+    }
+    .content-tab {
+        background-color: rgba(158, 187, 208, 0.5);
+        width: 100vw;
+        min-height: 100vh;
+        .location-icon {
+            vertical-align: bottom;
+            height: 34px;
+            width: auto;
+            padding: 0rem 0.2rem;
+        }
+        .gtc {
+            color: #1d0f62;
+            font-size: 20px;
+        }
+        .gtc-cards {
+            margin: 0 3rem;
+            .cards {
+                width: 145px;
+                height: 161px;
+                background-color: #828282;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 6px 6px rgba(0, 0, 0, 0.3);
+                margin: 1.2rem auto;
+                border-radius: 6px;
+                img {
+                    display: block;
+                    position: relative;
+                    float: right;
+                }
+                .rank {
+                    position: relative;
+                    top: 12%;
+                    left: 74%;
+                    transform: translate(0%, 0%);
+                    font-size: larger;
+                    font-weight: bold;
+                    color: white;
+                }
+                .profile-img {
+                    margin: -2rem 3rem;
+                    height: 48px;
+                    width: 48px;
+                    border-radius: 50%;
+                }
+                .gtc-name {
+                    text-align: center;
+                    color: white;
+                    margin-top: 5rem;
+                    font-weight: 600;
+                    width: auto;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    padding: 0 0.5rem;
+                }
+                .gtc-name2 {
+                    text-align: center;
+                    color: white;
+                    margin-top: 5.7rem;
+                    font-weight: 600;
+                    width: auto;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    padding: 0 0.5rem;
+                }
+                .gtc-star {
+                    text-align: center;
+                    color: white;
+                    font-weight: 600;
+                    #count {
+                        margin-right: 2px;
+                        color: #f3ca3e;
+                    }
+                    .chat-icon {
+                        display: inline-flex;
+                        position: relative;
+                        float: left;
+                        margin: 0 0.5rem;
+                        cursor: pointer;
+                        color: #fff;
+                        font-size: 20px;
+                    }
+                    .mail-icon {
+                        float: right;
+                        color: #fff;
+                        font-size: 20px;
+                        margin: 0 0.5rem;
+                        cursor: pointer;
+                    }
+                }
+            }
+            .top-card {
+                height: 175px;
+                bottom: 0.8rem;
+                position: relative;
+            }
+        }
+        .table-content {
+            margin: 1rem 3rem;
+            position: relative;
+            overflow: auto;
+            // height: 250px;
+            .gttc-row {
+                cursor: pointer;
+            }
+            .gttc-img {
+                height: 31px;
+                width: 31px;
+                border-radius: 50%;
+                display: inline;
+            }
+            .gttc-img-name {
+                font-size: 14px;
+                color: white;
+                display: inline-block;
+                padding: 0.5rem;
+                position: relative;
+                width: calc(100% - 270px);
+            }
+            .gttc-star {
+                text-align: center;
+                color: white;
+                font-weight: 600;
+                display: inline;
+                position: absolute;
+                margin-top: 0.2rem;
+                #count2 {
+                    color: #f3ca3e;
+                    margin-right: 2px;
+                }
+            }
+            .vline {
+                height: 1.6rem;
+                width: 2px;
+                background: #f5f5f5;
+                display: inline-block;
+                margin: 0 4rem;
+                vertical-align: middle;
+            }
+            .gttc-rank {
+                text-align: center;
+                font-size: 14px;
+                display: inline;
+                padding: 0 1rem;
+            }
+            .card-header {
+                padding: 0.5rem 1.25rem !important;
+                background-color: #464775;
+                color: white;
+            }
+            .table {
+                margin-bottom: 0 !important;
+                color: white;
+                .td {
+                    border: none !important;
+                }
+            }
+            .card-body {
+                background-color: #888;
+                padding: 0 13rem;
+            }
+            .gttc-tap-data {
+                text-align: center;
+            }
+            .you {
+                display: inline-block;
+                padding: 0 0.2rem;
+                color: white;
+            }
+        }
+        /* width */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    }
+    .loader {
+        border: 16px solid #dde2eb;
+        border-radius: 50%;
+        border-top: 10px solid #3498db;
+        width: 120px;
+        height: 120px;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+        margin: auto;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        position: fixed;
+    }
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+}

@@ -1,0 +1,84 @@
+.Employeeview {
+    .main {
+        width: 100vw;
+        min-height: 100vh;
+        background-color: rgba(158, 187, 208, 0.5);
+        .search {
+            margin: 1rem 2rem;
+        }
+        .gtc-cards {
+            margin: 1rem 2rem;
+            .cards {
+                width: 145px;
+                height: 161px;
+                background-color: #828282;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 6px 6px rgba(0, 0, 0, 0.3);
+                margin: 1.2rem 0.7rem;
+                border-radius: 6px;
+                img {
+                    display: block;
+                    position: relative;
+                    float: right;
+                }
+                .profile-img {
+                    margin: -2rem 3rem;
+                    height: 48px;
+                    width: 48px;
+                    border-radius: 50%;
+                }
+                .rank {
+                    position: relative;
+                    top: 12%;
+                    left: 74%;
+                    transform: translate(0%, 0%);
+                    font-size: larger;
+                    font-weight: bold;
+                    color: white;
+                }
+                .gtc-name2 {
+                    text-align: center;
+                    color: white;
+                    margin-top: 6.4rem;
+                    font-weight: 600;
+                    width: auto;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    padding: 0 0.5rem;
+                }
+                .gtc-name {
+                    text-align: center;
+                    margin-top: 0.2rem;
+                    color: white;
+                    margin-top: 6.4rem;
+                    font-weight: 600;
+                    width: auto;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    padding: 0 0.5rem;
+                }
+
+                .chat-icon,
+                .mail-icon {
+                    display: inline-flex;
+                    position: relative;
+                    float: left;
+                    margin: 0 1rem;
+                    cursor: pointer;
+                    & {
+                        color: white;
+                        font-size: 20px;
+                    }
+                }
+                .mail-icon {
+                    float: right;
+                    & {
+                        color: white;
+                        font-size: 20px;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "clb-home-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/clbHome/ClbHomeWebPart.js",
+          "manifest": "./src/webparts/clbHome/ClbHomeWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "ClbHomeWebPartStrings": "lib/webparts/clbHome/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
+    "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js"
+  }
+}

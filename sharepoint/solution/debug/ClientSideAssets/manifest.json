@@ -1,0 +1,39 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.5",
+   "id": "e0d96ecc-93c6-41cd-a574-85cccea9d76e",
+    "version": "1.0.1",
+    "packageName": "net.sharepoint.championsboard",
+    "developer": {
+      "name": "Microsoft",
+      "websiteUrl": "https://www.microsoft.com",
+      "privacyUrl": "https://privacy.microsoft.com/privacystatement",
+      "termsOfUseUrl": "https://www.microsoft.com/servicesagreement",
+      "mpnId": "1234567890"
+    },
+    "name": {
+      "short": "Champion Management Platform",
+      "full": "Champion Management Platform Program"
+    },
+    "description": {
+      "short": "Champion Management Platform for Teamwork Champions",
+      "full": "The Champion Management Platform for the Teamwork Champions program enables you to 'claim' your digital badge by overlaying it on top of your existing profile picture."
+    },
+    "icons": {
+      "outline": "icon-outline.png",
+      "color": "icon-color.png"
+    },
+    "accentColor": "#D85028",
+    "staticTabs": [
+        {
+          "entityId": "CMP",
+          "name": "CMP",        
+          //"contentUrl": "https://m365x111493.sharepoint.com/_layouts/15/teamslogon.aspx?SPFX=true&dest=/sites/ChampionMangementPlatform/SitePages/CMP.aspx",
+          "contentUrl": "https://{TenantName}.sharepoint.com/_layouts/15/teamslogon.aspx?SPFX=true&dest=/sites/{SiteName}/SitePages/{SitePage}.aspx",
+          "scopes": [ "personal" ]
+        }
+    ],    
+    "permissions": ["identity","messageTeamMembers"],
+    "validDomains": []
+  
+  }
