@@ -99,7 +99,7 @@ If desired the administrator can configure the installation location including t
 
 · list (SharePoint list for maintaining Champions)
 
-· CName (Share Point list Column Name for Champions)
+· CName (SharePoint list Column Name for Champions)
 ```
 <br/>
 
