@@ -17,3 +17,5 @@ build.configureWebpack.mergeConfig({
       return generatedConfiguration;
     }
   });
+
+  build.sass.setConfig({ warnOnNonCSSModules: false, useCssModules:true});
