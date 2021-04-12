@@ -111,13 +111,13 @@ If desired the administrator can configure the installation location including t
 2.	Create the SharePoint App Package. This package will be used to deploy the application in SharePoint and Microsoft Teams. Run the below commands :
 
 ```
-· gulp serve 
+· npm install 
 
 · gulp build
 
 · gulp bundle --ship
 
-· gulp package-solution –ship
+· gulp package-solution --ship
 ```
 
 3.	Navigate to the solution folder where you cloned and locate the newly created ***cmp.sppkg*** package in ***"sharepoint/solution"***.
