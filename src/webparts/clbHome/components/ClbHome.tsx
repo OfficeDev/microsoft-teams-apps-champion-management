@@ -640,7 +640,7 @@ export default class ClbHome extends React.Component<
                         >
                           <div className={styles.mb}>
                             <img
-                              src={require("../assets/images/addMember.png")}
+                              src={require("../assets/images/addmember.png")}
                               alt="Adding Members Start adding the people you will collaborate with in your..."
                               title="Adding Members Start adding the people you will collaborate with in your..."
                               className={styles.dashboardimgs}
