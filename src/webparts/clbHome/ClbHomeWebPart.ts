@@ -22,7 +22,7 @@ export default class ClbHomeWebPart extends BaseClientSideWebPart<IClbHomeWebPar
         context: this.context,
        // siteUrl:'https://m365x374010.sharepoint.com',
         // passing siteUrl here for mutlti tenant.
-        siteUrl: this.context.pageContext.web.absoluteUrl,
+        siteUrl: this.context.pageContext.web.absoluteUrl.replace(this.context.pageContext.web.serverRelativeUrl, ""),
       }
     );
 
