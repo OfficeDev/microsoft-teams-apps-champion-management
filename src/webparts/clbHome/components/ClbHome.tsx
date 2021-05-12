@@ -166,7 +166,7 @@ export default class ClbHome extends React.Component<
                                   case "text":
                                     column = {
                                       name: element.name,
-                                      text: {},
+                                      text: {}, 
                                     };
                                     listColumns.push(column);
                                     break;
@@ -395,7 +395,7 @@ export default class ClbHome extends React.Component<
                                     );
                                 }, 6000);
                               } else {
-                                this.createNewList(siteId, item);
+                               this.createNewList(siteId, item);
                                 setTimeout(() => {
                                   if (item.displayName === "Events List") {
                                     siteconfig.eventsMasterData.forEach(
@@ -430,6 +430,81 @@ export default class ClbHome extends React.Component<
                                               if (
                                                 newUserResponse.status === 201
                                               ) {
+                                                this.props.context.spHttpClient
+                                                .post(                                                   
+                                                  this.state.siteUrl +
+                                                  "/" +
+                                                  this.state.inclusionpath +
+                                                  "/" +
+                                                  this.state.sitename +
+                                                  "/_api/web/lists/GetByTitle('Events List')/Items/Fields/GetByTitle('Title')",
+                                                  SPHttpClient.configurations.v1,
+                                                  {
+                                                    headers: {
+                                                    // IF-MATCH header: Provides a way to verify that the object being changed has not been changed since it was last retrieved.
+                     // "IF-MATCH":"*", will overwrite any modification in the object, since it was last retrieved.
+                     "IF-MATCH": "*",
+                     "X-HTTP-Method": "PATCH",
+                     // Accept header: Specifies the format for response data from the server.
+                     "Accept": "application/json;odata=verbose",
+                     //Content-Type header: Specifies the format of the data that the client is sending to the server
+                     "Content-Type": "application/json;odata=verbose",
+                     
+                                                    },
+                                                    body:  JSON.stringify({
+                                                      '__metadata': {
+                                                        // Type that you are modifying.
+                                                        'type': 'SP.FieldText'
+                                                    },
+                                     
+                                                    'EnforceUniqueValues': true
+                                                  }),
+                                                  }
+                                                )  .then(
+                                                  (
+                                                    _newUserResponse1: SPHttpClientResponse
+                                                  ) => { 
+                                                    this.props.context.spHttpClient
+                                                    .post(                                                   
+                                                      this.state.siteUrl +
+                                                      "/" +
+                                                      this.state.inclusionpath +
+                                                      "/" +
+                                                      this.state.sitename +
+                                                      "/_api/web/lists/GetByTitle('Events List')/Items/Fields/GetByTitle('Title')",
+                                                      SPHttpClient.configurations.v1,
+                                                      {
+                                                        headers: {
+                                                        // IF-MATCH header: Provides a way to verify that the object being changed has not been changed since it was last retrieved.
+                         // "IF-MATCH":"*", will overwrite any modification in the object, since it was last retrieved.
+                         "IF-MATCH": "*",
+                         "X-HTTP-Method": "PATCH",
+                         // Accept header: Specifies the format for response data from the server.
+                         "Accept": "application/json;odata=verbose",
+                         //Content-Type header: Specifies the format of the data that the client is sending to the server
+                         "Content-Type": "application/json;odata=verbose",
+                         
+                                                        },
+                                                        body:  JSON.stringify({
+                                                          '__metadata': {
+                                                            // Type that you are modifying.
+                                                            'type': 'SP.FieldText'
+                                                        },
+                                         
+                                                        'EnforceUniqueValues': true
+                                                      }),
+                                                      }
+                                                    )  .then(
+                                                      (
+                                                        _newUserResponse2: SPHttpClientResponse
+                                                      ) => { 
+                                                      });
+                                                  })
+                                                  .catch(
+                                                    (
+                                                      _newUserResponse2: any
+                                                    ) => { 
+                                                    });
                                               } else {
                                               }
                                             }
@@ -495,8 +570,7 @@ export default class ClbHome extends React.Component<
             this.setState({ siteId: data.id.split(",")[1] }, () => {
               this._createList();
             });
-          })
-          .catch((errClbHome) => {});
+          });
       });
   }
 
@@ -640,7 +714,7 @@ export default class ClbHome extends React.Component<
                         >
                           <div className={styles.mb}>
                             <img
-                              src={require("../assets/images/addmember.png")}
+                              src={require("../assets/images/addMember.png")}
                               alt="Adding Members Start adding the people you will collaborate with in your..."
                               title="Adding Members Start adding the people you will collaborate with in your..."
                               className={styles.dashboardimgs}
