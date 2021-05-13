@@ -72,7 +72,7 @@ export default class ClbHome extends React.Component<
 
     this.props.context.spHttpClient
       .get(
-        this.state.siteUrl +
+        
           "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
         SPHttpClient.configurations.v1
       )
@@ -88,7 +88,7 @@ export default class ClbHome extends React.Component<
   private _createList() {
     let listname = siteconfig.lists[1].listName;
     const getListUrl: string =
-      this.state.siteUrl +
+      
       "/" +
       this.state.inclusionpath +
       "/" +
@@ -96,15 +96,15 @@ export default class ClbHome extends React.Component<
       `/_api/web/lists/GetByTitle('${listname}')/Items`;
 
     let memberListName = siteconfig.lists[0].listName;
-
+console.log(this.state.siteUrl);
     let getMemberListUrl =
-      this.state.siteUrl +
+      this.state.siteUrl+
       "/" +
       `/_api/web/lists/GetByTitle('${memberListName}')/Items`;
 
     let isMembersListNotExists = false;
     this.props.context.spHttpClient
-      .get(getMemberListUrl, SPHttpClient.configurations.v1)
+      .get("/_api/web/lists/GetByTitle('Member List')/Items", SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => {
         if (response.status === 404) {
           isMembersListNotExists = true;
@@ -119,19 +119,19 @@ export default class ClbHome extends React.Component<
           if (response.status === 404) {
             this.props.context.spHttpClient
               .get(
-                this.state.siteUrl +
+                
                   "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
                 SPHttpClient.configurations.v1
               )
               .then((responseuser: SPHttpClientResponse) => {
                 responseuser.json().then((datauser: any) => {
                   const createsiteUrl: string =
-                    this.state.siteUrl + "/_api/SPSiteManager/create";
+                     "/_api/SPSiteManager/create";
                   const siteDefinition: any = {
                     request: {
                       Title: this.state.sitename,
                       Url:
-                        this.state.siteUrl +
+                        this.state.siteUrl+
                         "/" +
                         this.state.inclusionpath +
                         "/" +
@@ -323,7 +323,7 @@ export default class ClbHome extends React.Component<
                                 setTimeout(() => {
                                   this.props.context.spHttpClient
                                     .get(
-                                      this.state.siteUrl +
+                                      
                                         "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
                                       SPHttpClient.configurations.v1
                                     )
@@ -355,8 +355,7 @@ export default class ClbHome extends React.Component<
                                                   listDefinition
                                                 ),
                                               };
-                                              const url: string =
-                                                this.state.siteUrl +
+                                              const url: string = this.state.siteUrl+
                                                 "/_api/web/lists/GetByTitle('Member List')/items";
                                               this.props.context.spHttpClient
                                                 .post(
@@ -411,7 +410,7 @@ export default class ClbHome extends React.Component<
                                         };
 
                                         const url: string =
-                                          this.state.siteUrl +
+                                          
                                           "/" +
                                           this.state.inclusionpath +
                                           "/" +
@@ -432,7 +431,7 @@ export default class ClbHome extends React.Component<
                                               ) {
                                                 this.props.context.spHttpClient
                                                 .post(                                                   
-                                                  this.state.siteUrl +
+                                                  
                                                   "/" +
                                                   this.state.inclusionpath +
                                                   "/" +
@@ -466,7 +465,7 @@ export default class ClbHome extends React.Component<
                                                   ) => { 
                                                     this.props.context.spHttpClient
                                                     .post(                                                   
-                                                      this.state.siteUrl +
+                                                      
                                                       "/" +
                                                       this.state.inclusionpath +
                                                       "/" +
@@ -619,7 +618,7 @@ export default class ClbHome extends React.Component<
             }
             this.props.context.spHttpClient
               .get(
-                this.state.siteUrl +
+                
                   "/_api/web/lists/GetByTitle('Member List')/Items",
                 SPHttpClient.configurations.v1
               )

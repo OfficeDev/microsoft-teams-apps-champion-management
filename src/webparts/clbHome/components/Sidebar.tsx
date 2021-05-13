@@ -138,31 +138,20 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     let optionArrayIds = [];
     if (this.state.edetails.length == 0)
       this.props.context.spHttpClient
-        .get(
-          this.state.siteUrl +
-            "/" +
-            this.state.inclusionpath +
-            "/" +
-            this.state.sitename +
-            "/_api/web/lists/GetByTitle('Events List')/Items",
-          SPHttpClient.configurations.v1
-        )
+        .get( "/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Events List')/Items", SPHttpClient.configurations.v1)
         .then(async (response: SPHttpClientResponse) => {
           if (response.status === 200) {
             await response.json().then((responseJSON: any) => {
               let i = 0;
               while (i < responseJSON.value.length) {
-                if (
-                  responseJSON.value[i] &&
-                  responseJSON.value[i].hasOwnProperty("Title")
-                ) {
+                if (responseJSON.value[i] && responseJSON.value[i].hasOwnProperty("Title") && responseJSON.value[i].IsActive) {
                   optionArray.push(responseJSON.value[i].Title);
                   optionArrayIds.push({
                     Title: responseJSON.value[i].Title,
                     Id: responseJSON.value[i].Id,
                   });
-                  i++;
                 }
+                i++;
               }
               this.setState({
                 edetails: optionArray,
@@ -199,8 +188,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     this.optionsEventsList();
     this.props.context.spHttpClient
       .get(
-        this.state.siteUrl +
-          "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Region')",
+       
+        "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Region')",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
@@ -208,8 +197,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
           if (!regions.error) {
             this.props.context.spHttpClient
               .get(
-                this.state.siteUrl +
-                  "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Country')",
+               
+                "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Country')",
                 SPHttpClient.configurations.v1
               )
               // tslint:disable-next-line:no-shadowed-variable
@@ -229,8 +218,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
 
     this.props.context.spHttpClient
       .get(
-        this.state.siteUrl +
-          "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Group')",
+       
+        "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Group')",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
@@ -238,8 +227,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
           if (!roles.error) {
             this.props.context.spHttpClient
               .get(
-                this.state.siteUrl +
-                  "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('FocusArea')",
+               
+                "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('FocusArea')",
                 SPHttpClient.configurations.v1
               )
               // tslint:disable-next-line: no-shadowed-variable
@@ -267,8 +256,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
   public componentWillMount() {
     this.props.context.spHttpClient
       .get(
-        this.state.siteUrl +
-          "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
+       
+        "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
         SPHttpClient.configurations.v1
       )
       .then((responseuser: SPHttpClientResponse) => {
@@ -276,8 +265,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
           if (!datauser.error) {
             this.props.context.spHttpClient
               .get(
-                this.state.siteUrl +
-                  "/_api/web/lists/GetByTitle('Member List')/Items",
+               
+                "/_api/web/lists/GetByTitle('Member List')/Items",
                 SPHttpClient.configurations.v1
               )
               .then((response: SPHttpClientResponse) => {
@@ -318,8 +307,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     totalchamps = datada.value.filter((x) =>
                       (x.Role.toLowerCase() === "champion" ||
                         x.Role.toLowerCase() === "manager") &&
-                      x.Status !== null &&
-                      x.Status !== undefined
+                        x.Status !== null &&
+                        x.Status !== undefined
                         ? x.Status.toLowerCase() === "approved"
                         : false
                     ).length;
@@ -331,12 +320,12 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     )
                       this.props.context.spHttpClient
                         .get(
-                          this.state.siteUrl +
-                            "/" +
-                            this.state.inclusionpath +
-                            "/" +
-                            this.state.sitename +
-                            "/_api/web/lists/GetByTitle('Event Track Details')/Items",
+                         
+                          "/" +
+                          this.state.inclusionpath +
+                          "/" +
+                          this.state.sitename +
+                          "/_api/web/lists/GetByTitle('Event Track Details')/Items",
                           SPHttpClient.configurations.v1
                         )
                         .then((responseeventsdetails: SPHttpClientResponse) => {
@@ -373,7 +362,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                     EventId: eventItem.Id,
                                     MemberId: memberData,
                                     DateofEvent: new Date(),
-                                    Count: 10,
+                                    Points: 10,
                                   };
                                   const spHttpClientOptions: ISPHttpClientOptions = {
                                     body: JSON.stringify(listDefinition),
@@ -386,36 +375,25 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                       this.state.sitename +
                                       "/_api/web/lists/GetByTitle('Event Track Details')/items";
                                     this.props.context.spHttpClient.post(
-                                      this.state.siteUrl + url,
+                                      url,
                                       SPHttpClient.configurations.v1,
                                       spHttpClientOptions
                                     );
                                     memcount.push({
                                       id: memberData,
-                                      count: 10,
+                                      points: 10,
                                     });
                                   }
                                 }
                                 for (let i = 0; i < memberids.length; i++) {
-                                  if (
-                                    datada.value.findIndex(
-                                      (v: { ID: any }) =>
-                                        v.ID === memberids[i].MemberId
-                                    ) !== -1
-                                  ) {
+                                  if (datada.value.findIndex((v: { ID: any }) =>v.ID === memberids[i].MemberId) !== -1) {
                                     let totalUserPoints = 0;
-                                    eventsdatauser.value
-                                      .filter(
-                                        (z: any) =>
-                                          z.MemberId === memberids[i].MemberId
-                                      )
-                                      .map((z: any) => {
-                                        totalUserPoints =
-                                          totalUserPoints + z.Count;
-                                      });
-                                    memcount.push({
+                                    eventsdatauser.value.filter((z: any) => z.MemberId === memberids[i].MemberId)
+                                      .map((z: any) => { totalUserPoints = totalUserPoints + z.Points;});
+                                    
+                                      memcount.push({
                                       id: memberids[i].MemberId,
-                                      count: totalUserPoints,
+                                      points: totalUserPoints,
                                     });
                                   }
                                 }
@@ -423,7 +401,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                 let pointsTotal = 0;
                                 let rank: number;
                                 memcount
-                                  .sort((x, y) => y.count - x.count)
+                                  .sort((x, y) => y.points - x.points)
                                   .map((x: any, ind: number) => {
                                     if (
                                       x.id ===
@@ -434,7 +412,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                       ).ID
                                     ) {
                                       rank = ind + 1;
-                                      pointsTotal = x.count;
+                                      pointsTotal = x.points;
                                     }
                                   });
                                 this.setState({
@@ -493,9 +471,9 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
             } else {
               alert(
                 "Response status " +
-                  response.status +
-                  " - " +
-                  response.statusText
+                response.status +
+                " - " +
+                response.statusText
               );
             }
           });
@@ -546,9 +524,9 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     let userarr: IUserDetail[] = [];
     items.forEach((user) => {
       userarr.push({ ID: user.id, LoginName: user.loginName });
-      user["FirstName"] = user.text.split(",")[0];
-      user["LastName"] = user.text.split(",")[1];
-      user["Title"] = user.loginName.split("|")[2];
+      user["FirstName"] = user.text.split(",")[0] || "";
+      user["LastName"] = user.text.split(",")[1] || "";
+      user["Title"] = user.loginName.split("|")[2] || "";
       this.setState({ currentUser: user });
     });
     this.setState({ UserDetails: userarr });

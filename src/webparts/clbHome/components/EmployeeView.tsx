@@ -48,26 +48,18 @@ export default class EmployeeView extends Component<
     microsoftTeams.initialize();
     this.props.context.spHttpClient
       .get(
-        this.state.siteUrl + "/_api/web/lists/GetByTitle('Member List')/Items",
+        "/_api/web/lists/GetByTitle('Member List')/Items",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
         response.json().then((datada) => {
           if (!datada.error) {
             this.props.context.spHttpClient
-              .get(
-                this.state.siteUrl +
-                  "/" +
-                  this.state.inclusionpath +
-                  "/" +
-                  this.state.sitename +
-                  "/_api/web/lists/GetByTitle('Events List')/Items",
-                SPHttpClient.configurations.v1
-              )
+              .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Events List')/Items", SPHttpClient.configurations.v1)
               .then((responseevents: SPHttpClientResponse) => {
                 responseevents.json().then((eventsdata) => {
                   if (!eventsdata.error) {
-                    if (eventsdata && eventsdata.value.length > 0) {
+                    if (eventsdata && eventsdata.value.filter(ed => ed.IsActive).length > 0) {
                       this.setState({ users: datada.value, isLoaded: true });
                     }
                   }
