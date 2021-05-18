@@ -18,6 +18,7 @@ interface ChampionsProps {
   fromV: string;
   events?: any;
   filterBy?: string;
+  callBack?: Function;
 }
 interface ChampionState {
   isLoaded: boolean;
@@ -223,7 +224,7 @@ export default class Champions extends Component<
                                               </td>
                                               <td className="gttc-tap-data">
                                                 {
-                                                  rankedMember.eventpoints[e].map((x) => x.Points / 10).length
+                                                  rankedMember.eventpoints[e].map((x) => x.Points / x.Points).length
                                                 }
                                               </td>
                                             </tr>

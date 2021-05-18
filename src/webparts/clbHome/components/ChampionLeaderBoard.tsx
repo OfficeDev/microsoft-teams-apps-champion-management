@@ -241,6 +241,7 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
                   events={eventDropdown}
                   fromV={""}
                   filterBy=""
+                  callBack={_renderListAsync}
                 />
               </PivotItem>
               <PivotItem headerText="Near Me">
@@ -256,7 +257,8 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
                   type="Near Me"
                   events={eventDropdown}
                   fromV={""}
-                  filterBy={filterByFocusArea}
+                  filterBy={filterByFocusArea}                  
+                  callBack={_renderListAsync}                  
                 />
               </PivotItem>
               <PivotItem headerText="By Specialty">
@@ -272,7 +274,8 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
                   type="By Specialty"
                   events={eventDropdown}
                   fromV={""}
-                  filterBy={filterBySpeciality}
+                  filterBy={filterBySpeciality}                  
+                  callBack={_renderListAsync}
                 />
               </PivotItem>
             </Pivot>
