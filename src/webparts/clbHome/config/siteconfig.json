@@ -48,7 +48,7 @@
         },
         {
           "name": "Description",
-          "type": "choice"
+          "type": "text"          
         },
         {
           "name": "IsActive",
@@ -68,7 +68,7 @@
           "type": "number"
         },
         {
-          "name": "Count",
+          "name": "Points",
           "type": "number"
         },
         {

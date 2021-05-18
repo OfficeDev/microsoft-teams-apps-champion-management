@@ -273,21 +273,22 @@ export default class ChampionvView extends Component<
       tmp = this.state.edetailsIds;
       let scount = link.points * 10;
       let item1 = tmp.filter((i) => i.Id === link.eventid);
-      if (item1.length != 0) {
-        scount = link.points * item1[0].Ecount;
-      }
+     
       let seventid = String(link.eventid);
       let smemberid = String(link.memberid);
       let sdoe = link.DateOfEvent;
       let stype = link.type;
       let spoints = link.points * 10;
+      if (item1.length != 0) {
+        scount = link.points * item1[0].Ecount;
+      }
       if (true) {
         const listDefinition: any = {
           Title: stype,
           EventId: seventid,
           MemberId: smemberid,
           DateofEvent: sdoe,
-          Points: spoints,
+          Points: scount,
         };
 
         const spHttpClientOptions: ISPHttpClientOptions = {

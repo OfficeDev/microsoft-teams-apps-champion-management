@@ -6,13 +6,7 @@ import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import * as microsoftTeams from "@microsoft/teams-js";
-import {
-  ILabelStyles,
-  IStyleSet,
-  Label,
-  Icon,
-  initializeIcons,
-} from "office-ui-fabric-react";
+import { ILabelStyles, IStyleSet, Label, Icon, initializeIcons, } from "office-ui-fabric-react";
 initializeIcons();
 
 const labelStyles: Partial<IStyleSet<ILabelStyles>> = {
@@ -58,6 +52,10 @@ export default class Champions extends Component<
   }
 
   public render() {
+    const starStyles = {
+      color: "#f3ca3e"
+    };
+
     return (
       <React.Fragment>
         {this.props.type && (
@@ -126,13 +124,9 @@ export default class Champions extends Component<
                                 <Icon
                                   iconName="CannedChat"
                                   className="chat-icon"
-                                  onClick={() =>
-                                    this.openTask(
-                                      `https://teams.microsoft.com/l/chat/0/0?users=${member.Title}`
-                                    )
-                                  }
+                                  onClick={() => this.openTask(`https://teams.microsoft.com/l/chat/0/0?users=${member.Title}`)}
                                 />
-                                <Icon iconName="FavoriteStarFill" id="count" />
+                                <Icon iconName="FavoriteStarFill"  style={starStyles} id="points" />
                                 {member.totalpoints}
                                 <a href={`mailto:${member.Title}`}>
                                   <Icon
@@ -194,14 +188,7 @@ export default class Champions extends Component<
                                 >
                                   <div className="gttc-row">
                                     <span>
-                                      <img
-                                        src={
-                                          "/_layouts/15/userphoto.aspx?username=" +
-                                          rankedMember.Title
-                                        }
-                                        className="gttc-img"
-                                        onError={this.addDefaultSrc}
-                                      />
+                                      <img src={"/_layouts/15/userphoto.aspx?username=" + rankedMember.Title} className="gttc-img" onError={this.addDefaultSrc} />
                                       <div className="gttc-img-name">
                                         {rankedMember.FirstName}
                                       </div>
@@ -209,7 +196,9 @@ export default class Champions extends Component<
                                     <div className="gttc-star">
                                       <Icon
                                         iconName="FavoriteStarFill"
-                                        id="count2"
+                                        id="points2"
+                                        style={starStyles}
+                                         
                                       />
                                       {rankedMember.totalpoints}
                                     </div>
@@ -222,27 +211,19 @@ export default class Champions extends Component<
                                 <Accordion.Collapse eventKey={rankedMember.ID}>
                                   <Card.Body>
                                     <Table>
-                                      {Object.keys(
-                                        rankedMember.eventpoints
-                                      ).map((e, i) => {
+                                      {Object.keys(rankedMember.eventpoints).map((e, i) => {
                                         return (
                                           e !== "0" && (
                                             <tr>
                                               <td>
                                                 {
-                                                  this.props.events.find(
-                                                    (ev) =>
-                                                      e !== "0" &&
-                                                      ev.ID.toString() === e
-                                                  ).Title
+                                                  this.props.events.find((ev) => e !== "0" && ev.ID.toString() === e)
+                                                  && this.props.events.find((ev) => e !== "0" && ev.ID.toString() === e).Title
                                                 }
                                               </td>
                                               <td className="gttc-tap-data">
-                                              {
-                                                  rankedMember.eventpoints[
-                                                    e
-                                                  ].map((x) => x.Count / 10)
-                                                    .length
+                                                {
+                                                  rankedMember.eventpoints[e].map((x) => x.Points / 10).length
                                                 }
                                               </td>
                                             </tr>

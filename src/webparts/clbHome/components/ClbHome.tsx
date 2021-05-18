@@ -131,7 +131,7 @@ console.log(this.state.siteUrl);
                     request: {
                       Title: this.state.sitename,
                       Url:
-                        this.state.siteUrl+
+                        this.state.siteUrl.replace("https:/","https://").replace("https:///","https://")+
                         "/" +
                         this.state.inclusionpath +
                         "/" +
@@ -355,7 +355,7 @@ console.log(this.state.siteUrl);
                                                   listDefinition
                                                 ),
                                               };
-                                              const url: string = this.state.siteUrl+
+                                              const url: string =  
                                                 "/_api/web/lists/GetByTitle('Member List')/items";
                                               this.props.context.spHttpClient
                                                 .post(
@@ -426,86 +426,7 @@ console.log(this.state.siteUrl);
                                             (
                                               newUserResponse: SPHttpClientResponse
                                             ) => {
-                                              if (
-                                                newUserResponse.status === 201
-                                              ) {
-                                                this.props.context.spHttpClient
-                                                .post(                                                   
-                                                  
-                                                  "/" +
-                                                  this.state.inclusionpath +
-                                                  "/" +
-                                                  this.state.sitename +
-                                                  "/_api/web/lists/GetByTitle('Events List')/Items/Fields/GetByTitle('Title')",
-                                                  SPHttpClient.configurations.v1,
-                                                  {
-                                                    headers: {
-                                                    // IF-MATCH header: Provides a way to verify that the object being changed has not been changed since it was last retrieved.
-                     // "IF-MATCH":"*", will overwrite any modification in the object, since it was last retrieved.
-                     "IF-MATCH": "*",
-                     "X-HTTP-Method": "PATCH",
-                     // Accept header: Specifies the format for response data from the server.
-                     "Accept": "application/json;odata=verbose",
-                     //Content-Type header: Specifies the format of the data that the client is sending to the server
-                     "Content-Type": "application/json;odata=verbose",
-                     
-                                                    },
-                                                    body:  JSON.stringify({
-                                                      '__metadata': {
-                                                        // Type that you are modifying.
-                                                        'type': 'SP.FieldText'
-                                                    },
-                                     
-                                                    'EnforceUniqueValues': true
-                                                  }),
-                                                  }
-                                                )  .then(
-                                                  (
-                                                    _newUserResponse1: SPHttpClientResponse
-                                                  ) => { 
-                                                    this.props.context.spHttpClient
-                                                    .post(                                                   
-                                                      
-                                                      "/" +
-                                                      this.state.inclusionpath +
-                                                      "/" +
-                                                      this.state.sitename +
-                                                      "/_api/web/lists/GetByTitle('Events List')/Items/Fields/GetByTitle('Title')",
-                                                      SPHttpClient.configurations.v1,
-                                                      {
-                                                        headers: {
-                                                        // IF-MATCH header: Provides a way to verify that the object being changed has not been changed since it was last retrieved.
-                         // "IF-MATCH":"*", will overwrite any modification in the object, since it was last retrieved.
-                         "IF-MATCH": "*",
-                         "X-HTTP-Method": "PATCH",
-                         // Accept header: Specifies the format for response data from the server.
-                         "Accept": "application/json;odata=verbose",
-                         //Content-Type header: Specifies the format of the data that the client is sending to the server
-                         "Content-Type": "application/json;odata=verbose",
-                         
-                                                        },
-                                                        body:  JSON.stringify({
-                                                          '__metadata': {
-                                                            // Type that you are modifying.
-                                                            'type': 'SP.FieldText'
-                                                        },
-                                         
-                                                        'EnforceUniqueValues': true
-                                                      }),
-                                                      }
-                                                    )  .then(
-                                                      (
-                                                        _newUserResponse2: SPHttpClientResponse
-                                                      ) => { 
-                                                      });
-                                                  })
-                                                  .catch(
-                                                    (
-                                                      _newUserResponse2: any
-                                                    ) => { 
-                                                    });
-                                              } else {
-                                              }
+                             
                                             }
                                           );
                                       }
@@ -748,7 +669,7 @@ console.log(this.state.siteUrl);
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
-                              href={`${this.state.siteUrl}/Lists/Member%20List/AllItems.aspx`}
+                              href={`/Lists/Member%20List/AllItems.aspx`}
                               target="_blank"
                             >
                               <img
@@ -766,7 +687,7 @@ console.log(this.state.siteUrl);
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
-                              href={`${this.state.siteUrl}/${this.state.inclusionpath}/${this.state.sitename}/Lists/Events%20List/AllItems.aspx`}
+                              href={`/${this.state.inclusionpath}/${this.state.sitename}/Lists/Events%20List/AllItems.aspx`}
                               target="_blank"
                             >
                               <img
@@ -784,7 +705,7 @@ console.log(this.state.siteUrl);
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
-                              href={`${this.state.siteUrl}/${this.state.inclusionpath}/${this.state.sitename}/Lists/Event%20Track%20Details/AllItems.aspx`}
+                              href={`/${this.state.inclusionpath}/${this.state.sitename}/Lists/Event%20Track%20Details/AllItems.aspx`}
                               target="_blank"
                             >
                               <img
