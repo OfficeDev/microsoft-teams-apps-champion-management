@@ -72,7 +72,21 @@ Digital Badge is intended to allow Microsoft 365 Champions to apply a ‘Champio
 ### Prerequisites
 
 Ensure the administrator who will install the app has access to following:
+### Install NodeJs
 
+1.  Download nodejs from this link 
+    https://nodejs.org/ 
+
+2.   Previous Releases | Node.js (nodejs.org) 
+    Download node 10.24.0
+
+3.  After downloading the nodejs and installing follow steps as follows
+
+4.  Please open the CMP download folder
+    Run Npm install
+    And 
+    Run npm install -g gulp
+    
   *	Global or SharePoint Administrator role in the target tenant
   *	***ChampionManagementPlatform*** project in GitHub
 ### Install Champion Leaderboard SPFx Package
@@ -193,6 +207,15 @@ If desired the administrator can configure the installation location including t
 
 · If you are using the default configuration, this can be found at ***`https://<yourtenant>.sharepoint.com/sites/ChampionManagementPlatform/`***.
 ```
+
+- Select site permissions
+
+- Advanced permissions settings
+
+- Select Grant permissions 
+ 
+ From <https://github.com/OfficeDev/microsoft-teams-apps-champion-management> ![image](https://user-images.githubusercontent.com/69787520/119333872-089d8280-bca8-11eb-8653-7ae7256dace8.png)
+
   . Select Share
   . Enter in 'Everyone except external users'
   . Change permissions to Edit
@@ -203,6 +226,79 @@ If desired the administrator can configure the installation location including t
  <br/>
 
 <img src="./Images/sitePerms.png" alt="Quick Start Guide" style="width: 100%;">
+
+### Teams Personal App:
+
+Please update the ClbHomeWebPart.manifest.json file with new entry TeamsPersonalApp
+
+
+
+
+![image](https://user-images.githubusercontent.com/69787520/119333583-a5abeb80-bca7-11eb-8bf8-8a5912a509b4.png)
+
+### Updated in version 1.1.0.0
+
+1. Champions Managegment Portal as a personal app configuration.
+2. Code clean up to improve performance 
+3. Issues identified in the tab view with blank pages
+4. Points calculation issues
+
+### Known issues
+
+1. Column type for description on Events List - you should change to single line of text and not choice 
+    - Click on Events list icon in the Champions Managegment Portal as a personal app or tab 
+    - Go to Event list settings
+    - Go to Column Description
+    - Change the type as text from choice
+2. Color coding list for approved and pending status
+3
+### Frequently Asked Questions
+
+FAQ:
+
+
+Q. Can we Install in existing site?
+
+A. Currently the CMP design flow is about having separate site which will be responsible for managing or restricting the data access to the limited users than all the users of the root site. At this moment the answer is not possible with the current design.
+
+Q.How to configure creation of the "Member List" on another site than the root site of the tenant? 
+
+A.At this moment we are considering Member List creation at root level as there is limitation we see when tried to create at ChampionLeaderBoard Site level. So the code has limitations with Member List adding at sub site level as requested.
+
+Q. Teams SharePoint Error : Check your site does not exists already . Why this error
+
+A.This issue we are able to reproduce when the ChampionLeaderBoard site is not deleted from active sharepoint sites and Deleted Sites.
+
+Also should make sure the MemberList Sharepoint list to be deleted from Parent or Main Sharepoint site and from the respective site recycle bin. Please let us know if you still see after doing these steps.
+
+
+
+
+
+Q.App not updating profile picture with badge
+
+After successfull installed the App on  tenant and everything works fine except the update profile picture function. As it has nothing customized anything just used the default app. All API Requests are granted! Is showing the  error in the image, why?
+From <https://github.com/OfficeDev/microsoft-teams-apps-champion-management/issues/10> 
+
+
+A.This issue will come when the permissions are not being inherited or approved after deploying the sharepoint package at the time of uploading from app catalogue. After doing the same able to update the profile picture with badge. Please let us know if you still see the same error even following the steps.
+
+
+
+
+
+
+
+
+From <https://github.com/OfficeDev/microsoft-teams-apps-champion-management/issues/10> 
+
+
+Q.App not loading components when added as Personal App in Teams
+A.This feature is not there in the current version of CMP. Will try to incorporate on the coming versions with the same.
+
+
+![image](https://user-images.githubusercontent.com/69787520/119333982-308ce600-bca8-11eb-985d-76f5526b5166.png)
+
 
 ### Additional Customization Options
 
