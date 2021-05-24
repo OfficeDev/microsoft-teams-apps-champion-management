@@ -113,7 +113,7 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
         let pointsTotal = 0;
         if (datau != "undefined") {
           for (let j = 0; j < datau.value.length; j++) {
-            pointsTotal += datau.value[j].Points;
+            pointsTotal += datau.value[j].Count
           }
         }
         usersd[i]["eventpoints"] = eventpoints;

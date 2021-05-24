@@ -362,7 +362,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                     EventId: eventItem.Id,
                                     MemberId: memberData,
                                     DateofEvent: new Date(),
-                                    Points: 10,
+                                    Count: 10,
                                   };
                                   const spHttpClientOptions: ISPHttpClientOptions = {
                                     body: JSON.stringify(listDefinition),
@@ -389,7 +389,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                   if (datada.value.findIndex((v: { ID: any }) =>v.ID === memberids[i].MemberId) !== -1) {
                                     let totalUserPoints = 0;
                                     eventsdatauser.value.filter((z: any) => z.MemberId === memberids[i].MemberId)
-                                      .map((z: any) => { totalUserPoints = totalUserPoints + z.Points;});
+                                      .map((z: any) => { totalUserPoints = totalUserPoints + z.Count});
                                     
                                       memcount.push({
                                       id: memberids[i].MemberId,
@@ -401,7 +401,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                 let pointsTotal = 0;
                                 let rank: number;
                                 memcount
-                                  .sort((x, y) => y.points - x.points)
+                                  .sort((x, y) => y.Count - x.Count)
                                   .map((x: any, ind: number) => {
                                     if (
                                       x.id ===

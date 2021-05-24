@@ -29,7 +29,7 @@ import _ from "lodash";
 const columns = [
   { field: "DateOfEvent", headerName: "Date of Event", width: 250 },
   { field: "type", headerName: "Type", width: 250 },
-  { field: "points", headerName: "Points", width: 250 },
+  { field: "Count", headerName: "Points", width: 250 },
 ];
 const DayPickerStrings: IDatePickerStrings = {
   months: [
@@ -131,7 +131,7 @@ export interface ChampList {
   type: string;
   eventid: number;
   memberid: number;
-  points: number;
+  Count: number;
   DateOfEvent: Date;
 }
 export interface EventList {
@@ -271,16 +271,16 @@ export default class ChampionvView extends Component<
       let tmp: Array<EventList> = null;
       let selectedVal: any = null;
       tmp = this.state.edetailsIds;
-      let scount = link.points * 10;
+      let scount = link.Count * 10;
       let item1 = tmp.filter((i) => i.Id === link.eventid);
      
       let seventid = String(link.eventid);
       let smemberid = String(link.memberid);
       let sdoe = link.DateOfEvent;
       let stype = link.type;
-      let spoints = link.points * 10;
+      let spoints = link.Count * 10;
       if (item1.length != 0) {
-        scount = link.points * item1[0].Ecount;
+        scount = link.Count * item1[0].Ecount;
       }
       if (true) {
         const listDefinition: any = {
@@ -288,7 +288,7 @@ export default class ChampionvView extends Component<
           EventId: seventid,
           MemberId: smemberid,
           DateofEvent: sdoe,
-          Points: scount,
+          Count: scount,
         };
 
         const spHttpClientOptions: ISPHttpClientOptions = {
@@ -401,7 +401,7 @@ export default class ChampionvView extends Component<
               type: responseJSON.value[i].Title,
               eventid: responseJSON.value[i].EventId,
               memberid: memberid,
-              points: responseJSON.value[i].Points,
+              Count: responseJSON.value[i].Count,
               DateOfEvent: responseJSON.value[i].DateofEvent,
             };
             const newBag = this.state.collection.concat(c);
@@ -484,7 +484,7 @@ export default class ChampionvView extends Component<
                               type: responseJSON.value[i].Title,
                               eventid: responseJSON.value[i].EventId,
                               memberid: memberid,
-                              points: responseJSON.value[i].Points,
+                              Count: responseJSON.value[i].Count,
                               DateOfEvent: responseJSON.value[i].DateofEvent,
                             };
                             const newBag = this.state.collection.concat(c);
@@ -657,7 +657,9 @@ export default class ChampionvView extends Component<
                                 htmlFor="inputPoints"
                                 className="col-sm-3 col-form-label"
                               >
-                                Points
+                      
+                      
+                                Count
                               </label>
                               <div className="col-sm-9">
                                 <TextField
@@ -685,7 +687,7 @@ export default class ChampionvView extends Component<
                                         type: this.state.type,
                                         eventid: this.state.eventid,
                                         memberid: this.state.memberid,
-                                        points: this.state.points,
+                                        Count: this.state.points,
                                         DateOfEvent: this.state.DateOfEvent,
                                       },
                                       "false"
@@ -707,11 +709,11 @@ export default class ChampionvView extends Component<
                                 <div key={item.eventid} className="m-2 mb-3">
                                   <Alert
                                     onClose={() => {
-                                      this.removeDevice(item.type, item.points);
+                                      this.removeDevice(item.type, item.Count);
                                     }}
                                   >
                                     {item.type}
-                                    <span className="ml-4">{item.points}</span>
+                                    <span className="ml-4">{item.Count}</span>
                                   </Alert>
                                 </div>
                               ))}

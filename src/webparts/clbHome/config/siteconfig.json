@@ -68,7 +68,7 @@
           "type": "number"
         },
         {
-          "name": "Points",
+          "name": "Count",
           "type": "number"
         },
         {

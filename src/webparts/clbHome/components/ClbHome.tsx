@@ -68,7 +68,7 @@ export default class ClbHome extends React.Component<
     this.setState({
       isShow: true,
     });
-    this.rootSiteId();
+   
 
     this.props.context.spHttpClient
       .get(
@@ -81,6 +81,7 @@ export default class ClbHome extends React.Component<
           this.setState({ loggedinUserName: datauser.DisplayName });
         });
       });
+      this.rootSiteId();
   }
 
   //create lists when you upload package into new tenant.
@@ -488,12 +489,39 @@ console.log(this.state.siteUrl);
           .get()
           .then((data: any) => {
             this.setState({ siteId: data.id.split(",")[1] }, () => {
+              if(this.IsCMPAlreadyExists)
               this._createList();
+              else alert(
+                ` ${this.state.loggedinUserName} has updated the Champion Management Platform, please refresh the app to complete the setup.`
+              );
             });
           });
       });
   }
-
+  private  IsCMPAlreadyExists(): boolean {
+    let flag:boolean = false;
+    this.props.context.spHttpClient
+      .get(
+        "/_api/web/lists/GetByTitle('Member List')/Items",
+        SPHttpClient.configurations.v1
+      )
+      .then((response: SPHttpClientResponse) => {
+        if (response.status === 200) {
+          this.setState({
+            isShow: false,
+          });
+          
+        }
+        else
+        {
+        this.setState({
+          isShow: true,
+        });
+      flag=true;
+      }
+      });
+      return flag;
+  }
   private async _getListData(email: any): Promise<any> {
     return this.props.context.spHttpClient
       .get(

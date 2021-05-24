@@ -224,7 +224,7 @@ export default class Champions extends Component<
                                               </td>
                                               <td className="gttc-tap-data">
                                                 {
-                                                  rankedMember.eventpoints[e].map((x) => x.Points / x.Points).length
+                                                  rankedMember.eventpoints[e].map((x) => x.Count / x.Count).length
                                                 }
                                               </td>
                                             </tr>
