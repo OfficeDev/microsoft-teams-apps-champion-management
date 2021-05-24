@@ -230,7 +230,7 @@ If desired the administrator can configure the installation location including t
 
 CLbHomeWebPart.manifest.json is updated with a new entry, TeamsPersonalApp  
 
-<img src="./Images/teamspersonalapp.png" alt="Quick Start Guide" style="width: 100%;">
+<img src="./Images/teamspersonalapp.PNG" alt="" style="width: 100%;">
 
 ### Updated in version 1.1.0.0
 
