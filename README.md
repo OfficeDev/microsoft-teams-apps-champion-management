@@ -80,11 +80,10 @@ Ensure the administrator who will install the app has access to following:
 2.   Previous Releases | Node.js (nodejs.org) 
     Download node 10.24.0
 
-3.  After downloading the nodejs and installing follow steps as follows
+3.  After downloading and installing nodejs, follow the below steps:
 
-4.  Please open the CMP download folder
+4.  Open the CMP download folder
     Run Npm install
-    And 
     Run npm install -g gulp
     
   *	Global or SharePoint Administrator role in the target tenant
@@ -229,29 +228,25 @@ If desired the administrator can configure the installation location including t
 
 ### Teams Personal App:
 
-Please update the ClbHomeWebPart.manifest.json file with new entry TeamsPersonalApp
+CLbHomeWebPart.manifest.json is updated with a new entry, TeamsPersonalApp  
 
-
-
-
-![image](https://user-images.githubusercontent.com/69787520/119333583-a5abeb80-bca7-11eb-8bf8-8a5912a509b4.png)
+<img src="./Images/teamspersonalapp.png" alt="Quick Start Guide" style="width: 100%;">
 
 ### Updated in version 1.1.0.0
 
-1. Champions Managegment Portal as a personal app configuration.
-2. Code clean up to improve performance 
-3. Issues identified in the tab view with blank pages
-4. Points calculation issues
+1. Champions Managegment Platform can be configured now as a personal app and Teams scope.
+2. Fixed configurable tab experience.
+3. Improved rank logic.
 
 ### Known issues
 
-1. Column type for description on Events List - you should change to single line of text and not choice 
+1. Column type for description in Events List - User should change from 'Choice' to Single line of text.
     - Click on Events list icon in the Champions Managegment Portal as a personal app or tab 
     - Go to Event list settings
     - Go to Column Description
     - Change the type as text from choice
 2. Color coding list for approved and pending status
-3
+
 ### Frequently Asked Questions
 
 FAQ:
@@ -259,45 +254,15 @@ FAQ:
 
 Q. Can we Install in existing site?
 
-A. Currently the CMP design flow is about having separate site which will be responsible for managing or restricting the data access to the limited users than all the users of the root site. At this moment the answer is not possible with the current design.
+A. To maintain permissions and access control, current version of CMP is creating a new site.
 
 Q.How to configure creation of the "Member List" on another site than the root site of the tenant? 
 
-A.At this moment we are considering Member List creation at root level as there is limitation we see when tried to create at ChampionLeaderBoard Site level. So the code has limitations with Member List adding at sub site level as requested.
+A. This will be addressed in V 2.0. In current version, because of permission limitation, CMP is creating site at root level. If needed, CMP code is customizable.
 
-Q. Teams SharePoint Error : Check your site does not exists already . Why this error
+Q.Why is Profile image not updated with Digital Badge? 
 
-A.This issue we are able to reproduce when the ChampionLeaderBoard site is not deleted from active sharepoint sites and Deleted Sites.
-
-Also should make sure the MemberList Sharepoint list to be deleted from Parent or Main Sharepoint site and from the respective site recycle bin. Please let us know if you still see after doing these steps.
-
-
-
-
-
-Q.App not updating profile picture with badge
-
-After successfull installed the App on  tenant and everything works fine except the update profile picture function. As it has nothing customized anything just used the default app. All API Requests are granted! Is showing the  error in the image, why?
-From <https://github.com/OfficeDev/microsoft-teams-apps-champion-management/issues/10> 
-
-
-A.This issue will come when the permissions are not being inherited or approved after deploying the sharepoint package at the time of uploading from app catalogue. After doing the same able to update the profile picture with badge. Please let us know if you still see the same error even following the steps.
-
-
-
-
-
-
-
-
-From <https://github.com/OfficeDev/microsoft-teams-apps-champion-management/issues/10> 
-
-
-Q.App not loading components when added as Personal App in Teams
-A.This feature is not there in the current version of CMP. Will try to incorporate on the coming versions with the same.
-
-
-![image](https://user-images.githubusercontent.com/69787520/119333982-308ce600-bca8-11eb-985d-76f5526b5166.png)
+A.This happens when the permissions are not being inherited or approved after deploying package.
 
 
 ### Additional Customization Options
