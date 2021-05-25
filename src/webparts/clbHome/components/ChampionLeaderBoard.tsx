@@ -56,27 +56,14 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
 
   const _renderListAsync = async () => {
     props.context.spHttpClient
-      .get(
-        siteUrl +
-          "/" +
-          inclusionpath +
-          "/" +
-          siteName +
-          "/_api/web/lists/GetByTitle('Events List')/Items",
-        SPHttpClient.configurations.v1
-      )
+      .get( "/" + inclusionpath + "/" + siteName + "/_api/web/lists/GetByTitle('Events List')/Items", SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => {
         response
           .json()
           .then((eventdata) => {
             if (!eventdata.error) {
-              setEventDropDown(_.orderBy(eventdata.value,['Id'],['asc']));
-              props.context.spHttpClient
-                .get(
-                  siteUrl +
-                    "/_api/web/lists/GetByTitle('Member List')/Items?$filter= Status eq 'Approved'",
-                  SPHttpClient.configurations.v1
-                )
+              setEventDropDown(_.orderBy(eventdata.value.filter(ed => ed.IsActive), ['Id'], ['asc']));
+              props.context.spHttpClient.get( "/_api/web/lists/GetByTitle('Member List')/Items?$filter= Status eq 'Approved'", SPHttpClient.configurations.v1)
                 // tslint:disable-next-line: no-shadowed-variable
                 .then((response: SPHttpClientResponse) => {
                   response.json().then((datada) => {
@@ -88,7 +75,7 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
                 });
             }
           })
-          .catch((e) => {});
+          .catch((e) => { });
       });
   };
 
@@ -101,17 +88,17 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
 
   const getUserPoints = (id: any) => {
     return props.context.spHttpClient.get(
-      siteUrl +
-        "/" +
-        inclusionpath +
-        "/" +
-        siteName +
-        "/_api/web/lists/GetByTitle('Event Track Details')/Items?$filter=MemberId eq " +
-        id,
+     
+      "/" +
+      inclusionpath +
+      "/" +
+      siteName +
+      "/_api/web/lists/GetByTitle('Event Track Details')/Items?$filter=MemberId eq " +
+      id,
       SPHttpClient.configurations.v1
     );
   };
-  
+
   async function processUsers(usersd: any) {
     let result: any[];
     let promises = [];
@@ -122,11 +109,11 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
     let c = 0;
     for (let i = 0; i < usersd.length; i++) {
       result[i].json().then((datau) => {
-        let eventpoints = _.groupBy(_.orderBy(datau.value,['Id'],['asc']), "EventId");
+        let eventpoints = _.groupBy(_.orderBy(datau.value, ['Id'], ['asc']), "EventId");
         let pointsTotal = 0;
         if (datau != "undefined") {
           for (let j = 0; j < datau.value.length; j++) {
-            pointsTotal += datau.value[j].Count;
+            pointsTotal += datau.value[j].Count
           }
         }
         usersd[i]["eventpoints"] = eventpoints;
@@ -136,8 +123,8 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
         if (c === usersd.length) {
           props.context.spHttpClient
             .get(
-              siteUrl +
-                "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Region')",
+            
+              "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Region')",
               SPHttpClient.configurations.v1
             )
             .then((response: SPHttpClientResponse) => {
@@ -145,8 +132,8 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
                 if (!focusAreas.error) {
                   props.context.spHttpClient
                     .get(
-                      siteUrl +
-                        "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('FocusArea')",
+                     
+                      "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('FocusArea')",
                       SPHttpClient.configurations.v1
                     )
                     // tslint:disable-next-line: no-shadowed-variable
@@ -254,6 +241,7 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
                   events={eventDropdown}
                   fromV={""}
                   filterBy=""
+                  callBack={_renderListAsync}
                 />
               </PivotItem>
               <PivotItem headerText="Near Me">
@@ -269,7 +257,8 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
                   type="Near Me"
                   events={eventDropdown}
                   fromV={""}
-                  filterBy={filterByFocusArea}
+                  filterBy={filterByFocusArea}                  
+                  callBack={_renderListAsync}                  
                 />
               </PivotItem>
               <PivotItem headerText="By Specialty">
@@ -285,7 +274,8 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
                   type="By Specialty"
                   events={eventDropdown}
                   fromV={""}
-                  filterBy={filterBySpeciality}
+                  filterBy={filterBySpeciality}                  
+                  callBack={_renderListAsync}
                 />
               </PivotItem>
             </Pivot>

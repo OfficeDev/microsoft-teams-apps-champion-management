@@ -29,7 +29,7 @@ import _ from "lodash";
 const columns = [
   { field: "DateOfEvent", headerName: "Date of Event", width: 250 },
   { field: "type", headerName: "Type", width: 250 },
-  { field: "count", headerName: "Points", width: 250 },
+  { field: "Count", headerName: "Points", width: 250 },
 ];
 const DayPickerStrings: IDatePickerStrings = {
   months: [
@@ -109,7 +109,7 @@ export interface ChampionViewState {
   validationError: string;
   eventid: number;
   memberid: number;
-  count: number;
+  points: number;
   DateOfEvent: Date;
   collection: Array<ChampList>;
   collectionNew: Array<ChampList>;
@@ -131,7 +131,7 @@ export interface ChampList {
   type: string;
   eventid: number;
   memberid: number;
-  count: number;
+  Count: number;
   DateOfEvent: Date;
 }
 export interface EventList {
@@ -151,7 +151,7 @@ export default class ChampionvView extends Component<
     this.getTrackDetailsData = this.getTrackDetailsData.bind(this);
     this.onChange = this.onChange.bind(this);
     this.getListData = this.getListData.bind(this);
-    this.setCount = this.setCount.bind(this);
+    this.setPoints = this.setPoints.bind(this);
     this.createorupdateItem = this.createorupdateItem.bind(this);
     this.options = this.options.bind(this);
     this.removeDevice = this.removeDevice.bind(this);
@@ -164,7 +164,7 @@ export default class ChampionvView extends Component<
       validationError: "",
       eventid: 0,
       memberid: 0,
-      count: 1,
+      points: 1,
       DateOfEvent: new Date(),
       collection: [],
       collectionNew: [],
@@ -194,7 +194,7 @@ export default class ChampionvView extends Component<
       this.setState({
         collectionNew: newBag,
         eventid: 0,
-        count: 1,
+        points: 1,
       });
       this.setState({ selectedkey: 0 });
     } else {
@@ -210,12 +210,12 @@ export default class ChampionvView extends Component<
     if (this.state.edetails.length == 0)
       this.props.context.spHttpClient
         .get(
-          this.state.siteUrl +
-            "/" +
-            this.state.inclusionpath +
-            "/" +
-            this.state.sitename +
-            "/_api/web/lists/GetByTitle('Events List')/Items",
+         
+          "/" +
+          this.state.inclusionpath +
+          "/" +
+          this.state.sitename +
+          "/_api/web/lists/GetByTitle('Events List')/Items",
           SPHttpClient.configurations.v1
         )
         .then(async (response: SPHttpClientResponse) => {
@@ -225,16 +225,17 @@ export default class ChampionvView extends Component<
               while (i < responseJSON.value.length) {
                 if (
                   responseJSON.value[i] &&
-                  responseJSON.value[i].hasOwnProperty("Title")
+                  responseJSON.value[i].hasOwnProperty("Title") &&
+                  responseJSON.value[i].IsActive
                 ) {
                   optionArray.push(responseJSON.value[i].Title);
                   optionArrayIds.push({
                     Title: responseJSON.value[i].Title,
                     Id: responseJSON.value[i].Id,
-                    Ecount:responseJSON.value[i].Points,
+                    Ecount: responseJSON.value[i].Points,
                   });
-                  i++;
                 }
+                i++;
               }
               this.setState({
                 edetails: optionArray,
@@ -255,11 +256,11 @@ export default class ChampionvView extends Component<
     return myOptions;
   }
 
-  public removeDevice(type: string, count: number) {
+  public removeDevice(type: string, points: number) {
     this.setState((prevState) => ({
       collectionNew: prevState.collectionNew.filter(
         (data) => data.type !== type,
-        count
+        points
       ),
     }));
   }
@@ -270,16 +271,17 @@ export default class ChampionvView extends Component<
       let tmp: Array<EventList> = null;
       let selectedVal: any = null;
       tmp = this.state.edetailsIds;
-      let scount = link.count * 10;
+      let scount = link.Count * 10;
       let item1 = tmp.filter((i) => i.Id === link.eventid);
-      if (item1.length != 0) {
-        scount = link.count * item1[0].Ecount;
-      }
+     
       let seventid = String(link.eventid);
       let smemberid = String(link.memberid);
       let sdoe = link.DateOfEvent;
       let stype = link.type;
-
+      let spoints = link.Count * 10;
+      if (item1.length != 0) {
+        scount = link.Count * item1[0].Ecount;
+      }
       if (true) {
         const listDefinition: any = {
           Title: stype,
@@ -309,7 +311,7 @@ export default class ChampionvView extends Component<
           if (this.props.context)
             this.props.context.spHttpClient
               .post(
-                this.state.siteUrl + url,
+                url,
                 SPHttpClient.configurations.v1,
                 spHttpClientOptions
               )
@@ -320,9 +322,9 @@ export default class ChampionvView extends Component<
                 } else {
                   alert(
                     "Response status " +
-                      responseData.status +
-                      " - " +
-                      responseData.statusText
+                    responseData.status +
+                    " - " +
+                    responseData.statusText
                   );
                 }
               })
@@ -346,23 +348,25 @@ export default class ChampionvView extends Component<
     let flag = false;
     this.props.context.spHttpClient
       .get(
-        this.state.siteUrl +
-          "/" +
-          this.state.inclusionpath +
-          "/" +
-          this.state.sitename +
-          "/_api/web/lists/GetByTitle('Event Track Details')/Items",
+       
+        "/" +
+        this.state.inclusionpath +
+        "/" +
+        this.state.sitename +
+        "/_api/web/lists/GetByTitle('Event Track Details')/Items",
         SPHttpClient.configurations.v1
       )
       .then(async (response: SPHttpClientResponse) => {
         if (response.status === 200) {
           await response.json().then((responseJSON: any) => {
             let i = 0;
-            while (i < responseJSON.value.length) {
-              if (responseJSON.value[i].MemberId == memberid) {
-                if (responseJSON.value[i].EventId == eventid) return flag;
+            if (responseJSON.value != undefined) {              
+              while (i < responseJSON.value.length) {
+                if (responseJSON.value[i].MemberId == memberid) {
+                  if (responseJSON.value[i].EventId == eventid) return flag;
+                }
+                i++;
               }
-              i++;
             }
           });
         }
@@ -373,12 +377,12 @@ export default class ChampionvView extends Component<
   private async getListData(memberid: any, _eventid: any): Promise<any> {
     this.setState({ collection: [] });
     const response = await this.props.context.spHttpClient.get(
-      this.state.siteUrl +
-        "/" +
-        this.state.inclusionpath +
-        "/" +
-        this.state.sitename +
-        "/_api/web/lists/GetByTitle('Event Track Details')/Items",
+     
+      "/" +
+      this.state.inclusionpath +
+      "/" +
+      this.state.sitename +
+      "/_api/web/lists/GetByTitle('Event Track Details')/Items",
       SPHttpClient.configurations.v1
     );
     if (response.status === 200) {
@@ -397,7 +401,7 @@ export default class ChampionvView extends Component<
               type: responseJSON.value[i].Title,
               eventid: responseJSON.value[i].EventId,
               memberid: memberid,
-              count: responseJSON.value[i].Count,
+              Count: responseJSON.value[i].Count,
               DateOfEvent: responseJSON.value[i].DateofEvent,
             };
             const newBag = this.state.collection.concat(c);
@@ -425,8 +429,8 @@ export default class ChampionvView extends Component<
   public getMemberId(): number {
     this.props.context.spHttpClient
       .get(
-        this.state.siteUrl +
-          "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
+       
+        "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
         SPHttpClient.configurations.v1
       )
       .then((responseuser: SPHttpClientResponse) => {
@@ -434,8 +438,8 @@ export default class ChampionvView extends Component<
           if (!datauser.error) {
             this.props.context.spHttpClient
               .get(
-                this.state.siteUrl +
-                  "/_api/web/lists/GetByTitle('Member List')/Items",
+               
+                "/_api/web/lists/GetByTitle('Member List')/Items",
                 SPHttpClient.configurations.v1
               )
               .then((response: SPHttpClientResponse) => {
@@ -448,12 +452,12 @@ export default class ChampionvView extends Component<
                   this.setState({ collection: [] });
                   this.props.context.spHttpClient
                     .get(
-                      this.state.siteUrl +
-                        "/" +
-                        this.state.inclusionpath +
-                        "/" +
-                        this.state.sitename +
-                        "/_api/web/lists/GetByTitle('Event Track Details')/Items",
+                     
+                      "/" +
+                      this.state.inclusionpath +
+                      "/" +
+                      this.state.sitename +
+                      "/_api/web/lists/GetByTitle('Event Track Details')/Items",
                       SPHttpClient.configurations.v1
                     )
                     .then((response1: SPHttpClientResponse) => {
@@ -480,7 +484,7 @@ export default class ChampionvView extends Component<
                               type: responseJSON.value[i].Title,
                               eventid: responseJSON.value[i].EventId,
                               memberid: memberid,
-                              count: responseJSON.value[i].Count,
+                              Count: responseJSON.value[i].Count,
                               DateOfEvent: responseJSON.value[i].DateofEvent,
                             };
                             const newBag = this.state.collection.concat(c);
@@ -533,14 +537,11 @@ export default class ChampionvView extends Component<
     }
   }
 
-  private setCount(e: any): void {
-    if (
-      !e.target.value ||
-      (e.target.value.length <= 1 && parseInt(e.target.value) <= 5)
-    ) {
-      this.setState({ count: e.target.value });
+  private setPoints(e: any): void {
+    if (!e.target.value || (e.target.value.length <= 1 && parseInt(e.target.value) <= 5)) {
+      this.setState({ points: e.target.value });
     } else {
-      this.setState({ count: this.state.count });
+      this.setState({ points: this.state.points });
     }
   }
 
@@ -650,19 +651,21 @@ export default class ChampionvView extends Component<
                             </div>
                           </div>
                           {this.state.type &&
-                          this.state.type !== "Select Event Type" ? (
+                            this.state.type !== "Select Event Type" ? (
                             <div className="form-group row">
                               <label
-                                htmlFor="inputCount"
+                                htmlFor="inputPoints"
                                 className="col-sm-3 col-form-label"
                               >
+                      
+                      
                                 Count
                               </label>
                               <div className="col-sm-9">
                                 <TextField
-                                  value={this.state.count.toString()}
-                                  onChange={this.setCount}
-                                  id="inputCount"
+                                  value={this.state.points.toString()}
+                                  onChange={this.setPoints}
+                                  id="inputPoints"
                                   type="number"
                                   min="1"
                                   max="5"
@@ -684,7 +687,7 @@ export default class ChampionvView extends Component<
                                         type: this.state.type,
                                         eventid: this.state.eventid,
                                         memberid: this.state.memberid,
-                                        count: this.state.count,
+                                        Count: this.state.points,
                                         DateOfEvent: this.state.DateOfEvent,
                                       },
                                       "false"
@@ -706,11 +709,11 @@ export default class ChampionvView extends Component<
                                 <div key={item.eventid} className="m-2 mb-3">
                                   <Alert
                                     onClose={() => {
-                                      this.removeDevice(item.type, item.count);
+                                      this.removeDevice(item.type, item.Count);
                                     }}
                                   >
                                     {item.type}
-                                    <span className="ml-4">{item.count}</span>
+                                    <span className="ml-4">{item.Count}</span>
                                   </Alert>
                                 </div>
                               ))}

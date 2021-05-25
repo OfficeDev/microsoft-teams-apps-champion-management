@@ -48,7 +48,7 @@
         },
         {
           "name": "Description",
-          "type": "choice"
+          "type": "text"          
         },
         {
           "name": "IsActive",

@@ -94,7 +94,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
   public componentDidMount() {
     this.props.context.spHttpClient
       .get(
-        this.state.siteUrl +
+       
           "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Region')",
         SPHttpClient.configurations.v1
       )
@@ -103,7 +103,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
           if (!regions.error) {
             this.props.context.spHttpClient
               .get(
-                this.state.siteUrl +
+               
                   "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Country')",
                 SPHttpClient.configurations.v1
               )
@@ -124,7 +124,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
 
     this.props.context.spHttpClient
       .get(
-        this.state.siteUrl +
+       
           "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Group')",
         SPHttpClient.configurations.v1
       )
@@ -133,7 +133,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
           if (!groups.error) {
             this.props.context.spHttpClient
               .get(
-                this.state.siteUrl +
+               
                   "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('FocusArea')",
                 SPHttpClient.configurations.v1
               )
@@ -197,7 +197,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
   public async _createorupdateItem() {
     return this.props.context.spHttpClient
       .get(
-        this.state.siteUrl +
+       
           "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
         SPHttpClient.configurations.v1
       )
@@ -206,7 +206,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
           if (!datauser.error) {
             this.props.context.spHttpClient
               .get(
-                this.state.siteUrl +
+               
                   "/_api/web/lists/GetByTitle('Member List')/Items",
                 SPHttpClient.configurations.v1
               )

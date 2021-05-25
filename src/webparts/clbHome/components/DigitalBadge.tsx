@@ -126,7 +126,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
     microsoftTeams.getContext((context: microsoftTeams.Context) => {
       this.props.context.spHttpClient
         .get(
-          this.state.siteUrl +
+         
             "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
           SPHttpClient.configurations.v1
         )
@@ -134,7 +134,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
           responseuser.json().then((datauser: any) => {
             this.props.context.spHttpClient
               .get(
-                this.state.siteUrl +
+               
                   "/_api/web/lists/GetByTitle('Member List')/Items",
                 SPHttpClient.configurations.v1
               )

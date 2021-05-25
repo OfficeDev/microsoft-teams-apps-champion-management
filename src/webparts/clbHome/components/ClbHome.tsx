@@ -68,11 +68,11 @@ export default class ClbHome extends React.Component<
     this.setState({
       isShow: true,
     });
-    this.rootSiteId();
+   
 
     this.props.context.spHttpClient
       .get(
-        this.state.siteUrl +
+        
           "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
         SPHttpClient.configurations.v1
       )
@@ -81,6 +81,7 @@ export default class ClbHome extends React.Component<
           this.setState({ loggedinUserName: datauser.DisplayName });
         });
       });
+      this.rootSiteId();
   }
 
   //create lists when you upload package into new tenant.
@@ -88,7 +89,7 @@ export default class ClbHome extends React.Component<
   private _createList() {
     let listname = siteconfig.lists[1].listName;
     const getListUrl: string =
-      this.state.siteUrl +
+      
       "/" +
       this.state.inclusionpath +
       "/" +
@@ -96,15 +97,15 @@ export default class ClbHome extends React.Component<
       `/_api/web/lists/GetByTitle('${listname}')/Items`;
 
     let memberListName = siteconfig.lists[0].listName;
-
+console.log(this.state.siteUrl);
     let getMemberListUrl =
-      this.state.siteUrl +
+      this.state.siteUrl+
       "/" +
       `/_api/web/lists/GetByTitle('${memberListName}')/Items`;
 
     let isMembersListNotExists = false;
     this.props.context.spHttpClient
-      .get(getMemberListUrl, SPHttpClient.configurations.v1)
+      .get("/_api/web/lists/GetByTitle('Member List')/Items", SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => {
         if (response.status === 404) {
           isMembersListNotExists = true;
@@ -119,19 +120,19 @@ export default class ClbHome extends React.Component<
           if (response.status === 404) {
             this.props.context.spHttpClient
               .get(
-                this.state.siteUrl +
+                
                   "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
                 SPHttpClient.configurations.v1
               )
               .then((responseuser: SPHttpClientResponse) => {
                 responseuser.json().then((datauser: any) => {
                   const createsiteUrl: string =
-                    this.state.siteUrl + "/_api/SPSiteManager/create";
+                     "/_api/SPSiteManager/create";
                   const siteDefinition: any = {
                     request: {
                       Title: this.state.sitename,
                       Url:
-                        this.state.siteUrl +
+                        this.state.siteUrl.replace("https:/","https://").replace("https:///","https://")+
                         "/" +
                         this.state.inclusionpath +
                         "/" +
@@ -166,7 +167,7 @@ export default class ClbHome extends React.Component<
                                   case "text":
                                     column = {
                                       name: element.name,
-                                      text: {},
+                                      text: {}, 
                                     };
                                     listColumns.push(column);
                                     break;
@@ -323,7 +324,7 @@ export default class ClbHome extends React.Component<
                                 setTimeout(() => {
                                   this.props.context.spHttpClient
                                     .get(
-                                      this.state.siteUrl +
+                                      
                                         "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
                                       SPHttpClient.configurations.v1
                                     )
@@ -355,8 +356,7 @@ export default class ClbHome extends React.Component<
                                                   listDefinition
                                                 ),
                                               };
-                                              const url: string =
-                                                this.state.siteUrl +
+                                              const url: string =  
                                                 "/_api/web/lists/GetByTitle('Member List')/items";
                                               this.props.context.spHttpClient
                                                 .post(
@@ -395,7 +395,7 @@ export default class ClbHome extends React.Component<
                                     );
                                 }, 6000);
                               } else {
-                                this.createNewList(siteId, item);
+                               this.createNewList(siteId, item);
                                 setTimeout(() => {
                                   if (item.displayName === "Events List") {
                                     siteconfig.eventsMasterData.forEach(
@@ -411,7 +411,7 @@ export default class ClbHome extends React.Component<
                                         };
 
                                         const url: string =
-                                          this.state.siteUrl +
+                                          
                                           "/" +
                                           this.state.inclusionpath +
                                           "/" +
@@ -427,11 +427,7 @@ export default class ClbHome extends React.Component<
                                             (
                                               newUserResponse: SPHttpClientResponse
                                             ) => {
-                                              if (
-                                                newUserResponse.status === 201
-                                              ) {
-                                              } else {
-                                              }
+                             
                                             }
                                           );
                                       }
@@ -493,13 +489,39 @@ export default class ClbHome extends React.Component<
           .get()
           .then((data: any) => {
             this.setState({ siteId: data.id.split(",")[1] }, () => {
+              if(this.IsCMPAlreadyExists)
               this._createList();
+              else alert(
+                ` ${this.state.loggedinUserName} has updated the Champion Management Platform, please refresh the app to complete the setup.`
+              );
             });
-          })
-          .catch((errClbHome) => {});
+          });
       });
   }
-
+  private  IsCMPAlreadyExists(): boolean {
+    let flag:boolean = false;
+    this.props.context.spHttpClient
+      .get(
+        "/_api/web/lists/GetByTitle('Member List')/Items",
+        SPHttpClient.configurations.v1
+      )
+      .then((response: SPHttpClientResponse) => {
+        if (response.status === 200) {
+          this.setState({
+            isShow: false,
+          });
+          
+        }
+        else
+        {
+        this.setState({
+          isShow: true,
+        });
+      flag=true;
+      }
+      });
+      return flag;
+  }
   private async _getListData(email: any): Promise<any> {
     return this.props.context.spHttpClient
       .get(
@@ -545,7 +567,7 @@ export default class ClbHome extends React.Component<
             }
             this.props.context.spHttpClient
               .get(
-                this.state.siteUrl +
+                
                   "/_api/web/lists/GetByTitle('Member List')/Items",
                 SPHttpClient.configurations.v1
               )
@@ -640,7 +662,7 @@ export default class ClbHome extends React.Component<
                         >
                           <div className={styles.mb}>
                             <img
-                              src={require("../assets/images/addmember.png")}
+                              src={require("../assets/images/addMember.png")}
                               alt="Adding Members Start adding the people you will collaborate with in your..."
                               title="Adding Members Start adding the people you will collaborate with in your..."
                               className={styles.dashboardimgs}
@@ -675,7 +697,7 @@ export default class ClbHome extends React.Component<
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
-                              href={`${this.state.siteUrl}/Lists/Member%20List/AllItems.aspx`}
+                              href={`/Lists/Member%20List/AllItems.aspx`}
                               target="_blank"
                             >
                               <img
@@ -693,7 +715,7 @@ export default class ClbHome extends React.Component<
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
-                              href={`${this.state.siteUrl}/${this.state.inclusionpath}/${this.state.sitename}/Lists/Events%20List/AllItems.aspx`}
+                              href={`/${this.state.inclusionpath}/${this.state.sitename}/Lists/Events%20List/AllItems.aspx`}
                               target="_blank"
                             >
                               <img
@@ -711,7 +733,7 @@ export default class ClbHome extends React.Component<
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
-                              href={`${this.state.siteUrl}/${this.state.inclusionpath}/${this.state.sitename}/Lists/Event%20Track%20Details/AllItems.aspx`}
+                              href={`/${this.state.inclusionpath}/${this.state.sitename}/Lists/Event%20Track%20Details/AllItems.aspx`}
                               target="_blank"
                             >
                               <img

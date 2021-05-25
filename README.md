@@ -72,7 +72,20 @@ Digital Badge is intended to allow Microsoft 365 Champions to apply a ‘Champio
 ### Prerequisites
 
 Ensure the administrator who will install the app has access to following:
+### Install NodeJs
 
+1.  Download nodejs from this link 
+    https://nodejs.org/ 
+
+2.   Previous Releases | Node.js (nodejs.org) 
+    Download node 10.24.0
+
+3.  After downloading and installing nodejs, follow the below steps:
+
+4.  Open the CMP download folder
+    Run Npm install
+    Run npm install -g gulp
+    
   *	Global or SharePoint Administrator role in the target tenant
   *	***ChampionManagementPlatform*** project in GitHub
 ### Install Champion Leaderboard SPFx Package
@@ -193,6 +206,15 @@ If desired the administrator can configure the installation location including t
 
 · If you are using the default configuration, this can be found at ***`https://<yourtenant>.sharepoint.com/sites/ChampionManagementPlatform/`***.
 ```
+
+- Select site permissions
+
+- Advanced permissions settings
+
+- Select Grant permissions 
+ 
+ From <https://github.com/OfficeDev/microsoft-teams-apps-champion-management> ![image](https://user-images.githubusercontent.com/69787520/119333872-089d8280-bca8-11eb-8653-7ae7256dace8.png)
+
   . Select Share
   . Enter in 'Everyone except external users'
   . Change permissions to Edit
@@ -203,6 +225,45 @@ If desired the administrator can configure the installation location including t
  <br/>
 
 <img src="./Images/sitePerms.png" alt="Quick Start Guide" style="width: 100%;">
+
+### Teams Personal App:
+
+CLbHomeWebPart.manifest.json is updated with a new entry, TeamsPersonalApp  
+
+<img src="./Images/teamspersonalapp.PNG" alt="" style="width: 100%;">
+
+### Updated in version 1.1.0.0
+
+1. Champions Managegment Platform can be configured now as a personal app and Teams scope.
+2. Fixed configurable tab experience.
+3. Improved rank logic.
+
+### Known issues
+
+1. Column type for description in Events List - User should change from 'Choice' to Single line of text.
+    - Click on Events list icon in the Champions Managegment Portal as a personal app or tab 
+    - Go to Event list settings
+    - Go to Column Description
+    - Change the type as text from choice
+2. Color coding list for approved and pending status
+
+### Frequently Asked Questions
+
+FAQ:
+
+
+Q. Can we Install in existing site?
+
+A. To maintain permissions and access control, current version of CMP is creating a new site.
+
+Q.How to configure creation of the "Member List" on another site than the root site of the tenant? 
+
+A. This will be addressed in V 2.0. In current version, because of permission limitation, CMP is creating site at root level. If needed, CMP code is customizable.
+
+Q.Why is Profile image not updated with Digital Badge? 
+
+A.This happens when the permissions are not being inherited or approved after deploying package.
+
 
 ### Additional Customization Options
 
