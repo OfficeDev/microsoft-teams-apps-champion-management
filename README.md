@@ -181,8 +181,45 @@ If desired the administrator can configure the installation location including t
 <img src="./Images/Deploy.png" alt="Quick Start Guide" style="width: 100%;">
 11.	Return to the ***SharePoint admin center***. Under expand the ***Advanced*** menu in the left navigation and select ***API access***. Select and approve all pending requests associated with ***championmanagement***
   <br/>
-
 <img src="./Images/APIAccess.png" alt="Quick Start Guide" style="width: 100%;">
+
+<table>
+    <tbody>
+      <tr>
+        <td>
+          <b> Permission Name </b>
+        </td>
+        <td>
+          <b>Description</b>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Sites.ReadWrite.All
+        </td>
+        <td>
+          Allows the app to create, read, update, and delete documents and list items in all site collections without a signed in user.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Sites.Manage.All
+        </td>
+        <td>
+          Allows the app to create or delete document libraries and lists in all site collections without a signed in user.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          User.ReadWrite.All
+        </td>
+        <td>
+          Allows the app to read and update user profiles without a signed in user.
+        </td>
+      </tr>
+     </tbod>
+     </table>
+
 12.	Return to app list in the App Catalog and select the ***championmanagement*** app. Select the Files tab in the ribbon and click the ***Sync to Teams*** button.
   <br/>
 
