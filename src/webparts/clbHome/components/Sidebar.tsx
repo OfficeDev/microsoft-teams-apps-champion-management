@@ -30,6 +30,8 @@ interface IUserDetail {
 export class ISPLists {
   public value: ISPList[];
 }
+
+
 export class ISPList {
   public Title: string;
   public FirstName: string;
@@ -78,6 +80,9 @@ export interface EventList {
   Title: string;
   Id: number;
 }
+
+let FirstName: string = "";
+let LastName: string = "";
 export default class Sidebar extends React.Component<ISidebarStateProps, IState> {
   constructor(props: ISidebarStateProps) {
     super(props);
@@ -188,7 +193,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     this.optionsEventsList();
     this.props.context.spHttpClient
       .get(
-       
+        "/" +
+        this.state.inclusionpath +
+        "/" +
+        this.state.sitename +
         "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Region')",
         SPHttpClient.configurations.v1
       )
@@ -197,7 +205,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
           if (!regions.error) {
             this.props.context.spHttpClient
               .get(
-               
+                "/" +
+                this.state.inclusionpath +
+                "/" +
+                this.state.sitename +
                 "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Country')",
                 SPHttpClient.configurations.v1
               )
@@ -218,7 +229,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
 
     this.props.context.spHttpClient
       .get(
-       
+        "/" +
+        this.state.inclusionpath +
+        "/" +
+        this.state.sitename +
         "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Group')",
         SPHttpClient.configurations.v1
       )
@@ -227,7 +241,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
           if (!roles.error) {
             this.props.context.spHttpClient
               .get(
-               
+                "/" +
+                this.state.inclusionpath +
+                "/" +
+                this.state.sitename +
                 "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('FocusArea')",
                 SPHttpClient.configurations.v1
               )
@@ -265,7 +282,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
           if (!datauser.error) {
             this.props.context.spHttpClient
               .get(
-               
+                "/" +
+                this.state.inclusionpath +
+                "/" +
+                this.state.sitename +
                 "/_api/web/lists/GetByTitle('Member List')/Items",
                 SPHttpClient.configurations.v1
               )
@@ -301,6 +321,9 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                   user["Region"] = datauser.Region;
                   user["Group"] = datauser.Group;
                   user["FocusArea"] = datauser.FocusArea;
+FirstName =  datauser.DisplayName.split(" ")[0];
+LastName =  datauser.DisplayName.split(" ")[1];
+
                   this.setState({ currentUser: user });
                   if (!datada.error) {
                     let totalchamps: number = 0;
@@ -319,8 +342,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                       memberDataIds.Status === "Approved"
                     )
                       this.props.context.spHttpClient
-                        .get(
-                         
+                        .get(                         
                           "/" +
                           this.state.inclusionpath +
                           "/" +
@@ -363,6 +385,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                     MemberId: memberData,
                                     DateofEvent: new Date(),
                                     Count: 10,
+                                    MemberName : datauser.DisplayName,
+                                    EventName : eventItem.Title
                                   };
                                   const spHttpClientOptions: ISPHttpClientOptions = {
                                     body: JSON.stringify(listDefinition),
@@ -458,7 +482,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
 
     let flag = await this._getListData(usersave.Title);
     if (flag == 0) {
-      const url: string = "/_api/web/lists/GetByTitle('Member List')/items";
+      const url: string =   "/" +
+      this.state.inclusionpath +
+      "/" +
+      this.state.sitename +"/_api/web/lists/GetByTitle('Member List')/items";
       if (this.props.context)
         this.props.context.spHttpClient
           .post(url, SPHttpClient.configurations.v1, spHttpClientOptions)
@@ -466,7 +493,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
             if (response.status === 201) {
               alert("Champion request submission successful");
               {
-                this.props.onClickCancel();
+                 this.props.onClickCancel();
               }
             } else {
               alert(
@@ -491,7 +518,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
 
   private async _getListData(email: any): Promise<any> {
     return this.props.context.spHttpClient
-      .get(
+      .get(  "/" +
+      this.state.inclusionpath +
+      "/" +
+      this.state.sitename +
         "/_api/web/lists/GetByTitle('Member List')/Items",
         SPHttpClient.configurations.v1
       )
@@ -560,9 +590,9 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
               />
               {/* username */}
               <div className="championname">
-                {this.state.currentUser.FirstName +
+                {FirstName +
                   "  " +
-                  this.state.currentUser.LastName}
+                  LastName}
               </div>
             </div>
             {!this.state.bc && !this.state.form && (

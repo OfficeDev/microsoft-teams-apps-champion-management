@@ -71,7 +71,7 @@
     "@types/mocha": "2.2.38",
     "ajv": "^6.9.1",
     "file-loader": "^6.2.0",
-    "gulp": "^3.9.1",
+    "gulp": "~3.9.1",
     "url-loader": "^4.1.1",
     "val-loader": "^2.1.2"
   }

@@ -125,6 +125,7 @@ export interface ChampionViewState {
   sitename: string;
   inclusionpath: string;
   loading: boolean;
+  membersInfo: Array<any>
 }
 export interface ChampList {
   id: number;
@@ -133,6 +134,8 @@ export interface ChampList {
   memberid: number;
   Count: number;
   DateOfEvent: Date;
+  MemberName: string;
+  EventName: string;
 }
 export interface EventList {
   Title: string;
@@ -180,6 +183,7 @@ export default class ChampionvView extends Component<
       sitename: siteconfig.sitename,
       inclusionpath: siteconfig.inclusionPath,
       loading: true,
+      membersInfo: []
     };
   }
 
@@ -194,7 +198,7 @@ export default class ChampionvView extends Component<
       this.setState({
         collectionNew: newBag,
         eventid: 0,
-        points: 1,
+        points: data.Count,
       });
       this.setState({ selectedkey: 0 });
     } else {
@@ -210,7 +214,7 @@ export default class ChampionvView extends Component<
     if (this.state.edetails.length == 0)
       this.props.context.spHttpClient
         .get(
-         
+
           "/" +
           this.state.inclusionpath +
           "/" +
@@ -273,12 +277,15 @@ export default class ChampionvView extends Component<
       tmp = this.state.edetailsIds;
       let scount = link.Count * 10;
       let item1 = tmp.filter((i) => i.Id === link.eventid);
-     
       let seventid = String(link.eventid);
       let smemberid = String(link.memberid);
       let sdoe = link.DateOfEvent;
       let stype = link.type;
       let spoints = link.Count * 10;
+      let oMember = this.state.membersInfo.filter(x => x.Id.toString() == smemberid)[0];
+      let sMemberName = oMember.FirstName + ' ' + oMember.LastName;
+      let seventName = this.state.edetailsIds.filter(x => x.Id.toString() == seventid)[0].Title;
+
       if (item1.length != 0) {
         scount = link.Count * item1[0].Ecount;
       }
@@ -289,6 +296,8 @@ export default class ChampionvView extends Component<
           MemberId: smemberid,
           DateofEvent: sdoe,
           Count: scount,
+          MemberName: sMemberName,
+          EventName: seventName
         };
 
         const spHttpClientOptions: ISPHttpClientOptions = {
@@ -348,7 +357,7 @@ export default class ChampionvView extends Component<
     let flag = false;
     this.props.context.spHttpClient
       .get(
-       
+
         "/" +
         this.state.inclusionpath +
         "/" +
@@ -360,7 +369,7 @@ export default class ChampionvView extends Component<
         if (response.status === 200) {
           await response.json().then((responseJSON: any) => {
             let i = 0;
-            if (responseJSON.value != undefined) {              
+            if (responseJSON.value != undefined) {
               while (i < responseJSON.value.length) {
                 if (responseJSON.value[i].MemberId == memberid) {
                   if (responseJSON.value[i].EventId == eventid) return flag;
@@ -377,7 +386,7 @@ export default class ChampionvView extends Component<
   private async getListData(memberid: any, _eventid: any): Promise<any> {
     this.setState({ collection: [] });
     const response = await this.props.context.spHttpClient.get(
-     
+
       "/" +
       this.state.inclusionpath +
       "/" +
@@ -387,7 +396,7 @@ export default class ChampionvView extends Component<
     );
     if (response.status === 200) {
       await response.json().then((responseJSON: any) => {
-        let i = 0;
+        let i = 1;
         while (i < responseJSON.value.length) {
           if (responseJSON.value[i].MemberId == memberid) {
             if (responseJSON.value[i].MemberId == memberid)
@@ -403,6 +412,9 @@ export default class ChampionvView extends Component<
               memberid: memberid,
               Count: responseJSON.value[i].Count,
               DateOfEvent: responseJSON.value[i].DateofEvent,
+              MemberName: responseJSON.value[i].MemberName,
+              EventName: responseJSON.value[i].eventName
+
             };
             const newBag = this.state.collection.concat(c);
             this.setState({
@@ -429,7 +441,7 @@ export default class ChampionvView extends Component<
   public getMemberId(): number {
     this.props.context.spHttpClient
       .get(
-       
+
         "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
         SPHttpClient.configurations.v1
       )
@@ -438,7 +450,10 @@ export default class ChampionvView extends Component<
           if (!datauser.error) {
             this.props.context.spHttpClient
               .get(
-               
+                "/" +
+                this.state.inclusionpath +
+                "/" +
+                this.state.sitename +
                 "/_api/web/lists/GetByTitle('Member List')/Items",
                 SPHttpClient.configurations.v1
               )
@@ -449,10 +464,10 @@ export default class ChampionvView extends Component<
                       d.Title.toLowerCase() === datauser.Email.toLowerCase()
                   ).ID;
                   this.setState({ newMemberId: memberDataIds });
-                  this.setState({ collection: [] });
+                  this.setState({ collection: [], membersInfo: datada.value });
                   this.props.context.spHttpClient
                     .get(
-                     
+
                       "/" +
                       this.state.inclusionpath +
                       "/" +
@@ -486,6 +501,9 @@ export default class ChampionvView extends Component<
                               memberid: memberid,
                               Count: responseJSON.value[i].Count,
                               DateOfEvent: responseJSON.value[i].DateofEvent,
+                              MemberName: responseJSON.value[i].MemberName,
+                              EventName: responseJSON.value[i].eventName
+
                             };
                             const newBag = this.state.collection.concat(c);
                             this.setState({
@@ -657,8 +675,8 @@ export default class ChampionvView extends Component<
                                 htmlFor="inputPoints"
                                 className="col-sm-3 col-form-label"
                               >
-                      
-                      
+
+
                                 Count
                               </label>
                               <div className="col-sm-9">
@@ -689,6 +707,8 @@ export default class ChampionvView extends Component<
                                         memberid: this.state.memberid,
                                         Count: this.state.points,
                                         DateOfEvent: this.state.DateOfEvent,
+                                        MemberName: "test",
+                                        EventName: "evtest",
                                       },
                                       "false"
                                     )

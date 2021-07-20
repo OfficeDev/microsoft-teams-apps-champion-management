@@ -17,6 +17,7 @@ import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import siteconfig from "../config/siteconfig.json";
 
 export interface IClbAddMemberProps {
   context?: any;
@@ -39,6 +40,7 @@ export interface ISPList {
 interface IUserDetail {
   ID: number;
   LoginName: string;
+  Name : string;
 }
 interface IState {
   list: ISPLists;
@@ -58,6 +60,8 @@ interface IState {
   focusAreas: Array<any>;
   memberData: any;
   memberrole: string;
+  sitename: string;
+  inclusionpath: string;
 }
 
 const dropdownStyles: Partial<IDropdownStyles> = {
@@ -88,6 +92,8 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
       memberData: { region: "", group: "", focusArea: "", country: "" },
       siteUrl: this.props.siteUrl,
       memberrole: "",
+      sitename: siteconfig.sitename,
+      inclusionpath: siteconfig.inclusionPath,
     };
   }
 
@@ -95,7 +101,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
     this.props.context.spHttpClient
       .get(
        
-          "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Region')",
+        "/"+this.state.inclusionpath+"/"+this.state.sitename+"/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Region')",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
@@ -104,7 +110,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
             this.props.context.spHttpClient
               .get(
                
-                  "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Country')",
+                "/"+this.state.inclusionpath+"/"+this.state.sitename+ "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Country')",
                 SPHttpClient.configurations.v1
               )
               // tslint:disable-next-line: no-shadowed-variable
@@ -125,7 +131,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
     this.props.context.spHttpClient
       .get(
        
-          "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Group')",
+        "/"+this.state.inclusionpath+"/"+this.state.sitename+ "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Group')",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
@@ -134,7 +140,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
             this.props.context.spHttpClient
               .get(
                
-                  "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('FocusArea')",
+                "/"+this.state.inclusionpath+"/"+this.state.sitename+ "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('FocusArea')",
                 SPHttpClient.configurations.v1
               )
               // tslint:disable-next-line: no-shadowed-variable
@@ -157,7 +163,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
   private _getPeoplePickerItems(items: any[]) {
     let userarr: IUserDetail[] = [];
     items.forEach((user) => {
-      userarr.push({ ID: user.id, LoginName: user.loginName });
+      userarr.push({ ID: user.id, LoginName: user.loginName, Name: user.text });
     });
     this.setState({ UserDetails: userarr });
   }
@@ -165,7 +171,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
   private async _getListData(email: any): Promise<any> {
     return this.props.context.spHttpClient
       .get(
-        "/_api/web/lists/GetByTitle('Member List')/Items",
+        "/"+this.state.inclusionpath+"/"+this.state.sitename+ "/_api/web/lists/GetByTitle('Member List')/Items",
         SPHttpClient.configurations.v1
       )
       .then(async (response: SPHttpClientResponse) => {
@@ -198,7 +204,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
     return this.props.context.spHttpClient
       .get(
        
-          "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
+        "/"+this.state.inclusionpath+"/"+this.state.sitename+ "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
         SPHttpClient.configurations.v1
       )
       .then((responseuser: SPHttpClientResponse) => {
@@ -207,7 +213,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
             this.props.context.spHttpClient
               .get(
                
-                  "/_api/web/lists/GetByTitle('Member List')/Items",
+                "/"+this.state.inclusionpath+"/"+this.state.sitename+ "/_api/web/lists/GetByTitle('Member List')/Items",
                 SPHttpClient.configurations.v1
               )
               .then((responsen: SPHttpClientResponse) => {
@@ -225,19 +231,24 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                     let email = this.state.UserDetails[0].ID.split("|")[2];
                     // tslint:disable-next-line: no-shadowed-variable
                     this.props.context.spHttpClient
-                      .get(
-                        "/_api/web/siteusers?$filter=UserPrincipalName eq '" +
-                          email +
-                          "'",
+                      .get( "/" + this.state.inclusionpath + "/" + this.state.sitename+
+                         "/_api/web/siteusers",
                         SPHttpClient.configurations.v1
                       )
                       .then((responseData: SPHttpClientResponse) => {
                         if (responseData.status === 200) {
                           responseData.json().then(async (data) => {
+                            // tslint:disable-next-line: no-function-expression
+                            var member:any=[];
+                            data.value.forEach(element => {
+                              if(element.Email.toLowerCase() === email.toLowerCase()) 
+                              member.push(element);
+                            });
+
                             const listDefinition: any = {
                               Title: email,
-                              FirstName: data.value[0].Title.split(" ")[0],
-                              LastName: data.value[0].Title.split(" ")[1],
+                              FirstName: this.state.UserDetails[0].Name.split(" ")[0],
+                              LastName: this.state.UserDetails[0].Name.split(" ")[1],
                               Region: this.state.memberData.region,
                               Country: this.state.memberData.country,
                               Role: "Champion",
@@ -258,7 +269,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                             let flag = await this._getListData(email);
                             if (flag == 0) {
                               const url: string =
-                                "/_api/web/lists/GetByTitle('Member List')/items";
+                              "/"+this.state.inclusionpath+"/"+this.state.sitename+"/_api/web/lists/GetByTitle('Member List')/items";
                               this.props.context.spHttpClient
                                 .post(
                                   url,

@@ -48,6 +48,7 @@ const graphUrl = "https://graph.microsoft.com";
 const graphMyPhotoApiUrl = graphUrl + "/v1.0/me/photo";
 const graphMyPhotoBitsUrl = graphMyPhotoApiUrl + "/$value";
 let upn: string | undefined = "";
+import siteconfig from "../config/siteconfig.json";
 
 export interface IDigitalBadgeState extends ITeamsBaseComponentState {
   entityId?: string;
@@ -110,8 +111,8 @@ export default class DigitalBadge extends TeamsBaseComponent<
       showAccept: false,
       downloadText: strings.DownloadButtonText,
       userletters: "",
-      sitename: "",
-      inclusionpath: "",
+      sitename: siteconfig.sitename,
+      inclusionpath: siteconfig.inclusionPath,
       siteUrl: this.props.siteUrl
     });
     this.forceUpdate();
@@ -126,7 +127,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
     microsoftTeams.getContext((context: microsoftTeams.Context) => {
       this.props.context.spHttpClient
         .get(
-         
+          "/" + this.state.inclusionpath + "/" + this.state.sitename +
             "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
           SPHttpClient.configurations.v1
         )
@@ -134,7 +135,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
           responseuser.json().then((datauser: any) => {
             this.props.context.spHttpClient
               .get(
-               
+                "/" + this.state.inclusionpath + "/" + this.state.sitename +
                   "/_api/web/lists/GetByTitle('Member List')/Items",
                 SPHttpClient.configurations.v1
               )

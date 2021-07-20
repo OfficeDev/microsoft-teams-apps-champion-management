@@ -27,15 +27,26 @@
     "staticTabs": [
         {
           "entityId": "CMP",
-          "name": "CMP",        
-          "configurationUrl": "https://{tenant}.sharepoint.com/_layouts/15/TeamsLogon.aspx?SPFX=true&dest=https://{tenant}.sharepoint.com/sites/{siteName}/_layouts/15/teamshostedapp.aspx%3FopenPropertyPane=true%26teams%26componentId={webpartid}%26forceLocale={locale}",
+          "name": "CMP",    
+          "contentUrl": "https://m365x374010.sharepoint.com/_layouts/15/teamslogon.aspx?SPFX=true&dest=/sites/ChampionManagementPlatform",
+          "websiteUrl": "https:// m365x374010.sharepoint.com/sites/ChampionManagementPlatform",
           "scopes": [ "personal" ]
-        }
-    ],   
-    "permissions": ["identity","messageTeamMembers"],
+        } ,
+        {
+          "entityId": "CMP new 3",
+          "name": "CMP new 3" ,  
+          "canUpdateConfiguration": true,  
+          "contentUrl": "https://m365x374010.sharepoint.com/_layouts/15/TeamsLogon.aspx?SPFX=true&dest=/sites/ChampionManagementPlatform/_layouts/15/teamshostedapp.aspx%3FopenPropertyPane=true%26teams%26componentId=6df47bd5-d84a-41ab-8c4a-9352076e8b6c%26forceLocale={locale}",
+           "scopes": [ "personal" ]
+        }       
+
+       
+            
+          
+    ],
     "validDomains": [
       "*.login.microsoftonline.com",
-      "*.sharepoint.com" 
-    ] 
+      "*.sharepoint.com"
+    ]
   
   }

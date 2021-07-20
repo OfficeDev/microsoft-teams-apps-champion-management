@@ -63,7 +63,8 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
           .then((eventdata) => {
             if (!eventdata.error) {
               setEventDropDown(_.orderBy(eventdata.value.filter(ed => ed.IsActive), ['Id'], ['asc']));
-              props.context.spHttpClient.get( "/_api/web/lists/GetByTitle('Member List')/Items?$filter= Status eq 'Approved'", SPHttpClient.configurations.v1)
+               props.context.spHttpClient.get( 
+                "/"+inclusionpath+"/"+siteName+ "/_api/web/lists/GetByTitle('Member List')/Items?$filter= Status eq 'Approved'", SPHttpClient.configurations.v1)
                 // tslint:disable-next-line: no-shadowed-variable
                 .then((response: SPHttpClientResponse) => {
                   response.json().then((datada) => {
@@ -113,7 +114,7 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
         let pointsTotal = 0;
         if (datau != "undefined") {
           for (let j = 0; j < datau.value.length; j++) {
-            pointsTotal += datau.value[j].Count
+            pointsTotal += datau.value[j].Count;
           }
         }
         usersd[i]["eventpoints"] = eventpoints;
@@ -124,6 +125,7 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
           props.context.spHttpClient
             .get(
             
+              "/"+inclusionpath+"/"+siteName+ 
               "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Region')",
               SPHttpClient.configurations.v1
             )
@@ -133,6 +135,8 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
                   props.context.spHttpClient
                     .get(
                      
+                      "/"+
+                      inclusionpath+"/"+siteName+ 
                       "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('FocusArea')",
                       SPHttpClient.configurations.v1
                     )
