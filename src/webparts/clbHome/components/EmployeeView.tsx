@@ -47,7 +47,8 @@ export default class EmployeeView extends Component<
   public _renderListAsync() {
     microsoftTeams.initialize();
     this.props.context.spHttpClient
-      .get(
+    .get(  "/"+this.state.inclusionpath+"/"+this.state.sitename+ 
+    
         "/_api/web/lists/GetByTitle('Member List')/Items",
         SPHttpClient.configurations.v1
       )

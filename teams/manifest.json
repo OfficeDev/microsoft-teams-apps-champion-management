@@ -26,16 +26,15 @@
     "accentColor": "#D85028",
     "staticTabs": [
         {
-          "entityId": "CMP",
-          "name": "CMP",        
-          "configurationUrl": "https://{tenant}.sharepoint.com/_layouts/15/TeamsLogon.aspx?SPFX=true&dest=https://{tenant}.sharepoint.com/sites/{siteName}/_layouts/15/teamshostedapp.aspx%3FopenPropertyPane=true%26teams%26componentId={webpartid}%26forceLocale={locale}",
-          "scopes": [ "personal" ]
+        "entityId": "CMP",
+        "name": "CMP",
+        "contentUrl": "https://{tenant}.sharepoint.com/_layouts/15/TeamsLogon.aspx?SPFX=true&dest=https://{tenant}.sharepoint.com/sites/{siteName}/_layouts/15/teamshostedapp.aspx%3FopenPropertyPane=true%26teams%26componentId={webpartid}%26forceLocale={locale}",
+        "scopes": [ "personal" ]
         }
-    ],   
-    "permissions": ["identity","messageTeamMembers"],
+    ],
     "validDomains": [
       "*.login.microsoftonline.com",
-      "*.sharepoint.com" 
-    ] 
+      "*.sharepoint.com"
+    ]
   
   }

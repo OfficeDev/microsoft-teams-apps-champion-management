@@ -1,9 +1,8 @@
 import * as React from "react";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { sp } from "@pnp/sp";
-import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
+import { SPHttpClient, SPHttpClientResponse, ISPHttpClientOptions, } from "@microsoft/sp-http";
 import siteconfig from "../config/siteconfig.json";
-
 export interface IClbChampionsListProps {
   context?: WebPartContext;
   onClickAddmember: Function;
@@ -24,6 +23,7 @@ export interface ISPList {
   Role: String;
   Region: string;
   Points: number;
+  ID: number;
 }
 interface IState {
   list: ISPLists;
@@ -32,11 +32,9 @@ interface IState {
   UserDetails: Array<any>;
   selectedusers: Array<any>;
   siteUrl: string;
-  inclusionpath: string;
-  sitename : string;
-            
+  memberrole: string;
 }
-class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
+class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
   constructor(props: IClbChampionsListProps) {
     super(props);
     sp.setup({
@@ -50,17 +48,15 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
       UserDetails: [],
       selectedusers: [],
       siteUrl: this.props.siteUrl,
-      sitename: siteconfig.sitename,
-      inclusionpath: siteconfig.inclusionPath,  
+      memberrole: "",
     };
     this._getListData();
   }
 
   private _getListData(): Promise<ISPLists> {
     return this.props.context.spHttpClient
-      .get(  "/"+this.state.inclusionpath+"/"+this.state.sitename+ 
-            
-        "/_api/web/lists/GetByTitle('Member List')/Items",
+      .get(
+         "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/_api/web/lists/GetByTitle('Member List')/Items",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
@@ -77,6 +73,60 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
     this.setState({ list: { value: items } });
   }
 
+  private updateItem = (e, ID: number) => {
+    let ButtonText = e.target.outerText;
+    let status = "";
+    let Id = ID;
+    if (ButtonText === "Approve") {
+      status = "Approved";
+    }
+    else {
+      status = "Rejected";
+    }
+    const listDefinition: any = {
+      Status: status,
+    };
+    const spHttpClientOptions: ISPHttpClientOptions = {
+      body: JSON.stringify(listDefinition),
+      headers: {
+        'Accept': 'application/json;odata=nometadata',
+        'Content-type': 'application/json;odata=nometadata',
+        'odata-version': '',
+        'IF-MATCH': '*',
+        'X-HTTP-Method': 'MERGE'
+      },
+    };
+
+    const url: string =
+       "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + `/_api/web/lists/GetByTitle('Member List')/items(${Id})`;
+    this.props.context.spHttpClient
+      .post(
+        url,
+        SPHttpClient.configurations.v1,
+
+        spHttpClientOptions
+      )
+      .then((response: SPHttpClientResponse) => {
+        if (response.status === 201) {
+          this.setState({
+            UserDetails: [],
+            isAddChampion: false,
+          });
+          alert("Champion" + status);
+        } else {
+
+
+          alert(
+            "Response status " +
+            response.status +
+            " - " +
+            `Champion ${status}.`
+          );
+          this._getListData();
+        }
+      });
+  }
+
   public render() {
     return (
       <div>
@@ -89,13 +139,15 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
             <th>FocusArea</th>
             <th>Group</th>
             {!this.props.isEmp && <th>Status</th>}
+            <th></th>
+            <th></th>
           </thead>
           <tbody>
             {this.state.list &&
               this.state.list.value &&
               this.state.list.value.length > 0 &&
               this.state.list.value.map((item: ISPList) => {
-                if (item.Status === "Approved") {//showing only approved list
+                if (item.Status != "Approved" && item.Status != "Rejected") {//showing only approved list
                   return (
                     <tr>
                       <td>
@@ -108,10 +160,36 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
                       <td>{item.FocusArea}</td>
                       <td>{item.Group}</td>
                       {!this.props.isEmp && <td>{item.Status}</td>}
+                      <td>
+                        <button
+                          className="addchampion btn btn-primary"
+                          onClick={e => this.updateItem(e, item.ID)}
+                        >
+                          Approve
+                        </button></td>
+                      <td>
+                        <button
+                          className="addchampion btn btn-primary"
+                          onClick={e => this.updateItem(e, item.ID)}
+                        >
+                          Reject
+                        </button></td>
                     </tr>
                   );
                 }
               })}
+            {this.state.list &&
+              this.state.list.value &&
+              this.state.list.value.length > 0 &&
+              this.state.list.value.filter(i => i.Status == "Pending").length == 0 &&
+              (
+                <tr>
+                  <td colSpan={7}>
+                    <h5>No champions requests available.</h5>
+                  </td>
+                </tr>
+              )
+            }
           </tbody>
         </table>
         <button
@@ -125,4 +203,4 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
   }
 }
 
-export default ClbChampionsList;
+export default ApproveChampion;

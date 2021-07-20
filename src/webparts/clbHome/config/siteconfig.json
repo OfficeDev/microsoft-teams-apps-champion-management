@@ -1,7 +1,7 @@
 {
   "inclusionPath": "sites",
   "sitename": "ChampionManagementPlatform",
-   "lists": [
+  "lists": [
     {
       "listName": "Member List",
       "columns": [
@@ -48,7 +48,7 @@
         },
         {
           "name": "Description",
-          "type": "text"          
+          "type": "text"
         },
         {
           "name": "IsActive",
@@ -74,6 +74,14 @@
         {
           "name": "DateofEvent",
           "type": "dateTime"
+        },
+        {
+          "name": "MemberName",
+          "type": "text"
+        },
+        {
+          "name": "EventName",
+          "type": "text"
         }
       ]
     }
