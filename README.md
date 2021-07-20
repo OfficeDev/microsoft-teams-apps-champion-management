@@ -5,13 +5,13 @@ The Champion Management Platform is a custom Teams app that enables organization
 
 The app provides an easy interface for designated users to add members to the champion program, preview, collaborate and communicate and build a community of power users and coaches.  <br/>
 
-<img src="./Images/WelcomeCMP.png" alt="CMP Screen" style="width: 100%;">                    
+![CMP Screen](./Images/WelcomeCMP.png)                   
 
 ## How it works:
 
 1.	The current version of the Champion Management Platform operates as an app in Microsoft Teams that is installed locally in your tenant by your tenant administrator or any user who has the capability to side load the application.
-2.  Once installed, it can be accessed via “+Add a tab”  option at the top of the channel within a team. ***Channel > Add a tab > Champion Management Platform***
-3.	The app installation process will create a SharePoint list (***Members List*** )to store all users who are nominated to be a champion. A local administrator is responsible for maintaining this SharePoint list. This person can be the individual who manages the Champion program for the organization or his/her delegate.
+2.  Once installed, it can be accessed via “+Add a tab”  option at the top of the channel within a team. ***Channel > Add a tab > Champion Management Platform*** or from accessing the platform as a personal app on the left rail by ***Selecting "..." for more apps in left rail of Teams > searching for Champion Management Platform***
+3.	The app installation process will create a SharePoint site “ChampionManagementPlatform” and SharePoint list (Members List ) in this site to store all users who are nominated to be a champion. Two additional lists(“Events List” and “Events Track Details”) are created to track the events and points. A local administrator is responsible for maintaining this SharePoint list. This person can be the individual who manages the Champion program for the organization or his/her delegate.
 4.	The app provides an easy interface for approved employees (Champions) to showcase their Focus area, preview, collaborate and even add their colleagues as new champions.
 5.	There are 3 major components in Champion Management Platform. 
 ..a.	Champion management
@@ -20,7 +20,7 @@ The app provides an easy interface for designated users to add members to the ch
 6.	The Champions will be earning points for hosting events, writing Blogs, moderating Office hours etc., Leaderboard ranks all the champions based on their points globally, regionally, and even by focus area.
 7.	Point accumulation , ranking logic, Event details are configurable by the Admin based on the organization  needs. <br/>
 
- <img src="./Images/QuickGuide.png" alt="Quick Start Guide" style="width: 100%;">
+ ![Quick Start Guide](./Images/QuickGuide.png)
 
 ### Champion Leaderboard:
 
@@ -34,12 +34,12 @@ Roles can be categorized as:
 In our Champions program, Admin is a Champion by default.  The Champion view is to enable Administrator or Champions to identify all the members of the Champions program. 
 <br/>
 
- <img src="./Images/Leaderboard.png" alt="Quick Start Guide" style="width: 100%;">         
+![Quick Start Guide](./Images/Leaderboard.png)      
 
 
 #### An Admin / Champion can do the following: 
 
-1.	Access Champion  Leaderboard
+1.	Access Champion Leaderboard
 ..a.	To view their current points total.
 ..b.	To view their Global rank and how they rank against others globally.
 ..c.	Access their dashboard with list of events they have supported.
@@ -56,22 +56,38 @@ Leader board encourages the employees to get connected to the Champions in their
 3.	Employee can also “Become a Champion” by submitting their information.
  <br/>
 
- <img src="./Images/EmpView.png" alt="Quick Start Guide" style="width: 100%;">
+ ![Quick Start Guide](./Images/EmpView.png)     
      
 ### Add Members 
 Admin and current Champions of the program can nominate(***Add Members***) peers as Champions. Additional responsibility falls on the admin to maintain the Champions SharePoint list. *The approval process stays with the Admin only.*
 
-### Digital Badge <img src="./Images/Champion_small.png" alt="Champion logo" style="width: 100%;">
+The Admin can approve/Reject the champion nominations using Manage Approvals screen. 
+
+### Digital Badge ![Champion logo](./Images/Champion_small.png)
 Digital Badge is intended to allow Microsoft 365 Champions to apply a ‘Champion’ badge on their profile image. It provides an easy and seamless process to share the recognition as a champion with the team.
  <br/>
 
-   <img src="./Images/Digitalbadge.png" alt="Quick Start Guide" style="width: 100%;">
-     
+![Quick Start Guide](./Images/Digitalbadge.png) 
 
 
 ### Prerequisites
 
 Ensure the administrator who will install the app has access to following:
+
+SharePoint Admin role 
+- Permission to load application package into SharePoint Online
+- Permission to approve API requests in SharePoint Online
+- Ability to create a site in SharePoint Online
+
+Once the package has been installed, API granted, and solution synced to Teams (steps documented below), the same admin will likely also be asked to complete the first run experience. This first run creates the SharePoint site (ChampionManagementPlatform)
+that all assets of this solution will be created under. Additionaly permissions need to be modified by an owner of this site to include edit/contribute rights for the organizations ability to interact with the solution.
+
+#Installation Types (Customized vs Standard)
+
+##Customized Installation
+The customized installation makes the assumption you wish to change the default variables (site location, text or visual aspects, etc) with the Champion Management Platform. Customizing the installation takes it outside of 
+configurations we have tested against but allows you to modify any aspect of the platform. Below are high level steps to get you started on a customized installation.
+
 ### Install NodeJs
 
 1.  Download nodejs from this link 
@@ -80,20 +96,15 @@ Ensure the administrator who will install the app has access to following:
 2.   Previous Releases | Node.js (nodejs.org) 
     Download node 10.24.0
 
-3.  After downloading and installing nodejs, follow the below steps:
+3.  After downloading the nodejs and installing follow steps as follows
 
-4.  Open the CMP download folder
+4.  Please open the CMP download folder
     Run Npm install
+    And 
     Run npm install -g gulp
     
   *	Global or SharePoint Administrator role in the target tenant
   *	***ChampionManagementPlatform*** project in GitHub
-### Install Champion Leaderboard SPFx Package
-
-1.	Download Code / clone from GitHub.
-
-2.	To use the default configuration: 
-    a. Navigate to the solution folder where you cloned and locate the ***cmp.sppkg*** package in ***"sharepoint/solution"***.
     
 ### Customize configuration
 
@@ -102,7 +113,7 @@ If desired the administrator can configure the installation location including t
 1.	Update the ***"src/webparts/XXXXX/config/siteconfig.json"*** configuration file. Changing the values in the JSON file will customize the SharePoint list location and/or schema when it is created during deployment.
  <br/>
 
-   <img src="./Images/Siteconfig1.png" alt="Quick Start Guide" style="width: 100%;">
+   ![Quick Start Guide](./Images/Siteconfig1.png) 
      
 
 ```
@@ -116,10 +127,9 @@ If desired the administrator can configure the installation location including t
 ```
 <br/>
 
-<img src="./Images/Siteconfig2.png" alt="Quick Start Guide" style="width: 100%;">
+ ![Quick Start Guide](./Images/EventsListConfig.png) 
 <br/>
-
-<img src="./Images/Siteconfig3.png" alt="Quick Start Guide" style="width: 100%;">
+ ![Quick Start Guide](./Images/Siteconfig3.png) 
 
 2.	Create the SharePoint App Package. This package will be used to deploy the application in SharePoint and Microsoft Teams. Run the below commands :
 
@@ -135,114 +145,101 @@ If desired the administrator can configure the installation location including t
 
 3.	Navigate to the solution folder where you cloned and locate the newly created ***cmp.sppkg*** package in ***"sharepoint/solution"***.
 
+
+##Standard Installation
+The standard installation assumes you would like to take the SharePoint package file located in our GitHub repository and install using the configuration outlined in this readme file (assets all created under a SharePoint site
+called ChampionManagementPlatform as well as the default list names and all related teamwork champion terms within the application)
+
+Continuing below steps you can take the cmp.sppkg file from the ***cmp.sppkg*** package in ***"sharepoint/solution"*** location of the GitHub repo here (or use the one customized for your organization if someone provided a customized file)
+
 ### Deploy your Package to SharePoint
 
 1.	Open SharePoint and sign in using the administrator account. Click on the "dots" icon in the top left corner of the banner.
  <br/>
 
-<img src="./Images/banner.png" alt="Quick Start Guide" style="width: 100%;">	
+ ![Quick Start Guide](./Images/banner.png) 
+ <br/>
 2.	Select Admin from the menu that appears.
  <br/>
 
-<img src="./Images/Admin_menu.png" alt="Quick Start Guide" style="width: 100%;">	
+ ![Quick Start Guide](./Images/Admin_menu.png) 
+ <br/>
 3.	Select SharePoint from the menu that appears. You may need to click "... Show all" for the SharePoint entry to appear.
   <br/>
 
-<img src="./Images/Admin_menu2.png" alt="Quick Start Guide" style="width: 100%;">
+ ![Quick Start Guide](./Images/Admin_menu2.png) 
+ <br/>
 4.	You will be directed to the SharePoint admin center.
   <br/>
 
-<img src="./Images/Admin_menu3.png" alt="Quick Start Guide" style="width: 100%;">
+ ![Quick Start Guide](./Images/Admin_menu3.png) 
+ <br/>
 5.	Click on "More features" menu item. Locate the Apps section and click the ***Open*** button.
   <br/>
 
-<img src="./Images/Admin_menu4.png" alt="Quick Start Guide" style="width: 100%;">
+ ![Quick Start Guide](./Images/Admin_menu4.png)
+ <br/> 
 6.	Click the ***App Catalog*** link.
   <br/>
 
-<img src="./Images/AppCatalog.png" alt="Quick Start Guide" style="width: 100%;">
+ ![Quick Start Guide](./Images/AppCatalog.png) 
+ <br/>
 *If you do not see an app catalog available, use the instructions <a href='https://docs.microsoft.com/en-us/sharepoint/use-app-catalog#step-1-create-the-app-catalog-site-collection' target="_blank">here</a> to create a new app catalog before continuing.*
 
 7.	Click the ***Distribute apps for SharePoint*** link.
   <br/>
 
-<img src="./Images/AppCatalog2.png" alt="Quick Start Guide" style="width: 100%;">
+![Quick Start Guide](./Images/AppCatalog2.png) 
+<br/>
 8.	Click the ***New*** menu item
   <br/>
 
-<img src="./Images/AppCatalog3.png" alt="Quick Start Guide" style="width: 100%;">
+![Quick Start Guide](./Images/AppCatalog3.png) 
+<br/>
 9.	Click the ***Choose Files*** button, select the ***cmp.sppkg*** file you downloaded or created earlier, and click on ***OK***
  <br/>
 
-<img src="./Images/AppCatalog4.png" alt="Quick Start Guide" style="width: 100%;">
+![Quick Start Guide](./Images/AppCatalog4.png) 
+<br/>
 10.	A confirmation dialog is displayed. Ensure the checkbox for "Make this solution available to all sites in the organization" is chosen and click ***Deploy***.
   <br/>
 
-<img src="./Images/Deploy.png" alt="Quick Start Guide" style="width: 100%;">
+![Quick Start Guide](./Images/Deploy.png) 
+<br/>
 11.	Return to the ***SharePoint admin center***. Under expand the ***Advanced*** menu in the left navigation and select ***API access***. Select and approve all pending requests associated with ***championmanagement***
   <br/>
-<img src="./Images/APIAccess.png" alt="Quick Start Guide" style="width: 100%;">
 
-<table>
-    <tbody>
-      <tr>
-        <td>
-          <b> Permission Name </b>
-        </td>
-        <td>
-          <b>Description</b>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Sites.ReadWrite.All
-        </td>
-        <td>
-          Allows the app to create, read, update, and delete documents and list items in all site collections without a signed in user.
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Sites.Manage.All
-        </td>
-        <td>
-          Allows the app to create or delete document libraries and lists in all site collections without a signed in user.
-        </td>
-      </tr>
-      <tr>
-        <td>
-          User.ReadWrite.All
-        </td>
-        <td>
-          Allows the app to read and update user profiles without a signed in user.
-        </td>
-      </tr>
-     </tbod>
-     </table>
-
+![Quick Start Guide](./Images/APIAccess.png) 
+<br/>
 12.	Return to app list in the App Catalog and select the ***championmanagement*** app. Select the Files tab in the ribbon and click the ***Sync to Teams*** button.
   <br/>
 
-<img src="./Images/SyncToTeams.png" alt="Quick Start Guide" style="width: 100%;">
+![Quick Start Guide](./Images/SyncToTeams.png) 
+<br/>
 
-### Add ***Champion Management Platform*** Tab in Teams
+### First Run Experience:Add ***Champion Management Platform*** Tab in Teams
 
 1.	Navigate to Microsoft teams, select the Team and channel where you want to install Champion Management Platform. Click ***Add a tab***, choose ***Champion Management Platform*** from the app list, and Save. (Search for Champion)
+
+Alternately you can also add the Champion Management Platform as a personal app in the left side rail by selecting the “...” and searching for Champion Management Platform, and then selecting add. 
+ 
+This first run experience needs to be completed by the person who will be an admin of the platform, as it is this experience that creates the initial resources (SPO site + assets (3 lists mentioned above). This user that completes the first run is added as a manager of the platform. Alternately you may need a SharePoint admin to run the first run so the site is created and then have them add you as a manager of the platform once the assets have been created. 
+
+
   <br/>
 
-<img src="./Images/AddTab_ChampionAdd.png" alt="Quick Start Guide" style="width: 100%;">
+![Quick Start Guide](./Images/AddTab_ChampionAdd.png) 
 
-2. Click 'Add' to create the ***'Champion Management Platform'*** tab to your Teams.
-3. The landing page for an Admin will have access to the *Champion Leaderboard, Digital Badge* application, and the SharePoint lists(*Champions, Events,Event track Details*).
+2. Click 'Add' to create the ***'Champion Management Platform'*** tab to your Teams (Alternately you can also just load the app as a personal app in the left rail here too).
+3. The landing page for an Admin will have access to the *Champion Leaderboard, Digital Badge* application, and the SharePoint lists(*Champions, Events,Event track Details*), as well as Manage Approvals.
   <br/>
 
-<img src="./Images/AddTab_Teams.png" alt="Quick Start Guide" style="width: 100%;">
+![Quick Start Guide](./Images/AddTab_Teams.png) 
 4. Grant Permissions to users:
 
 · Navigate to the URL for the Champion Management Platform site as the administrator. 
 
 · If you are using the default configuration, this can be found at ***`https://<yourtenant>.sharepoint.com/sites/ChampionManagementPlatform/`***.
-```
 
 - Select site permissions
 
@@ -250,39 +247,82 @@ If desired the administrator can configure the installation location including t
 
 - Select Grant permissions 
  
- From <https://github.com/OfficeDev/microsoft-teams-apps-champion-management> ![image](https://user-images.githubusercontent.com/69787520/119333872-089d8280-bca8-11eb-8653-7ae7256dace8.png)
+<br/>
 
-  . Select Share
-  . Enter in 'Everyone except external users'
-  . Change permissions to Edit
-  . Unselect send email
-  . Press share
+![Quick Start Guide](./Images/AddEveryone.png) 
+
+  . Select Share <br/>
+  . Enter in 'Everyone except external users'<br/>
+  . Change permissions to Edit<br/>
+  . Unselect send email<br/>
+  . Press share<br/>
   
-```
+
  <br/>
 
-<img src="./Images/sitePerms.png" alt="Quick Start Guide" style="width: 100%;">
+![Quick Start Guide](./Images/sitePerms.png) 
 
 ### Teams Personal App:
 
 CLbHomeWebPart.manifest.json is updated with a new entry, TeamsPersonalApp  
 
-<img src="./Images/teamspersonalapp.PNG" alt="" style="width: 100%;">
+![Quick Start Guide](./Images/teamspersonalapp.png) 
 
-### Updated in version 1.1.0.0
+### Completed Install
+Once you have performed the above steps, the deployment of the Champion Management Platform is now complete. If an admin was deploying this on behalf of the manager of the Champion Management Platform please have the admin add the
+Champion Management Platform manager as a champion and change their role in the Memberlist from ***Champion*** to ***Manager*** so they will have access to the other parts of the platform.
 
-1. Champions Managegment Platform can be configured now as a personal app and Teams scope.
-2. Fixed configurable tab experience.
-3. Improved rank logic.
+### Updated in version 1.2.0.0
+
+1.	'Member List' is now created right under 'ChampionManagementPlatform' site. This was created in the root site in version 1.1.0.0
+2.	'Manage Approvals' functionality is added to the App. The Admins can now see additional feature in the home page 'Manage Approvals'. This screen can be used by the admins to Approve/Reject the champion nominations easily. 
+<br/>
+
+![Quick Start Guide](./Images/ManageApprovalsIcon.png) 
+ 
+3.	Column type for 'Description' is modified to 'Single line of text' from 'Choice'
+4.	'Member Name' and 'Event Name' columns are added to 'Event Track List' SharePoint list.
+
+### Upgrade to version 1.2.0.0
+
+If you are already having 1.1.0.0 installed on your tenant and want to upgrade to 1.2.0.0 the existing app and SharePoint site 'ChampionManagementSite' have to be deleted. 
+
+If you have current members and events you will want to export those list items and import re-import them into the respective list areas. We have expanded our lists to have some additional data as well so you may need to populate additional fields. 
+
+Memberlist (same information) 
+EventList (same information) 
+EventTrackDetails (added two colums to contain event name + member name) 
+
+Follow the below steps to upgrade your install and optionally also export and import the data you may already have for the program. 
+
+1.	Delete the existing App from Teams.
+<br/>
+
+![Quick Start Guide](./Images/Upgrade1.png) 
+
+ 
+2.	Delete 'Members List' from root site. <br/>
+    a. Remember to export members if you are wanting to import the members back in 
+3.	Delete 'ChampionManagementPlatform' Sharepoint site from both 'Active Sites' and 'Deleted Sites'.
+
+    a. Remember to export the Event List and Event Track List if you are wanting to import the events details back in. 
+
+<br/>
+
+![Quick Start Guide](./Images/Upgrade2.png) 
+ 
+4. Delete 'cmp.sppkg' from App Catalog.	
+5. Startover the installation of new package following instructions from the section 'Install Champion Leaderboard SPFx Package' of this document.
+6. Once the install has completed and first run is done, you can visit the site assets of the ChampionManagementPlatform and import any of the exported Champion data
+
 
 ### Known issues
 
-1. Column type for description in Events List - User should change from 'Choice' to Single line of text.
-    - Click on Events list icon in the Champions Managegment Portal as a personal app or tab 
-    - Go to Event list settings
-    - Go to Column Description
-    - Change the type as text from choice
-2. Color coding list for approved and pending status
+1) If site is presenting with spinning blue circle check to ensure permissions are allowed to the ChampionManagementPlatform sharepoint site. If this is happening on the first load experience ensure that the user running first run experience has permissions to create a SharePoint site (first run creates the initial ChampionManagementPlatform site).If you continue to experience the blue circle, please remove the app from Teams and try again. Visit our issues list to log an issue if issue is still persistent. 
+
+<br/>
+
+2) If new users visit the Champion Management Platform app and receive a blue spinning circle, ensure that you have granted contribute/edit permissions to the SharePoint site created during first run to all users (or scoped users accessing the app). The default site created is ChampionManagementPlatform.
 
 ### Frequently Asked Questions
 
@@ -291,30 +331,27 @@ FAQ:
 
 Q. Can we Install in existing site?
 
-A. To maintain permissions and access control, current version of CMP is creating a new site.
+A. To maintain permissions and access control, current version of CMP is creating a new site. If you wish to install to a specific existing site you can download the source code and modify the location of SharePoint site the package installs to. This would require a recompile of the package.
 
-Q.How to configure creation of the "Member List" on another site than the root site of the tenant? 
+Q.Why is profile image not updated with Digital Badge?
 
-A. This will be addressed in V 2.0. In current version, because of permission limitation, CMP is creating site at root level. If needed, CMP code is customizable.
+A.This happens when the permissions are not being inherited or approved after deploying package. The users must be able to update their profile images and Graph API permissions must have also been approved during package install. 
 
-Q.Why is Profile image not updated with Digital Badge? 
-
-A.This happens when the permissions are not being inherited or approved after deploying package.
 
 
 ### Additional Customization Options
 
-The Champion Management Platform is built to provide a great starting point for managing your program. There are several ways you can modify the solution to fit your needs, with some of teh major customizations in this current release coming from modifying list and column options once the solution has been deployed. Common actions include:
+The Champion Management Platform is built to provide a great starting point for managing your program. There are several ways you can modify the solution to fit your needs, with some of the major customizations in this current release coming from modifying list and column options once the solution has been deployed. Common actions include:
 
 . Expanding the list of regions / countries / Focus Area / Groups to fit your criteria. Lists provide a very flexible way to provide data points for collection. While we have provided some starter data you will want to modify these values as they are reflected in the Add Members section. This action is done from selecting the list you would like to edit (champion list for this example), selecting the drop down on the column, then navigating to Column settings -> Edit.
 <br/>
 
-<img src="./Images/customization.png" alt="Quick Start Guide" style="width: 100%;">
+![Quick Start Guide](./Images/customization.png) 
 
 . You could take similar actions in other lists to modify or add in event types and manual counts for activity logging.
 <br/>
 
-<img src="./Images/WarningId.png" alt="Quick Start Guide" style="width: 100%;">
+![Quick Start Guide](./Images/WarningId.png) 
  
 ### Legal
 
