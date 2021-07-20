@@ -37,7 +37,7 @@
     "gulp-update": "0.0.2",
     "jquery": "^3.3.1",
     "loadash": "^1.0.0",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "merge": "^1.2.1",
     "moment": "^2.29.1",
     "msteams-ui-components-react": "^0.5.0",
