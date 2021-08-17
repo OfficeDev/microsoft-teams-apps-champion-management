@@ -242,7 +242,7 @@ export default class ClbHome extends React.Component<
       });
   }
   private createListsinExistingSite() {
-  let graphSiteRoot = "sites?search=*";
+  let graphSiteRoot = "sites?search=" + siteconfig.sitename;
   this.props.context.msGraphClientFactory
     .getClient()
     .then((garphClient: MSGraphClient) => {
@@ -674,7 +674,7 @@ export default class ClbHome extends React.Component<
 }
   private rootSiteId() {
   this.createListsinExistingSite();
-  let graphSiteRoot = "sites?search=*";
+  let graphSiteRoot = "sites?search=" + siteconfig.sitename;
   this.props.context.msGraphClientFactory
     .getClient()
     .then((garphClient: MSGraphClient) => {
