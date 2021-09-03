@@ -64,7 +64,7 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
             if (!eventdata.error) {
               setEventDropDown(_.orderBy(eventdata.value.filter(ed => ed.IsActive), ['Id'], ['asc']));
                props.context.spHttpClient.get( 
-                "/"+inclusionpath+"/"+siteName+ "/_api/web/lists/GetByTitle('Member List')/Items?$filter= Status eq 'Approved'", SPHttpClient.configurations.v1)
+                "/"+inclusionpath+"/"+siteName+ "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000&$filter= Status eq 'Approved'", SPHttpClient.configurations.v1)
                 // tslint:disable-next-line: no-shadowed-variable
                 .then((response: SPHttpClientResponse) => {
                   response.json().then((datada) => {

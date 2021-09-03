@@ -121,6 +121,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
     }, 100);
   }
 
+  //Get currents user's details from Mmber List for Digital Badge processing
   private _renderListAsync() {
     microsoftTeams.initialize();
     microsoftTeams.registerOnThemeChangeHandler(this.updateTheme);
@@ -136,7 +137,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
             this.props.context.spHttpClient
               .get(
                 "/" + this.state.inclusionpath + "/" + this.state.sitename +
-                  "/_api/web/lists/GetByTitle('Member List')/Items",
+                "/_api/web/lists/GetByTitle('Member List')/Items?$filter=Title eq '" + datauser.Email.toLowerCase() +"'",
                 SPHttpClient.configurations.v1
               )
               .then((response: SPHttpClientResponse) => {

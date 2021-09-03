@@ -82,9 +82,9 @@ SharePoint Admin role
 Once the package has been installed, API granted, and solution synced to Teams (steps documented below), the same admin will likely also be asked to complete the first run experience. This first run creates the SharePoint site (ChampionManagementPlatform)
 that all assets of this solution will be created under. Additionaly permissions need to be modified by an owner of this site to include edit/contribute rights for the organizations ability to interact with the solution.
 
-#Installation Types (Customized vs Standard)
+# Installation Types (Customized vs Standard)
 
-##Customized Installation
+## Customized Installation
 The customized installation makes the assumption you wish to change the default variables (site location, text or visual aspects, etc) with the Champion Management Platform. Customizing the installation takes it outside of 
 configurations we have tested against but allows you to modify any aspect of the platform. Below are high level steps to get you started on a customized installation.
 
@@ -146,7 +146,7 @@ If desired the administrator can configure the installation location including t
 3.	Navigate to the solution folder where you cloned and locate the newly created ***cmp.sppkg*** package in ***"sharepoint/solution"***.
 
 
-##Standard Installation
+## Standard Installation
 The standard installation assumes you would like to take the SharePoint package file located in our GitHub repository and install using the configuration outlined in this readme file (assets all created under a SharePoint site
 called ChampionManagementPlatform as well as the default list names and all related teamwork champion terms within the application)
 
@@ -272,6 +272,14 @@ CLbHomeWebPart.manifest.json is updated with a new entry, TeamsPersonalApp
 Once you have performed the above steps, the deployment of the Champion Management Platform is now complete. If an admin was deploying this on behalf of the manager of the Champion Management Platform please have the admin add the
 Champion Management Platform manager as a champion and change their role in the Memberlist from ***Champion*** to ***Manager*** so they will have access to the other parts of the platform.
 
+### Updated in version 1.3.0.0
+
+1. Improved App installation process to fix issues while installing the app.
+2. Upgraded NPM packages to recommended version for better performance, security and latest fixes.
+3. Fixed an issue where the App is not working as expected when more than 100 champions are added to the system.
+4. Fixed an issue with incorrect rank of current user being displayed on the side bar under Leaderboard screen.
+  
+
 ### Updated in version 1.2.0.0
 
 1.	'Member List' is now created right under 'ChampionManagementPlatform' site. This was created in the root site in version 1.1.0.0
@@ -283,9 +291,31 @@ Champion Management Platform manager as a champion and change their role in the 
 3.	Column type for 'Description' is modified to 'Single line of text' from 'Choice'
 4.	'Member Name' and 'Event Name' columns are added to 'Event Track List' SharePoint list.
 
-### Upgrade to version 1.2.0.0
+### Upgrade to version 1.3.0.0 from 1.2.0.0
 
-If you are already having 1.1.0.0 installed on your tenant and want to upgrade to 1.2.0.0 the existing app and SharePoint site 'ChampionManagementSite' have to be deleted. 
+If you are already having version 1.2.0.0 installed on your tenant follow the below steps to upgrade:
+
+1.  Navigate to App Catalog with a tenant Admin account. Do not delete the existing 1.2.0.0 package.Upload the new package that is downloaded from "sharepoint/solution" folder which will replace the existing package.  
+
+![Upgrade 1.3](./Images/Upgrade1.3-1.png) 
+
+2. Click on "Deploy".
+
+![Upgrade 1.3](./Images/Upgrade1.3-2.png) 
+
+3. "Check In" the package.
+
+![Upgrade 1.3](./Images/Upgrade1.3-3.png) 
+
+4. Select the package and click "Sync to Teams" from the ribbon and wait for the "Successfully synced to teams solution" message to appear
+
+![Upgrade 1.3](./Images/SyncToTeams.png) 
+
+5. The Champion Management Platform will be updated to the latest version and you will see changes reflected in Teams. Please note that if you do not see changes reflected in Teams after 30 minutes you can log out and back in and clear the Teams cache to see changes immediately. 
+
+### Upgrade to version 1.3.0.0 from 1.1.0.0
+
+If you are already having 1.1.0.0 installed on your tenant and want to upgrade to 1.3.0.0 the existing app and SharePoint site 'ChampionManagementSite' have to be deleted. 
 
 If you have current members and events you will want to export those list items and import re-import them into the respective list areas. We have expanded our lists to have some additional data as well so you may need to populate additional fields. 
 
@@ -312,7 +342,7 @@ Follow the below steps to upgrade your install and optionally also export and im
 ![Quick Start Guide](./Images/Upgrade2.png) 
  
 4. Delete 'cmp.sppkg' from App Catalog.	
-5. Startover the installation of new package following instructions from the section 'Install Champion Leaderboard SPFx Package' of this document.
+5. Startover the installation of new package following instructions from the section 'Standard Installation' of this document.
 6. Once the install has completed and first run is done, you can visit the site assets of the ChampionManagementPlatform and import any of the exported Champion data
 
 

@@ -21,6 +21,8 @@ import DigitalBadge from "./DigitalBadge";
 import { ThemeStyle } from "msteams-ui-styles-core";
 import siteconfig from "../config/siteconfig.json";
 import { MSGraphClient } from "@microsoft/sp-http";
+import { sp } from "@pnp/sp/presets/all";
+
 initializeIcons();
 
 export interface IClbHomeState {
@@ -38,7 +40,13 @@ export interface IClbHomeState {
   siteId: any;
   isShow: boolean;
   loggedinUserName: string;
+  loggedinUserEmail: string;
 }
+
+//Global Variables
+const cmpLog: string = "CMP Logs: ";
+let flagCheckUserRole: boolean= true;
+const errorMessage: string = "An unexpected error occured ";
 
 export default class ClbHome extends React.Component<
   IClbHomeProps,
@@ -61,17 +69,25 @@ export default class ClbHome extends React.Component<
       siteId: "",
       isShow: false,
       loggedinUserName: "",
+      loggedinUserEmail:""
     };
 
-    this._getListData = this._getListData.bind(this);
-    this.rootSiteId = this.rootSiteId.bind(this);
+    this.checkUserRole = this.checkUserRole.bind(this);
+       
+    //Set the context for PNP
+    sp.setup({     
+      spfxContext: this.props.context
+    });
+
   }
 
-  public componentDidMount() {
+  public componentDidMount() {    
+    
     this.setState({
       isShow: true,
     });
 
+    //Get current user details and set state
     this.props.context.spHttpClient
       .get(
 
@@ -81,16 +97,23 @@ export default class ClbHome extends React.Component<
       .then((responseuser: SPHttpClientResponse) => {
         responseuser.json().then((datauser: any) => {
           this.setState({ loggedinUserName: datauser.DisplayName });
+          this.setState({ loggedinUserEmail: datauser.Email });
+
+          //Create site and lists when app is installed 
+          this.createSiteAndLists().then(() => {
+            //Check current user's role and set UI components
+            this.checkUserRole(datauser.Email);
+          });
         });
+      }).catch((error) => {
+        alert(errorMessage + "while retrieving user details. Below is the " + JSON.stringify(error));
+        console.error("CMP_CLBHome_componentDidMount_FailedToGetUserDetails \n", JSON.stringify(error));
       });
-    this.rootSiteId();
+
   }
 
-  //create lists when you upload package into new tenant.
-
-
-
-  private createNewList(siteId: any, item: any) {
+  //create lists 
+  private createNewList(siteId: any, item: any) {   
     this.props.context.msGraphClientFactory
       .getClient()
       .then(async (client: MSGraphClient) => {
@@ -102,6 +125,7 @@ export default class ClbHome extends React.Component<
           .post(item, (errClbHome, _res, rawresponse) => {
             if (!errClbHome) {
               if (rawresponse.status === 201) {
+                console.log(cmpLog + "List created: " + "'" + item.displayName +"'");
                 setTimeout(() => {
                   this.props.context.spHttpClient
                     .get(
@@ -239,566 +263,533 @@ export default class ClbHome extends React.Component<
       }
             }
 });
-      });
+}).catch((error)=>{
+  alert(errorMessage + "while creating new list. Below are the details: \n" + JSON.stringify(error));
+  console.error("CMP_CLBHome_createNewList_FailedtoCreateList \n",JSON.stringify(error));             
+ });
   }
-  private createListsinExistingSite() {
-  let graphSiteRoot = "sites?search=*";
-  this.props.context.msGraphClientFactory
-    .getClient()
-    .then((garphClient: MSGraphClient) => {
-      garphClient
-        .api(graphSiteRoot)
-        .version("v1.0")
-        .header("Content-Type", "application/json")
-        .responseType("json")
-        .get()
-        .then((data: any) => {
-          var exSiteId = data.value.filter(x => x.displayName == siteconfig.sitename.toLowerCase()) !== undefined
-            && data.value.filter(x => x.displayName.toLowerCase() == siteconfig.sitename.toLowerCase()) !== null
-            && data.value.filter(x => x.displayName.toLowerCase() == siteconfig.sitename.toLowerCase()).length !== 0 ?
-            data.value.filter(x => x.displayName.toLowerCase() == siteconfig.sitename.toLowerCase())[0].id.split(",")[1] : '';
-          if (exSiteId === '') {
+ 
+  //When app is installed create new site collection and lists if not existing already
+  private async createSiteAndLists() {
+
+    console.log(cmpLog + "Checking if site exists already.");
+
+    //Set Variables
+    var exSiteId;
+
+    try {
+      //Set Root site URL for checking if site exists
+      let rootSiteURL: string;
+      if (this.props.context.pageContext.web.serverRelativeUrl == "/")
+        rootSiteURL = this.props.context.pageContext.web.absoluteUrl;
+      else
+        rootSiteURL = this.props.siteUrl;
+
+      //Check if CMP site exists        
+      await sp.site.exists(rootSiteURL + "/" + this.state.inclusionpath + "/" + this.state.sitename).then((response) => {
+        if (response != undefined) {
+          //If CMP site does not exist, create the site and lists
+          if (!response) {
+            flagCheckUserRole = false;
+            console.log(cmpLog + "Creating new site collection: '" + this.state.sitename + "'");
+            //Create a new site collection
+            const createSiteUrl: string = "/_api/SPSiteManager/create";
+            const siteDefinition: any = {
+              request: {
+                Title: this.state.sitename,
+                Url:
+                  this.state.siteUrl.replace("https:/", "https://").replace("https:///", "https://") +
+                  "/" +
+                  this.state.inclusionpath +
+                  "/" +
+                  this.state.sitename,
+                Lcid: 1033,
+                ShareByEmailEnabled: true,
+                Description: "Description",
+                WebTemplate: "STS#3",
+                SiteDesignId: "6142d2a0-63a5-4ba0-aede-d9fefca2c767",
+                Owner: this.state.loggedinUserEmail,
+              },
+            };
+            const spHttpsiteClientOptions: ISPHttpClientOptions = {
+              body: JSON.stringify(siteDefinition),
+            };
+
+            //HTTP post request for creating a new site collection
             this.props.context.spHttpClient
-              .get(
-
-                "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
-                SPHttpClient.configurations.v1
+              .post(
+                createSiteUrl,
+                SPHttpClient.configurations.v1,
+                spHttpsiteClientOptions
               )
-              .then((responseuser: SPHttpClientResponse) => {
-                responseuser.json().then((datauser: any) => {
-                  const createsiteUrl: string =
-                    "/_api/SPSiteManager/create";
-                  const siteDefinition: any = {
-                    request: {
-                      Title: this.state.sitename,
-                      Url:
-                        this.state.siteUrl.replace("https:/", "https://").replace("https:///", "https://") +
-                        "/" +
-                        this.state.inclusionpath +
-                        "/" +
-                        this.state.sitename,
-                      Lcid: 1033,
-                      ShareByEmailEnabled: true,
-                      Description: "Description",
-                      WebTemplate: "STS#3",
-                      SiteDesignId: "6142d2a0-63a5-4ba0-aede-d9fefca2c767",
-                      Owner: datauser.Email,
-                    },
-                  };
-                  const spHttpsiteClientOptions: ISPHttpClientOptions = {
-                    body: JSON.stringify(siteDefinition),
-                  };
-                  this.props.context.spHttpClient
-                    .post(
-                      createsiteUrl,
-                      SPHttpClient.configurations.v1,
-                      spHttpsiteClientOptions
-                    )
-                    .then((siteresponse: SPHttpClientResponse) => {
-                      if (siteresponse.status === 200) {
-                        siteresponse.json().then((sitedata: any) => {
-                          if (sitedata.SiteId) {
-                            exSiteId = sitedata.SiteId;
-                            this.setState({ siteId: sitedata.SiteId }, () => {
-                              let isMembersListNotExists = false;
-                              this.props.context.spHttpClient
-                                .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Member List')/Items", SPHttpClient.configurations.v1)
-                                .then((response: SPHttpClientResponse) => {
-                                  if (response.status === 404) {
-                                    if (exSiteId) {
-                                      let lists = [];
-                                      siteconfig.lists.forEach((item) => {
-                                        let listColumns = [];
-                                        item.columns.forEach((element) => {
-                                          let column;
-                                          switch (element.type) {
-                                            case "text":
-                                              column = {
-                                                name: element.name,
-                                                text: {},
-                                              };
-                                              listColumns.push(column);
-                                              break;
-                                            case "choice":
-                                              switch (element.name) {
-                                                case "Region":
-                                                  column = {
-                                                    name: element.name,
-                                                    choice: {
-                                                      allowTextEntry: false,
-                                                      choices: [
-                                                        "Africa",
-                                                        "Asia",
-                                                        "Australia / Pacific",
-                                                        "Europe",
-                                                        "Middle East",
-                                                        "North America / Central America / Caribbean",
-                                                        "South America",
-                                                      ],
-                                                      displayAs: "dropDownMenu",
-                                                    },
-                                                  };
-                                                  listColumns.push(column);
-                                                  break;
-                                                case "Country":
-                                                  column = {
-                                                    name: element.name,
-                                                    choice: {
-                                                      allowTextEntry: false,
-                                                      choices: ["INDIA", "USA"],
-                                                      displayAs: "dropDownMenu",
-                                                    },
-                                                  };
-                                                  listColumns.push(column);
-                                                  break;
-                                                case "Role":
-                                                  column = {
-                                                    name: element.name,
-                                                    choice: {
-                                                      allowTextEntry: false,
-                                                      choices: ["Manager", "Champion"],
-                                                      displayAs: "dropDownMenu",
-                                                    },
-                                                  };
-                                                  listColumns.push(column);
-                                                  break;
-                                                case "Status":
-                                                  column = {
-                                                    name: element.name,
-                                                    choice: {
-                                                      allowTextEntry: false,
-                                                      choices: ["Approved", "Pending"],
-                                                      displayAs: "dropDownMenu",
-                                                    },
-                                                  };
-                                                  listColumns.push(column);
-                                                  break;
-                                                case "FocusArea":
-                                                  column = {
-                                                    name: element.name,
-                                                    choice: {
-                                                      allowTextEntry: false,
-                                                      choices: [
-                                                        "Marketing",
-                                                        "Teamwork",
-                                                        "Business Apps",
-                                                        "Virtual Events",
-                                                      ],
-                                                      displayAs: "dropDownMenu",
-                                                    },
-                                                  };
-                                                  listColumns.push(column);
-                                                  break;
-                                                case "Group":
-                                                  column = {
-                                                    name: element.name,
-                                                    choice: {
-                                                      allowTextEntry: false,
-                                                      choices: [
-                                                        "IT Pro",
-                                                        "Sales",
-                                                        "Engineering",
-                                                      ],
-                                                      displayAs: "dropDownMenu",
-                                                    },
-                                                  };
-                                                  listColumns.push(column);
-                                                  break;
-                                                case "Description":
-                                                  column = {
-                                                    name: element.name,
-                                                    choice: {
-                                                      allowTextEntry: false,
-                                                      choices: [
-                                                        "Event Moderator",
-                                                        "Office Hours",
-                                                        "Blogs",
-                                                        "Training",
-                                                      ],
-                                                      displayAs: "dropDownMenu",
-                                                    },
-                                                  };
-                                                  listColumns.push(column);
-                                                  break;
-                                                default:
-                                                  break;
-                                              }
-                                              break;
-                                            case "boolean":
-                                              column = {
-                                                name: element.name,
-                                                boolean: {},
-                                              };
-                                              listColumns.push(column);
-                                              break;
-                                            case "dateTime":
-                                              column = {
-                                                name: element.name,
-                                                dateTime: {},
-                                              };
-                                              listColumns.push(column);
-                                              break;
-                                            case "number":
-                                              column = {
-                                                name: element.name,
-                                                number: {},
-                                              };
-                                              listColumns.push(column);
-                                              break;
-                                            default:
-                                              break;
-                                          }
-                                        });
-                                        let list = {
-                                          displayName: item.listName,
-                                          columns: listColumns,
-                                          list: {
-                                            template: "genericList",
-                                          },
-                                        };
-                                        lists.push(list);
-                                      });
-
-                                      lists.forEach((item) => {
-                                        let siteId =
-                                          item.displayName === siteconfig.lists[0].listName
-                                            ? this.state.siteId // siteconfig.rootSiteId
-                                            : exSiteId;
-                                        if (
-                                          item.displayName === siteconfig.lists[0].listName &&
-                                          !isMembersListNotExists
-                                        ) {
-                                          this.createNewList(siteId, item);
-
-                                        } else {
-                                          this.createNewList(siteId, item);
-
-                                        }
-                                      });
-                                    }
+              .then((siteResponse: SPHttpClientResponse) => {
+                //If site is succesfully created
+                if (siteResponse.status === 200) {
+                  console.log(cmpLog + "Created new site collection: '" + this.state.sitename + "'");
+                  siteResponse.json().then((siteData: any) => {
+                    if (siteData.SiteId) {
+                      exSiteId = siteData.SiteId;
+                      this.setState({ siteId: siteData.SiteId }, () => {
+                        let isMembersListNotExists = false;
+                        console.log(cmpLog + "Creating Lists in new site");
+                        //Create 3 lists in the newly created site
+                        if (exSiteId) {
+                          let lists = [];
+                          siteconfig.lists.forEach((item) => {
+                            let listColumns = [];
+                            item.columns.forEach((element) => {
+                              let column;
+                              switch (element.type) {
+                                case "text":
+                                  column = {
+                                    name: element.name,
+                                    text: {},
+                                  };
+                                  listColumns.push(column);
+                                  break;
+                                case "choice":
+                                  switch (element.name) {
+                                    case "Region":
+                                      column = {
+                                        name: element.name,
+                                        choice: {
+                                          allowTextEntry: false,
+                                          choices: [
+                                            "Africa",
+                                            "Asia",
+                                            "Australia / Pacific",
+                                            "Europe",
+                                            "Middle East",
+                                            "North America / Central America / Caribbean",
+                                            "South America",
+                                          ],
+                                          displayAs: "dropDownMenu",
+                                        },
+                                      };
+                                      listColumns.push(column);
+                                      break;
+                                    case "Country":
+                                      column = {
+                                        name: element.name,
+                                        choice: {
+                                          allowTextEntry: false,
+                                          choices: ["INDIA", "USA"],
+                                          displayAs: "dropDownMenu",
+                                        },
+                                      };
+                                      listColumns.push(column);
+                                      break;
+                                    case "Role":
+                                      column = {
+                                        name: element.name,
+                                        choice: {
+                                          allowTextEntry: false,
+                                          choices: ["Manager", "Champion"],
+                                          displayAs: "dropDownMenu",
+                                        },
+                                      };
+                                      listColumns.push(column);
+                                      break;
+                                    case "Status":
+                                      column = {
+                                        name: element.name,
+                                        choice: {
+                                          allowTextEntry: false,
+                                          choices: ["Approved", "Pending"],
+                                          displayAs: "dropDownMenu",
+                                        },
+                                      };
+                                      listColumns.push(column);
+                                      break;
+                                    case "FocusArea":
+                                      column = {
+                                        name: element.name,
+                                        choice: {
+                                          allowTextEntry: false,
+                                          choices: [
+                                            "Marketing",
+                                            "Teamwork",
+                                            "Business Apps",
+                                            "Virtual Events",
+                                          ],
+                                          displayAs: "dropDownMenu",
+                                        },
+                                      };
+                                      listColumns.push(column);
+                                      break;
+                                    case "Group":
+                                      column = {
+                                        name: element.name,
+                                        choice: {
+                                          allowTextEntry: false,
+                                          choices: [
+                                            "IT Pro",
+                                            "Sales",
+                                            "Engineering",
+                                          ],
+                                          displayAs: "dropDownMenu",
+                                        },
+                                      };
+                                      listColumns.push(column);
+                                      break;
+                                    case "Description":
+                                      column = {
+                                        name: element.name,
+                                        choice: {
+                                          allowTextEntry: false,
+                                          choices: [
+                                            "Event Moderator",
+                                            "Office Hours",
+                                            "Blogs",
+                                            "Training",
+                                          ],
+                                          displayAs: "dropDownMenu",
+                                        },
+                                      };
+                                      listColumns.push(column);
+                                      break;
+                                    default:
+                                      break;
                                   }
-                                });
-                            });
-                          }
-                        });
-                      }
-                    });
-                });
-              });
-          } else {
-
-            this.setState({ siteId: exSiteId }, () => {
-              let isMembersListNotExists = false;
-              this.props.context.spHttpClient
-                .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Member List')/Items", SPHttpClient.configurations.v1)
-                .then((response: SPHttpClientResponse) => {
-                  if (response.status === 404) {
-                    if (exSiteId) {
-                      let lists = [];
-                      siteconfig.lists.forEach((item) => {
-                        let listColumns = [];
-                        item.columns.forEach((element) => {
-                          let column;
-                          switch (element.type) {
-                            case "text":
-                              column = {
-                                name: element.name,
-                                text: {},
-                              };
-                              listColumns.push(column);
-                              break;
-                            case "choice":
-                              switch (element.name) {
-                                case "Region":
+                                  break;
+                                case "boolean":
                                   column = {
                                     name: element.name,
-                                    choice: {
-                                      allowTextEntry: false,
-                                      choices: [
-                                        "Africa",
-                                        "Asia",
-                                        "Australia / Pacific",
-                                        "Europe",
-                                        "Middle East",
-                                        "North America / Central America / Caribbean",
-                                        "South America",
-                                      ],
-                                      displayAs: "dropDownMenu",
-                                    },
+                                    boolean: {},
                                   };
                                   listColumns.push(column);
                                   break;
-                                case "Country":
+                                case "dateTime":
                                   column = {
                                     name: element.name,
-                                    choice: {
-                                      allowTextEntry: false,
-                                      choices: ["INDIA", "USA"],
-                                      displayAs: "dropDownMenu",
-                                    },
+                                    dateTime: {},
                                   };
                                   listColumns.push(column);
                                   break;
-                                case "Role":
+                                case "number":
                                   column = {
                                     name: element.name,
-                                    choice: {
-                                      allowTextEntry: false,
-                                      choices: ["Manager", "Champion"],
-                                      displayAs: "dropDownMenu",
-                                    },
-                                  };
-                                  listColumns.push(column);
-                                  break;
-                                case "Status":
-                                  column = {
-                                    name: element.name,
-                                    choice: {
-                                      allowTextEntry: false,
-                                      choices: ["Approved", "Pending"],
-                                      displayAs: "dropDownMenu",
-                                    },
-                                  };
-                                  listColumns.push(column);
-                                  break;
-                                case "FocusArea":
-                                  column = {
-                                    name: element.name,
-                                    choice: {
-                                      allowTextEntry: false,
-                                      choices: [
-                                        "Marketing",
-                                        "Teamwork",
-                                        "Business Apps",
-                                        "Virtual Events",
-                                      ],
-                                      displayAs: "dropDownMenu",
-                                    },
-                                  };
-                                  listColumns.push(column);
-                                  break;
-                                case "Group":
-                                  column = {
-                                    name: element.name,
-                                    choice: {
-                                      allowTextEntry: false,
-                                      choices: [
-                                        "IT Pro",
-                                        "Sales",
-                                        "Engineering",
-                                      ],
-                                      displayAs: "dropDownMenu",
-                                    },
-                                  };
-                                  listColumns.push(column);
-                                  break;
-                                case "Description":
-                                  column = {
-                                    name: element.name,
-                                    choice: {
-                                      allowTextEntry: false,
-                                      choices: [
-                                        "Event Moderator",
-                                        "Office Hours",
-                                        "Blogs",
-                                        "Training",
-                                      ],
-                                      displayAs: "dropDownMenu",
-                                    },
+                                    number: {},
                                   };
                                   listColumns.push(column);
                                   break;
                                 default:
                                   break;
                               }
-                              break;
-                            case "boolean":
-                              column = {
-                                name: element.name,
-                                boolean: {},
-                              };
-                              listColumns.push(column);
-                              break;
-                            case "dateTime":
-                              column = {
-                                name: element.name,
-                                dateTime: {},
-                              };
-                              listColumns.push(column);
-                              break;
-                            case "number":
-                              column = {
-                                name: element.name,
-                                number: {},
-                              };
-                              listColumns.push(column);
-                              break;
-                            default:
-                              break;
-                          }
-                        });
-                        let list = {
-                          displayName: item.listName,
-                          columns: listColumns,
-                          list: {
-                            template: "genericList",
-                          },
-                        };
-                        lists.push(list);
-                      });
+                            });
+                            let list = {
+                              displayName: item.listName,
+                              columns: listColumns,
+                              list: {
+                                template: "genericList",
+                              },
+                            };
+                            lists.push(list);
+                          });
 
-                      lists.forEach((item) => {
-                        let siteId =
-                          item.displayName === siteconfig.lists[0].listName
-                            ? this.state.siteId // siteconfig.rootSiteId
-                            : exSiteId;
-                        if (
-                          item.displayName === siteconfig.lists[0].listName &&
-                          !isMembersListNotExists
-                        ) {
-                          this.createNewList(siteId, item);
+                          lists.forEach((item) => {
+                            let siteId =
+                              item.displayName === siteconfig.lists[0].listName
+                                ? this.state.siteId // siteconfig.rootSiteId
+                                : exSiteId;
+                            if (
+                              item.displayName === siteconfig.lists[0].listName &&
+                              !isMembersListNotExists
+                            ) {
+                              this.createNewList(siteId, item);
 
-                        } else {
-                          this.createNewList(siteId, item);
+                            } else {
+                              this.createNewList(siteId, item);
 
+                            }
+                          });
                         }
                       });
                     }
-                  }
-                });
-            });
+                  });
+                }
+              }).catch((error) => {
+                alert(errorMessage + "while creating new site. Below are the details: \n" + JSON.stringify(error));
+                console.error("CMP_CLBHome_createSiteAndLists_FailedToCreateSite \n", JSON.stringify(error));
+              });
+
+          }//IF END
+
+          //If CMP site already exists create only lists.  
+          else {
+            //Check if Lists exists already
+            this.props.context.spHttpClient
+              .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Member List')/Items", SPHttpClient.configurations.v1)
+              .then((responseMemberList: SPHttpClientResponse) => {
+                if (responseMemberList.status === 404) {
+                  //If lists do not exist create lists. Else no action is required
+                  console.log(cmpLog + "Site already existing but lists not found");
+                  console.log(cmpLog + "Getting site collection ID for creating lists");
+                  flagCheckUserRole = false;
+                  //Get Sitecollection ID for creating lists   
+                  this.props.context.spHttpClient
+                    .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/site/id", SPHttpClient.configurations.v1)
+                    .then((responseuser: SPHttpClientResponse) => {
+                      if (responseuser.status === 404) {
+                        alert(errorMessage + "while setting up the App. Please try refreshing or loading after some time.");
+                        console.error("CMP_CLBHome_createSiteAndLists_FailedToGetSiteID \n");
+                      }
+                      else {
+                        responseuser.json().then((datauser: any) => {
+                          exSiteId = datauser.value;
+                          if (exSiteId) {
+                            console.log(cmpLog + "Creating lists");
+                            //Set up List Creation Information
+                            let lists = [];
+                            siteconfig.lists.forEach((item) => {
+                              let listColumns = [];
+                              item.columns.forEach((element) => {
+                                let column;
+                                switch (element.type) {
+                                  case "text":
+                                    column = {
+                                      name: element.name,
+                                      text: {},
+                                    };
+                                    listColumns.push(column);
+                                    break;
+                                  case "choice":
+                                    switch (element.name) {
+                                      case "Region":
+                                        column = {
+                                          name: element.name,
+                                          choice: {
+                                            allowTextEntry: false,
+                                            choices: [
+                                              "Africa",
+                                              "Asia",
+                                              "Australia / Pacific",
+                                              "Europe",
+                                              "Middle East",
+                                              "North America / Central America / Caribbean",
+                                              "South America",
+                                            ],
+                                            displayAs: "dropDownMenu",
+                                          },
+                                        };
+                                        listColumns.push(column);
+                                        break;
+                                      case "Country":
+                                        column = {
+                                          name: element.name,
+                                          choice: {
+                                            allowTextEntry: false,
+                                            choices: ["INDIA", "USA"],
+                                            displayAs: "dropDownMenu",
+                                          },
+                                        };
+                                        listColumns.push(column);
+                                        break;
+                                      case "Role":
+                                        column = {
+                                          name: element.name,
+                                          choice: {
+                                            allowTextEntry: false,
+                                            choices: ["Manager", "Champion"],
+                                            displayAs: "dropDownMenu",
+                                          },
+                                        };
+                                        listColumns.push(column);
+                                        break;
+                                      case "Status":
+                                        column = {
+                                          name: element.name,
+                                          choice: {
+                                            allowTextEntry: false,
+                                            choices: ["Approved", "Pending"],
+                                            displayAs: "dropDownMenu",
+                                          },
+                                        };
+                                        listColumns.push(column);
+                                        break;
+                                      case "FocusArea":
+                                        column = {
+                                          name: element.name,
+                                          choice: {
+                                            allowTextEntry: false,
+                                            choices: [
+                                              "Marketing",
+                                              "Teamwork",
+                                              "Business Apps",
+                                              "Virtual Events",
+                                            ],
+                                            displayAs: "dropDownMenu",
+                                          },
+                                        };
+                                        listColumns.push(column);
+                                        break;
+                                      case "Group":
+                                        column = {
+                                          name: element.name,
+                                          choice: {
+                                            allowTextEntry: false,
+                                            choices: [
+                                              "IT Pro",
+                                              "Sales",
+                                              "Engineering",
+                                            ],
+                                            displayAs: "dropDownMenu",
+                                          },
+                                        };
+                                        listColumns.push(column);
+                                        break;
+                                      case "Description":
+                                        column = {
+                                          name: element.name,
+                                          choice: {
+                                            allowTextEntry: false,
+                                            choices: [
+                                              "Event Moderator",
+                                              "Office Hours",
+                                              "Blogs",
+                                              "Training",
+                                            ],
+                                            displayAs: "dropDownMenu",
+                                          },
+                                        };
+                                        listColumns.push(column);
+                                        break;
+                                      default:
+                                        break;
+                                    }
+                                    break;
+                                  case "boolean":
+                                    column = {
+                                      name: element.name,
+                                      boolean: {},
+                                    };
+                                    listColumns.push(column);
+                                    break;
+                                  case "dateTime":
+                                    column = {
+                                      name: element.name,
+                                      dateTime: {},
+                                    };
+                                    listColumns.push(column);
+                                    break;
+                                  case "number":
+                                    column = {
+                                      name: element.name,
+                                      number: {},
+                                    };
+                                    listColumns.push(column);
+                                    break;
+                                  default:
+                                    break;
+                                }
+                              });
+                              let list = {
+                                displayName: item.listName,
+                                columns: listColumns,
+                                list: {
+                                  template: "genericList",
+                                },
+                              };
+                              lists.push(list);
+                            });
+
+                            //Iterate and create all the lists
+                            lists.forEach((item) => {
+                              this.createNewList(exSiteId, item);
+                            });
+
+                          }
+
+                        });
+                      }
+                    }).catch((error) => {
+                      alert(errorMessage + "while retrieving SiteID. Below are the details: \n" + JSON.stringify(error));
+                      console.error("CMP_CLBHome_createSiteAndLists_FailedToGetSiteID \n", JSON.stringify(error));
+                    });
+
+                }
+              }).catch((error) => {
+                alert(errorMessage + "while checking if MemberList exists. Below are the details: \n" + JSON.stringify(error));
+                console.error("CMP_CLBHome_createSiteAndLists_FailedToCheckMemberListExists \n", JSON.stringify(error));
+              });
           }
-        });
-    });
-  //  });
-}
-  private rootSiteId() {
-  this.createListsinExistingSite();
-  let graphSiteRoot = "sites?search=*";
-  this.props.context.msGraphClientFactory
-    .getClient()
-    .then((garphClient: MSGraphClient) => {
-      garphClient
-        .api(graphSiteRoot)
-        .version("v1.0")
-        .header("Content-Type", "application/json")
-        .responseType("json")
-        .get()
-        .then((data: any) => {
 
-        });
-    });
-}
-  private IsCMPAlreadyExists(): boolean {
-  let flag: boolean = false;
-  this.props.context.spHttpClient
-    .get(
-      "/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Member List')/Items",
-      SPHttpClient.configurations.v1
-    )
-    .then((response: SPHttpClientResponse) => {
-      if (response.status === 200) {
-        this.setState({
-          isShow: false,
-        });
+        }//First IF END
 
-      }
-      else {
-        this.setState({
-          isShow: true,
-        });
-        flag = true;
-      }
-    });
-  return flag;
-}
-  private async _getListData(email: any): Promise < any > {
-  return this.props.context.spHttpClient
-    .get(
-      "/" +
-      this.state.inclusionpath +
-      "/" +
-      this.state.sitename + "/_api/web/lists/GetByTitle('Member List')/Items",
-      SPHttpClient.configurations.v1
-    )
-    .then(async (response: SPHttpClientResponse) => {
-      if (response.status === 200) {
-        this.setState({
-          isShow: false,
-        });
-        let flag = 0;
+      }).catch((error) => {
+        alert(errorMessage + "while checking if site exists. Below are the details: \n" + JSON.stringify(error));
+        console.error("CMP_CLBHome_createSiteAndLists_FailedtoCheckIfSiteExists \n", JSON.stringify(error));
+      });
+    }
+    catch (error) {
+      console.error("CMP_CLBHome_createSiteAndLists \n", error);
+      alert(errorMessage + "while creating site and lists. Below are the details: \n" + error);
+    }
 
-        await response.json().then((responseJSON: any) => {
-          let i = 0;
-          while (i < responseJSON.value.length) {
-            if (
-              responseJSON.value[i].Title.toLowerCase() == email.toLowerCase()
-            ) {
-              flag = 1;
-              return flag;
+  }
+
+//Check current users's role from "Member List" and set the UI components accordingly
+private async checkUserRole(userEmail: string)
+{
+  try
+  {
+  if(flagCheckUserRole)
+  {
+    
+  console.log(cmpLog + "Checking user role and setting the UI components");
+      this.props.context.spHttpClient
+      .get(
+        "/" +
+        this.state.inclusionpath +
+        "/" +
+        this.state.sitename +
+        "/_api/web/lists/GetByTitle('Member List')/Items?$filter=Title eq '" + userEmail.toLowerCase() +"'",
+        SPHttpClient.configurations.v1
+      )
+      .then((response: SPHttpClientResponse) => {
+        if (response.status === 200) {
+          this.setState({
+            isShow: false,
+          });}
+        response.json().then((datada) => {
+          if (!datada.error) {
+            let dataexists: any = datada.value.find(
+              (x) =>
+                x.Title.toLowerCase() === this.state.loggedinUserEmail.toLowerCase()
+            );
+            if (dataexists) {
+              if (dataexists.Status === "Approved") {
+                if (dataexists.Role === "Manager") {
+                  this.setState({ clB: true });
+                } else if (dataexists.Role === "Champion") {
+                  this.setState({ cV: true });
+                }
+              } else if (
+                dataexists.Role === "Employee" ||
+                dataexists.Role === "Champion" ||
+                dataexists.Role === "Manager"
+              ) {
+                this.setState({ eV: true });
+              }
             }
-            i++;
-          }
-          return flag;
-        });
-        return flag;
-      }
-    });
-}
-
-  public componentWillMount() {
-  this.props.context.spHttpClient
-    .get(
-      "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
-      SPHttpClient.configurations.v1
-    )
-    .then((responseuser: SPHttpClientResponse) => {
-      responseuser.json().then(async (datauser) => {
-        if (!datauser.error) {
-          let flag = await this._getListData(datauser.Email.toLowerCase());
-          if (flag === 0) {
+            else
             this.setState({ eV: true });
           }
-          this.props.context.spHttpClient
-            .get(
-              "/" +
-              this.state.inclusionpath +
-              "/" +
-              this.state.sitename +
-              "/_api/web/lists/GetByTitle('Member List')/Items",
-              SPHttpClient.configurations.v1
-            )
-            .then((response: SPHttpClientResponse) => {
-              response.json().then((datada) => {
-                if (!datada.error) {
-                  let dataexists: any = datada.value.find(
-                    (x) =>
-                      x.Title.toLowerCase() === datauser.Email.toLowerCase()
-                  );
-                  if (dataexists) {
-                    if (dataexists.Status === "Approved") {
-                      if (dataexists.Role === "Manager") {
-                        this.setState({ clB: true });
-                      } else if (dataexists.Role === "Champion") {
-                        this.setState({ cV: true });
-                      }
-                    } else if (
-                      dataexists.Role === "Employee" ||
-                      dataexists.Role === "Champion" ||
-                      dataexists.Role === "Manager"
-                    ) {
-                      this.setState({ eV: true });
-                    }
-                  }
-                }
-              });
-            });
-        }
-      });
-    });
-}
+        });
+      }).catch((error)=>{
+        alert(errorMessage + "while retrieving user role. Below are the details: \n" + JSON.stringify(error));
+        console.error("CMP_CLBHome_checkUserRole_FailedtoGetUserRole \n",JSON.stringify(error));             
+       });
+    }
+  }
+  catch(error)
+  {
+    console.error("CMP_CLBHome_checkUserRole \n",error);             
+    alert(errorMessage + " while retrieving user role. Below are the details: \n" + error);
+  }
+} 
 
-  public render(): React.ReactElement < IClbHomeProps > {
+ public render(): React.ReactElement < IClbHomeProps > {
   return(
       <div className = { styles.clbHome } >
       { this.state.isShow && <div className={styles.load}></div> }

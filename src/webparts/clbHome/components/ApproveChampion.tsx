@@ -52,11 +52,12 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
     };
     this._getListData();
   }
-
+  
+  //Get the list of Members from member List
   private _getListData(): Promise<ISPLists> {
     return this.props.context.spHttpClient
       .get(
-         "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/_api/web/lists/GetByTitle('Member List')/Items",
+         "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
