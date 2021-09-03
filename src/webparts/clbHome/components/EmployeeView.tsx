@@ -44,12 +44,13 @@ export default class EmployeeView extends Component<
     this._renderListAsync();
   }
 
+  //Get details of all members from Member List to display on leader board employee view
   public _renderListAsync() {
     microsoftTeams.initialize();
     this.props.context.spHttpClient
     .get(  "/"+this.state.inclusionpath+"/"+this.state.sitename+ 
     
-        "/_api/web/lists/GetByTitle('Member List')/Items",
+        "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {

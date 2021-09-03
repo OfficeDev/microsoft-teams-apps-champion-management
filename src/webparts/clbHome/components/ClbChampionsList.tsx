@@ -56,11 +56,12 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
     this._getListData();
   }
 
+  //Get Details of all members from Member List 
   private _getListData(): Promise<ISPLists> {
     return this.props.context.spHttpClient
       .get(  "/"+this.state.inclusionpath+"/"+this.state.sitename+ 
             
-        "/_api/web/lists/GetByTitle('Member List')/Items",
+        "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {

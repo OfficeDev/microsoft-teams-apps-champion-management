@@ -270,6 +270,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     }
   }
 
+  //Get current user's details from Member list and Event track details to display rank and points on side bar
   public componentWillMount() {
     this.props.context.spHttpClient
       .get(
@@ -286,7 +287,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                 this.state.inclusionpath +
                 "/" +
                 this.state.sitename +
-                "/_api/web/lists/GetByTitle('Member List')/Items",
+                "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000",
                 SPHttpClient.configurations.v1
               )
               .then((response: SPHttpClientResponse) => {
@@ -321,8 +322,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                   user["Region"] = datauser.Region;
                   user["Group"] = datauser.Group;
                   user["FocusArea"] = datauser.FocusArea;
-FirstName =  datauser.DisplayName.split(" ")[0];
-LastName =  datauser.DisplayName.split(" ")[1];
+                  FirstName = datauser.DisplayName.split(" ")[0];
+                  LastName = datauser.DisplayName.split(" ")[1];
 
                   this.setState({ currentUser: user });
                   if (!datada.error) {
@@ -347,7 +348,7 @@ LastName =  datauser.DisplayName.split(" ")[1];
                           this.state.inclusionpath +
                           "/" +
                           this.state.sitename +
-                          "/_api/web/lists/GetByTitle('Event Track Details')/Items",
+                          "/_api/web/lists/GetByTitle('Event Track Details')/Items?$top=5000",
                           SPHttpClient.configurations.v1
                         )
                         .then((responseeventsdetails: SPHttpClientResponse) => {
@@ -425,7 +426,7 @@ LastName =  datauser.DisplayName.split(" ")[1];
                                 let pointsTotal = 0;
                                 let rank: number;
                                 memcount
-                                  .sort((x, y) => y.Count - x.Count)
+                                  .sort((x, y) => y.points - x.points)
                                   .map((x: any, ind: number) => {
                                     if (
                                       x.id ===
@@ -516,13 +517,14 @@ LastName =  datauser.DisplayName.split(" ")[1];
     this.setState({ isActive: !this.state.isActive, form: !this.state.form });
   }
 
+  //Get current user's details from Member List
   private async _getListData(email: any): Promise<any> {
     return this.props.context.spHttpClient
       .get(  "/" +
       this.state.inclusionpath +
       "/" +
       this.state.sitename +
-        "/_api/web/lists/GetByTitle('Member List')/Items",
+      "/_api/web/lists/GetByTitle('Member List')/Items?$filter=Title eq '" + email.toLowerCase() +"'",
         SPHttpClient.configurations.v1
       )
       .then(async (response: SPHttpClientResponse) => {

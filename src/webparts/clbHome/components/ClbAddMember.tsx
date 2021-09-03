@@ -171,7 +171,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
   private async _getListData(email: any): Promise<any> {
     return this.props.context.spHttpClient
       .get(
-        "/"+this.state.inclusionpath+"/"+this.state.sitename+ "/_api/web/lists/GetByTitle('Member List')/Items",
+        "/"+this.state.inclusionpath+"/"+this.state.sitename+ "/_api/web/lists/GetByTitle('Member List')/Items?$filter=Title eq '" + email.toLowerCase() +"'",
         SPHttpClient.configurations.v1
       )
       .then(async (response: SPHttpClientResponse) => {

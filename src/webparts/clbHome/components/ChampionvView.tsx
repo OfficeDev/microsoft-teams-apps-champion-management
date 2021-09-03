@@ -391,7 +391,7 @@ export default class ChampionvView extends Component<
       this.state.inclusionpath +
       "/" +
       this.state.sitename +
-      "/_api/web/lists/GetByTitle('Event Track Details')/Items",
+      "/_api/web/lists/GetByTitle('Event Track Details')/Items?$top=5000",
       SPHttpClient.configurations.v1
     );
     if (response.status === 200) {
@@ -438,6 +438,7 @@ export default class ChampionvView extends Component<
     return formateDateCollection;
   }
 
+  //Get Member ID of the current user and the Event Track details from Member List 
   public getMemberId(): number {
     this.props.context.spHttpClient
       .get(
@@ -454,7 +455,7 @@ export default class ChampionvView extends Component<
                 this.state.inclusionpath +
                 "/" +
                 this.state.sitename +
-                "/_api/web/lists/GetByTitle('Member List')/Items",
+                "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000",
                 SPHttpClient.configurations.v1
               )
               .then((response: SPHttpClientResponse) => {
@@ -472,7 +473,7 @@ export default class ChampionvView extends Component<
                       this.state.inclusionpath +
                       "/" +
                       this.state.sitename +
-                      "/_api/web/lists/GetByTitle('Event Track Details')/Items",
+                      "/_api/web/lists/GetByTitle('Event Track Details')/Items?$top=5000",
                       SPHttpClient.configurations.v1
                     )
                     .then((response1: SPHttpClientResponse) => {
