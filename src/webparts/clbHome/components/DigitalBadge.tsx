@@ -600,17 +600,9 @@ export default class DigitalBadge extends TeamsBaseComponent<
         const context = canvas.getContext("2d");
         const contextDownload = canvasDownload.getContext("2d");
         const profileImageObj: HTMLImageElement = new Image();
-        const badgeImageObj: HTMLImageElement = new Image();
+        profileImageObj.crossOrigin = "Anonymous";
         profileImageObj.src = profileImage.url;
-        badgeImageObj.src = require("../assets/images/badge648.png");
         profileImageObj.onload = () => {
-          context.drawImage(
-            profileImageObj,
-            0,
-            0,
-            `${profileImage.width}`,
-            `${profileImage.width}`
-          );
           contextDownload.drawImage(
             profileImageObj,
             0,
@@ -619,6 +611,19 @@ export default class DigitalBadge extends TeamsBaseComponent<
             `${profileImage.width}`
           );
           context.drawImage(
+            profileImageObj,
+            0,
+            0,
+            `${profileImage.width}`,
+            `${profileImage.width}`
+          );
+        };
+
+        const badgeImageObj: HTMLImageElement = new Image();
+        badgeImageObj.crossOrigin = "Anonymous";
+        badgeImageObj.src = require("../assets/images/badge648.png");
+        badgeImageObj.onload = () => {
+          context.drawImage(
             badgeImageObj,
             0,
             0,
@@ -626,6 +631,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
             `${profileImage.width}`
           );
         };
+
         resolve(profileImage);
       }
     );
