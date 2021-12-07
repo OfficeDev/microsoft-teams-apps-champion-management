@@ -1,0 +1,139 @@
+.addMembersPath {
+  display: inline-flex;
+  margin-top: 36px;
+  margin-bottom: 26px;
+  text-align: center;
+  font: normal normal bold 14px/24px Segoe UI;
+  letter-spacing: 0px;
+  color: #33344A;
+  opacity: 1;
+
+  .backImg {
+    width: 7px;
+    height: 12px;
+    margin-right: 10px;
+    margin-top: 6px;
+  }
+
+  .backLabel {
+    padding-right: 10px;
+    cursor: pointer;
+  }
+
+  .border {
+    width: 0px;
+    height: 14px;
+    border: 1px solid #33344A;
+    margin-top: 5px;
+  }
+
+  .addMemberLabel {
+    padding-left: 10px;
+  }
+}
+
+.updatedMessage {
+  text-align: left;
+  font: normal normal 600 18px/24px Segoe UI;
+  letter-spacing: 0px;
+  opacity: 1;
+  color: #8bc832;
+
+  .tickImage {
+    width: 28px;
+    height: 28px;
+    margin-right: 10px;
+    margin-bottom: 7px;
+  }
+}
+
+.errorMessage {
+  color: #ED2939;
+  text-align: left;
+  font: normal normal 600 18px/24px Segoe UI;
+  letter-spacing: 0px;
+  opacity: 1;
+}
+
+.pickerLabel {
+  text-align: left;
+  font: normal normal bold 18px/24px Segoe UI;
+  letter-spacing: 0px;
+  color: #000000;
+  opacity: 1;
+  margin-bottom: 10px;
+
+  .asterisk {
+    color: #a4262c;
+  }
+}
+
+.btnArea {
+  float: right;
+  margin-top: 1rem;
+
+
+  .cancelBtn {
+    display: inline-flex;
+    width: 138px;
+    height: 38px;
+    border-color: #33344A;
+    background-color: white;
+    border-radius: 2px;
+    margin-right: 37px;
+    padding-left: 30px;
+
+    .cancelBtnLabel {
+      text-align: center;
+      font: normal normal bold 14px/24px Segoe UI;
+      letter-spacing: 0px;
+      color: #000003;
+      opacity: 1;
+    }
+
+  }
+
+  .saveBtn {
+    display: inline-flex;
+    width: 138px;
+    height: 38px;
+    background: #464775;
+    border-color: #464775;
+    border-radius: 2px;
+    padding-left: 35px;
+
+    .saveBtnLabel {
+      opacity: 1;
+      text-align: center;
+      font: normal normal bold 14px/24px Segoe UI;
+      letter-spacing: 0px;
+      color: #FFFFFF;
+    }
+  }
+}
+
+.load {
+  border: 16px solid #dde2eb;
+  border-radius: 50%;
+  border-top: 10px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: fixed;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -231,6 +231,7 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
               onLinkClick={() => {
                 setUsers(allUsers);
               }}
+              className="pivotControl"
             >
               <PivotItem
                 headerText="Global"

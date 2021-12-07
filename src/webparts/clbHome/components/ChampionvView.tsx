@@ -12,6 +12,7 @@ import { DefaultButton } from "office-ui-fabric-react";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { Dropdown, IDropdown } from "office-ui-fabric-react/lib/Dropdown";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
+import { Icon } from '@fluentui/react/lib/Icon';
 import { sp } from "@pnp/sp";
 import {
   SPHttpClient,
@@ -25,11 +26,14 @@ import { DataGrid } from "@material-ui/data-grid";
 import * as moment from "moment";
 import siteconfig from "../config/siteconfig.json";
 import _ from "lodash";
+import { Label } from "@fluentui/react";
 
 const columns = [
-  { field: "DateOfEvent", headerName: "Date of Event", width: 250 },
-  { field: "type", headerName: "Type", width: 250 },
-  { field: "Count", headerName: "Points", width: 250 },
+  { field: "DateOfEvent", type: 'date', sortable: false,
+    headerName: "Date of Event", width: 200
+  },
+  { field: "type", headerName: "Type", width: 150 },
+  { field: "Count", type: 'number', headerName: "Points", width: 150 },
 ];
 const DayPickerStrings: IDatePickerStrings = {
   months: [
@@ -87,6 +91,18 @@ const controlClass = mergeStyleSets({
     margin: "0 0 15px 0",
     maxWidth: "300px",
   },
+  marginAuto: {
+    margin: "auto",
+  },
+  marginTopAuto: {
+    marginTop: "auto",
+  },
+  paddingRight: {
+    paddingLeft: "0 !important",
+    paddingRight: "10px !important",
+    paddingTop: "0px !important",
+    paddingBottom: "0px !important"
+  }
 });
 
 const firstDayOfWeek = DayOfWeek.Sunday;
@@ -125,7 +141,8 @@ export interface ChampionViewState {
   sitename: string;
   inclusionpath: string;
   loading: boolean;
-  membersInfo: Array<any>
+  membersInfo: Array<any>;
+  showValidationError: boolean;
 }
 export interface ChampList {
   id: number;
@@ -133,7 +150,7 @@ export interface ChampList {
   eventid: number;
   memberid: number;
   Count: number;
-  DateOfEvent: Date;
+  DateOfEvent: any;
   MemberName: string;
   EventName: string;
 }
@@ -183,7 +200,8 @@ export default class ChampionvView extends Component<
       sitename: siteconfig.sitename,
       inclusionpath: siteconfig.inclusionPath,
       loading: true,
-      membersInfo: []
+      membersInfo: [],
+      showValidationError: false
     };
   }
 
@@ -193,14 +211,23 @@ export default class ChampionvView extends Component<
 
   public addDevice(data: ChampList, saved: any) {
     if (saved === "false") {
-      this.setState({ collectionNew: [] });
-      const newBag = this.state.collectionNew.concat(data);
-      this.setState({
-        collectionNew: newBag,
-        eventid: 0,
-        points: data.Count,
-      });
-      this.setState({ selectedkey: 0 });
+      if((data.type == "" || data.type == "Select Event Type")) {
+        this.setState({showValidationError:true, validationError:"Please select event type!"});
+      }
+      else if((data.Count > 5 || data.Count < 1)) {
+        this.setState({showValidationError:true, validationError:"Count should be between 1 and 5"});
+      }
+      else {
+        this.setState({ collectionNew: [], showValidationError:false });
+        const newBag = this.state.collectionNew.concat(data);
+        this.setState({
+          collectionNew: newBag,
+          eventid: 0,
+          points: data.Count,
+        });
+        this.setState({ selectedkey: 0 });
+      }
+      
     } else {
       const newBag = this.state.collection.concat(data);
       this.setState({
@@ -391,7 +418,7 @@ export default class ChampionvView extends Component<
       this.state.inclusionpath +
       "/" +
       this.state.sitename +
-      "/_api/web/lists/GetByTitle('Event Track Details')/Items?$top=5000",
+      "/_api/web/lists/GetByTitle('Event Track Details')/Items?$top=5000&$orderby=DateofEvent desc",
       SPHttpClient.configurations.v1
     );
     if (response.status === 200) {
@@ -432,7 +459,7 @@ export default class ChampionvView extends Component<
     const formateDateCollection = collection.map((item: any) => {
       return {
         ...item,
-        DateOfEvent: moment(item.DateOfEvent).format("MMMM Do YYYY, h:mm:ss a"),
+        DateOfEvent: moment(item.DateOfEvent).format("MMMM Do, YYYY"),
       };
     });
     return formateDateCollection;
@@ -473,7 +500,7 @@ export default class ChampionvView extends Component<
                       this.state.inclusionpath +
                       "/" +
                       this.state.sitename +
-                      "/_api/web/lists/GetByTitle('Event Track Details')/Items?$top=5000",
+                      "/_api/web/lists/GetByTitle('Event Track Details')/Items?$top=5000&$orderby=DateofEvent desc",
                       SPHttpClient.configurations.v1
                     )
                     .then((response1: SPHttpClientResponse) => {
@@ -586,7 +613,7 @@ export default class ChampionvView extends Component<
             {this.props.showSidebar && <div className="cv">Championview</div>}
             {!this.state.isShow && (
               <Accordion>
-                <Card>
+                <Card className="eventsCards">
                   <Accordion.Toggle
                     as={Card.Header}
                     eventKey="0"
@@ -601,7 +628,6 @@ export default class ChampionvView extends Component<
                         style={{
                           height: 400,
                           width: "auto",
-                          backgroundColor: "rgba(158,187,208,.5)",
                         }}
                       >
                         <DataGrid
@@ -616,7 +642,7 @@ export default class ChampionvView extends Component<
                     </Card.Body>
                   </Accordion.Collapse>
                 </Card>
-                <Card>
+                <Card className="eventsCards">
                   <Accordion.Toggle
                     as={Card.Header}
                     eventKey="1"
@@ -628,18 +654,15 @@ export default class ChampionvView extends Component<
                     <Card.Body className="cb">
                       <div className="form-fields">
                         <div className="form-data">
-                          <div className="form-group row">
-                            <label
-                              htmlFor="date"
-                              className="col-sm-3 col-form-label"
-                            >
-                              Month and Date
-                            </label>
+                          <div className="form-group row">                            
                             <DatePicker
+                              label="Month and Date"
                               className={cx(
                                 controlClass.control,
-                                "col-sm-9",
-                                "date"
+                                "col-md-4",
+                                "date",
+                                controlClass.marginAuto,
+                                controlClass.paddingRight,
                               )}
                               firstDayOfWeek={firstDayOfWeek}
                               strings={DayPickerStrings}
@@ -651,16 +674,14 @@ export default class ChampionvView extends Component<
                               onSelectDate={this.onChange}
                               value={this.state.DateOfEvent}
                             />
-                          </div>
-                          <div className="form-group row">
-                            <label
-                              htmlFor="type"
-                              className="col-sm-3 col-form-label"
-                            >
-                              Type
-                            </label>
-                            <div className="col-sm-9">
+                            <div
+                              className={cx(
+                                "col-md-5",
+                                controlClass.marginAuto,
+                                controlClass.paddingRight
+                              )}>
                               <Dropdown
+                                label="Type"
                                 placeholder="Select Event Type"
                                 onChange={(evt) => this.handleSelect(evt)}
                                 id="drp"
@@ -668,20 +689,13 @@ export default class ChampionvView extends Component<
                                 onRenderCaretDown={onRenderCaretDown}
                               />
                             </div>
-                          </div>
-                          {this.state.type &&
-                            this.state.type !== "Select Event Type" ? (
-                            <div className="form-group row">
-                              <label
-                                htmlFor="inputPoints"
-                                className="col-sm-3 col-form-label"
-                              >
-
-
-                                Count
-                              </label>
-                              <div className="col-sm-9">
+                            <div className={cx(
+                                "col-md-2",
+                                controlClass.marginAuto,
+                                controlClass.paddingRight
+                              )}>
                                 <TextField
+                                  label="Count"
                                   value={this.state.points.toString()}
                                   onChange={this.setPoints}
                                   id="inputPoints"
@@ -690,15 +704,11 @@ export default class ChampionvView extends Component<
                                   max="5"
                                 />
                               </div>
-                            </div>
-                          ) : (
-                            ""
-                          )}
-                          <div className="row">
-                            <div className="col-12">
-                              <div className="float-end">
-                                <DefaultButton
-                                  text="Add"
+                              <div className={cx(
+                                "col-md-1",
+                                controlClass.marginTopAuto,
+                              )}>
+                                <Icon iconName="CircleAdditionSolid" className="AddEventIcon" 
                                   onClick={(_e) =>
                                     this.addDevice(
                                       {
@@ -713,37 +723,48 @@ export default class ChampionvView extends Component<
                                       },
                                       "false"
                                     )
-                                  }
-                                />
+                                  }/>
                               </div>
-                              <br />
-                              <br />
-                              {this.state.collectionNew !== null &&
-                                this.state.collectionNew.length !== 0 && (
-                                  <div className="mb-3">
-                                    When you are done adding Events, Please
-                                    Click on <b>Submit</b> to save
-                                  </div>
-                                )}
-
-                              {this.state.collectionNew.map((item) => (
+                          </div>
+                          <div>
+                            {this.state.showValidationError &&
+                              <span className="errorMessage">
+                                {this.state.validationError}
+                              </span>
+                            }
+                          </div>
+                          <div className="row">
+                            <div className="col-12" style={{padding:"0px"}}>
+                            {this.state.collectionNew.map((item) => (
                                 <div key={item.eventid} className="m-2 mb-3">
-                                  <Alert
-                                    onClose={() => {
-                                      this.removeDevice(item.type, item.Count);
-                                    }}
-                                  >
-                                    {item.type}
-                                    <span className="ml-4">{item.Count}</span>
-                                  </Alert>
+                                  <span className="col-md-1 zeroPadding">
+                                    <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className="tickImage" />
+                                  </span>
+                                  <span className="col-md-5">{item.DateOfEvent.toDateString()}</span>
+                                  <span className="col-md-4">{item.type}</span>
+                                  <span className="col-md-1">{item.Count}</span>
+                                  <span className="col-md-1 deleteEvent">
+                                    <Icon iconName="Delete" 
+                                      onClick={() => {
+                                        this.removeDevice(item.type, item.Count);
+                                      }}
+                                    />
+                                  </span>
                                 </div>
                               ))}
-
+                              
+                              {this.state.collectionNew !== null &&
+                                this.state.collectionNew.length !== 0 && (
+                                  <div className="mb-3 helpText">
+                                    When you are done adding events, please
+                                    click on <b>Submit</b> button to save.
+                                  </div>
+                                )}
                               {this.state.collectionNew !== null &&
                                 this.state.collectionNew.length !== 0 && (
                                   <DefaultButton
                                     text="Submit"
-                                    className="mt-4 float-end"
+                                    className="mt-4 float-end btnSubmit"
                                     onClick={this.createorupdateItem}
                                   />
                                 )}

@@ -1,0 +1,83 @@
+.championListPath {
+  display: inline-flex;
+  margin-top: 36px;
+  margin-bottom: 26px;
+  text-align: center;
+  font: normal normal bold 14px/24px Segoe UI;
+  letter-spacing: 0px;
+  color: #33344A;
+  opacity: 1;
+
+  .backImg {
+    width: 7px;
+    height: 12px;
+    margin-right: 10px;
+    margin-top: 6px;
+  }
+
+  .backLabel {
+    padding-right: 10px;
+    cursor: pointer;
+  }
+
+  .border {
+    width: 0px;
+    height: 14px;
+    border: 1px solid #33344A;
+    margin-top: 5px;
+  }
+
+  .championListLabel {
+    padding-left: 10px;
+  }
+}
+
+.successMessage {
+  text-align: left;
+  font: normal normal 600 18px/24px Segoe UI;
+  letter-spacing: 0px;
+  opacity: 1;
+  color: #8bc832;
+
+  .tickImage {
+    width: 28px;
+    height: 28px;
+    margin-right: 10px;
+    margin-bottom: 7px;
+  }
+}
+
+
+.listHeading {
+  text-align: left;
+  font: normal normal bold 18px/24px Segoe UI;
+  letter-spacing: 0px;
+  color: #000000;
+  opacity: 1;
+  margin-bottom: 26px;
+}
+
+table {
+  letter-spacing: 0px;
+  color: #000000;
+  opacity: 1;
+
+  thead.listHeader {
+    background-color: #DEDEF3;
+    text-align: left;
+    font: normal normal bold 18px/24px Segoe UI;
+
+  }
+
+  tbody.listBody {
+    background-color: #F6F5F4;
+    text-align: left;
+    font: normal normal normal 18px/24px Segoe UI;
+
+  }
+
+  th,
+  td {
+    border: 0.25px solid #979593;
+  }
+}

@@ -1,40 +1,52 @@
 {
-    "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
-    "manifestVersion": "1.5",
-   "id": "e0d96ecc-93c6-41cd-a574-85cccea9d76e",
-    "version": "1.0.1",
-    "packageName": "net.sharepoint.championsboard",
-    "developer": {
-      "name": "Microsoft",
-      "websiteUrl": "https://www.microsoft.com",
-      "privacyUrl": "https://privacy.microsoft.com/privacystatement",
-      "termsOfUseUrl": "https://www.microsoft.com/servicesagreement",
-      "mpnId": "1234567890"
-    },
-    "name": {
-      "short": "Champion Management Platform",
-      "full": "Champion Management Platform Program"
-    },
-    "description": {
-      "short": "Champion Management Platform for Teamwork Champions",
-      "full": "The Champion Management Platform for the Teamwork Champions program enables you to 'claim' your digital badge by overlaying it on top of your existing profile picture."
-    },
-    "icons": {
-      "outline": "icon-outline.png",
-      "color": "icon-color.png"
-    },
-    "accentColor": "#D85028",
-    "staticTabs": [
-        {
-        "entityId": "CMP",
-        "name": "CMP",
-        "contentUrl": "https://{tenant}.sharepoint.com/_layouts/15/TeamsLogon.aspx?SPFX=true&dest=https://{tenant}.sharepoint.com/sites/{siteName}/_layouts/15/teamshostedapp.aspx%3FopenPropertyPane=true%26teams%26componentId={webpartid}%26forceLocale={locale}",
-        "scopes": [ "personal" ]
-        }
-    ],
-    "validDomains": [
-      "*.login.microsoftonline.com",
-      "*.sharepoint.com"
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.11",
+  "packageName": "CMPHomeWebPart",
+  "id": "6df47bd5-d84a-41ab-8c4a-9352076e8b6c",
+  "version": "2.0.0.0",
+  "developer": {
+    "name": "Teams Customer Advocacy Group",
+    "websiteUrl": "https://products.office.com/en-us/sharepoint/collaboration",
+    "privacyUrl": "https://privacy.microsoft.com/en-us/privacystatement",
+    "termsOfUseUrl": "https://www.microsoft.com/en-us/servicesagreement",
+    "mpnId": "CA01101011"
+  },
+  "name": {
+    "short": "Champion Management Platform"
+  },
+  "description": {
+    "short": "Champion Management Platform",
+    "full": "Get started managing and empowering your organization Champions with the Champion Management Platform. Give feedback at https://aka.ms/AdoptionFeedback and visit the larger community at https://aka.ms/m365champions."
+  },
+  "icons": {
+    "outline": "6df47bd5-d84a-41ab-8c4a-9352076e8b6c_outline.png",
+    "color": "6df47bd5-d84a-41ab-8c4a-9352076e8b6c_color.png"
+  },
+  "accentColor": "#004578",
+  "configurableTabs": [{
+    "configurationUrl": "https://{teamSiteDomain}{teamSitePath}/_layouts/15/TeamsLogon.aspx?SPFX=true&dest={teamSitePath}/_layouts/15/teamshostedapp.aspx%3FopenPropertyPane=true%26teams%26componentId=6df47bd5-d84a-41ab-8c4a-9352076e8b6c%26forceLocale={locale}",
+    "canUpdateConfiguration": true,
+    "scopes": [
+      "team"
     ]
-  
+  }],
+  "staticTabs": [{
+    "entityId": "Champion Management Platform",
+    "name": "Champion Management Platform",
+    "contentUrl": "https://{teamSiteDomain}/_layouts/15/TeamsLogon.aspx?SPFX=true&dest=/_layouts/15/teamshostedapp.aspx%3Fteams%26personal%26componentId=6df47bd5-d84a-41ab-8c4a-9352076e8b6c%26forceLocale={locale}",
+    "scopes": ["personal"]
+  }],
+  "validDomains": [
+    "*.login.microsoftonline.com",
+    "*.sharepoint.com",
+    "*.sharepoint-df.com",
+    "spoppe-a.akamaihd.net",
+    "spoprod-a.akamaihd.net",
+    "resourceseng.blob.core.windows.net",
+    "msft.spoppe.com"
+  ],
+  "webApplicationInfo": {
+    "resource": "https://{teamSiteDomain}",
+    "id": "00000003-0000-0ff1-ce00-000000000000"
   }
+}

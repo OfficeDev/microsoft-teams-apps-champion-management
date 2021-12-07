@@ -1,11 +1,39 @@
 {
-  "inclusionPath": "sites",  
+  "inclusionPath": "sites",
   "sitename": "ChampionManagementPlatform",
-  "lists": [
-    {
+  "libraries": [{
+    "listName": "Digital Badge Assets",
+    "listTemplate": "101",
+    "masterData": [{
+        "Title": "Shortcut Hero",
+        "TournamentName": 1,
+        "Name": "Photo_Frame_Shortcuts.png"
+      },
+      {
+        "Title": "Always on Mute",
+        "TournamentName": 1,
+        "Name": "Photo_Frame_Mute.png"
+      },
+      {
+        "Title": "Virtual Background",
+        "TournamentName": 2,
+        "Name": "Photo_Frame_Mess.png"
+      },
+      {
+        "Title": "Jokester",
+        "TournamentName": 2,
+        "Name": "Photo_Frame_Jokes.png"
+      },
+      {
+        "Title": "Double Booked",
+        "TournamentName": 3,
+        "Name": "Photo_Frame_Booked.png"
+      }
+    ]
+  }],
+  "lists": [{
       "listName": "Member List",
-      "columns": [
-        {
+      "columns": [{
           "name": "FirstName",
           "type": "text"
         },
@@ -41,8 +69,7 @@
     },
     {
       "listName": "Events List",
-      "columns": [
-        {
+      "columns": [{
           "name": "Points",
           "type": "number"
         },
@@ -58,8 +85,7 @@
     },
     {
       "listName": "Event Track Details",
-      "columns": [
-        {
+      "columns": [{
           "name": "MemberId",
           "type": "number"
         },
@@ -86,8 +112,7 @@
       ]
     }
   ],
-  "eventsMasterData": [
-    {
+  "eventsMasterData": [{
       "Title": "Event Moderator",
       "Points": 10,
       "Description": "Event Moderator"
@@ -107,5 +132,384 @@
       "Points": 10,
       "Description": "Training"
     }
+  ],
+  "totLists": [{
+      "listName": "ToT Admins",
+      "listTemplate": "100",
+      "fields": []
+    },
+    {
+      "listName": "Actions List",
+      "listTemplate": "100",
+      "fields": [
+        "<Field DisplayName='Category' StaticName='Category'  Type='Text' Required='TRUE' Name='Category' Viewable='TRUE' />",
+        "<Field DisplayName='Points' StaticName='Points' Type='Number' Required='TRUE' Name='Points' Viewable='TRUE' />",
+        "<Field DisplayName='Description' StaticName='Description' Type='Text' Required='TRUE' Name='Description' Viewable='TRUE' />",
+        "<Field DisplayName='HelpURL' StaticName='HelpURL' Type='Text' Required='FALSE' Name='HelpURL' Viewable='TRUE' />"
+      ],
+      "masterData": [{
+          "Title": "Send 1:1",
+          "Category": "Chat",
+          "Points": 10,
+          "Description": "Send a 1:1 chat to someone else in the organization",
+          "HelpURL": "https://support.microsoft.com/en-us/office/start-a-chat-in-teams-0c71b32b-c050-4930-a887-5afbe742b3d8"
+        },
+        {
+          "Title": "Send GIF",
+          "Category": "Chat",
+          "Points": 10,
+          "Description": "Send a GIF to someone else in org",
+          "HelpURL": "https://support.microsoft.com/en-us/office/send-an-emoji-gif-or-sticker-in-teams-174248c9-e64d-4de1-9f41-3199cc0751ad"
+        },
+        {
+          "Title": "Attach a file",
+          "Category": "Channel",
+          "Points": 20,
+          "Description": "Attach a file to a conversation in a channel post",
+          "HelpURL": "https://support.microsoft.com/en-us/office/send-a-file-picture-or-link-in-teams-0e930dcd-46fd-42c3-8d7d-15af4f9bcfca"
+        },
+        {
+          "Title": "Mark message as urgent",
+          "Category": "Chat",
+          "Points": 10,
+          "Description": "Mark message as urgent for place importance",
+          "HelpURL": "https://support.microsoft.com/en-us/office/mark-a-message-as-important-or-urgent-in-teams-ea99d5b6-1317-4550-8d75-86ff14cd4462#:~:text=To%20do%20that%2C%20tap%20More%20options%20%3E%20Message,just%20retrace%20your%20steps%20and%20tap%20it%20again."
+        },
+        {
+          "Title": "Pin conversation",
+          "Category": "Chat",
+          "Points": 10,
+          "Description": "Pin (Save the message) chat on your message thread for visibility",
+          "HelpURL": "https://support.microsoft.com/en-us/office/hide-unhide-mute-or-pin-a-chat-in-teams-9aee02ef-713d-495b-8a73-9762d8e4b066"
+        },
+        {
+          "Title": "Schedule a meeting",
+          "Category": "Calendar",
+          "Points": 20,
+          "Description": "Schedule a meeting with someone",
+          "HelpURL": "https://docs.microsoft.com/en-us/microsoftteams/teams-add-in-for-outlook"
+        },
+        {
+          "Title": "Create a recording",
+          "Category": "Calling",
+          "Points": 20,
+          "Description": "Record call to share with members",
+          "HelpURL": "https://support.microsoft.com/en-us/office/record-a-meeting-in-teams-34dfbe7f-b07d-4a27-b4c6-de62f1348c24"
+        },
+        {
+          "Title": "Invite someone to an existing call",
+          "Category": "Calling",
+          "Points": 20,
+          "Description": "Add another person to a call invitation",
+          "HelpURL": "https://docs.microsoft.com/en-us/microsoftteams/teams-add-in-for-outlook"
+        },
+        {
+          "Title": "Place a phone call",
+          "Category": "Calling",
+          "Points": 10,
+          "Description": "Place a phone call to another teams users",
+          "HelpURL": "https://support.microsoft.com/en-us/office/first-things-to-know-about-calls-in-microsoft-teams-2b883a81-dd15-41bd-a6ba-39deef141027"
+        },
+        {
+          "Title": "Listen to voicemail",
+          "Category": "Calling",
+          "Points": 10,
+          "Description": "Listen to a voicemail from someone",
+          "HelpURL": "https://support.microsoft.com/en-us/office/check-your-voicemail-in-teams-f8d568ce-7329-4fe2-a6a2-325ec2e2b419#:~:text=Check%20your%20voicemail%20in%20Teams%20To%20check%20your,someone%20back%2C%20select%20More%20options%20%3E%20Call%20back."
+        },
+        {
+          "Title": "Create a channel ",
+          "Category": "Channel",
+          "Points": 10,
+          "Description": "Create a channel for your team",
+          "HelpURL": "https://support.microsoft.com/en-us/office/create-a-channel-in-teams-fda0b75e-5b90-4fb8-8857-7e102b014525"
+        },
+        {
+          "Title": "Add members to channel",
+          "Category": "Channel",
+          "Points": 10,
+          "Description": "Add the people in your team to channel",
+          "HelpURL": "https://support.microsoft.com/en-us/office/create-a-channel-in-teams-fda0b75e-5b90-4fb8-8857-7e102b014525"
+        },
+        {
+          "Title": "Create a folder for files",
+          "Category": "Channel",
+          "Points": 10,
+          "Description": "Create a folder to store your files",
+          "HelpURL": "https://support.microsoft.com/en-us/topic/collaborate-on-files-in-microsoft-teams-9b200289-dbac-4823-85bd-628a5c7bb0ae"
+        },
+        {
+          "Title": "Mention someone with @",
+          "Category": "Channel",
+          "Points": 20,
+          "Description": "Use @ mention to get the attention of someone",
+          "HelpURL": "https://support.microsoft.com/en-us/office/get-attention-with-mentions-b2ffb135-7069-4880-84ee-5b27f402418b#:~:text=%20Get%20an%20entire%20team%20or%20channel%27s%20attention,Finish%20your%20message%20and%20select%20Send.%20More%20"
+        },
+        {
+          "Title": "Create a private channel",
+          "Category": "Channel",
+          "Points": 20,
+          "Description": "Create a private channel to enhance security",
+          "HelpURL": "https://docs.microsoft.com/en-us/MicrosoftTeams/private-channels#:~:text=Private%20channel%20owner%20and%20member%20actions%20%20,%20%20No%20%204%20more%20rows%20"
+        },
+        {
+          "Title": "Add app to channel",
+          "Category": "Apps",
+          "Points": 20,
+          "Description": "Include app in your Team channel to enhance productivity",
+          "HelpURL": "https://support.microsoft.com/en-us/office/add-an-app-to-microsoft-teams-b2217706-f7ed-4e64-8e96-c413afd02f77"
+        },
+        {
+          "Title": "Add app to chat",
+          "Category": "Apps",
+          "Points": 20,
+          "Description": "Include app in your chat to enhance collaboration",
+          "HelpURL": "https://support.microsoft.com/en-us/office/add-an-app-to-microsoft-teams-b2217706-f7ed-4e64-8e96-c413afd02f77"
+        },
+        {
+          "Title": "Include app in meeting invite",
+          "Category": "Apps",
+          "Points": 20,
+          "Description": "Include app in your invite to prepare for collaboration",
+          "HelpURL": "https://support.microsoft.com/en-us/office/use-apps-in-teams-meetings-62bca572-ba7e-4e21-9190-a47c61319739"
+        },
+        {
+          "Title": "Pin and unpin apps",
+          "Category": "Apps",
+          "Points": 10,
+          "Description": "Easily access apps by pinning them on your top bar",
+          "HelpURL": "https://support.microsoft.com/en-us/office/pin-an-app-for-easy-access-3045fd44-6604-4ba7-8ecc-1c0d525e89ec"
+        },
+        {
+          "Title": "Configure app notifications",
+          "Category": "Apps",
+          "Points": 20,
+          "Description": "Control your notification",
+          "HelpURL": "https://support.microsoft.com/en-us/office/add-an-app-to-microsoft-teams-b2217706-f7ed-4e64-8e96-c413afd02f77"
+        },
+        {
+          "Title": "Send app content in messages",
+          "Category": "Apps",
+          "Points": 20,
+          "Description": "Send informative messages or highlight individuals with Praise badge",
+          "HelpURL": "https://support.microsoft.com/en-us/office/insert-app-content-into-a-message-32bfc3a5-3b07-4a4d-a884-52de852ee8ef"
+        }
+      ]
+    },
+    {
+      "listName": "Tournaments",
+      "listTemplate": "100",
+      "fields": [
+        "<Field DisplayName='Description' StaticName='Description' Type='Note' Required='FALSE' Name='Description' Viewable='TRUE' NumLines='6' RichText='FALSE' />",
+        "<Field DisplayName='Status' StaticName='Status' Type='Text' Required='FALSE' Name='Status' Viewable='TRUE' />"
+      ],
+      "masterData": [{
+          "Title": "Communication in Teams",
+          "Description": "Tournament focuses on Microsoft Teams communication capabilities. Get engaged and learn more about communication features around chat, meeting, calling and more to earn points and rewards.",
+          "Status": "Not Started"
+        },
+        {
+          "Title": "Collaboration in Teams",
+          "Description": "Tournament focuses on Microsoft Teams collaboration capabilities. Get engaged and learn more about collaboration features around channels, posts, files and more to earn points and rewards.",
+          "Status": "Not Started"
+        },
+        {
+          "Title": "Apps in Teams",
+          "Description": "Tournament focuses on Microsoft Teams applications capabilities. Get engaged and learn more about applications features within team channels and groups to earn points and rewards.",
+          "Status": "Not Started"
+        }
+      ]
+    },
+    {
+      "listName": "Tournament Actions",
+      "listTemplate": "100",
+      "fields": [
+        "<Field DisplayName='Category' StaticName='Category' Type='Text' Required='FALSE' Name='Category' Viewable='TRUE' />",
+        "<Field DisplayName='Action' StaticName='Action' Type='Text' Required='FALSE' Name='Action' Viewable='TRUE' />",
+        "<Field DisplayName='Description' StaticName='Description' Type='Text' Required='FALSE' Name='Description' Viewable='TRUE' />",
+        "<Field DisplayName='Points' StaticName='Points' Type='Number' Required='FALSE' Name='Points' Viewable='TRUE' />",
+        "<Field DisplayName='HelpURL' StaticName='HelpURL' Type='Text' Required='FALSE' Name='HelpURL' Viewable='TRUE'  />"
+      ],
+      "masterData": [{
+          "Title": "Communication in Teams", //title is tournament name
+          "Category": "Chat",
+          "Action": "Send 1:1",
+          "Description": "Send a 1:1 chat to someone else in the organization",
+          "Points": "10",
+          "HelpURL": "https://support.microsoft.com/en-us/office/start-a-chat-in-teams-0c71b32b-c050-4930-a887-5afbe742b3d8"
+        },
+        {
+          "Title": "Communication in Teams", //title is tournament name
+          "Category": "Chat",
+          "Action": "Send GIF",
+          "Description": "Send a GIF to someone else in org",
+          "Points": "10",
+          "HelpURL": "https://support.microsoft.com/en-us/office/send-an-emoji-gif-or-sticker-in-teams-174248c9-e64d-4de1-9f41-3199cc0751ad"
+        },
+        {
+          "Title": "Communication in Teams", //title is tournament name
+          "Category": "Channel",
+          "Action": "Attach a file",
+          "Description": "Attach a file to a conversation in a channel post",
+          "Points": "20",
+          "HelpURL": "https://support.microsoft.com/en-us/office/send-a-file-picture-or-link-in-teams-0e930dcd-46fd-42c3-8d7d-15af4f9bcfca"
+        },
+        {
+          "Title": "Communication in Teams", //title is tournament name
+          "Category": "Chat",
+          "Action": "Mark message as urgent",
+          "Description": "Mark message as urgent for place importance",
+          "Points": "10",
+          "HelpURL": "https://support.microsoft.com/en-us/office/mark-a-message-as-important-or-urgent-in-teams-ea99d5b6-1317-4550-8d75-86ff14cd4462#:~:text=To%20do%20that%2C%20tap%20More%20options%20%3E%20Message,just%20retrace%20your%20steps%20and%20tap%20it%20again."
+        },
+        {
+          "Title": "Communication in Teams", //title is tournament name
+          "Category": "Chat",
+          "Action": "Pin conversation",
+          "Description": "Pin (Save the message) chat on your message thread for visibility",
+          "Points": "10",
+          "HelpURL": "https://support.microsoft.com/en-us/office/hide-unhide-mute-or-pin-a-chat-in-teams-9aee02ef-713d-495b-8a73-9762d8e4b066"
+        },
+        {
+          "Title": "Communication in Teams", //title is tournament name
+          "Category": "Calendar",
+          "Action": "Schedule a meeting",
+          "Description": "Schedule a meeting with someone",
+          "Points": "20",
+          "HelpURL": "https://docs.microsoft.com/en-us/microsoftteams/teams-add-in-for-outlook"
+        },
+        {
+          "Title": "Communication in Teams", //title is tournament name
+          "Category": "Calling",
+          "Action": "Create a recording",
+          "Description": "Record call to share with members",
+          "Points": "20",
+          "HelpURL": "https://support.microsoft.com/en-us/office/record-a-meeting-in-teams-34dfbe7f-b07d-4a27-b4c6-de62f1348c24"
+        },
+        {
+          "Title": "Communication in Teams", //title is tournament name
+          "Category": "Calling",
+          "Action": "Invite someone to an existing call",
+          "Description": "Add another person to a call invitation",
+          "Points": "20",
+          "HelpURL": "https://docs.microsoft.com/en-us/microsoftteams/teams-add-in-for-outlook"
+        },
+        {
+          "Title": "Collaboration in Teams", //title is tournament name
+          "Category": "Calling",
+          "Action": "Place a phone call",
+          "Description": "Place a phone call to another teams users",
+          "Points": "10",
+          "HelpURL": "https://support.microsoft.com/en-us/office/first-things-to-know-about-calls-in-microsoft-teams-2b883a81-dd15-41bd-a6ba-39deef141027"
+        },
+        {
+          "Title": "Collaboration in Teams", //title is tournament name
+          "Category": "Calling",
+          "Action": "Listen to voicemail",
+          "Description": "Listen to a voicemail from someone",
+          "Points": "10",
+          "HelpURL": "https://support.microsoft.com/en-us/office/check-your-voicemail-in-teams-f8d568ce-7329-4fe2-a6a2-325ec2e2b419#:~:text=Check%20your%20voicemail%20in%20Teams%20To%20check%20your,someone%20back%2C%20select%20More%20options%20%3E%20Call%20back."
+        },
+        {
+          "Title": "Collaboration in Teams", //title is tournament name
+          "Category": "Channel",
+          "Action": "Create a channel ",
+          "Description": "Create a channel for your team",
+          "Points": "10",
+          "HelpURL": "https://support.microsoft.com/en-us/office/create-a-channel-in-teams-fda0b75e-5b90-4fb8-8857-7e102b014525"
+        },
+        {
+          "Title": "Collaboration in Teams", //title is tournament name
+          "Category": "Channel",
+          "Action": "Add members to channel",
+          "Description": "Add the people in your team to channel",
+          "Points": "10",
+          "HelpURL": "https://support.microsoft.com/en-us/office/create-a-channel-in-teams-fda0b75e-5b90-4fb8-8857-7e102b014525"
+        },
+        {
+          "Title": "Collaboration in Teams", //title is tournament name
+          "Category": "Channel",
+          "Action": "Create a folder for files",
+          "Description": "Create a folder to store your files",
+          "Points": "10",
+          "HelpURL": "https://support.microsoft.com/en-us/topic/collaborate-on-files-in-microsoft-teams-9b200289-dbac-4823-85bd-628a5c7bb0ae"
+        },
+        {
+          "Title": "Collaboration in Teams", //title is tournament name
+          "Category": "Channel",
+          "Action": "Mention someone with @",
+          "Description": "Use @ mention to get the attention of someone",
+          "Points": "10",
+          "HelpURL": "https://support.microsoft.com/en-us/office/get-attention-with-mentions-b2ffb135-7069-4880-84ee-5b27f402418b#:~:text=%20Get%20an%20entire%20team%20or%20channel%27s%20attention,Finish%20your%20message%20and%20select%20Send.%20More%20"
+        },
+        {
+          "Title": "Collaboration in Teams", //title is tournament name
+          "Category": "Channel",
+          "Action": "Create a private channel",
+          "Description": "Create a private channel to enhance security ",
+          "Points": "20",
+          "HelpURL": "https://docs.microsoft.com/en-us/MicrosoftTeams/private-channels#:~:text=Private%20channel%20owner%20and%20member%20actions%20%20,%20%20No%20%204%20more%20rows%20"
+        },
+        {
+          "Title": "Apps in Teams", //title is tournament name
+          "Category": "Apps",
+          "Action": "Add app to channel",
+          "Description": "Include app in your Team channel to enhance productivity",
+          "Points": "20",
+          "HelpURL": "https://support.microsoft.com/en-us/office/add-an-app-to-microsoft-teams-b2217706-f7ed-4e64-8e96-c413afd02f77"
+        },
+        {
+          "Title": "Apps in Teams", //title is tournament name
+          "Category": "Apps",
+          "Action": "Add app to chat",
+          "Description": "Include app in your chat to enhance collaboration",
+          "Points": "20",
+          "HelpURL": "https://support.microsoft.com/en-us/office/add-an-app-to-microsoft-teams-b2217706-f7ed-4e64-8e96-c413afd02f77"
+        },
+        {
+          "Title": "Apps in Teams", //title is tournament name
+          "Category": "Apps",
+          "Action": "Include app in meeting invite",
+          "Description": "Include app in your invite to prepare for collaboration",
+          "Points": "20",
+          "HelpURL": "https://support.microsoft.com/en-us/office/use-apps-in-teams-meetings-62bca572-ba7e-4e21-9190-a47c61319739"
+        },
+        {
+          "Title": "Apps in Teams", //title is tournament name
+          "Category": "Apps",
+          "Action": "Pin and unpin apps",
+          "Description": "Easily access apps by pinning them on your top bar",
+          "Points": "10",
+          "HelpURL": "https://support.microsoft.com/en-us/office/pin-an-app-for-easy-access-3045fd44-6604-4ba7-8ecc-1c0d525e89ec"
+        },
+        {
+          "Title": "Apps in Teams", //title is tournament name
+          "Category": "Apps",
+          "Action": "Configure app notifications",
+          "Description": "Control your notification",
+          "Points": "20",
+          "HelpURL": "https://support.microsoft.com/en-us/office/add-an-app-to-microsoft-teams-b2217706-f7ed-4e64-8e96-c413afd02f77"
+        },
+        {
+          "Title": "Apps in Teams", //title is tournament name
+          "Category": "Apps",
+          "Action": "Send app content in messages",
+          "Description": "Send informative messages or highlight individuals with Praise badge",
+          "Points": "20",
+          "HelpURL": "https://support.microsoft.com/en-us/office/insert-app-content-into-a-message-32bfc3a5-3b07-4a4d-a884-52de852ee8ef"
+        }
+      ]
+    },
+    {
+      "listName": "User Actions",
+      "listTemplate": "100",
+      "fields": [
+        "<Field DisplayName='Tournament Name' InternalName='TournamentName' StaticName='TournamentName' Type='Text' Required='FALSE' Name='TournamentName' Viewable='TRUE' Indexed='TRUE'/>",
+        "<Field DisplayName='Category' InternalName='Category' StaticName='Category' Type='Text' Required='FALSE' Name='Category' Viewable='TRUE' Indexed='TRUE' />",
+        "<Field DisplayName='Action' InternalName='Action' StaticName='Action' Type='Text' Required='FALSE' Name='Action' Viewable='TRUE' Indexed='TRUE' />",
+        "<Field DisplayName='Points' InternalName='Points' StaticName='Points' Type='Number' Required='FALSE' Name='Points' Viewable='TRUE' Indexed='TRUE'/>"
+      ]
+    }
+
   ]
 }

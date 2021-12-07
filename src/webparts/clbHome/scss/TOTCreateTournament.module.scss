@@ -1,0 +1,98 @@
+.container {
+  height: 100%;
+  width: 100%;
+  padding: 2% 5%;
+}
+
+.errorMessage {
+  color: #ED2939;
+  font: normal normal 600 18px/24px Segoe UI;
+  letter-spacing: 0px;
+  opacity: 1;
+}
+
+.successMessage {
+  font: normal normal 600 18px/24px Segoe UI;
+  letter-spacing: 0px;
+  opacity: 1;
+  color: #8bc832;
+}
+
+.asteriskStyle {
+  color: #a4262c;
+}
+
+.createBtn {
+  background-color: #6264A7;
+  border-color: #6264A7;
+}
+
+.selectTeamActionArea {
+  display: inline-flex;
+
+  .selectTeamActionLabel {
+    text-align: left;
+    font: normal normal 600 18px/24px Segoe UI;
+    letter-spacing: 0px;
+    color: #000000;
+    opacity: 1;
+  }
+}
+
+.createTournamentPath {
+  display: inline-flex;
+  margin-bottom: 26px;
+  text-align: center;
+  font: normal normal bold 14px/24px Segoe UI;
+  letter-spacing: 0px;
+  color: #33344A;
+  opacity: 1;
+
+  .backImg {
+    width: 7px;
+    height: 12px;
+    margin-right: 10px;
+    margin-top: 6px;
+  }
+
+  .backLabel {
+    padding-right: 10px;
+    cursor: pointer;
+  }
+
+  .border {
+    width: 0px;
+    height: 14px;
+    border: 1px solid #33344A;
+    margin-top: 5px;
+  }
+
+  .createTournamentLabel {
+    font: normal normal bold 18px/23px Segoe UI;
+    padding-left: 10px;
+  }
+}
+
+.tickImage {
+  width: 28px;
+  height: 28px;
+  margin-right: 10px;
+  margin-bottom: 7px;
+}
+
+:global {
+  .ms-Label {
+    font: normal normal 600 18px/24px Segoe UI;
+  }
+}
+
+.treeViewContent {
+  div[class^='treeView_'] {
+    width: 70%;
+  }
+
+  div[class^='treeView_']>div>div:first-child {
+    background-color: #BDBDE6;
+    padding: 5px 5px 0 5px;
+  }
+}

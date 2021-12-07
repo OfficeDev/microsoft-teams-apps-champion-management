@@ -81,8 +81,8 @@ export interface EventList {
   Id: number;
 }
 
-let FirstName: string = "";
-let LastName: string = "";
+let displayName: string = "";
+
 export default class Sidebar extends React.Component<ISidebarStateProps, IState> {
   constructor(props: ISidebarStateProps) {
     super(props);
@@ -143,7 +143,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     let optionArrayIds = [];
     if (this.state.edetails.length == 0)
       this.props.context.spHttpClient
-        .get( "/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Events List')/Items", SPHttpClient.configurations.v1)
+        .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Events List')/Items", SPHttpClient.configurations.v1)
         .then(async (response: SPHttpClientResponse) => {
           if (response.status === 200) {
             await response.json().then((responseJSON: any) => {
@@ -274,7 +274,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
   public componentWillMount() {
     this.props.context.spHttpClient
       .get(
-       
+
         "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
         SPHttpClient.configurations.v1
       )
@@ -315,15 +315,14 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                   localStorage.setItem("memberid", memberData); // storing memberid in local storage
                   //based on user role (champion or manager) then we are showing champion details
                   let user = this.state.currentUser;
-                  user["FirstName"] = datauser.DisplayName.split(" ")[0];
+                  user["FirstName"] = datauser.DisplayName.split(" ")[0].replace(",", "");
                   user["LastName"] = datauser.DisplayName.split(" ")[1];
                   user["Title"] = datauser.Email;
                   user["Country"] = datauser.Country;
                   user["Region"] = datauser.Region;
                   user["Group"] = datauser.Group;
                   user["FocusArea"] = datauser.FocusArea;
-                  FirstName = datauser.DisplayName.split(" ")[0];
-                  LastName = datauser.DisplayName.split(" ")[1];
+                  displayName = datauser.DisplayName.replace(",", "");
 
                   this.setState({ currentUser: user });
                   if (!datada.error) {
@@ -343,7 +342,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                       memberDataIds.Status === "Approved"
                     )
                       this.props.context.spHttpClient
-                        .get(                         
+                        .get(
                           "/" +
                           this.state.inclusionpath +
                           "/" +
@@ -386,8 +385,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                     MemberId: memberData,
                                     DateofEvent: new Date(),
                                     Count: 10,
-                                    MemberName : datauser.DisplayName,
-                                    EventName : eventItem.Title
+                                    MemberName: datauser.DisplayName,
+                                    EventName: eventItem.Title
                                   };
                                   const spHttpClientOptions: ISPHttpClientOptions = {
                                     body: JSON.stringify(listDefinition),
@@ -411,12 +410,12 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                   }
                                 }
                                 for (let i = 0; i < memberids.length; i++) {
-                                  if (datada.value.findIndex((v: { ID: any }) =>v.ID === memberids[i].MemberId) !== -1) {
+                                  if (datada.value.findIndex((v: { ID: any }) => v.ID === memberids[i].MemberId) !== -1) {
                                     let totalUserPoints = 0;
                                     eventsdatauser.value.filter((z: any) => z.MemberId === memberids[i].MemberId)
-                                      .map((z: any) => { totalUserPoints = totalUserPoints + z.Count});
-                                    
-                                      memcount.push({
+                                      .map((z: any) => { totalUserPoints = totalUserPoints + z.Count; });
+
+                                    memcount.push({
                                       id: memberids[i].MemberId,
                                       points: totalUserPoints,
                                     });
@@ -483,10 +482,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
 
     let flag = await this._getListData(usersave.Title);
     if (flag == 0) {
-      const url: string =   "/" +
-      this.state.inclusionpath +
-      "/" +
-      this.state.sitename +"/_api/web/lists/GetByTitle('Member List')/items";
+      const url: string = "/" +
+        this.state.inclusionpath +
+        "/" +
+        this.state.sitename + "/_api/web/lists/GetByTitle('Member List')/items";
       if (this.props.context)
         this.props.context.spHttpClient
           .post(url, SPHttpClient.configurations.v1, spHttpClientOptions)
@@ -494,7 +493,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
             if (response.status === 201) {
               alert("Champion request submission successful");
               {
-                 this.props.onClickCancel();
+                this.props.onClickCancel();
               }
             } else {
               alert(
@@ -520,11 +519,11 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
   //Get current user's details from Member List
   private async _getListData(email: any): Promise<any> {
     return this.props.context.spHttpClient
-      .get(  "/" +
-      this.state.inclusionpath +
-      "/" +
-      this.state.sitename +
-      "/_api/web/lists/GetByTitle('Member List')/Items?$filter=Title eq '" + email.toLowerCase() +"'",
+      .get("/" +
+        this.state.inclusionpath +
+        "/" +
+        this.state.sitename +
+        "/_api/web/lists/GetByTitle('Member List')/Items?$filter=Title eq '" + email.toLowerCase() + "'",
         SPHttpClient.configurations.v1
       )
       .then(async (response: SPHttpClientResponse) => {
@@ -580,6 +579,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       <div className="Championleaderboard">
         {this.state.isLoaded && (
           <div className="sidenav">
+            <div className="back-btn" onClick={this.props.onClickCancel}>
+              <Icon iconName="ChevronLeftSmall" id="chevLeft" />
+              <span className="backText" title="Back">Back</span>
+            </div>
             <div>
               {/* user profile image*/}
               <img
@@ -592,9 +595,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
               />
               {/* username */}
               <div className="championname">
-                {FirstName +
-                  "  " +
-                  LastName}
+                {displayName}
               </div>
             </div>
             {!this.state.bc && !this.state.form && (
@@ -603,15 +604,12 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                 <div className="pointcircle">
                   <div className="insidecircle">
                     <div className="pointsscale">
-                      <Icon iconName="FavoriteStarFill" id="star" />
-                      {this.state.totalUserPointsfromList}
-                      <div className="points">Points</div>
+                      <div><Icon iconName="FavoriteStarFill" id="star" className="yellowStar" /></div>
+                      <div>{this.state.totalUserPointsfromList} Points</div>
                     </div>
                     <div className="line"></div>
                     <div className="globalrank">
-                      Global Rank <br />
-                      <span className="bold">{this.state.userRank}</span>
-                      <br />
+                      <span className="bold">{this.state.userRank}</span> Global Rank <br />
                       of {this.state.totalUsers} Champions
                     </div>
                   </div>
@@ -732,15 +730,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                 </div>
               </div>
             )}
-            <div className="back-btn">
-              {/* back button to home */}
-              <button
-                className=" btn btn-primary back"
-                onClick={this.props.onClickCancel}
-              >
-                Back
-              </button>
-            </div>
+
           </div>
         )}
       </div>

@@ -1,0 +1,196 @@
+.totLandingPage {
+  .container {
+    height: 100%;
+    width: 100%;
+
+    .totHeader {
+      background: url('../assets/CMPImages/BannerImage.png');
+      background-color: #464775;
+      height: 80px;
+      min-width: 100%;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+      padding-left: 200px;
+      padding-top: 6px;
+      margin-bottom: 2.06rem;
+
+      .totPageHeading {
+        cursor: pointer;
+        text-align: left;
+        font: normal normal 400 32px/64px Segoe UI;
+        letter-spacing: 0px;
+        color: #FFFFFF;
+        opacity: 1;
+        text-align: left;
+      }
+    }
+
+    .grid {
+      margin: 0 12.5rem 0 12.5rem;
+
+      .messageContainer {
+        margin-top: 10px;
+        margin-left: 1%;
+        text-overflow: center;
+
+        .errorMessage {
+          color: #ED2939;
+          text-align: left;
+          font: normal normal 600 18px/24px Segoe UI;
+          letter-spacing: 0px;
+          opacity: 1;
+        }
+
+        .successMessage {
+          text-align: left;
+          font: normal normal 600 18px/24px Segoe UI;
+          letter-spacing: 0px;
+          opacity: 1;
+          color: #8bc832;
+
+          .tickImage {
+            width: 28px;
+            height: 28px;
+            margin-right: 10px;
+            margin-bottom: 7px;
+          }
+        }
+      }
+
+      .pageSubHeader {
+        text-align: left;
+        font: normal normal bold 24px/32px Segoe UI;
+        letter-spacing: 0px;
+        color: #33344A;
+        opacity: 1;
+      }
+
+      .cursor {
+        cursor: pointer;
+
+        .dashboardimgs {
+          height: 180px;
+          width: auto;
+          position: relative;
+          opacity: 1;
+        }
+
+        .center {
+          width: 180px;
+          text-align: center;
+          font: normal normal normal 18px/24px Segoe UI;
+          letter-spacing: 0px;
+          color: #464775;
+          opacity: 1;
+          overflow-y: clip;
+          text-overflow: ellipsis;
+        }
+
+      }
+
+      .imageLayout {
+        margin-bottom: 2rem;
+      }
+
+      .mb {
+        align-self: center;
+        text-transform: capitalize;
+      }
+
+    }
+
+    @media screen and (max-width: 1184px) {
+      .totHeader {
+        padding-left: 100px;
+      }
+
+      .grid {
+        margin: 0 6.5rem 0 6.5rem;
+
+        .cursor {
+          cursor: pointer;
+
+          .dashboardimgs {
+            height: 160px;
+            width: auto;
+            position: relative;
+            opacity: 1;
+          }
+
+          .center {
+            width: 160px;
+            text-align: center;
+            font: normal normal normal 18px/24px Segoe UI;
+            letter-spacing: 0px;
+            color: #464775;
+            text-overflow: ellipsis;
+            overflow-y: clip;
+            opacity: 1;
+          }
+        }
+      }
+    }
+
+    @media screen and (max-width: 844px) {
+      .totHeader {
+        padding-left: 25px;
+      }
+
+      .grid {
+        margin: 0 2rem 0 2rem;
+
+        .cursor {
+          cursor: pointer;
+
+          .dashboardimgs {
+            height: 135px;
+            width: auto;
+            position: relative;
+            opacity: 1;
+          }
+
+          .center {
+            width: 135px;
+            text-align: center;
+            font: normal normal normal 18px/24px Segoe UI;
+            letter-spacing: 0px;
+            color: #464775;
+            overflow-y: clip;
+            text-overflow: ellipsis;
+            opacity: 1;
+          }
+        }
+      }
+    }
+
+
+  }
+
+  .load {
+    border: 16px solid #dde2eb;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    position: fixed;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+}

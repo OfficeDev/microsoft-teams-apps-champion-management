@@ -60,12 +60,7 @@ export default class Champions extends Component<
     return (
       <React.Fragment>
         {this.props.type && (
-          <Label styles={labelStyles}>
-            <img
-              src={require("../assets/images/Location.png")}
-              alt="location icon"
-              className="location-icon"
-            />
+          <Label className="gtcLabel">            
             <span className="gtc">
               <b>{this.props.type}</b> Top {this.props.filterBy} Champions
             </span>
@@ -89,16 +84,16 @@ export default class Champions extends Component<
                   .map((member: any, ind = 0) => {
                     return (
                       this.state.isLoaded && (
-                        <div className={ind === 0 ? "top-card cards" : "cards"}>
+                        <div className={ind === 0 ? "cards" : "cards"}>
                           {this.props.fromV == "e" && (
                             <img
-                              src={require("../assets/images/badge-strip.png")}
+                              src={require("../assets/CMPImages/badgeStripNoRank.png")}
                               alt="top-badge"
                             />
                           )}
                           {this.props.fromV != "e" && (
                             <img
-                              src={require("../assets/images/top-strip-icon.png")}
+                              src={require("../assets/CMPImages/badgeStripNew.png")}
                               alt="top-badge"
                             />
                           )}
@@ -128,7 +123,7 @@ export default class Champions extends Component<
                                   onClick={() => this.openTask(`https://teams.microsoft.com/l/chat/0/0?users=${member.Title}`)}
                                 />
                                 <Icon iconName="FavoriteStarFill"  style={starStyles} id="points" />
-                                {member.totalpoints}
+                                <span className="totalPoints">{member.totalpoints}</span>
                                 <a href={`mailto:${member.Title}`}>
                                   <Icon
                                     iconName="NewMail"
@@ -163,14 +158,9 @@ export default class Champions extends Component<
                   })}
               </Row>
             </div>
-            <div>
+            <div className="paddingTop">
               {this.props.type && (
                 <React.Fragment>
-                  <img
-                    src={require("../assets/images/Location.png")}
-                    alt="location icon"
-                    className="location-icon"
-                  />
                   <span className="gtc">
                     <b>{this.props.type}</b> Top {this.props.filterBy} Champions
                     : <b>My Rank</b>
@@ -182,41 +172,48 @@ export default class Champions extends Component<
                           .slice(0, 3)
                           .map((rankedMember: any, ind: number) => {
                             return (
-                              <Card>
+                              <Card className="topChampCards">
                                 <Accordion.Toggle
                                   as={Card.Header}
                                   eventKey={rankedMember.ID}
                                 >
-                                  <div className="gttc-row">
+                                  <div className="gttc-row-left">
                                     <span>
                                       <img src={"/_layouts/15/userphoto.aspx?username=" + rankedMember.Title} className="gttc-img" onError={this.addDefaultSrc} />
                                       <div className="gttc-img-name">
                                         {rankedMember.FirstName}
                                       </div>
                                     </span>
-                                    <div className="gttc-star">
-                                      <Icon
-                                        iconName="FavoriteStarFill"
-                                        id="points2"
-                                        style={starStyles}
-                                         
-                                      />
-                                      {rankedMember.totalpoints}
-                                    </div>
-                                    <div className="vline"></div>
-                                    <div className="gttc-rank">
-                                      Rank <b>{ind + 1}</b>
-                                    </div>
+                                  </div>                                  
+                                    <div className="gttc-row-right">
+                                      <div className="gttc-star">
+                                        <Icon
+                                          iconName="FavoriteStarFill"
+                                          id="points2"
+                                          style={starStyles}                                         
+                                        />
+                                        <span className="points">{rankedMember.totalpoints}</span>
+                                      </div>
+                                      <div className="vline"></div>
+                                      <div className="gttc-rank">
+                                        Rank <b>{ind + 1}</b>
+                                      </div>
                                   </div>
                                 </Accordion.Toggle>
                                 <Accordion.Collapse eventKey={rankedMember.ID}>
                                   <Card.Body>
                                     <Table>
+                                      {Object.keys(rankedMember.eventpoints).length != 0 &&
+                                        <tr>
+                                          <th>Event Type</th>
+                                          <th className="countHeader">Count</th>
+                                        </tr>
+                                      }
                                       {Object.keys(rankedMember.eventpoints).map((e, i) => {
                                         return (
                                           e !== "0" && (
                                             <tr>
-                                              <td>
+                                              <td className="eventTypeCol">
                                                 {
                                                   this.props.events.find((ev) => e !== "0" && ev.ID.toString() === e)
                                                   && this.props.events.find((ev) => e !== "0" && ev.ID.toString() === e).Title

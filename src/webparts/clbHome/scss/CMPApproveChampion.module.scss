@@ -1,0 +1,157 @@
+.approveChampionPath {
+  display: inline-flex;
+  margin-top: 36px;
+  margin-bottom: 26px;
+  text-align: center;
+  font: normal normal bold 14px/24px Segoe UI;
+  letter-spacing: 0px;
+  color: #33344A;
+  opacity: 1;
+
+  .backImg {
+    width: 7px;
+    height: 12px;
+    margin-right: 10px;
+    margin-top: 6px;
+  }
+
+  .backLabel {
+    padding-right: 10px;
+    cursor: pointer;
+  }
+
+  .border {
+    width: 0px;
+    height: 14px;
+    border: 1px solid #33344A;
+    margin-top: 5px;
+  }
+
+  .approveChampionLabel {
+    padding-left: 10px;
+  }
+}
+
+.approveMessage {
+  text-align: left;
+  font: normal normal 600 18px/24px Segoe UI;
+  letter-spacing: 0px;
+  opacity: 1;
+  color: #8bc832;
+
+  .tickImage {
+    width: 28px;
+    height: 28px;
+    margin-right: 10px;
+    margin-bottom: 7px;
+  }
+}
+
+.rejectMessage {
+  color: #ED2939;
+  text-align: left;
+  font: normal normal 600 18px/24px Segoe UI;
+  letter-spacing: 0px;
+  opacity: 1;
+}
+
+.listHeading {
+  text-align: left;
+  font: normal normal bold 18px/24px Segoe UI;
+  letter-spacing: 0px;
+  color: #000000;
+  opacity: 1;
+  margin-bottom: 26px;
+}
+
+table {
+  letter-spacing: 0px;
+  color: #000000;
+  opacity: 1;
+
+  thead.listHeader {
+    background-color: #DEDEF3;
+    text-align: left;
+    font: normal normal bold 18px/24px Segoe UI;
+
+  }
+
+  tbody.listBody {
+    background-color: #F6F5F4;
+    text-align: left;
+    font: normal normal normal 18px/24px Segoe UI;
+  }
+
+  th,
+  td {
+    border: 0.25px solid #979593;
+  }
+}
+
+
+.rejectBtn {
+  display: inline-flex;
+  width: 108px;
+  height: 38px;
+  border-color: #33344A;
+  background-color: white;
+  border-radius: 2px;
+  margin-right: 15px;
+  margin-bottom: 1%;
+  padding-left: 15px;
+
+  .rejectBtnLabel {
+    text-align: center;
+    font: normal normal bold 14px/24px Segoe UI;
+    letter-spacing: 0px;
+    color: #000003;
+    opacity: 1;
+  }
+
+}
+
+.approveBtn {
+  display: inline-flex;
+  width: 108px;
+  height: 38px;
+  background: #464775;
+  border-color: #464775;
+  border-radius: 2px;
+  padding-left: 15px;
+  margin-bottom: 1%;
+
+  .approveBtnLabel {
+    opacity: 1;
+    text-align: center;
+    font: normal normal bold 14px/24px Segoe UI;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+  }
+}
+
+.noRecordsArea {
+  margin-left: 35%;
+  margin-top: 5%;
+  opacity: 1;
+
+  .noRecordsImg {
+    width: 64px;
+    height: 64px;
+  }
+
+  .noRecordsLabels {
+    margin-left: 15px;
+    text-align: left;
+    font: normal normal 600 18px/24px Segoe UI;
+    letter-spacing: 0px;
+    color: #000000;
+  }
+}
+
+@media screen and (max-width: 840px) {
+  .noRecordsArea {
+    margin-left: 15%;
+    margin-top: 5%;
+    opacity: 1;
+  }
+}

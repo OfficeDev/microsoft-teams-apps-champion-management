@@ -1,14 +1,19 @@
-import * as React from "react";
+import { Label } from "@fluentui/react";
+import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { sp } from "@pnp/sp";
-import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
+import * as React from "react";
 import siteconfig from "../config/siteconfig.json";
+import styles from "../scss/CMPChampionsList.module.scss";
+
 
 export interface IClbChampionsListProps {
   context?: WebPartContext;
   onClickAddmember: Function;
   isEmp: boolean;
   siteUrl: string;
+  userAdded: boolean;
+  userStatus: string;
 }
 export interface ISPLists {
   value: ISPList[];
@@ -28,13 +33,13 @@ export interface ISPList {
 interface IState {
   list: ISPLists;
   isAddChampion: boolean;
-  SuccessMessage: string;
-  UserDetails: Array<any>;
-  selectedusers: Array<any>;
+  successMessage: string;
+  userDetails: Array<any>;
+  selectedUsers: Array<any>;
   siteUrl: string;
-  inclusionpath: string;
-  sitename : string;
-            
+  inclusionPath: string;
+  siteName: string;
+
 }
 class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
   constructor(props: IClbChampionsListProps) {
@@ -46,12 +51,12 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
     this.state = {
       list: { value: [] },
       isAddChampion: false,
-      SuccessMessage: "",
-      UserDetails: [],
-      selectedusers: [],
+      successMessage: "",
+      userDetails: [],
+      selectedUsers: [],
       siteUrl: this.props.siteUrl,
-      sitename: siteconfig.sitename,
-      inclusionpath: siteconfig.inclusionPath,  
+      siteName: siteconfig.sitename,
+      inclusionPath: siteconfig.inclusionPath,
     };
     this._getListData();
   }
@@ -59,8 +64,8 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
   //Get Details of all members from Member List 
   private _getListData(): Promise<ISPLists> {
     return this.props.context.spHttpClient
-      .get(  "/"+this.state.inclusionpath+"/"+this.state.sitename+ 
-            
+      .get("/" + this.state.inclusionPath + "/" + this.state.siteName +
+
         "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000",
         SPHttpClient.configurations.v1
       )
@@ -80,18 +85,37 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
 
   public render() {
     return (
-      <div>
-        <h4 className="mt-2 mb-2">Champion List</h4>
-        <table className="table table-bodered table-striped">
-          <thead>
+      <div className="container">
+        <div className={styles.championListPath}>
+          <img src={require("../assets/CMPImages/BackIcon.png")}
+            className={styles.backImg}
+          />
+          <span
+            className={styles.backLabel}
+            onClick={() => { this.props.onClickAddmember(); }}
+            title="Back"
+          >
+            Back
+          </span>
+          <span className={styles.border}></span>
+          <span className={styles.championListLabel}>Champion List</span>
+        </div>
+        {this.props.userAdded ?
+          <Label className={styles.successMessage}>
+            <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
+            {this.props.userStatus === "Pending" ? "User Nominated Successfully!" : "User Added Successfully!"}
+          </Label> : null}
+        <div className={`${styles.listHeading}`}>Champion List</div>
+        <table className="table table-bodered">
+          <thead className={styles.listHeader}>
             <th>People Name</th>
             <th>Region</th>
             <th>Country</th>
-            <th>FocusArea</th>
+            <th>Focus Area</th>
             <th>Group</th>
             {!this.props.isEmp && <th>Status</th>}
           </thead>
-          <tbody>
+          <tbody className={styles.listBody}>
             {this.state.list &&
               this.state.list.value &&
               this.state.list.value.length > 0 &&
@@ -115,12 +139,6 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
               })}
           </tbody>
         </table>
-        <button
-          className="addchampion btn btn-primary"
-          onClick={() => this.props.onClickAddmember()}
-        >
-          Back
-        </button>
       </div>
     );
   }

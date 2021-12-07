@@ -38,6 +38,15 @@ import "../assets/stylesheets/main.scss";
 import * as $ from "jquery";
 import IProfileImage from "../models/IProfileImage";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
+import dbStyles from "../scss/CMPDigitalBadge.module.scss";
+import { Icon } from '@fluentui/react/lib/Icon';
+import { mergeStyleSets } from '@fluentui/react/lib/Styling';
+import siteconfig from "../config/siteconfig.json";
+import commonServices from '../Common/CommonServices';
+import * as stringsConstants from "../constants/strings";
+import { List } from '@fluentui/react/lib/List';
+import { Label } from "@microsoft/office-ui-fabric-react-bundle";
+
 
 const config = {
   baseFontSize: 16,
@@ -48,7 +57,81 @@ const graphUrl = "https://graph.microsoft.com";
 const graphMyPhotoApiUrl = graphUrl + "/v1.0/me/photo";
 const graphMyPhotoBitsUrl = graphMyPhotoApiUrl + "/$value";
 let upn: string | undefined = "";
-import siteconfig from "../config/siteconfig.json";
+
+//CSS classes for Image List
+const classNames = mergeStyleSets({
+  listGrid: {
+    width: '100%',
+    overflow: 'hidden',
+    fontSize: 0,
+    position: 'relative',
+    margin: 'auto auto auto auto'
+  },
+  listGridTile: {
+    width: '25%',
+    marginBottom: '8%',
+    textAlign: 'center',
+    outline: 'none',
+    position: 'relative',
+    float: 'left',
+    selectors: {
+      'focus:after': {
+        content: '',
+        position: 'absolute',
+        left: 2,
+        right: 2,
+        top: 2,
+        bottom: 2,
+        boxSizing: 'border-box',
+      },
+    },
+  },
+  listGridSizer: {
+    paddingBottom: '100%',
+  },
+  listGridPadder: {
+    position: 'absolute',
+    align: 'center',
+    left: 2,
+    top: 2,
+    right: 2,
+    bottom: 2,
+    marginRight: '10%',
+    marginBottom: '5%'
+  },
+  listGridLabel: {
+    background: '#464775',
+    color: '#FFFFFF',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    width: '100%',
+    height: '28px',
+    boxSizing: 'border-box',
+    font: "normal normal bold 16px/21px Segoe UI",
+    paddingTop: '3px',
+    overflowX: 'hidden'
+  },
+  listGridImage: {
+    position: 'absolute',
+    top: '15%',
+    left: 0,
+    width: '70%',
+    marginLeft: "15%"
+  },
+  acceptIcon: {
+    marginRight: "10px",
+    fontSize: "16px",
+    fontWeight: "bolder",
+    color: "#FFFFFF",
+    opacity: 1
+  },
+  downloadIcon: {
+    fontSize: "16px",
+    fontWeight: "bolder",
+    opacity: 1
+  }
+});
 
 export interface IDigitalBadgeState extends ITeamsBaseComponentState {
   entityId?: string;
@@ -57,6 +140,8 @@ export interface IDigitalBadgeState extends ITeamsBaseComponentState {
   profileImage?: IProfileImage;
   isLoggedIn: boolean;
   hasAccepted: boolean;
+  hasImageSelected: boolean;
+  imageURL: string;
   isApplying: boolean;
   isApplied: boolean;
   error: string;
@@ -68,6 +153,8 @@ export interface IDigitalBadgeState extends ITeamsBaseComponentState {
   userletters: string;
   sitename: string;
   inclusionpath: string;
+  allBadgeImages: string[];
+  noBadgesFlag: boolean;
 }
 export interface IDigitalBadgeProps extends ITeamsBaseComponentProps {
   clientId: string;
@@ -86,8 +173,11 @@ export default class DigitalBadge extends TeamsBaseComponent<
     super(props, states);
     this._onDownloadImage = this._onDownloadImage.bind(this);
     this.onUserAcceptance = this.onUserAcceptance.bind(this);
+    this.onBadgeSelected = this.onBadgeSelected.bind(this);
     this._onApplyProfileImage = this._onApplyProfileImage.bind(this);
     this.getPhotoBits = this.getPhotoBits.bind(this);
+    this.getAllBadgeImages = this.getAllBadgeImages.bind(this);
+    this.onRenderCell = this.onRenderCell.bind(this);
   }
   private _requestOptions: {} = {
     headers: {
@@ -97,12 +187,15 @@ export default class DigitalBadge extends TeamsBaseComponent<
   public componentWillMount() {
     initializeIcons();
     let profile: IProfileImage = { url: "", width: 0 };
+
     this.setState({
       fontSize: this.pageFontSize(),
       isLoading: true,
       themeLoaded: false,
       profileImage: profile,
       hasAccepted: false,
+      hasImageSelected: false,
+      imageURL: "",
       isApplying: false,
       isApplied: false,
       isLoggedIn: false,
@@ -113,13 +206,88 @@ export default class DigitalBadge extends TeamsBaseComponent<
       userletters: "",
       sitename: siteconfig.sitename,
       inclusionpath: siteconfig.inclusionPath,
-      siteUrl: this.props.siteUrl
+      siteUrl: this.props.siteUrl,
+      allBadgeImages: [],
+      noBadgesFlag: false
     });
+
     this.forceUpdate();
     setTimeout(() => {
       this._renderListAsync();
     }, 100);
+
   }
+
+  //Multiple Badges   
+  //Render Fluent UI list cell to show the images and hyperlinks
+  private onRenderCell(item: any, index: number | undefined) {
+    try {
+      return (
+        <div
+          className={classNames.listGridTile}
+          data-is-focusable
+        >
+          <div className={classNames.listGridSizer}>
+            <div className={classNames.listGridPadder}>
+              <a href="#" onClick={() => { this.onBadgeSelected(item.url); }}>
+                <img src={item.url} className={classNames.listGridImage} /></a>
+              <span className={classNames.listGridLabel} title={item.title}>{item.title}</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    catch (error) {
+      console.error("CMP_DigitalBadge_onRenderCell \n", JSON.stringify(error));
+      this.setState({
+        error: stringsConstants.TOTErrorMessage + "while displaying the digital badges. Below are the details: \n" + JSON.stringify(error),
+        isApplying: false,
+        isLoading: false
+      });
+    }
+
+  }
+
+  //On a badge selection set the state and show the overlay images
+  public onBadgeSelected(img: string): void {
+    try {
+      this.setState({
+        hasImageSelected: true,
+        imageURL: img,
+      });
+      this.showUserInformation(upn);
+    }
+    catch (error) {
+      console.error("CMP_DigitalBadge_onBadgeSelected \n", JSON.stringify(error));
+      this.setState({
+        error: stringsConstants.TOTErrorMessage + "while applying the digital badge. Below are the details: \n" + JSON.stringify(error),
+        isApplying: false,
+        isLoading: false
+      });
+    }
+  }
+
+  //Get badge images from 'Digital Badge Assets' document library.
+  private async getAllBadgeImages() {
+    try {
+      this.setState({ isLoading: true });
+      let commonServiceManager: commonServices = new commonServices(this.props.context, this.props.siteUrl);
+      const resultImages: any[] = await commonServiceManager.getAllBadgeImages(stringsConstants.DigitalBadgeLibrary, this.props.context.pageContext.user.email.toLowerCase());
+      if (resultImages.length == 0)
+        this.setState({ noBadgesFlag: true, isLoading: false });
+      else
+        this.setState({ allBadgeImages: resultImages, isLoading: false });
+    }
+    catch (error) {
+      console.error("CMP_DigitalBadge_getAllBadgeImages \n", JSON.stringify(error));
+      this.setState({
+        error: stringsConstants.TOTErrorMessage + "while retrieving the digital badges. Below are the details: \n" + JSON.stringify(error),
+        isApplying: false,
+        isLoading: false
+      });
+    }
+  }
+  //Multiple Badges Section Ends
 
   //Get currents user's details from Mmber List for Digital Badge processing
   private _renderListAsync() {
@@ -129,7 +297,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
       this.props.context.spHttpClient
         .get(
           "/" + this.state.inclusionpath + "/" + this.state.sitename +
-            "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
+          "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
           SPHttpClient.configurations.v1
         )
         .then((responseuser: SPHttpClientResponse) => {
@@ -137,7 +305,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
             this.props.context.spHttpClient
               .get(
                 "/" + this.state.inclusionpath + "/" + this.state.sitename +
-                "/_api/web/lists/GetByTitle('Member List')/Items?$filter=Title eq '" + datauser.Email.toLowerCase() +"'",
+                "/_api/web/lists/GetByTitle('Member List')/Items?$filter=Title eq '" + datauser.Email.toLowerCase() + "'",
                 SPHttpClient.configurations.v1
               )
               .then((response: SPHttpClientResponse) => {
@@ -177,6 +345,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
         });
     });
   }
+
 
   public render(): React.ReactElement<IDigitalBadgeProps> {
     return (
@@ -228,7 +397,20 @@ export default class DigitalBadge extends TeamsBaseComponent<
                   <Surface>
                     <Panel>
                       <PanelHeader>
-                        <div style={styles.header}>Digital Badge</div>
+                        <div className={dbStyles.digitalBadgePath}>
+                          <img src={require("../assets/CMPImages/BackIcon.png")}
+                            className={dbStyles.backImg}
+                          />
+                          <span
+                            className={dbStyles.backLabel}
+                            onClick={this.props.clickcallback}
+                            title="Back"
+                          >
+                            Back
+                          </span>
+                          <span className={dbStyles.border}></span>
+                          <span className={dbStyles.digitalBadgeLabel}>Digital Badge</span>
+                        </div>
                       </PanelHeader>
                       <PanelBody>
                         <div className={"DigitalBadge"} style={styles.section}>
@@ -246,153 +428,264 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                 aria-live="polite"
                                 className={"contentSection"}
                               >
-                                {!this.state.hasAccepted && (
-                                  <div>
-                                    <img
-                                      src={require("../assets/images/appbanner648.jpg")}
-                                      className={"bannerimage"}
-                                      alt={strings.BannerImageAlt}
-                                    />
-                                    {this.state.badgeImgURL}
-                                    <h1 className={"title"}>
-                                      {strings.PreAcceptPageTitle}
-                                    </h1>
+                                <div
+                                  className={dbStyles.introPageBox}
+                                >
+                                  {!this.state.hasAccepted && (
+                                    <div className={dbStyles.divChild1}>
+                                      <span className={dbStyles.imgText}>
+                                        {strings.PreAcceptPageTitle}
+                                      </span>
+                                      <br /> <br />
+                                      <img
+                                        src={require("../assets/CMPImages/AppBanner.png")}
+                                        className={"bannerimage"}
+                                        alt={strings.BannerImageAlt}
+                                      />
+                                      {this.state.badgeImgURL}
+                                    </div>
+                                  )}
+                                  <div className={dbStyles.divChild2}>
+                                    {!this.state.hasAccepted &&
+                                      this.state.showAccept && (
+                                        <p
+                                          className={"description"}
+                                          dangerouslySetInnerHTML={this.createMarkup(
+                                            strings.PreAcceptDisclaimer
+                                          )}
+                                        />
+                                      )}
+                                    <br />
+                                    {!this.state.hasAccepted &&
+                                      this.state.showAccept && (
+                                        <p
+                                          className={"description"}
+                                          dangerouslySetInnerHTML={this.createMarkup(
+                                            strings.PreAcceptDisclaimer2
+                                          )}
+                                        />
+                                      )}
+                                    {!this.state.hasAccepted &&
+                                      !this.state.showAccept && (
+                                        <div>
+                                          <p
+                                            className={"description"}
+                                            dangerouslySetInnerHTML={this.createMarkup(
+                                              strings.NotQualifiedPreAcceptDisclaimer
+                                            )}
+                                          />
+                                          <p onClick={this.props.clickcallback}>
+                                            How to get Champion Badge
+                                          </p>
+                                        </div>
+                                      )}
                                   </div>
-                                )}
-                                {this.state.hasAccepted && (
-                                  <h1 className={"title"}>
-                                    {strings.PageTitle}
-                                  </h1>
-                                )}
-                                {!this.state.hasAccepted &&
-                                  this.state.showAccept && (
+                                </div>
+                                {this.state.hasAccepted && !this.state.hasImageSelected && (
+                                  <div className={dbStyles.badgeList}>
                                     <p
-                                      className={"description"}
                                       dangerouslySetInnerHTML={this.createMarkup(
-                                        strings.PreAcceptDisclaimer
+                                        strings.MultipleBadgeMessage
                                       )}
                                     />
-                                  )}
-                                {!this.state.hasAccepted &&
-                                  this.state.showAccept && (
-                                    <p
-                                      className={"description"}
-                                      dangerouslySetInnerHTML={this.createMarkup(
-                                        strings.PreAcceptDisclaimer2
-                                      )}
-                                    />
-                                  )}
-                                {!this.state.hasAccepted &&
-                                  !this.state.showAccept && (
-                                    <>
+                                    {this.state.noBadgesFlag && (
                                       <p
                                         className={"description"}
                                         dangerouslySetInnerHTML={this.createMarkup(
-                                          strings.NotQualifiedPreAcceptDisclaimer
+                                          strings.NoBadgeMessage
                                         )}
                                       />
-                                      <p onClick={this.props.clickcallback}>
-                                        How to get Champion Badge
-                                      </p>
-                                    </>
-                                  )}
-                                {this.state.hasAccepted &&
-                                  !this.state.isApplied &&
-                                  this.state.profileImage.url &&
-                                  this.state.profileImage.url !==
-                                    "../assets/images/noimage.png" && (
-                                    <p
-                                      className={`description`}
-                                      dangerouslySetInnerHTML={this.createMarkup(
-                                        strings.PreApplyDisclaimer,
-                                        anchorClass
-                                      )}
+                                    )}
+                                    <List
+                                      className={classNames.listGrid}
+                                      items={this.state.allBadgeImages}
+                                      renderedWindowsAhead={6}
+                                      onRenderCell={this.onRenderCell}
                                     />
-                                  )}
-                                {this.state.hasAccepted &&
-                                  !this.state.isApplied &&
-                                  this.state.profileImage.url && (
-                                    <p
-                                      className={`description`}
-                                      dangerouslySetInnerHTML={this.createMarkup(
-                                        strings.PreApplyDisclaimer1,
-                                        anchorClass
-                                      )}
-                                    />
-                                  )}
+                                  </div>
+                                )}
+                                {this.state.hasAccepted && this.state.hasImageSelected && (
+                                  <div className={dbStyles.badgeDetailsHeading}>
+                                    {strings.PageTitle}
+                                  </div>
+                                )}
+                                <div className={dbStyles.badgeDetailsContainer}>
+                                  <div className={dbStyles.badgeBtnArea}>
+                                    <div className={`profileContainer ${dbStyles.profileArea}`}>
+                                      {this.state.profileImage.url &&
+                                        this.state.hasAccepted &&
+                                        this.state.hasImageSelected &&
+                                        this.state.profileImage.url !==
+                                        "../assets/images/noimage.png" && (
+                                          <div
+                                            id="forDomToImage"
+                                            style={{ maxWidth: "700px" }}
+                                          >
+                                            <img
+                                              style={{
+                                                width: `150px`,
+                                              }}
+                                              src={this.state.profileImage.url}
+                                              id={"profileImage"}
+                                              alt={strings.ProfileImageAlt}
+                                            />
+                                            <img
+                                              style={{
+                                                width: `150px`,
+                                                marginTop: `-150px`,
+                                              }}
+                                              id={"badgeImage"}
+                                              alt={strings.BadgeImageAlt}
+                                              src={this.state.imageURL}
+                                            />
+                                          </div>
+                                        )}
+                                      {this.state.profileImage.url &&
+                                        this.state.profileImage.url ===
+                                        "../assets/images/noimage.png" &&
+                                        this.state.hasAccepted &&
+                                        this.state.hasImageSelected && (
+                                          <div
+                                            id="forDomToImage"
+                                            style={{ maxWidth: "700px" }}
+                                          >
+                                            <img
+                                              src={require("../assets/images/noimage.png")}
+                                              style={{ width: `100px` }}
+                                              id={"profileImage"}
+                                              alt={strings.ProfileImageAlt}
+                                            />
+                                            <div className={"profiletext"}>
+                                              {this.state.userletters}
+                                            </div>
+                                            <img
+                                              style={{
+                                                width: `100px`,
+                                                marginTop: `-100px`,
+                                              }}
+                                              id={"badgeImage"}
+                                              alt={strings.BadgeImageAlt}
+                                              src={this.state.imageURL}
+                                            />
+                                          </div>
+                                        )}
+                                      {!this.state.profileImage.url &&
+                                        this.state.hasAccepted &&
+                                        this.state.hasImageSelected && (
+                                          <div>
+                                            <img
+                                              src={require("../assets/images/noprofile.png")}
+                                              id={"photoStuff"}
+                                              alt={"strings.NoProfileImageAlt"}
+                                              aria-hidden="true"
+                                              style={{ width: "150px", height: "auto" }}
+                                            />
+                                          </div>
+                                        )}
+                                    </div>
+                                    {!this.state.isApplying &&
+                                      this.state.profileImage.url &&
+                                      this.state.hasAccepted &&
+                                      this.state.hasImageSelected &&
+                                      !this.state.isApplying &&
+                                      !this.state.isApplied && (
+                                        <div className={`buttonContainer ${dbStyles.buttonArea}`}>
+                                          <PrimaryButton
+                                            className={primaryButton(
+                                              contextCSS
+                                            )}
+                                            onClick={this._onApplyProfileImage}
+                                            ariaLabel={strings.ApplyButtonText}
+                                            ariaDescription={
+                                              strings.ApplyButtonAriaDescription
+                                            }
+                                            disabled={
+                                              this.state.isApplying ||
+                                              this.state.isApplied ||
+                                              this.state.error.length > 0
+                                            }
+                                            title="Apply"
+                                          >
+                                            <Icon iconName="Completed" className={`${classNames.acceptIcon}`} />
+                                            {strings.ApplyButtonText}
+                                          </PrimaryButton>
+                                          <br />
+                                          {this.state.profileImage.url !==
+                                            "../assets/images/noimage.png" && (
+                                              <div className={dbStyles.downloadArea}>
+                                                <CompoundButton
+                                                  iconProps={{
+                                                    iconName: "Download",
+                                                    className: classNames.downloadIcon
+                                                  }}
+                                                  className={`
+                                                    ${compoundButton(contextCSS)
+                                                      .container} ${dbStyles.downloadBtn}`
+                                                  }
+                                                  style={{ ...styleProps }}
+                                                  title="Download"
+                                                  onClick={this._onDownloadImage}
+                                                  ariaLabel={
+                                                    strings.DownloadButtonText
+                                                  }
+                                                  ariaDescription={
+                                                    strings.DownloadButtonAriaDescription
+                                                  }
+                                                  disabled={
+                                                    this.state.isApplying ||
+                                                    this.state.isApplied ||
+                                                    this.state.imageDownloaded
+                                                  }
+                                                >
+                                                  {this.state.downloadText}
+                                                </CompoundButton> <br />
+                                                <Label
+                                                  style={styleProps}
+                                                  className={dbStyles.downloadMsg}
+                                                >
+                                                  {
+                                                    this.state.imageDownloaded
+                                                      ? strings.DownloadedButtonSecondaryText
+                                                      : strings.DownloadButtonSecondaryText
 
-                                <div className={"profileContainer"}>
-                                  {this.state.profileImage.url &&
-                                    this.state.hasAccepted &&
-                                    this.state.profileImage.url !==
-                                      "../assets/images/noimage.png" && (
-                                      <div
-                                        id="forDomToImage"
-                                        style={{ maxWidth: "700px" }}
-                                      >
-                                        <img
-                                          style={{
-                                            width: `${this.state.profileImage.width}px`,
-                                          }}
-                                          src={this.state.profileImage.url}
-                                          id={"profileImage"}
-                                          alt={strings.ProfileImageAlt}
-                                        />
-                                        <img
-                                          style={{
-                                            width: `${this.state.profileImage.width}px`,
-                                            marginTop: `-${this.state.profileImage.width}px`,
-                                          }}
-                                          id={"badgeImage"}
-                                          alt={strings.BadgeImageAlt}
-                                          src={require("../assets/images/badge648.png")}
-                                        />
-                                      </div>
-                                    )}
-                                  {this.state.profileImage.url &&
-                                    this.state.profileImage.url ===
-                                      "../assets/images/noimage.png" &&
-                                    this.state.hasAccepted && (
-                                      <div
-                                        id="forDomToImage"
-                                        style={{ maxWidth: "700px" }}
-                                      >
-                                        <img
-                                          src={require("../assets/images/noimage.png")}
-                                          style={{ width: `100px` }}
-                                          id={"profileImage"}
-                                          alt={strings.ProfileImageAlt}
-                                        />
-                                        <div className={"profiletext"}>
-                                          {this.state.userletters}
+                                                  }
+                                                </Label>
+                                              </div>
+                                            )}
                                         </div>
-                                        <img
-                                          style={{
-                                            width: `100px`,
-                                            marginTop: `-100px`,
-                                          }}
-                                          id={"badgeImage"}
-                                          alt={strings.BadgeImageAlt}
-                                          src={require("../assets/images/badge648.png")}
+                                      )}
+                                  </div>
+                                  <div className={dbStyles.badgeDetailsText}>
+                                    {this.state.hasAccepted &&
+                                      this.state.hasImageSelected &&
+                                      !this.state.isApplied &&
+                                      this.state.profileImage.url &&
+                                      this.state.profileImage.url !==
+                                      "../assets/images/noimage.png" && (
+                                        <p
+                                          dangerouslySetInnerHTML={this.createMarkup(
+                                            strings.PreApplyDisclaimer,
+                                            anchorClass
+                                          )}
                                         />
-                                      </div>
-                                    )}
-                                  {!this.state.profileImage.url &&
-                                    this.state.hasAccepted && (
-                                      <div>
-                                        <img
-                                          src={require("../assets/images/noprofile.png")}
-                                          id={"photoStuff"}
-                                          alt={"strings.NoProfileImageAlt"}
-                                          aria-hidden="true"
+                                      )}
+                                    {this.state.hasAccepted &&
+                                      this.state.hasImageSelected &&
+                                      !this.state.isApplied &&
+                                      this.state.profileImage.url && (
+                                        <p
+                                          dangerouslySetInnerHTML={this.createMarkup(
+                                            strings.PreApplyDisclaimer1,
+                                            anchorClass
+                                          )}
                                         />
-                                      </div>
-                                    )}
+                                      )}
+                                  </div>
                                 </div>
                                 {!this.state.profileImage.url &&
-                                  this.state.hasAccepted && (
+                                  this.state.hasAccepted &&
+                                  this.state.hasImageSelected && (
                                     <p
-                                      className={"description"}
                                       dangerouslySetInnerHTML={this.createMarkup(
                                         strings.NoProfileImageDescription,
                                         anchorClass
@@ -405,13 +698,16 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                       this.state.showAccept && (
                                         <PrimaryButton
                                           className={primaryButton(contextCSS)}
-                                          text={strings.AcceptButtonText}
                                           onClick={this.onUserAcceptance}
                                           ariaLabel={strings.AcceptButtonText}
                                           ariaDescription={
                                             strings.AcceptButtonAriaDescription
                                           }
-                                        />
+                                          title="Accept"
+                                        >
+                                          <Icon iconName="Completed" className={`${classNames.acceptIcon}`} />
+                                          {strings.AcceptButtonText}
+                                        </PrimaryButton>
                                       )}
                                     {!this.state.hasAccepted &&
                                       !this.state.showAccept && (
@@ -422,62 +718,6 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                             strings.UnauthorizedText
                                           )}
                                         />
-                                      )}
-                                    {this.state.profileImage.url &&
-                                      this.state.hasAccepted &&
-                                      !this.state.isApplying &&
-                                      !this.state.isApplied && (
-                                        <div className={"buttonContainer"}>
-                                          <PrimaryButton
-                                            className={primaryButton(
-                                              contextCSS
-                                            )}
-                                            text={strings.ApplyButtonText}
-                                            onClick={this._onApplyProfileImage}
-                                            ariaLabel={strings.ApplyButtonText}
-                                            ariaDescription={
-                                              strings.ApplyButtonAriaDescription
-                                            }
-                                            disabled={
-                                              this.state.isApplying ||
-                                              this.state.isApplied ||
-                                              this.state.error.length > 0
-                                            }
-                                          />
-                                          <br />
-                                          {this.state.profileImage.url !==
-                                            "../assets/images/noimage.png" && (
-                                            <CompoundButton
-                                              iconProps={{
-                                                iconName: "Download",
-                                              }}
-                                              className={
-                                                compoundButton(contextCSS)
-                                                  .container
-                                              }
-                                              style={styleProps}
-                                              onClick={this._onDownloadImage}
-                                              ariaLabel={
-                                                strings.DownloadButtonText
-                                              }
-                                              ariaDescription={
-                                                strings.DownloadButtonAriaDescription
-                                              }
-                                              disabled={
-                                                this.state.isApplying ||
-                                                this.state.isApplied ||
-                                                this.state.imageDownloaded
-                                              }
-                                              secondaryText={
-                                                this.state.imageDownloaded
-                                                  ? strings.DownloadedButtonSecondaryText
-                                                  : strings.DownloadButtonSecondaryText
-                                              }
-                                            >
-                                              {this.state.downloadText}
-                                            </CompoundButton>
-                                          )}
-                                        </div>
                                       )}
                                   </div>
                                 )}
@@ -532,14 +772,6 @@ export default class DigitalBadge extends TeamsBaseComponent<
                               height={this.state.profileImage.width}
                               style={{ display: "none" }}
                             ></canvas>
-
-                            <PrimaryButton
-                              className={primaryButton(contextCSS)}
-                              text={"Back"}
-                              onClick={this.props.clickcallback}
-                              ariaLabel={"Back"}
-                              ariaDescription={"back button"}
-                            />
                           </div>
                         </div>
                         <div hidden={true} style={styles.section}>
@@ -602,7 +834,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
         const profileImageObj: HTMLImageElement = new Image();
         const badgeImageObj: HTMLImageElement = new Image();
         profileImageObj.src = profileImage.url;
-        badgeImageObj.src = require("../assets/images/badge648.png");
+        badgeImageObj.src = this.state.imageURL;
         profileImageObj.onload = () => {
           context.drawImage(
             profileImageObj,
@@ -649,7 +881,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
           profileImage: profileImage,
         });
         profileImageObj.src = require("../assets/images/noimage.png");
-        badgeImageObj.src = require("../assets/images/badge648.png");
+        badgeImageObj.src = this.state.imageURL;
         profileImageObj.onload = () => {
           context.font = "32px Arial";
           context.textAlign = "center";
@@ -730,7 +962,6 @@ export default class DigitalBadge extends TeamsBaseComponent<
     if (canvasDownload.msToBlob) {
       // for IE
       let blob = canvasDownload.msToBlob();
-      window.navigator.msSaveBlob(blob, "myProfileImage.jpg");
       this.setState({ downloadText: strings.DownloadedButtonText });
     } else {
       // other browsers
@@ -747,11 +978,12 @@ export default class DigitalBadge extends TeamsBaseComponent<
     }
   }
 
+  //On user acceptance show the digital badges for the user to select
   public onUserAcceptance(): void {
     this.setState({
       hasAccepted: true,
     });
-    this.showUserInformation(upn);
+    this.getAllBadgeImages();
   }
 
   public updateUserPhoto(blob: any): Promise<any> {

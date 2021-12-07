@@ -11,6 +11,7 @@ dist
 lib
 temp
 debug
+release
 
 # Coverage directory used by tools like istanbul
 coverage

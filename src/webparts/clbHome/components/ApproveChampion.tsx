@@ -1,8 +1,32 @@
-import * as React from "react";
+import { Label } from '@fluentui/react';
+import { Icon } from '@fluentui/react/lib/Icon';
+import { mergeStyleSets } from '@fluentui/react/lib/Styling';
+import { ISPHttpClientOptions, SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { sp } from "@pnp/sp";
-import { SPHttpClient, SPHttpClientResponse, ISPHttpClientOptions, } from "@microsoft/sp-http";
+import * as React from "react";
 import siteconfig from "../config/siteconfig.json";
+import styles from "../scss/CMPApproveChampion.module.scss";
+
+
+
+const classes = mergeStyleSets({
+  rejectIcon: {
+    marginRight: "10px",
+    fontSize: "17px",
+    fontWeight: "bolder",
+    color: "#000003",
+    opacity: 1
+  },
+  approveIcon: {
+    marginRight: "10px",
+    fontSize: "17px",
+    fontWeight: "bolder",
+    color: "#FFFFFF",
+    opacity: 1
+  }
+});
+
 export interface IClbChampionsListProps {
   context?: WebPartContext;
   onClickAddmember: Function;
@@ -28,7 +52,8 @@ export interface ISPList {
 interface IState {
   list: ISPLists;
   isAddChampion: boolean;
-  SuccessMessage: string;
+  approveMessage: string;
+  rejectMessage: string;
   UserDetails: Array<any>;
   selectedusers: Array<any>;
   siteUrl: string;
@@ -44,7 +69,8 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
     this.state = {
       list: { value: [] },
       isAddChampion: false,
-      SuccessMessage: "",
+      approveMessage: "",
+      rejectMessage: "",
       UserDetails: [],
       selectedusers: [],
       siteUrl: this.props.siteUrl,
@@ -52,12 +78,12 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
     };
     this._getListData();
   }
-  
+
   //Get the list of Members from member List
   private _getListData(): Promise<ISPLists> {
     return this.props.context.spHttpClient
       .get(
-         "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000",
+        "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
@@ -99,7 +125,7 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
     };
 
     const url: string =
-       "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + `/_api/web/lists/GetByTitle('Member List')/items(${Id})`;
+      "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + `/_api/web/lists/GetByTitle('Member List')/items(${Id})`;
     this.props.context.spHttpClient
       .post(
         url,
@@ -115,14 +141,16 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
           });
           alert("Champion" + status);
         } else {
-
-
-          alert(
-            "Response status " +
-            response.status +
-            " - " +
-            `Champion ${status}.`
-          );
+          if (status === 'Approved') {
+            this.setState({
+              approveMessage: `Your response has been ${status}.`
+            });
+          }
+          if (status === 'Rejected') {
+            this.setState({
+              rejectMessage: `Your response has been ${status}.`
+            });
+          }
           this._getListData();
         }
       });
@@ -130,20 +158,44 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
 
   public render() {
     return (
-      <div>
-        <h4 className="mt-2 mb-2">Champion List</h4>
-        <table className="table table-bodered table-striped">
-          <thead>
+      <div className="container">
+        <div className={styles.approveChampionPath}>
+          <img src={require("../assets/CMPImages/BackIcon.png")}
+            className={styles.backImg}
+          />
+          <span
+            className={styles.backLabel}
+            onClick={() => { this.props.onClickAddmember(); }}
+            title="Back"
+          >
+            Back
+          </span>
+          <span className={styles.border}></span>
+          <span className={styles.approveChampionLabel}>Manage Approval</span>
+        </div>
+        {this.state.approveMessage &&
+          <Label className={styles.approveMessage}>
+            <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
+            {this.state.approveMessage}
+          </Label>
+        }
+        {this.state.rejectMessage &&
+          <Label className={styles.rejectMessage}>
+            {this.state.rejectMessage}
+          </Label>
+        }
+        <div className={styles.listHeading}>Champion List</div>
+        <table className="table table-bodered">
+          <thead className={styles.listHeader}>
             <th>People Name</th>
             <th>Region</th>
             <th>Country</th>
             <th>FocusArea</th>
             <th>Group</th>
             {!this.props.isEmp && <th>Status</th>}
-            <th></th>
-            <th></th>
+            <th>Action</th>
           </thead>
-          <tbody>
+          <tbody className={styles.listBody}>
             {this.state.list &&
               this.state.list.value &&
               this.state.list.value.length > 0 &&
@@ -163,42 +215,44 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
                       {!this.props.isEmp && <td>{item.Status}</td>}
                       <td>
                         <button
-                          className="addchampion btn btn-primary"
+                          className={`btn ${styles.rejectBtn}`}
                           onClick={e => this.updateItem(e, item.ID)}
+                          title="Reject"
                         >
-                          Approve
-                        </button></td>
-                      <td>
+                          <Icon iconName="ErrorBadge" className={`${classes.rejectIcon}`} />
+                          <span className={styles.rejectBtnLabel}>Reject</span>
+                        </button>
                         <button
-                          className="addchampion btn btn-primary"
+                          className={`btn ${styles.approveBtn}`}
                           onClick={e => this.updateItem(e, item.ID)}
+                          title="Approve"
                         >
-                          Reject
-                        </button></td>
+                          <Icon iconName="Completed" className={`${classes.approveIcon}`} />
+                          <span className={styles.approveBtnLabel}>Approve</span>
+                        </button>
+                      </td>
                     </tr>
                   );
                 }
               })}
-            {this.state.list &&
-              this.state.list.value &&
-              this.state.list.value.length > 0 &&
-              this.state.list.value.filter(i => i.Status == "Pending").length == 0 &&
-              (
-                <tr>
-                  <td colSpan={7}>
-                    <h5>No champions requests available.</h5>
-                  </td>
-                </tr>
-              )
-            }
           </tbody>
         </table>
-        <button
-          className="addchampion btn btn-primary"
-          onClick={() => this.props.onClickAddmember()}
-        >
-          Back
-        </button>
+        {this.state.list &&
+          this.state.list.value &&
+          this.state.list.value.length > 0 &&
+          this.state.list.value.filter(i => i.Status == "Pending").length == 0 &&
+          (
+            <div className={styles.noRecordsArea}>
+              <img
+                src={require('../assets/CMPImages/Norecordsicon.svg')}
+                alt="norecordsicon"
+                className={styles.noRecordsImg}
+              />
+              <span className={styles.noRecordsLabels}>NO CHAMPION REQUESTS AVAILABLE</span>
+            </div>
+          )
+        }
+
       </div>
     );
   }
