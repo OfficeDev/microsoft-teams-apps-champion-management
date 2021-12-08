@@ -13,12 +13,13 @@ This page contains the different release details for Champion Management Platfor
 ### 2.0 (Dec 9, 2021)
 
 Below improvements released,
+
 - New and revamped User Interface.
 - Upgraded NPM packages to recommended version for better performance, security, and latest fixes
 - New module “Tournament of Teams” integrated to “Champion Management Platform” app. 
 - “Multiple Badges” feature implemented under “Digital Badges” section. Users can now select from the available badges to apply on profile pictures. Admins will have the ability to manage digital badges and tag them to tournaments created with “Tournament of Teams”
-- Connected experiences to app info, support via GitHub Issues list, and Feedback portal through application banner
-- Enhanced event recording with improved leader board dashboard views and mutliple event and recording workflows
+- Connected experiences to app info, support via GitHub issues list, and Feedback portal through application banner
+- Enhanced event recording with improved leader board dashboard views and multiple event and recording workflows
 
 
 ### 1.3 (Sep 03, 2021)
