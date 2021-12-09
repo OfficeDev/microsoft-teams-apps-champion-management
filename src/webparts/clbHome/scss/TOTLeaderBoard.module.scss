@@ -1,0 +1,234 @@
+.totSideBar {
+  display: flex !important;
+}
+
+.container {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+}
+
+.errorMessage {
+  color: red;
+  margin-left: 1.5%;
+  font-weight: bolder;
+  font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.noActvPartErr {
+  color: #000;
+  margin: -2% 0% 2% 0%;
+  font: normal normal 600 18px/24px Segoe UI;
+  -webkit-font-smoothing: antialiased;
+}
+
+.noActvTourErr {
+  color: #000;
+  margin: 2% 0% 2% 1%;
+  font: normal normal 600 18px/24px Segoe UI;
+  -webkit-font-smoothing: antialiased;
+}
+
+.myDashboardLink {
+  cursor: pointer;
+  text-decoration: underline;
+  color: #6264A7;
+}
+
+.labelHeading {
+  color: #1d0f62;
+  display: table-cell;
+  font: normal normal 600 18px/24px Segoe UI;
+  -webkit-font-smoothing: antialiased;
+  padding: 0.5em;
+}
+
+.labelNormal {
+  color: #1d0f62;
+  font-weight: normal;
+  display: table-cell;
+  padding: 0 0.5em;
+  text-align: justify;
+  font: normal normal normal 18px/24px Segoe UI;
+  -webkit-font-smoothing: antialiased;
+}
+
+.totLeaderboardPath {
+  display: inline-flex;
+  margin-left: 2%;
+  text-align: center;
+  font: normal normal bold 14px/24px Segoe UI;
+  letter-spacing: 0px;
+  color: #33344A;
+  opacity: 1;
+
+  .backImg {
+    width: 7px;
+    height: 12px;
+    margin-right: 10px;
+    margin-top: 6px;
+  }
+
+  .backLabel {
+    padding-right: 10px;
+    cursor: pointer;
+  }
+
+  .border {
+    width: 0px;
+    height: 14px;
+    border: 1px solid #33344A;
+    margin-top: 5px;
+  }
+
+  .totLeaderboardLabel {
+    font: normal normal bold 18px/23px Segoe UI;
+    padding-left: 10px;
+  }
+}
+
+.load {
+  border: 16px solid #dde2eb;
+  border-radius: 50%;
+  border-top: 10px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: fixed;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.listArea {
+  font-style: normal;
+  font-variant-ligatures: normal;
+  font-variant-caps: normal;
+  font-variant-numeric: normal;
+  font-variant-east-asian: normal;
+  font-weight: normal;
+  font-stretch: normal;
+  font-family: "Segoe UI";
+  list-style: none;
+  display: table;
+  margin-left: 0%;
+  padding: 1%;
+
+  .listVal {
+    display: table-row;
+  }
+}
+
+.contentArea {
+  margin-left: 0.5%;
+}
+
+.backBtn {
+  background-color: #fff !important;
+  color: #000 !important;
+  margin-left: 2% !important;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.table {
+  font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  margin-left: 1.5%;
+}
+
+table tr th {
+  font: normal normal 600 18px/24px Segoe UI;
+  background: #F6F5F4 0% 0% no-repeat padding-box;
+  border: 0.25px solid #C8C6C4;
+}
+
+table tr td {
+  font: normal normal normal 16px/21px Segoe UI;
+}
+
+:global {
+
+  .btn-secondary,
+  .btn-secondary:hover,
+  .btn-secondary:active,
+  .btn-secondary:focus,
+  .btn-secondary:not(:disabled):not(.disabled).active,
+  .show>.btn-secondary.dropdown-toggle {
+    color: #fff;
+    background-color: #6264A7;
+    border-color: #6264A7;
+  }
+
+  .dropdown-item>a {
+    color: #000;
+  }
+
+  .page-item.active {
+    color: #000;
+    background-color: #6264A7;
+    border-color: #6264A7;
+
+    .page-link {
+      background-color: #6264A7;
+      border-color: #6264A7;
+    }
+  }
+
+  .page-link:hover,
+  .page-link {
+    color: #000;
+  }
+}
+
+.rankCol {
+  width: 5%
+}
+
+.userCol {
+  width: 25%
+}
+
+.pointsCol {
+  width: 5%
+}
+
+.contentTab {
+  width: 100vw;
+  min-height: 100vh;
+  margin: 1em;
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}

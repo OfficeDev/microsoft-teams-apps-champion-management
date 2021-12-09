@@ -1,0 +1,138 @@
+.digitalBadgePath {
+  display: inline-flex;
+  margin-bottom: 25px;
+  text-align: center;
+  letter-spacing: 0px;
+  color: #33344A;
+  opacity: 1;
+
+  .backImg {
+    width: 7px;
+    height: 12px;
+    margin-right: 10px;
+    margin-top: 6px;
+  }
+
+  .backLabel {
+    padding-right: 10px;
+    cursor: pointer;
+    font: normal normal bold 14px/24px Segoe UI;
+  }
+
+  .border {
+    width: 0px;
+    height: 14px;
+    border: 1px solid #33344A;
+    margin-top: 5px;
+  }
+
+  .digitalBadgeLabel {
+    padding-left: 10px;
+    font: normal normal bold 18px/23px Segoe UI;
+  }
+}
+
+.introPageBox {
+  display: inline-flex;
+
+  .divChild1 {
+    width: 50%;
+
+    .imgText {
+      font: normal normal 600 21px/30px Segoe UI;
+      text-align: left;
+      letter-spacing: 0px;
+      color: #000000;
+      opacity: 1;
+    }
+  }
+
+  .divChild2 {
+    width: 50%;
+    margin-left: 3%;
+    margin-top: 5px;
+
+    p {
+      text-align: left;
+      font: normal normal normal 20px/27px Segoe UI;
+      letter-spacing: 0px;
+      color: #000000;
+      opacity: 1;
+    }
+  }
+}
+
+.badgeList {
+  p {
+    text-align: center;
+    font: normal normal 600 21px/30px Segoe UI;
+    letter-spacing: 0px;
+    color: #000000;
+    opacity: 1;
+    margin-left: 2%;
+    margin-bottom: 5%;
+  }
+}
+
+.badgeDetailsHeading {
+  text-align: left;
+  font: normal normal 600 21px/30px Segoe UI;
+  letter-spacing: 0px;
+  color: #000000;
+  opacity: 1;
+  margin-bottom: 30px;
+}
+
+.badgeDetailsContainer {
+  display: inline-flex;
+
+  .badgeBtnArea {
+    display: block;
+    width: 50%;
+
+    .profileArea {
+      width: 100%;
+    }
+
+    .buttonArea {
+      display: inline-flex;
+      width: 100%;
+      margin-left: 20%;
+      margin-top: 10%;
+
+      .downloadArea {
+        display: inline-block;
+        width: 50%;
+
+        .downloadBtn {
+          min-height: 2rem;
+          padding: 0 12px 0 12px;
+        }
+
+        .downloadMsg {
+          font-size: small;
+        }
+      }
+    }
+
+    @media screen and (max-width: 1057px) {
+      .buttonArea {
+        display: inline-block;
+        margin-left: 1%;
+        margin-top: 10%;
+      }
+    }
+  }
+
+  .badgeDetailsText {
+    width: 50%;
+
+    p {
+      text-align: left;
+      letter-spacing: 0px;
+      color: #000000;
+      opacity: 1;
+      font: normal normal normal 20px/27px Segoe UI;
+    }
+  }
+}

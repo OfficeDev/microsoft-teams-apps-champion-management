@@ -2,13 +2,15 @@
 
 .DigitalBadge {
   .container {
-    max-width: 700px;
+    max-width: 1610px;
     margin: 0px auto;
     text-align: center;
     box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2), 0px 0px 50px 0px rgba(0, 0, 0, 0.1);
   }
+
   .contentSection {
     padding: 10px;
+
     .bannerimage {
       max-width: 100%;
     }
@@ -31,6 +33,7 @@
   .description {
     @include ms-font-l;
     line-height: 1.5;
+
     strong {
       font-weight: 600;
     }
@@ -49,6 +52,7 @@
     #badgeImage {
       @extend #profileImage;
     }
+
     .profiletext {
       position: absolute;
       z-index: 999;
@@ -68,6 +72,7 @@
 
   .messagingContainer {
     @extend .applySpinnerContainer;
+
     [class*="ms-MessageBar-innerText"] {
       font-size: 14px;
       line-height: 1.5 !important;
@@ -79,16 +84,17 @@
 
     button {
       margin: 8px;
-      .ms-Button-flexContainer{
-        .ms-Button-textContainer{
-          .ms-Button-description{
-            line-height: 1.5!important;
+
+      .ms-Button-flexContainer {
+        .ms-Button-textContainer {
+          .ms-Button-description {
+            line-height: 1.5 !important;
           }
         }
       }
-     
+
     }
-    
+
   }
 
   [id="profileCanvas"] {

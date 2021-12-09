@@ -1,0 +1,159 @@
+.container {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+}
+
+.errorMessage {
+  color: #ED2939;
+  margin-left: 2%;
+  font: normal normal 600 18px/24px Segoe UI;
+  -webkit-font-smoothing: antialiased;
+}
+
+.noTourErrorMessage {
+  color: #000;
+  margin-top: 2%;
+  margin-left: 2%;
+  font: normal normal 600 18px/24px Segoe UI;
+  -webkit-font-smoothing: antialiased;
+}
+
+.successMessage {
+  margin-left: 1%;
+  color: #8BC832;
+  font: normal normal 600 18px/24px Segoe UI;
+  -webkit-font-smoothing: antialiased;
+}
+
+.tickImage {
+  width: 28px;
+  height: 28px;
+  margin-right: 1%;
+}
+
+.labelHeading {
+  color: #1d0f62;
+  display: table-cell;
+  font: normal normal 600 18px/24px Segoe UI;
+  -webkit-font-smoothing: antialiased;
+  padding: 0.5em;
+}
+
+.labelNormal {
+  color: #1d0f62;
+  font-weight: normal;
+  display: table-cell;
+  padding: 0 0.5em;
+  text-align: justify;
+  font: normal normal normal 18px/24px Segoe UI;
+  -webkit-font-smoothing: antialiased;
+}
+
+.subHeaderUnderline {
+  color: #1d0f62;
+  font: normal normal bold 18px/24px Segoe UI;
+  -webkit-font-smoothing: antialiased;
+  background-color: #BDBDE6;
+  padding-left: 10px;
+}
+
+.totDashboardPath {
+  display: inline-flex;
+  margin-left: 2%;
+  text-align: center;
+  font: normal normal bold 14px/24px Segoe UI;
+  letter-spacing: 0px;
+  color: #33344A;
+  opacity: 1;
+
+  .backImg {
+    width: 7px;
+    height: 12px;
+    margin-right: 10px;
+    margin-top: 6px;
+  }
+
+  .backLabel {
+    padding-right: 10px;
+    cursor: pointer;
+  }
+
+  .border {
+    width: 0px;
+    height: 14px;
+    border: 1px solid #33344A;
+    margin-top: 5px;
+  }
+
+  .totDashboardLabel {
+    font: normal normal bold 18px/23px Segoe UI;
+    padding-left: 10px;
+  }
+}
+
+.saveBtn {
+  background-color: #464775;
+  border-color: #464775;
+}
+
+.saveBtn:hover {
+  background-color: #464775 !important;
+}
+
+.btnArea {
+  margin-bottom: 2%;
+}
+
+.listArea {
+  font-style: normal;
+  font-variant-ligatures: normal;
+  font-variant-caps: normal;
+  font-variant-numeric: normal;
+  font-variant-east-asian: normal;
+  font-weight: normal;
+  font-stretch: normal;
+  font-family: "Segoe UI";
+  list-style: none;
+  display: table;
+  margin-left: 0%;
+  padding: 1%;
+
+  .listVal {
+    display: table-row;
+  }
+}
+
+.contentArea {
+  margin-left: 1%;
+}
+
+.contentTab {
+  width: 100vw;
+  min-height: 100vh;
+  margin: 1em;
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
+
+.totSideBar {
+  display: flex !important;
+}

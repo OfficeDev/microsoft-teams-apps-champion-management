@@ -1,0 +1,210 @@
+.clbHome {
+  .container {
+    height: 100%;
+    width: 100%;
+
+    .navbg {
+      background: #464775 0% 0% no-repeat padding-box;
+      opacity: 1;
+      width: 100%;
+      height: 65px;
+      margin-bottom: 0% !important;
+
+      .white {
+
+        .clbHeaderLogo {
+          margin-left: 41px;
+          width: 32px;
+          height: 32px;
+        }
+
+        .clbHeading {
+          margin-left: 23px;
+          text-align: left;
+          font: normal normal bold 24px/32px Segoe UI;
+          letter-spacing: 0px;
+          color: #FFFFFF;
+          opacity: 1;
+        }
+
+      }
+
+      .icon {
+        padding-right: 20px;
+      }
+
+      .fbIcon {
+        padding-right: 32px;
+        padding-left: 8px;
+        padding-bottom: 6px;
+      }
+    }
+
+    .imgheader {
+      background: url('../assets/CMPImages/BannerImage.png');
+      background-color: #464775;
+      height: 80px;
+      min-width: 100%;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+      padding-left: 200px;
+      padding-top: 6px;
+
+      .cmpPageHeading {
+        text-align: left;
+        font: normal normal 400 32px/64px Segoe UI;
+        letter-spacing: 0px;
+        color: #FFFFFF;
+        opacity: 1;
+      }
+    }
+
+    .grid {
+      margin: 0rem 12.5rem 0rem 12.5rem;
+
+      .quickguide {
+        text-align: left;
+        font: normal normal bold 24px/32px Segoe UI;
+        letter-spacing: 0px;
+        color: #33344A;
+        opacity: 1;
+        margin-top: 2.06rem;
+      }
+
+      .admintools {
+        text-align: left;
+        font: normal normal bold 24px/32px Segoe UI;
+        letter-spacing: 0px;
+        color: #33344A;
+        opacity: 1;
+      }
+
+      .cursor {
+        cursor: pointer;
+
+        .dashboardimgs {
+          height: 180px;
+          width: auto;
+          position: relative;
+        }
+
+        .totLabel,
+        .enableTournamentLabel {
+          text-transform: none;
+        }
+
+        .center {
+          width: 180px;
+          text-align: center;
+          font: normal normal normal 18px/24px Segoe UI;
+          letter-spacing: 0px;
+          color: #464775;
+          opacity: 1;
+          overflow-y: clip;
+          text-overflow: ellipsis;
+        }
+
+      }
+
+      .imageLayout {
+        margin-bottom: 2rem;
+      }
+
+      .mb {
+        align-self: center;
+        text-transform: capitalize;
+      }
+    }
+
+    @media screen and (max-width: 1184px) {
+      .imgheader {
+        padding-left: 100px;
+      }
+
+      .grid {
+        margin: 0 6.5rem 0 6.5rem;
+
+        .cursor {
+          cursor: pointer;
+
+          .dashboardimgs {
+            height: 160px;
+            width: auto;
+            position: relative;
+          }
+
+          .center {
+            width: 160px;
+            text-align: center;
+            font: normal normal normal 18px/24px Segoe UI;
+            letter-spacing: 0px;
+            color: #464775;
+            opacity: 1;
+            overflow-y: clip;
+            text-overflow: ellipsis;
+          }
+
+        }
+      }
+    }
+
+    @media screen and (max-width: 844px) {
+      .imgheader {
+        padding-left: 25px;
+      }
+
+      .grid {
+        margin: 0 2rem 0 2rem;
+
+        .cursor {
+          cursor: pointer;
+
+          .dashboardimgs {
+            height: 135px;
+            width: auto;
+            position: relative;
+          }
+
+          .center {
+            width: 135px;
+            text-align: center;
+            font: normal normal normal 18px/24px Segoe UI;
+            letter-spacing: 0px;
+            color: #464775;
+            opacity: 1;
+            overflow-y: clip;
+            text-overflow: ellipsis;
+          }
+        }
+
+      }
+    }
+  }
+
+  .load {
+    border: 16px solid #dde2eb;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    position: fixed;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
