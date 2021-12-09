@@ -8,7 +8,7 @@ The Champion Management Platform is a custom Teams app that enables organization
 
 The app provides an easy interface for designated users to add members to the champion program, preview, collaborate and communicate and build a community of Champions.  <br/>
 
-![CMP Screen](./Images/AddTab_Teams.png)                   
+![CMP Screen](https://github.com/Porkai-Pandian/cmp-local-10132021/blob/main/Images/AddTab_Teams.png)                   
 
 
 ## Known issues
@@ -28,12 +28,12 @@ The Champion Management Platform is built to provide a great starting point for 
 Expanding the list of regions / countries / Focus Area / Groups to fit your criteria. Lists provide a very flexible way to provide data points for collection. While we have provided some starter data you will want to modify these values as they are reflected in the Add Members section. This action is done from selecting the list you would like to edit (champion list for this example), selecting the drop down on the column, then navigating to Column settings -> Edit.
 <br/>
 
-![Quick Start Guide](./Images/customization.png) 
+![Quick Start Guide](https://github.com/Porkai-Pandian/cmp-local-10132021/blob/main/Images/customization.png) 
 
 You could take similar actions in other lists to modify or add in event types and manual counts for activity logging.
 <br/>
 
-![Quick Start Guide](./Images/WarningId.png) 
+![Quick Start Guide](https://github.com/Porkai-Pandian/cmp-local-10132021/blob/main/Images/WarningId.png) 
  
 ## Legal
 
