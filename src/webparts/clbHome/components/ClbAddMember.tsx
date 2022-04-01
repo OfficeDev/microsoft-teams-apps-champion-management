@@ -20,6 +20,7 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import siteconfig from "../config/siteconfig.json";
 import styles from "../scss/CMPAddMember.module.scss";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 
 
 
@@ -29,6 +30,7 @@ export interface IClbAddMemberProps {
   onClickBack: () => void;
   onClickSave: (userStatus: string) => void;
   siteUrl: string;
+  isAdmin: boolean;
 }
 export interface ISPLists {
   value: ISPList[];
@@ -361,7 +363,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                                 });
                             } else {
                               this.setState({
-                                updatedMessage: "User Already a Champion!",
+                                updatedMessage: LocaleStrings.UserExistingMessage,
                                 load: false
                               });
                             }
@@ -412,12 +414,12 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
             <span
               className={styles.backLabel}
               onClick={() => { this.props.onClickBack(); }}
-              title="Back"
+              title={LocaleStrings.CMPBreadcrumbLabel}
             >
-              Back
+             {LocaleStrings.CMPBreadcrumbLabel}
             </span>
             <span className={styles.border}></span>
-            <span className={styles.addMemberLabel}>Add Member</span>
+            <span className={styles.addMemberLabel}>{this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle}</span>
           </div>
           {this.state.updatedMessage !== "" ?
             <Label className={styles.updatedMessage}>
@@ -426,7 +428,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
             </Label> : null}
           {this.state.errorMessage !== "" ?
             <Label className={styles.errorMessage}>{this.state.errorMessage} </Label> : null}
-          <Label className={styles.pickerLabel}>Add Member <span className={styles.asterisk}>*</span></Label>
+          <Label className={styles.pickerLabel}>{this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle} <span className={styles.asterisk}>*</span></Label>
           <PeoplePicker
             context={this.props.context}
             personSelectionLimit={1}
@@ -436,14 +438,14 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
             principalTypes={[PrincipalType.User]}
             defaultSelectedUsers={this.state.selectedusers}
             resolveDelay={1000}
-            placeholder="For Adding a member please type member name"
+            placeholder={LocaleStrings.PeoplePickerPlaceholder}
           />
           <br></br>
           <Row>
             <Col md={3}>
               <Dropdown
                 onChange={(event: any, selectedOption: any) => this.filterUsers("region", selectedOption)}
-                placeholder="Select Region"
+                placeholder={LocaleStrings.RegionPlaceholder}
                 options={this.options(this.state.regions)}
                 styles={dropdownStyles}
               />
@@ -451,7 +453,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
             <Col md={3}>
               <Dropdown
                 onChange={(event: any, selectedOption: any) => this.filterUsers("country", selectedOption)}
-                placeholder="Select Country"
+                placeholder={LocaleStrings.CountryPlaceholder}
                 options={this.options(this.state.coutries)}
                 styles={dropdownStyles}
               />
@@ -459,7 +461,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
             <Col md={3}>
               <Dropdown
                 onChange={(event: any, selectedOption: any) => this.filterUsers("group", selectedOption)}
-                placeholder="Select Group"
+                placeholder={LocaleStrings.GroupPlaceholder}
                 options={this.options(this.state.groups)}
                 styles={dropdownStyles}
               />
@@ -467,7 +469,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
             <Col md={3}>
               <Dropdown
                 onChange={(event: any, selectedOption: any) => this.filterUsers("focusArea", selectedOption)}
-                placeholder="Select Focus Area"
+                placeholder={LocaleStrings.FocusAreaPlaceholder}
                 options={this.options(this.state.focusAreas)}
                 styles={dropdownStyles}
               />
@@ -477,10 +479,10 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
             <button
               className={`btn ${styles.cancelBtn}`}
               onClick={() => this.props.onClickBack()}
-              title="Back"
+              title={LocaleStrings.BackButton}
             >
               <Icon iconName="NavigateBack" className={`${classes.cancelIcon}`} />
-              <span className={styles.cancelBtnLabel}>Back</span>
+              <span className={styles.cancelBtnLabel}>{LocaleStrings.BackButton}</span>
             </button>
             <button
               className={`btn ${styles.saveBtn}`}
@@ -488,10 +490,10 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                 this._createorupdateItem();
                 this.state.UserDetails.length > 0 ? this.setState({ load: true }) : this.setState({ load: false });
               }}
-              title="Save"
+              title={LocaleStrings.SaveButton}
             >
               <Icon iconName="Save" className={`${classes.saveIcon}`} />
-              <span className={styles.saveBtnLabel}>Save</span>
+              <span className={styles.saveBtnLabel}>{LocaleStrings.SaveButton}</span>
             </button>
           </div>
           {this.state.load && <div className={styles.load}></div>}

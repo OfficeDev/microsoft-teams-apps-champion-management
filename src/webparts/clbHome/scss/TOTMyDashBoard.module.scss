@@ -48,6 +48,7 @@
   text-align: justify;
   font: normal normal normal 18px/24px Segoe UI;
   -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere;
 }
 
 .subHeaderUnderline {
@@ -128,6 +129,18 @@
   margin-left: 1%;
 }
 
+.dropdownArea {
+  margin-left: 1%;
+  margin-top: 2%;
+}
+
+.dropdownCol {
+  padding: 0.5em;
+}
+
+.labelCol {
+ margin-top: auto;
+}
 .contentTab {
   width: 100vw;
   min-height: 100vh;

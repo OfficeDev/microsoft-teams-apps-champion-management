@@ -5,6 +5,7 @@ import { sp } from "@pnp/sp";
 import * as React from "react";
 import siteconfig from "../config/siteconfig.json";
 import styles from "../scss/CMPChampionsList.module.scss";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 
 
 export interface IClbChampionsListProps {
@@ -93,26 +94,26 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
           <span
             className={styles.backLabel}
             onClick={() => { this.props.onClickAddmember(); }}
-            title="Back"
+            title={LocaleStrings.CMPBreadcrumbLabel}
           >
-            Back
+            {LocaleStrings.CMPBreadcrumbLabel}
           </span>
           <span className={styles.border}></span>
-          <span className={styles.championListLabel}>Champion List</span>
+          <span className={styles.championListLabel}>{LocaleStrings.ChampionsListPageTitle}</span>
         </div>
         {this.props.userAdded ?
           <Label className={styles.successMessage}>
             <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
-            {this.props.userStatus === "Pending" ? "User Nominated Successfully!" : "User Added Successfully!"}
+            {this.props.userStatus === "Pending" ? LocaleStrings.UserNominatedMessage : LocaleStrings.UserAddedMessage}
           </Label> : null}
-        <div className={`${styles.listHeading}`}>Champion List</div>
+        <div className={`${styles.listHeading}`}>{LocaleStrings.ChampionsListPageTitle}</div>
         <table className="table table-bodered">
           <thead className={styles.listHeader}>
-            <th>People Name</th>
-            <th>Region</th>
-            <th>Country</th>
-            <th>Focus Area</th>
-            <th>Group</th>
+            <th>{LocaleStrings.PeopleNameGridHeader}</th>
+            <th>{LocaleStrings.RegionGridHeader}</th>
+            <th>{LocaleStrings.CountryGridHeader}</th>
+            <th>{LocaleStrings.FocusAreaGridHeader}</th>
+            <th>{LocaleStrings.GroupGridHeader}</th>
             {!this.props.isEmp && <th>Status</th>}
           </thead>
           <tbody className={styles.listBody}>

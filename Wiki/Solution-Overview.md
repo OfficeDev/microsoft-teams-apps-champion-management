@@ -57,13 +57,21 @@ Admin and current Champions of the program can nominate(***Add Members***) peers
 
 The Admin can approve/Reject the champion nominations using Manage Approvals screen. 
 
+### Manage App Logo
+![ManageAppLogo](../Images/ManageAppLogo.png)     
+"Manage App Logo" option can be found under "Admin Tools" section on home page. Clicking on this icon opens the "CMP Logo" SharePoint library. New image can be uploaded to the library to replace the App logo. The new image needs to have below specifications:
+
+Name: AppLogo.jpg<br/>
+Type: JPG<br/>
+Dimensions: 32 X 32 <br/><br/>
+
 ### Digital Badge ![Champion logo](../Images/Champion_small.png)
 Digital Badge is intended to allow Microsoft 365 Champions to apply a ‘Champion’ badge on their profile image. It provides an easy and seamless process to share the recognition as a champion with the team.
  <br/>
 
 ![Quick Start Guide](../Images/Digitalbadge.png) 
 
-CMP administrators can upload multiple badges in the “Digital Badge Assets” library in the share point site. Champions can select from multiple badges and apply on their profile picture. 
+CMP administrators can upload multiple badges in the “Digital Badge Assets” library in the share point site. Champions can select from multiple badges, preview the profile picture and apply on their profile picture. 
 <br/><br/>
 ![Quick Start Guide](../Images/MultipleBadges.png) 
 

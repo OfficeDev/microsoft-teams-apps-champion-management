@@ -26,14 +26,17 @@ import { DataGrid } from "@material-ui/data-grid";
 import * as moment from "moment";
 import siteconfig from "../config/siteconfig.json";
 import _ from "lodash";
-import { Label } from "@fluentui/react";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 
 const columns = [
-  { field: "DateOfEvent", type: 'date', sortable: false,
-    headerName: "Date of Event", width: 200
+  {
+    field: "DateOfEvent", type: 'date', sortable: false,
+    headerName: LocaleStrings.DateofEventGridLabel, width: 200
   },
-  { field: "type", headerName: "Type", width: 150 },
-  { field: "Count", type: 'number', headerName: "Points", width: 150 },
+  { field: "type", headerName: LocaleStrings.EventTypeGridLabel, width: 150 },
+  { field: "Count", type: 'number', headerName: LocaleStrings.CMPSideBarPointsLabel, width: 150 },
 ];
 const DayPickerStrings: IDatePickerStrings = {
   months: [
@@ -211,14 +214,14 @@ export default class ChampionvView extends Component<
 
   public addDevice(data: ChampList, saved: any) {
     if (saved === "false") {
-      if((data.type == "" || data.type == "Select Event Type")) {
-        this.setState({showValidationError:true, validationError:"Please select event type!"});
+      if ((data.type == "" || data.type == "Select Event Type")) {
+        this.setState({ showValidationError: true, validationError: LocaleStrings.EventTypeValidationMessage });
       }
-      else if((data.Count > 5 || data.Count < 1)) {
-        this.setState({showValidationError:true, validationError:"Count should be between 1 and 5"});
+      else if ((data.Count > 5 || data.Count < 1)) {
+        this.setState({ showValidationError: true, validationError: LocaleStrings.CountValidationMessage });
       }
       else {
-        this.setState({ collectionNew: [], showValidationError:false });
+        this.setState({ collectionNew: [], showValidationError: false });
         const newBag = this.state.collectionNew.concat(data);
         this.setState({
           collectionNew: newBag,
@@ -227,7 +230,7 @@ export default class ChampionvView extends Component<
         });
         this.setState({ selectedkey: 0 });
       }
-      
+
     } else {
       const newBag = this.state.collection.concat(data);
       this.setState({
@@ -619,7 +622,7 @@ export default class ChampionvView extends Component<
                     eventKey="0"
                     className="cursor cvw"
                   >
-                    View Dashboard
+                    {LocaleStrings.ViewDashBoardLabel}
                   </Accordion.Toggle>
                   <Accordion.Collapse eventKey="0">
                     <Card.Body className="cb">
@@ -648,15 +651,15 @@ export default class ChampionvView extends Component<
                     eventKey="1"
                     className="cursor"
                   >
-                    Record Event
+                    {LocaleStrings.RecordEventLabel}
                   </Accordion.Toggle>
                   <Accordion.Collapse eventKey="1">
                     <Card.Body className="cb">
                       <div className="form-fields">
                         <div className="form-data">
-                          <div className="form-group row">                            
+                          <div className="form-group row">
                             <DatePicker
-                              label="Month and Date"
+                              label={LocaleStrings.MonthAndDateLabel}
                               className={cx(
                                 controlClass.control,
                                 "col-md-4",
@@ -681,8 +684,8 @@ export default class ChampionvView extends Component<
                                 controlClass.paddingRight
                               )}>
                               <Dropdown
-                                label="Type"
-                                placeholder="Select Event Type"
+                                label={LocaleStrings.EventTypeGridLabel}
+                                placeholder={LocaleStrings.EventTypeGridLabelPlaceHolder}
                                 onChange={(evt) => this.handleSelect(evt)}
                                 id="drp"
                                 options={this.options()}
@@ -690,41 +693,41 @@ export default class ChampionvView extends Component<
                               />
                             </div>
                             <div className={cx(
-                                "col-md-2",
-                                controlClass.marginAuto,
-                                controlClass.paddingRight
-                              )}>
-                                <TextField
-                                  label="Count"
-                                  value={this.state.points.toString()}
-                                  onChange={this.setPoints}
-                                  id="inputPoints"
-                                  type="number"
-                                  min="1"
-                                  max="5"
-                                />
-                              </div>
-                              <div className={cx(
-                                "col-md-1",
-                                controlClass.marginTopAuto,
-                              )}>
-                                <Icon iconName="CircleAdditionSolid" className="AddEventIcon" 
-                                  onClick={(_e) =>
-                                    this.addDevice(
-                                      {
-                                        id: 0,
-                                        type: this.state.type,
-                                        eventid: this.state.eventid,
-                                        memberid: this.state.memberid,
-                                        Count: this.state.points,
-                                        DateOfEvent: this.state.DateOfEvent,
-                                        MemberName: "test",
-                                        EventName: "evtest",
-                                      },
-                                      "false"
-                                    )
-                                  }/>
-                              </div>
+                              "col-md-2",
+                              controlClass.marginAuto,
+                              controlClass.paddingRight
+                            )}>
+                              <TextField
+                                label={LocaleStrings.CountLabel}
+                                value={this.state.points.toString()}
+                                onChange={this.setPoints}
+                                id="inputPoints"
+                                type="number"
+                                min="1"
+                                max="5"
+                              />
+                            </div>
+                            <div className={cx(
+                              "col-md-1",
+                              controlClass.marginTopAuto,
+                            )}>
+                              <Icon iconName="CircleAdditionSolid" className="AddEventIcon"
+                                onClick={(_e) =>
+                                  this.addDevice(
+                                    {
+                                      id: 0,
+                                      type: this.state.type,
+                                      eventid: this.state.eventid,
+                                      memberid: this.state.memberid,
+                                      Count: this.state.points,
+                                      DateOfEvent: this.state.DateOfEvent,
+                                      MemberName: "test",
+                                      EventName: "evtest",
+                                    },
+                                    "false"
+                                  )
+                                } />
+                            </div>
                           </div>
                           <div>
                             {this.state.showValidationError &&
@@ -734,36 +737,37 @@ export default class ChampionvView extends Component<
                             }
                           </div>
                           <div className="row">
-                            <div className="col-12" style={{padding:"0px"}}>
-                            {this.state.collectionNew.map((item) => (
-                                <div key={item.eventid} className="m-2 mb-3">
-                                  <span className="col-md-1 zeroPadding">
+                            <div>
+                              {this.state.collectionNew.map((item) => (
+                                <Row className="mt-5 row-margin" key={item.eventid}>
+                                  <Col className="tick" sm={1}>
                                     <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className="tickImage" />
-                                  </span>
-                                  <span className="col-md-5">{item.DateOfEvent.toDateString()}</span>
-                                  <span className="col-md-4">{item.type}</span>
-                                  <span className="col-md-1">{item.Count}</span>
-                                  <span className="col-md-1 deleteEvent">
-                                    <Icon iconName="Delete" 
-                                      onClick={() => {
-                                        this.removeDevice(item.type, item.Count);
-                                      }}
-                                    />
-                                  </span>
-                                </div>
+                                  </Col>
+                                  <Col sm={4}>{item.DateOfEvent.toDateString()}</Col>
+                                  <Col sm={4}>{item.type}</Col>
+                                  <Col sm={2}>{item.Count}</Col>
+                                  <Col sm={1}>
+                                    <div className="deleteEvent">
+                                      <Icon iconName="Delete"
+                                        onClick={() => {
+                                          this.removeDevice(item.type, item.Count);
+                                        }}
+                                      />
+                                    </div>
+                                  </Col>
+                                </Row>
                               ))}
-                              
+                              <br />
                               {this.state.collectionNew !== null &&
                                 this.state.collectionNew.length !== 0 && (
                                   <div className="mb-3 helpText">
-                                    When you are done adding events, please
-                                    click on <b>Submit</b> button to save.
+                                    {LocaleStrings.EventsSubmitMessage}
                                   </div>
                                 )}
                               {this.state.collectionNew !== null &&
                                 this.state.collectionNew.length !== 0 && (
                                   <DefaultButton
-                                    text="Submit"
+                                    text={LocaleStrings.SubmitButton}
                                     className="mt-4 float-end btnSubmit"
                                     onClick={this.createorupdateItem}
                                   />

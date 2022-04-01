@@ -44,6 +44,12 @@ export default class CommonServices {
     return items;
   }
 
+  //Get list items based on a filter and with specific columns
+  public async getFilteredListItemsWithSpecificColumns(listname: string, columns: string, filter: string): Promise<any> {
+    var items: any[] = [];
+    items = await sp.web.lists.getByTitle(listname).items.select(columns).filter(filter).getAll();
+    return items;
+  }
   //Create list item
   public async createListItem(listname: string, data: any): Promise<any> {
     return sp.web.lists.getByTitle(listname).items.add(data);
@@ -69,17 +75,17 @@ export default class CommonServices {
 
         //execute the batch and add field to default view
         batch.execute().then(async () => {
-          let addingStatus=[];
+          let addingStatus = [];
           for (let i = 0; i < fieldsToCreate.length; i++) {
             const parser = new DOMParser();
             const xml = parser.parseFromString(fieldsToCreate[i], 'text/xml');
             let fieldDisplayName = xml.querySelector('Field').getAttribute('DisplayName');
-          let listView= await listContext.views.getByTitle("All Items").fields.add(fieldDisplayName);
+            let listView = await listContext.defaultView.fields.add(fieldDisplayName);
             addingStatus.push(listView);
           }
-          Promise.all(addingStatus).then(() => { 
-            resolve("Success"); 
-          });        
+          Promise.all(addingStatus).then(() => {
+            resolve("Success");
+          });
         });
       } catch (error) {
         console.error("CommonServices_createListFields_FailedToCreatedField \n", error);
@@ -94,7 +100,6 @@ export default class CommonServices {
     const activeTournamentsArray: any[] = await this.getItemsWithOnlyFilter(stringsConstants.TournamentsMasterList, filterActive);
     return activeTournamentsArray;
   }
-
 
 
   //Filter and get all badge imagesfrom 'Digital Badges' library for the current user
@@ -120,15 +125,22 @@ export default class CommonServices {
     //if TOT is enabled get all the badges and filter for completed tournaments
     else {
       badgeImagesArray = await sp.web.lists.getByTitle(stringsConstants.DigitalBadgeLibrary).items.select("Title", "Tournament/Title", "File/Name").expand("Tournament", "File").get();
+      //Checking if the user is in member list
+      let filterQuery = "Title eq '" + userEmail.toLowerCase() + "'" + " and Status eq 'Approved'";
+      let isApprovedChampion = await this.getItemsWithOnlyFilter(stringsConstants.MemberList, filterQuery);
+
       //Loop through badges and filter based on user's tournaments completion status
       for (let i = 0; i < badgeImagesArray.length; i++) {
         //For global badges do not check for Tournaments completion status
 
         if (badgeImagesArray[i].Tournament == undefined) {
-          finalImagesArray.push({
-            title: badgeImagesArray[i].Title,
-            url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name
-          });
+          // Show the global badges only for champion
+          if (isApprovedChampion.length > 0) {
+            finalImagesArray.push({
+              title: badgeImagesArray[i].Title,
+              url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name
+            });
+          }
         }
         else {
           var tournamentCompleted = await this.getTournamentCompletedFlag(badgeImagesArray[i].Tournament.Title, userEmail);
@@ -147,8 +159,8 @@ export default class CommonServices {
   //Check if the user has completed the tournament
   public async getTournamentCompletedFlag(tournamentName: string, currentUserEmail: string): Promise<any> {
     let tournamentCompletedFlag: boolean = false;
-    
-    tournamentName = tournamentName.replace(/'/g,"''") ;
+
+    tournamentName = tournamentName.replace(/'/g, "''");
     //Get total number of actions for the tournament
     let filterTournamentActions: string = "Title eq '" + tournamentName + "'";
     var tournamentActionsCount: number = 0;
@@ -164,82 +176,83 @@ export default class CommonServices {
     return tournamentCompletedFlag;
   }
 
-   //get all user action for active tournament and bind to table
-   public async getUserActions(activeTournamentName,allUsersDetails): Promise<any> {
+  //get all user action for active tournament and bind to table
+  public async getUserActions(activeTournamentName): Promise<any> {
     return new Promise<any>(async (resolve, reject) => {
-      try {        
+      try {
         let userActionsWithDisplayName: any = [];
         let userRanks: any = [];
-        let getAllUserActions: any = [];   
-       
-          //get active tournament's participants
-          let filterQuery = "Tournament_x0020_Name eq '" +  activeTournamentName.replace(/'/g,"''")  + "'";
-          //get first batch of items
-          let getUserActions = await sp.web.lists.getByTitle(stringsConstants.UserActionsList).items.
-            filter(filterQuery).select("Title", "Points").top(5000).getPaged();
-          if (getUserActions.results.length > 0) 
-          {
+        let getAllUserActions: any = [];
+
+        //get active tournament's participants
+        let filterQuery = "Tournament_x0020_Name eq '" + activeTournamentName.replace(/'/g, "''") + "'";
+        //get first batch of items
+        let getUserActions = await sp.web.lists.getByTitle(stringsConstants.UserActionsList).items.
+          filter(filterQuery).select("Title", "Points", "UserName").top(5000).getPaged();
+        if (getUserActions.results.length > 0) {
+          getAllUserActions.push(...getUserActions.results);
+          //get next batch, if more items found
+          while (getUserActions.hasNext) {
+            getUserActions = await getUserActions.getNext();
             getAllUserActions.push(...getUserActions.results);
-            //get next batch, if more items found
-            while (getUserActions.hasNext) {
-              getUserActions = await getUserActions.getNext();
-              getAllUserActions.push(...getUserActions.results);
+          }
+          //groupby user and sum the points
+          var groupOfUniqueUsers = [];
+          getAllUserActions.reduce((res, value) => {
+            if (!res[value.Title]) {
+              res[value.Title] = { Title: value.Title, Points: 0 };
+              groupOfUniqueUsers.push(res[value.Title]);
             }
-            //groupby user and sum the points
-            var groupOfUniqueUsers = [];
-            getAllUserActions.reduce((res, value) => {
-              if (!res[value.Title]) {
-                res[value.Title] = { Title: value.Title, Points: 0 };
-                groupOfUniqueUsers.push(res[value.Title]);
+            res[value.Title].Points += value.Points;
+            res[value.Title].UserName = value.UserName;
+            return res;
+          }, {});
+          //sorting by points and then by display name 
+          groupOfUniqueUsers.sort((a, b) => {
+            if (a.Points < b.Points) return 1;
+            if (a.Points > b.Points) return -1;
+            if (a.Title > b.Title) return 1;
+            if (a.Title < b.Title) return -1;
+          });
+          // get user Display Name for users
+          if (groupOfUniqueUsers.length > 0) {
+            for (let i = 0; i < groupOfUniqueUsers.length; i++) {
+              let itemEmail: string = groupOfUniqueUsers[i].Title.toLowerCase();
+              let userDisplayName = itemEmail;
+              if (groupOfUniqueUsers[i].UserName != null)
+                userDisplayName = groupOfUniqueUsers[i].UserName;
+
+              if (userDisplayName.length > 0) {
+                userActionsWithDisplayName.push(
+                  {
+                    User: userDisplayName.replace(',', ''),
+                    Points: groupOfUniqueUsers[i].Points,
+                    Email: itemEmail
+                  });
               }
-              res[value.Title].Points += value.Points;
-              return res;
-            }, {});
-            //sorting by points and then by display name 
-            groupOfUniqueUsers.sort((a, b) => {
-              if (a.Points < b.Points) return 1;
-              if (a.Points > b.Points) return -1;
-              if (a.Title > b.Title) return 1;
-              if (a.Title < b.Title) return -1;
-            });
-            // get user Display Name for users
-            if (groupOfUniqueUsers.length > 0) {
-              for (let i = 0; i < groupOfUniqueUsers.length; i++) {
-                let itemEmail: string = groupOfUniqueUsers[i].Title.toLowerCase();
-                let userDisplayName = allUsersDetails.filter(
-                  (user) => user.email === itemEmail
-                );
-                if (userDisplayName.length > 0) {
-                  userActionsWithDisplayName.push(
-                    {
-                      User: userDisplayName[0].displayName.replace(',',''),
-                      Points: groupOfUniqueUsers[i].Points,
-                      Email:itemEmail
-                    });
-                }
-              }//for loop of getting user display name ends here   
-            }
-            //associate rank on the sorted array of users
-            for (let j = 0; j < userActionsWithDisplayName.length; j++) {
-              userRanks.push(
-                {
-                  Rank: j + 1,
-                  User: userActionsWithDisplayName[j].User,
-                  Points: userActionsWithDisplayName[j].Points,
-                  Email:userActionsWithDisplayName[j].Email
-                });
-            }
-            resolve(userRanks);
+            }//for loop of getting user display name ends here   
           }
-          else{
-            resolve(userRanks);
+          //associate rank on the sorted array of users
+          for (let j = 0; j < userActionsWithDisplayName.length; j++) {
+            userRanks.push(
+              {
+                Rank: j + 1,
+                User: userActionsWithDisplayName[j].User,
+                Points: userActionsWithDisplayName[j].Points,
+                Email: userActionsWithDisplayName[j].Email
+              });
           }
-          
+          resolve(userRanks);
+        }
+        else {
+          resolve(userRanks);
+        }
+
       }
       catch (error) {
         console.error("CommonServices_getUserActions \n", error);
         reject("Failed");
-        }
+      }
     });
   }
 }

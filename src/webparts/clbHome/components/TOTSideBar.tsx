@@ -1,4 +1,3 @@
-import { MSGraphClient } from "@microsoft/sp-http";
 import "@pnp/sp/items";
 import "@pnp/sp/lists";
 import "@pnp/sp/webs";
@@ -7,12 +6,14 @@ import * as React from "react";
 import commonServices from "../Common/CommonServices";
 import * as stringsConstants from "../constants/strings";
 import { RxJsEventEmitter } from "../events/RxJsEventEmitter";
+import { EventData } from "../events/EventData";
 import sideBarStyles from "../scss/TOTSideBar.module.scss";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 
 initializeIcons();
 
 let commonService: commonServices;
-let allUsersProperties: any = [];
+
 export interface ITOTSideBarProps {
   context: any;
   siteUrl: string;
@@ -59,7 +60,6 @@ export default class TOTSideBar extends React.Component<
       this.getCurrentUserDetails.bind(this)
     );
   }
-  public _graphClient: MSGraphClient;
   //Get User Actions from list and bind to table
   public componentDidMount() {
     this.setState({
@@ -79,7 +79,7 @@ export default class TOTSideBar extends React.Component<
       if (filterCurrentUser.length > 0) {
         this.setState({
           isShowLoader: true,
-          userDisplayName: filterCurrentUser[0].User,
+          userDisplayName: this.props.context.pageContext.user.displayName,
           userEmail: filterCurrentUser[0].Email,
           userPoints: filterCurrentUser[0].Points,
           userRank: filterCurrentUser[0].Rank,
@@ -98,101 +98,61 @@ export default class TOTSideBar extends React.Component<
     }
   }
 
-  //get all users properties and store in array
-  private async getAllUserProperties(): Promise<any> {
-    return new Promise<any>(async (resolve, reject) => {
-      this._graphClient =
-        await this.props.context.msGraphClientFactory.getClient();
-      await this._graphClient
-        .api("/users")
-        .get()
-        .then(async (users: any, rawResponse?: any) => {
-          for (let user of users.value) {
-            if (user.mail != null) {
-              allUsersProperties.push({
-                email: user.mail.toLowerCase(),
-                displayName: user.displayName,
-              });
-            }
-          }
-          this.setState({ allUserProps: allUsersProperties });
-          resolve("Success");
-        })
-        .catch((err) => {
-          console.error("TOT_TOTSideBar_getAllUserProperties \n", err);
-          this.setState({
-            showError: true,
-            errorMessage:
-              stringsConstants.TOTErrorMessage +
-              " while getting users. Below are the details: \n" +
-              JSON.stringify(err),
-            showSuccess: false,
-          });
-          reject("Failed");
-        });
-    });
-  }
-
-  private async getCurrentUserDetails(data?: any): Promise<any> {
+  private async getCurrentUserDetails(data?: EventData): Promise<any> {
     return new Promise<any>(async (resolve, reject) => {
       try {
+
+        let tournamentName: string;
         let allUserActions: any = [];
-        //get all users
-        let getAllUserStatus = await this.getAllUserProperties();
-        console.log(getAllUserStatus);
-        //get active tournament details
-        let tournamentDetails =
-          await commonService.getActiveTournamentDetails();
-        if (tournamentDetails.length != 0) {
-          await commonService
-            .getUserActions(
-              tournamentDetails[0]["Title"],
-              this.state.allUserProps
-            )
-            .then((res) => {
-              if (res.length > 0) {
-                allUserActions = res;
-                let filterCurrentUser = allUserActions.filter(
-                  (e) =>
-                    e.Email ===
-                    this.props.context.pageContext.user.email.toLowerCase()
-                );
-                //bind current user Ranks,Name,Points
-                if (filterCurrentUser.length > 0) {
-                  this.setState({
-                    userDisplayName: filterCurrentUser[0].User,
-                    userEmail: filterCurrentUser[0].Email,
-                    userRank: filterCurrentUser[0].Rank,
-                    userPoints: filterCurrentUser[0].Points,
-                    totalParticipants: res.length,
-                    isShowLoader: false,
-                  });
-                } else {
-                  this.setState({
-                    userDisplayName:
-                      this.props.context.pageContext.user.displayName,
-                    userEmail: this.props.context.pageContext.user.email,
-                    userRank: "0",
-                    userPoints: "0",
-                    totalParticipants: res.length,
-                    isShowLoader: false,
-                  });
-                }
-              } else if (res.length == 0) {
-                //no active participants
+
+        //Setting varaible based on the value received from Event Emitter
+        if (data != undefined)
+          tournamentName = data.tournamentName;
+        
+        if (tournamentName != undefined && tournamentName != "") {
+          //Getting user actions for the selected tournament to calculate points and rank
+          await commonService.getUserActions(tournamentName).then((res) => {
+            if (res.length > 0) {
+              allUserActions = res;
+              let filterCurrentUser = allUserActions.filter(
+                (e) =>
+                  e.Email ===
+                  this.props.context.pageContext.user.email.toLowerCase()
+              );
+              //bind current user Ranks,Name,Points
+              if (filterCurrentUser.length > 0) {
                 this.setState({
-                  userDisplayName:
-                    this.props.context.pageContext.user.displayName,
+                  userDisplayName: this.props.context.pageContext.user.displayName,
+                  userEmail: filterCurrentUser[0].Email,
+                  userRank: filterCurrentUser[0].Rank,
+                  userPoints: filterCurrentUser[0].Points,
+                  totalParticipants: res.length,
+                  isShowLoader: false,
+                });
+              } else {
+                this.setState({
+                  userDisplayName: this.props.context.pageContext.user.displayName,
                   userEmail: this.props.context.pageContext.user.email,
                   userRank: "0",
                   userPoints: "0",
-                  totalParticipants: "0",
+                  totalParticipants: res.length,
                   isShowLoader: false,
                 });
-              } else if (res == "Failed") {
-                console.error("TOT_TOTSideBar_getUserActions \n");
               }
-            });
+            } else if (res.length == 0) {
+              //no active participants
+              this.setState({
+                userDisplayName: this.props.context.pageContext.user.displayName,
+                userEmail: this.props.context.pageContext.user.email,
+                userRank: "0",
+                userPoints: "0",
+                totalParticipants: "0",
+                isShowLoader: false,
+              });
+            } else if (res == "Failed") {
+              console.error("TOT_TOTSideBar_getUserActions \n");
+            }
+          });
         } else {
           //no active tournaments
           this.setState({
@@ -250,13 +210,13 @@ export default class TOTSideBar extends React.Component<
                     <div className={sideBarStyles.insideCircle}>
                       <div className={sideBarStyles.pointsScale}>
                         <div><Icon iconName="FavoriteStarFill" id="star" className={sideBarStyles.yellowStar} /></div>
-                          <div>{this.state.userPoints} Points</div>
+                        <div>{this.state.userPoints} {LocaleStrings.PointsLabel}</div>
                       </div>
                       <div className={sideBarStyles.line}></div>
                       <div className={sideBarStyles.globalRank}>
-                        Tournament Rank <br />
+                        {LocaleStrings.TournamentRankLabel} <br />
                         <span className={sideBarStyles.bold}>{this.state.userRank}</span>
-                        &nbsp;of {this.state.totalParticipants} <br />Participants
+                        &nbsp;of {this.state.totalParticipants} <br />{LocaleStrings.ParticipantsLabel}
                       </div>
                     </div>
                   </div>

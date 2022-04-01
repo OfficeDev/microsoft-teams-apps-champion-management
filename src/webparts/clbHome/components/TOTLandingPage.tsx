@@ -17,6 +17,9 @@ import TOTMyDashboard from "./TOTMyDashboard";
 import TOTCreateTournament from "./TOTCreateTournament";
 import TOTEnableTournament from "./TOTEnableTournament";
 import Navbar from "react-bootstrap/Navbar";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import DigitalBadge from "./DigitalBadge";
+import { ThemeStyle } from "msteams-ui-styles-core";
 
 export interface ITOTLandingPageProps {
   context?: any;
@@ -36,7 +39,7 @@ interface ITOTLandingPageState {
   manageTournament: boolean;
   isAdmin: boolean;
   isShowLoader: boolean;
-  activeTournamentExists: boolean;
+  digitalBadge: boolean;
 }
 let commonService: commonServices;
 class TOTLandingPage extends React.Component<
@@ -58,7 +61,7 @@ class TOTLandingPage extends React.Component<
       leaderBoard: false,
       isAdmin: false,
       isShowLoader: false,
-      activeTournamentExists: false
+      digitalBadge: false
     };
     commonService = new commonServices(this.props.context, this.props.siteUrl);
     this.redirectTotHome = this.redirectTotHome.bind(this);
@@ -76,7 +79,6 @@ class TOTLandingPage extends React.Component<
       //if isTOTEnabled is true then just check for role else run provisioning to add missing lists and fields
       if (this.props.isTOTEnabled == true) {
         this.checkUserRole();
-        this.checkActiveTournament();
       }
       else {
         //verify tot lists/fields are present, create missing lists/fields
@@ -86,26 +88,11 @@ class TOTLandingPage extends React.Component<
             this.createLookupField();
           }
         });
-        //get active tournament details, and dynamic text change for manage tournament link
-        this.checkActiveTournament();
       }
     }
     catch (error) {
       console.error("TOT_TOTLandingPage_componentDidMount_FailedToGetUserDetails \n", error);
       this.setState({ showError: true, errorMessage: stringsConstants.TOTErrorMessage + "while getting user details. Below are the details: \n" + JSON.stringify(error), showSuccess: false });
-    }
-  }
-
-  //get active tournament details, and dynamic text change for manage tournament link
-  private async checkActiveTournament() {
-    let tournamentDetails = await commonService.getActiveTournamentDetails();
-    if (tournamentDetails.length == 0) {
-      //no active tournament
-      this.setState({ activeTournamentExists: false });
-    }
-    else {
-      //there is an active tournament
-      this.setState({ activeTournamentExists: true });
     }
   }
 
@@ -282,8 +269,8 @@ class TOTLandingPage extends React.Component<
       createTournament: false,
       manageTournament: false,
       dashboard: false,
+      digitalBadge: false,
     });
-    this.checkActiveTournament();
   }
 
   //Create tournament name look up field in Digital badge assets lib
@@ -501,18 +488,18 @@ class TOTLandingPage extends React.Component<
           {!this.state.leaderBoard &&
             !this.state.createTournament &&
             !this.state.dashboard &&
+            !this.state.digitalBadge &&
             !this.state.manageTournament && (
               <div>
                 <div className={styles.totHeader}>
-                  <span className={styles.totPageHeading} onClick={this.redirectTotHome}>Tournament of Teams</span>
+                  <span className={styles.totPageHeading} onClick={this.redirectTotHome}>{LocaleStrings.TOTBreadcrumbLabel}</span>
                 </div>
                 <div className={styles.grid}>
                   <div className={styles.messageContainer}>
                     {this.state.showSuccess && (
                       <Label className={styles.successMessage}>
                         <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
-                        Tournament of Teams enabled successfully. Please refresh the app
-                        before using.
+                        {LocaleStrings.EnableTOTSuccessMessage}
                       </Label>
                     )}
                     {this.state.showError && (
@@ -521,7 +508,7 @@ class TOTLandingPage extends React.Component<
                       </Label>
                     )}
                   </div>
-                  <h5 className={styles.pageSubHeader}>Quick Links</h5>
+                  <h5 className={styles.pageSubHeader}>{LocaleStrings.QuickLinksLabel}</h5>
                   <Row className="mt-4">
                     <Col sm={3} className={styles.imageLayout}>
                       <Media
@@ -536,11 +523,11 @@ class TOTLandingPage extends React.Component<
                         <div className={styles.mb}>
                           <img
                             src={require("../assets/TOTImages/LeaderBoard.svg")}
-                            alt="Leader Board"
-                            title="Leader Board"
+                            alt={LocaleStrings.TOTLeaderBoardPageTitle}
+                            title={LocaleStrings.TOTLeaderBoardPageTitle}
                             className={styles.dashboardimgs}
                           />
-                          <div className={styles.center} title="Leader Board">Leader Board</div>
+                          <div className={styles.center} title={LocaleStrings.TOTLeaderBoardPageTitle}>{LocaleStrings.TOTLeaderBoardPageTitle}</div>
                         </div>
                       </Media>
                     </Col>
@@ -557,19 +544,35 @@ class TOTLandingPage extends React.Component<
                         <div className={styles.mb}>
                           <img
                             src={require("../assets/TOTImages/MyDashboard.svg")}
-                            alt="My Dashboard"
-                            title="My Dashboard"
+                            alt={LocaleStrings.TOTMyDashboardPageTitle}
+                            title={LocaleStrings.TOTMyDashboardPageTitle}
                             className={styles.dashboardimgs}
                           />
-                          <div className={styles.center} title="My Dashboard">My Dashboard</div>
+                          <div className={styles.center} title={LocaleStrings.TOTMyDashboardPageTitle}>{LocaleStrings.TOTMyDashboardPageTitle}</div>
                         </div>
                       </Media>
                     </Col>
+                    <Col sm={3} className={styles.imageLayout}>
+                        <Media
+                          className={styles.cursor}
+                          onClick={() => this.setState({ digitalBadge: !this.state.digitalBadge })}
+                        >
+                          <div className={styles.mb}>
+                            <img
+                              src={require("../assets/CMPImages/DigitalBadge.svg")}
+                              alt={LocaleStrings.DigitalMembersToolTip}
+                              title={LocaleStrings.DigitalMembersToolTip}
+                              className={styles.dashboardimgs}
+                            />
+                            <div className={styles.center} title={LocaleStrings.DigitalBadgeLabel}>{LocaleStrings.DigitalBadgeLabel}</div>
+                          </div>
+                        </Media>
+                      </Col>
                   </Row>
 
                   {this.state.isAdmin && (
                     <div>
-                      <h5 className={styles.pageSubHeader}>Admin Tools</h5>
+                      <h5 className={styles.pageSubHeader}>{LocaleStrings.AdminToolsLabel}</h5>
                     </div>
                   )}
 
@@ -584,13 +587,13 @@ class TOTLandingPage extends React.Component<
                             >
                               <img
                                 src={require("../assets/TOTImages/ManageTournamentActions.svg")}
-                                alt="Accessing Tournament Actions List"
-                                title="Accessing Tournament Actions List"
+                                alt={LocaleStrings.ManageTournamentActionsToolTip}
+                                title={LocaleStrings.ManageTournamentActionsToolTip}
                                 className={`${styles.dashboardimgs}`}
                               />
                             </a>
-                            <div className={`${styles.center}`} title="Manage Tournament Actions">
-                              Manage Tournament Actions
+                            <div className={`${styles.center}`} title={LocaleStrings.ManageTournamentActionsLabel}>
+                            {LocaleStrings.ManageTournamentActionsLabel}
                             </div>
                           </div>
                         </Media>
@@ -608,12 +611,12 @@ class TOTLandingPage extends React.Component<
                           <div className={styles.mb}>
                             <img
                               src={require("../assets/TOTImages/CreateTournament.svg")}
-                              alt="Create Tournament"
-                              title="Create Tournament"
+                              alt={LocaleStrings.CreateTournamentPageTitle}
+                              title={LocaleStrings.CreateTournamentPageTitle}
                               className={styles.dashboardimgs}
                             />
-                            <div className={styles.center} title="Create Tournament">
-                              Create Tournament
+                            <div className={styles.center} title={LocaleStrings.CreateTournamentPageTitle}>
+                            {LocaleStrings.CreateTournamentPageTitle}
                             </div>
                           </div>
                         </Media>
@@ -628,25 +631,15 @@ class TOTLandingPage extends React.Component<
                             })
                           }
                         >
-                          {this.state.activeTournamentExists && (<div className={styles.mb}>
+                         <div className={styles.mb}>
                             <img
                               src={require("../assets/TOTImages/ManageTournaments.svg")}
-                              alt="End Current Tournament"
-                              title="End Current Tournament"
+                              alt={LocaleStrings.ManageTournamentsLabel}
+                              title={LocaleStrings.ManageTournamentsLabel}
                               className={styles.dashboardimgs}
                             />
-                            <div className={styles.center} title="End Current Tournament">End Current Tournament</div>
-                          </div>)}
-                          {!this.state.activeTournamentExists && (<div className={styles.mb}>
-                            <img
-                              src={require("../assets/TOTImages/ManageTournaments.svg")}
-                              alt="Start New Tournament"
-                              title="Start New Tournament"
-                              className={styles.dashboardimgs}
-                            />
-                            <div className={styles.center} title="Start New Tournament">Start New Tournament</div>
-                          </div>)}
-
+                            <div className={styles.center} title={LocaleStrings.ManageTournamentsLabel}>{LocaleStrings.ManageTournamentsLabel}</div>
+                          </div>
                         </Media>
                       </Col>
 
@@ -659,12 +652,12 @@ class TOTLandingPage extends React.Component<
                             >
                               <img
                                 src={require("../assets/TOTImages/ManageAdmins.svg")}
-                                alt="Accessing Admin List"
-                                title="Accessing Admin List"
+                                alt={LocaleStrings.ManageAdminsToolTip}
+                                title={LocaleStrings.ManageAdminsToolTip}
                                 className={styles.dashboardimgs}
                               />
                             </a>
-                            <div className={styles.center} title="Manage Admins">Manage Admins</div>
+                            <div className={styles.center} title={LocaleStrings.ManageAdminsLabel}>{LocaleStrings.ManageAdminsLabel}</div>
                           </div>
                         </Media>
                       </Col>
@@ -677,13 +670,13 @@ class TOTLandingPage extends React.Component<
                             >
                               <img
                                 src={require("../assets/TOTImages/ManageDigitalBadges.svg")}
-                                alt="Manage Digital Badges"
-                                title="Manage Digital Badges"
+                                alt={LocaleStrings.ManageDigitalBadgesLabel}
+                                title={LocaleStrings.ManageDigitalBadgesLabel}
                                 className={`${styles.dashboardimgs}`}
                               />
                             </a>
-                            <div className={`${styles.center}`} title="Manage Digital Badges">
-                              Manage Digital Badges
+                            <div className={`${styles.center}`} title={LocaleStrings.ManageDigitalBadgesLabel}>
+                            {LocaleStrings.ManageDigitalBadgesLabel}
                             </div>
                           </div>
                         </Media>
@@ -700,11 +693,9 @@ class TOTLandingPage extends React.Component<
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
                 onClickCancel={() => {
-                  this.checkActiveTournament();
                   this.setState({ leaderBoard: false });
                 }}
                 onClickMyDashboardLink={() => {
-                  this.checkActiveTournament();
                   this.setState({ dashboard: true, leaderBoard: false });
                 }}
               />
@@ -716,9 +707,24 @@ class TOTLandingPage extends React.Component<
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
                 onClickCancel={() => {
-                  this.checkActiveTournament();
                   this.setState({ dashboard: false });
                 }
+                }
+              />
+            )
+          }
+           {
+            this.state.digitalBadge && (
+              <DigitalBadge
+                siteUrl={this.props.siteUrl}
+                context={this.props.context}
+                clientId=""
+                description=""
+                theme={ThemeStyle.Light}
+                fontSize={12}
+                clickcallback={() => this.setState({ digitalBadge: false })}
+                clickcallchampionview={() =>
+                  this.setState({ digitalBadge: false })
                 }
               />
             )
@@ -729,7 +735,6 @@ class TOTLandingPage extends React.Component<
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
                 onClickCancel={() => {
-                  this.checkActiveTournament();
                   this.setState({ createTournament: false });
                 }}
               />
@@ -742,7 +747,6 @@ class TOTLandingPage extends React.Component<
                 context={this.props.context}
                 onClickCancel={() => {
                   this.setState({ manageTournament: false });
-                  this.checkActiveTournament();
                 }}
               />
             )}

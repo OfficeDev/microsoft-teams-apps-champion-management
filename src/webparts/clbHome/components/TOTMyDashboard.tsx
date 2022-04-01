@@ -1,27 +1,31 @@
 import * as React from "react";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
-import commonServices from "../Common/CommonServices";
-import * as stringsConstants from "../constants/strings";
-import styles from "../scss/TOTMyDashBoard.module.scss";
-import TOTSidebar from "./TOTSideBar";
-import { RxJsEventEmitter } from "../events/RxJsEventEmitter";
-
 //React Boot Strap
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-
 //FluentUI controls
 import { IButtonStyles, PrimaryButton, DefaultButton } from "@fluentui/react/lib/Button";
 import { Label } from "@fluentui/react/lib/Label";
 import { Spinner, SpinnerSize } from "@fluentui/react/lib/Spinner";
 import { Icon, IIconProps } from '@fluentui/react/lib/Icon';
-
+import { ComboBox, IComboBox, IComboBoxOption } from '@fluentui/react/lib/ComboBox';
+import { TooltipHost, ITooltipHostStyles } from '@fluentui/react/lib/Tooltip';
+import { mergeStyleSets } from '@fluentui/react/lib/Styling';
 //PNP
 import {
   TreeView,
   ITreeItem,
   TreeViewSelectionMode,
+  SelectChildrenMode,
+  TreeItemActionsDisplayMode,
 } from "@pnp/spfx-controls-react/lib/TreeView";
+import commonServices from "../Common/CommonServices";
+import * as stringsConstants from "../constants/strings";
+import styles from "../scss/TOTMyDashBoard.module.scss";
+import TOTSidebar from "./TOTSideBar";
+import { RxJsEventEmitter } from "../events/RxJsEventEmitter";
+import { EventData } from "../events/EventData";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 
 //Global Variables
 let commonServiceManager: commonServices;
@@ -32,6 +36,19 @@ export interface ITOTMyDashboardProps {
   onClickCancel: Function;
 }
 
+const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block', cursor: 'pointer' } };
+
+const calloutProps = { gapSpace: 0 };
+const classes = mergeStyleSets({
+  icon: {
+    fontSize: '16px',
+    paddingLeft: '10px',
+    fontWeight: 'bolder',
+    color: '#1d0f62',
+    position: 'relative',
+    top: '3px'
+  }
+});
 const backBtnStyles: Partial<IButtonStyles> = {
   root: {
     marginLeft: "1.5%",
@@ -67,6 +84,7 @@ const backBtnStyles: Partial<IButtonStyles> = {
 const saveIcon: IIconProps = { iconName: 'Save' };
 const backIcon: IIconProps = { iconName: 'NavigateBack' };
 
+
 interface ITOTMyDashboardState {
   actionsList: ITreeItem[];
   selectedActionsList: ITreeItem[];
@@ -76,10 +94,16 @@ interface ITOTMyDashboardState {
   noActiveTournament: boolean;
   errorMessage: string;
   actionsError: boolean;
-  tournamentName: string;
+  tournamentName: any;
   showSpinner: boolean;
   noPendingActions: boolean;
-  tournamentDescription: string;
+  tournamentDescription: any;
+  activeTournamentsList: Array<any>;
+  myTournamentsList: Array<any>;
+  activeTournamentName: any;
+  myTournamentName: any;
+  tournamentDescriptionList: Array<any>;
+  treeViewSelectedKeys?: string[];
 }
 
 export default class TOTMyDashboard extends React.Component<
@@ -104,6 +128,13 @@ export default class TOTMyDashboard extends React.Component<
       showSpinner: false,
       noPendingActions: false,
       tournamentDescription: "",
+      activeTournamentsList: [],
+      myTournamentsList: [],
+      activeTournamentName: "",
+      myTournamentName: "",
+      tournamentDescriptionList: [],
+      treeViewSelectedKeys: [],
+
     };
     //Create object for CommonServices class
     commonServiceManager = new commonServices(
@@ -115,235 +146,375 @@ export default class TOTMyDashboard extends React.Component<
     this.onActionSelected = this.onActionSelected.bind(this);
     this.getPendingActions = this.getPendingActions.bind(this);
     this.saveActions = this.saveActions.bind(this);
+    this.getActiveTournamentActions = this.getActiveTournamentActions.bind(this);
+    this.getMyTournamentActions = this.getMyTournamentActions.bind(this);
   }
 
-  //Get Actions from Master list and bind it to treeview on app load
+
   public componentDidMount() {
-    //Get Actions from Master list and bind it to Treeview
-    this.getPendingActions();
+    //Get list of active tournaments from Tournaments list
+    this.getActiveTournaments();
   }
 
-  //On select of a tree node change the state of selected actions
-  private onActionSelected(items: ITreeItem[]) {
-    this.setState({ selectedActionsList: items });
-  }
-
-  //Get Actions from Master list and bind it to Treeview
-  private async getPendingActions() {
-    console.log(stringsConstants.TotLog + "Getting actions from master list.");
+  //Get list of active tournaments from Tournaments list and binding it to dropdowns
+  private async getActiveTournaments() {
+    console.log(stringsConstants.TotLog + "Getting list of active tournaments from Tournaments list.");
     try {
       //Get current users's email
       currentUserEmail =
         this.props.context.pageContext.user.email.toLowerCase();
 
       //Get current active tournament details
-      let tournamentDetails: any[] =
+      let activeTournamentDetails: any[] =
         await commonServiceManager.getActiveTournamentDetails();
 
+      var activeTournamentsChoices = [];
+      var myTournamentsChoices = [];
+      var tournamentDescriptionChoices = [];
       //If active tournament found
-      if (tournamentDetails.length != 0) {
-        this.setState({
-          tournamentName: tournamentDetails[0]["Title"],
-          tournamentDescription: tournamentDetails[0]["Description"],
-        });
-        let filterActive: string =
-          "Title eq '" +
-          tournamentDetails[0]["Title"].replace(/'/g, "''") +
-          "'";
-        let filterUserTournaments: string =
-          "Tournament_x0020_Name eq '" +
-          tournamentDetails[0]["Title"].replace(/'/g, "''") +
-          "'" +
-          " and Title eq '" +
-          currentUserEmail +
-          "'";
-        //Get all actions for the tournament from "Tournament Actions" list
-        const allTournamentsActionsArray: any[] =
-          await commonServiceManager.getItemsWithOnlyFilter(
-            stringsConstants.TournamentActionsMasterList,
-            filterActive
-          );
+      if (activeTournamentDetails.length > 0) {
 
-        //Sort on Category
-        allTournamentsActionsArray.sort((a, b) => a.Category.localeCompare(b.Category));
+        //Get current user's active tournament details
+        let filterUserTournaments: string = "Title eq '" + currentUserEmail + "'";
 
-        //Get all actions completed by the current user for the current tournament
-        const userActionsArray: any[] =
-          await commonServiceManager.getItemsWithOnlyFilter(
-            stringsConstants.UserActionsList,
+        const currentUserTournaments: any[] =
+          await commonServiceManager.getFilteredListItemsWithSpecificColumns(
+            stringsConstants.UserActionsList, "Tournament_x0020_Name",
             filterUserTournaments
           );
-        var treeItemsArray: ITreeItem[] = [];
-        var completedTreeItemsArray: ITreeItem[] = [];
 
-        //Build the Parent Nodes(Categories) in Treeview. Skip the items which are already completed by the user in "User Actions" list
-        await allTournamentsActionsArray.forEach((vAction) => {
-          //Check if the category is present in the 'User Actions' list
-          var compareCategoriesArray = userActionsArray.filter((elArray) => {
-            return (
-              elArray.Action == vAction["Action"] &&
-              elArray.Category == vAction["Category"]
-            );
+        const uniqueUserTournaments: any[] = currentUserTournaments.filter((value, index) => {
+          const _value = JSON.stringify(value);
+          return index === currentUserTournaments.findIndex(item => {
+            return JSON.stringify(item) === _value;
           });
-          const tree: ITreeItem = {
-            key: vAction["Category"],
-            label: vAction["Category"],
-            children: [],
-          };
-
-          //If the category is not present in User Actions list add it to 'Pending Tree view'
-          var found: boolean;
-          if (compareCategoriesArray.length == 0) {
-            //Check if Category is already added to the Treeview. If yes, skip adding.
-            found = treeItemsArray.some((value) => {
-              return value.label === vAction["Category"];
-            });
-            if (!found) treeItemsArray.push(tree);
-          }
-          //If the category is present in User Actions list add it to 'Completed Tree view'
-          else {
-            //Check if Category is already added to the Treeview. If yes, skip adding.
-            found = completedTreeItemsArray.some((value) => {
-              return value.label === vAction["Category"];
-            });
-            if (!found) completedTreeItemsArray.push(tree);
-          }
-        }); //For Loop
-
-        //Build the child nodes(Actions) in Treeview. Skip the items which are already completed by the user in "User Actions" list
-        await allTournamentsActionsArray.forEach((vAction) => {
-          //Check if the action is present in the 'User Actions' list
-          var compareActionsArray = userActionsArray.filter((elChildArray) => {
-            return (
-              elChildArray.Action == vAction["Action"] &&
-              elChildArray.Category == vAction["Category"]
-            );
-          });
-
-          //If the action is  not present in User Actions list add it to 'Pending Tree view'
-          let tree: ITreeItem;
-          if (compareActionsArray.length == 0) {
-            if (vAction["HelpURL"] === 'null' || vAction["HelpURL"] == "") {
-              tree = {
-                key: vAction.Id,
-                label: vAction["Action"],
-                data:
-                  vAction["Category"] +
-                  stringsConstants.StringSeperator +
-                  vAction["HelpURL"],
-                subLabel:
-                  vAction["Points"] +
-                  stringsConstants.PointsDisplayString +
-                  vAction["Description"]
-              };
-            }
-            else {
-              tree = {
-                key: vAction.Id,
-                label: vAction["Action"],
-                data:
-                  vAction["Category"] +
-                  stringsConstants.StringSeperator +
-                  vAction["HelpURL"],
-                subLabel:
-                  vAction["Points"] +
-                  stringsConstants.PointsDisplayString +
-                  vAction["Description"],
-                actions: [
-                  {
-                    iconProps: {
-                      iconName: "Info",
-                      title: "Find out more about this action"
-                    },
-                    id: "GetItem",
-                    actionCallback: async (treeItem: ITreeItem) => {
-                      window.open(vAction["HelpURL"]);
-                    },
-                  },
-                ],
-              };
-            }
-            var treeCol: Array<ITreeItem> = treeItemsArray.filter((value) => {
-              return value.label == vAction["Category"];
-            });
-            if (treeCol.length != 0) {
-              treeCol[0].children.push(tree);
-            }
-          }
-          //If the action present in User Actions list add it to 'Completed Tree view'
-          else {
-            if (vAction["HelpURL"] === 'null' || vAction["HelpURL"] == "") {
-              tree = {
-                key: vAction.Id,
-                label: vAction["Action"],
-                data:
-                  vAction["Category"] +
-                  stringsConstants.StringSeperator +
-                  vAction["HelpURL"],
-                subLabel:
-                  vAction["Points"] +
-                  stringsConstants.PointsDisplayString +
-                  vAction["Description"],
-                iconProps: {
-                  iconName: "SkypeCheck",
-                },
-              };
-            }
-            else {
-              tree = {
-                key: vAction.Id,
-                label: vAction["Action"],
-                data:
-                  vAction["Category"] +
-                  stringsConstants.StringSeperator +
-                  vAction["HelpURL"],
-                subLabel:
-                  vAction["Points"] +
-                  stringsConstants.PointsDisplayString +
-                  vAction["Description"],
-                iconProps: {
-                  iconName: "SkypeCheck",
-                },
-                actions: [
-                  {
-                    iconProps: {
-                      iconName: "Info",
-                      title: "Find out more about this action"
-                    },
-                    id: "GetItem",
-                    actionCallback: async (treeItem: ITreeItem) => {
-                      window.open(vAction["HelpURL"]);
-                    },
-                  },
-                ],
-              };
-            }
-            var treeColCompleted: Array<ITreeItem> =
-              completedTreeItemsArray.filter((value) => {
-                return value.label == vAction["Category"];
-              });
-            if (treeColCompleted.length != 0) {
-              treeColCompleted[0].children.push(tree);
-            }
-          }
-        }); //For loop
-
-        if (treeItemsArray.length == 0)
-          this.setState({ noPendingActions: true });
-        this.setState({
-          actionsList: treeItemsArray,
-          completedActionsList: completedTreeItemsArray,
         });
-      } // IF END
 
+        //Loop through all "Active" tournaments and create an array with key and text
+        await activeTournamentDetails.forEach((eachTournament) => {
+
+          //Create an array for My Tournaments dropdown
+          if (uniqueUserTournaments.some(tournament => tournament.Tournament_x0020_Name == eachTournament["Title"])) {
+            myTournamentsChoices.push({
+              key: eachTournament["Title"],
+              text: eachTournament["Title"]
+            });
+          }
+          else {
+            //Create an array for Active Tournaments dropdown
+            activeTournamentsChoices.push({
+              key: eachTournament["Title"],
+              text: eachTournament["Title"]
+            });
+          }
+          tournamentDescriptionChoices.push({
+            key: eachTournament["Title"],
+            text: eachTournament["Description"]
+          });
+        });
+        activeTournamentsChoices.sort((a, b) => a.text.localeCompare(b.text));
+        myTournamentsChoices.sort((a, b) => a.text.localeCompare(b.text));
+
+        //Set state variables for dropdown options
+        this.setState({
+          activeTournamentsList: activeTournamentsChoices,
+          myTournamentsList: myTournamentsChoices,
+          tournamentDescriptionList: tournamentDescriptionChoices
+        });
+
+        //When an user participates in an active tournament, move that tournament to My Tournaments dropdown.
+        if (this.state.tournamentName != "") {
+          this.setState({
+            myTournamentName: this.state.tournamentName,
+            activeTournamentName: null,
+            tournamentName: this.state.tournamentName,
+          });
+          this.getPendingActions();
+        }
+        //Set the first option as a default tournament for My Tournaments dropdown
+        else if (myTournamentsChoices.length > 0) {
+          this.setState({
+            myTournamentName: myTournamentsChoices[0].text,
+            activeTournamentName: null,
+            tournamentName: myTournamentsChoices[0].text,
+          });
+        }
+        //If My Tournaments is empty, Set the first option as a default tournament for Active Tournaments dropdown
+        else if (activeTournamentsChoices.length > 0) {
+          this.setState({
+            myTournamentName: null,
+            activeTournamentName: activeTournamentsChoices[0].text,
+            tournamentName: activeTournamentsChoices[0].text,
+          });
+        }
+      }
       //If there is no active tournament
       else {
         this.setState({
           showError: true,
-          errorMessage: stringsConstants.NoActiveTournamentMessage,
+          errorMessage: LocaleStrings.NoActiveTournamentMessage,
           noActiveTournament: true
         });
       }
+    }
+    catch (error) {
+      console.error("TOT_TOTMyDashboard_getActiveTournaments \n", error);
+    }
+  }
+
+  //Set a value when an option is selected in My Tournaments dropdown and reset the Active Tournaments dropdown
+  public getMyTournamentActions = (ev: React.FormEvent<IComboBox>, option?: IComboBoxOption): void => {
+    this.setState({
+      tournamentName: option.key,
+      myTournamentName: option.key,
+      activeTournamentName: null
+    });
+
+  }
+
+  //Set a value when an option is selected in Active Tournaments dropdown and reset the My Tournaments dropdown
+  public getActiveTournamentActions = (ev: React.FormEvent<IComboBox>, option?: IComboBoxOption): void => {
+    this.setState({
+      tournamentName: option.key,
+      activeTournamentName: option.key,
+      myTournamentName: null
+    });
+  }
+
+  //Refresh the tournament actions whenever the tournament name is selected
+  public componentDidUpdate(prevProps: Readonly<ITOTMyDashboardProps>, prevState: Readonly<ITOTMyDashboardState>, snapshot?: any): void {
+    if (prevState.tournamentName != this.state.tournamentName) {
+      this.setState({ noPendingActions: false });
+      if (this.state.tournamentName !== "")
+        this.getPendingActions();
+      //Refresh the points and rank in the sidebar when a tournament is selected in My Tournaments / Active tournaments dropdown
+      this._eventEmitter.emit("rebindSideBar:start", {
+        tournamentName: this.state.tournamentName,
+      } as EventData);
+    }
+  }
+
+  //On select of a tree node change the state of selected actions
+  private onActionSelected(items: ITreeItem[]) {
+    this.setState({ selectedActionsList: items, treeViewSelectedKeys: items["key"] });
+  }
+
+  //Get Actions from Tournament Actions list and bind it to Treeview
+  private async getPendingActions() {
+    console.log(stringsConstants.TotLog + "Getting actions from Tournament Actions list.");
+    try {
+      // Reset state variables
+      this.setState({
+        actionsList: [],
+        completedActionsList: [],
+        selectedActionsList: [],
+        actionsError: false,
+        treeViewSelectedKeys: [],
+      });
+
+
+      //Get current users's email
+      currentUserEmail =
+        this.props.context.pageContext.user.email.toLowerCase();
+
+      let filterActive: string =
+        "Title eq '" +
+        this.state.tournamentName.replace(/'/g, "''") +
+        "'";
+      let filterUserTournaments: string =
+        "Tournament_x0020_Name eq '" +
+        this.state.tournamentName.replace(/'/g, "''") +
+        "'" +
+        " and Title eq '" +
+        currentUserEmail +
+        "'";
+
+      //Set the description for selected tournament
+      var tournmentDesc = this.state.tournamentDescriptionList.find((item) => item.key == this.state.tournamentName);
+
+      this.setState({
+        tournamentDescription: tournmentDesc.text
+      });
+
+      //Get all actions for the tournament from "Tournament Actions" list
+      const allTournamentsActionsArray: any[] =
+        await commonServiceManager.getItemsWithOnlyFilter(
+          stringsConstants.TournamentActionsMasterList,
+          filterActive
+        );
+
+      //Sort on Category
+      allTournamentsActionsArray.sort((a, b) => a.Category.localeCompare(b.Category));
+
+      //Get all actions completed by the current user for the current tournament
+      const userActionsArray: any[] =
+        await commonServiceManager.getItemsWithOnlyFilter(
+          stringsConstants.UserActionsList,
+          filterUserTournaments
+        );
+
+      var treeItemsArray: ITreeItem[] = [];
+      var completedTreeItemsArray: ITreeItem[] = [];
+
+      //Build the Parent Nodes(Categories) in Treeview. Skip the items which are already completed by the user in "User Actions" list
+      await allTournamentsActionsArray.forEach((vAction) => {
+        //Check if the category is present in the 'User Actions' list
+        var compareCategoriesArray = userActionsArray.filter((elArray) => {
+          return (
+            elArray.Action == vAction["Action"] &&
+            elArray.Category == vAction["Category"]
+          );
+        });
+        const tree: ITreeItem = {
+          key: vAction["Category"],
+          label: vAction["Category"],
+          children: [],
+        };
+
+        //If the category is not present in User Actions list add it to 'Pending Tree view'
+        var found: boolean;
+        if (compareCategoriesArray.length == 0) {
+          //Check if Category is already added to the Treeview. If yes, skip adding.
+          found = treeItemsArray.some((value) => {
+            return value.label === vAction["Category"];
+          });
+          if (!found) treeItemsArray.push(tree);
+        }
+        //If the category is present in User Actions list add it to 'Completed Tree view'
+        else {
+          //Check if Category is already added to the Treeview. If yes, skip adding.
+          found = completedTreeItemsArray.some((value) => {
+            return value.label === vAction["Category"];
+          });
+          if (!found) completedTreeItemsArray.push(tree);
+        }
+      }); //For Loop
+
+      //Build the child nodes(Actions) in Treeview. Skip the items which are already completed by the user in "User Actions" list
+      await allTournamentsActionsArray.forEach((vAction) => {
+        //Check if the action is present in the 'User Actions' list
+        var compareActionsArray = userActionsArray.filter((elChildArray) => {
+          return (
+            elChildArray.Action == vAction["Action"] &&
+            elChildArray.Category == vAction["Category"]
+          );
+        });
+
+        //If the action is  not present in User Actions list add it to 'Pending Tree view'
+        let tree: ITreeItem;
+        if (compareActionsArray.length == 0) {
+          if (vAction["HelpURL"] === 'null' || vAction["HelpURL"] == "") {
+            tree = {
+              key: vAction.Id,
+              label: vAction["Action"],
+              data:
+                vAction["Category"] +
+                stringsConstants.StringSeperator +
+                vAction["HelpURL"],
+              subLabel:
+                vAction["Points"] +
+                stringsConstants.PointsDisplayString +
+                vAction["Description"]
+            };
+          }
+          else {
+            tree = {
+              key: vAction.Id,
+              label: vAction["Action"],
+              data:
+                vAction["Category"] +
+                stringsConstants.StringSeperator +
+                vAction["HelpURL"],
+              subLabel:
+                vAction["Points"] +
+                stringsConstants.PointsDisplayString +
+                vAction["Description"],
+              actions: [
+                {
+                  iconProps: {
+                    iconName: "Info",
+                    title: LocaleStrings.MyDashboardInfoIconMessage
+                  },
+                  id: "GetItem",
+                  actionCallback: async (treeItem: ITreeItem) => {
+                    window.open(vAction["HelpURL"]);
+                  },
+                },
+              ],
+            };
+          }
+          var treeCol: Array<ITreeItem> = treeItemsArray.filter((value) => {
+            return value.label == vAction["Category"];
+          });
+          if (treeCol.length != 0) {
+            treeCol[0].children.push(tree);
+          }
+        }
+        //If the action present in User Actions list add it to 'Completed Tree view'
+        else {
+          if (vAction["HelpURL"] === 'null' || vAction["HelpURL"] == "") {
+            tree = {
+              key: vAction.Id,
+              label: vAction["Action"],
+              data:
+                vAction["Category"] +
+                stringsConstants.StringSeperator +
+                vAction["HelpURL"],
+              subLabel:
+                vAction["Points"] +
+                stringsConstants.PointsDisplayString +
+                vAction["Description"],
+              iconProps: {
+                iconName: "SkypeCheck",
+              },
+            };
+          }
+          else {
+            tree = {
+              key: vAction.Id,
+              label: vAction["Action"],
+              data:
+                vAction["Category"] +
+                stringsConstants.StringSeperator +
+                vAction["HelpURL"],
+              subLabel:
+                vAction["Points"] +
+                stringsConstants.PointsDisplayString +
+                vAction["Description"],
+              iconProps: {
+                iconName: "SkypeCheck",
+              },
+              actions: [
+                {
+                  iconProps: {
+                    iconName: "Info",
+                    title: LocaleStrings.MyDashboardInfoIconMessage
+                  },
+                  id: "GetItem",
+                  actionCallback: async (treeItem: ITreeItem) => {
+                    window.open(vAction["HelpURL"]);
+                  },
+                },
+              ],
+            };
+          }
+          var treeColCompleted: Array<ITreeItem> =
+            completedTreeItemsArray.filter((value) => {
+              return value.label == vAction["Category"];
+            });
+          if (treeColCompleted.length != 0) {
+            treeColCompleted[0].children.push(tree);
+          }
+        }
+      }); //For loop
+
+      if (treeItemsArray.length == 0)
+        this.setState({ noPendingActions: true });
+      this.setState({
+        actionsList: treeItemsArray,
+        completedActionsList: completedTreeItemsArray,
+      });
+
     } catch (error) {
       console.error("TOT_TOTMyDashboard_getPendingActions \n", error);
       this.setState({
@@ -404,6 +575,7 @@ export default class TOTMyDashboard extends React.Component<
                   Points: filterChildNodesArray[iCount].subLabel
                     .split(stringsConstants.StringSeperatorPoints)[0]
                     .replace(stringsConstants.PointsReplaceString, ""),
+                  UserName: this.props.context.pageContext.user.displayName
                 };
                 let createItems = await commonServiceManager.createListItem(
                   stringsConstants.UserActionsList,
@@ -415,11 +587,11 @@ export default class TOTMyDashboard extends React.Component<
           }
           this.setState({ actionsList: [], selectedActionsList: [] });
           Promise.all(createActionsPromise).then(() => {
-            this.getPendingActions().then(() => {
+            this.getActiveTournaments().then(() => {
               this.setState({ showSpinner: false });
               this._eventEmitter.emit("rebindSideBar:start", {
-                currentNumber: "1",
-              });
+                tournamentName: this.state.tournamentName,
+              } as EventData);
             });
           });
         });
@@ -459,12 +631,12 @@ export default class TOTMyDashboard extends React.Component<
                 <span
                   className={styles.backLabel}
                   onClick={() => this.props.onClickCancel()}
-                  title="Tournament of Teams"
+                  title={LocaleStrings.TOTBreadcrumbLabel}
                 >
-                  Tournament of Teams
+                  {LocaleStrings.TOTBreadcrumbLabel}
                 </span>
                 <span className={styles.border}></span>
-                <span className={styles.totDashboardLabel}>My Dashboard</span>
+                <span className={styles.totDashboardLabel}>{LocaleStrings.TOTMyDashboardPageTitle}</span>
               </div>
               {this.state.showError && (
                 <div>
@@ -474,36 +646,69 @@ export default class TOTMyDashboard extends React.Component<
                         {this.state.errorMessage}
                       </Label>
                       <DefaultButton
-                        text="Back"
-                        title="Back"
+                        text={LocaleStrings.BackButton}
+                        title={LocaleStrings.BackButton}
                         iconProps={backIcon}
                         onClick={() => this.props.onClickCancel()}
                         styles={backBtnStyles}>
                       </DefaultButton>
-                  </div>
+                    </div>
                   )
-                  :
-                  <Label className={styles.errorMessage}>
-                    {this.state.errorMessage}
-                  </Label>
-                }
+                    :
+                    <Label className={styles.errorMessage}>
+                      {this.state.errorMessage}
+                    </Label>
+                  }
                 </div>
               )}
+            </div>
+            <div className={styles.dropdownArea}>
+              <Row>
+                {this.state.myTournamentsList.length > 0 && (
+                  <Col md={5}>
+                    <span className={styles.labelHeading}>{LocaleStrings.MyTournamentsLabel} :
+                      <TooltipHost
+                        content={LocaleStrings.MyTournamentsTooltip}
+                        calloutProps={calloutProps}
+                        styles={hostStyles}
+                      >
+                        <Icon aria-label="Info" iconName="Info" className={classes.icon} />
+                      </TooltipHost>
+                    </span>
+                    <ComboBox className={styles.dropdownCol}
+                      placeholder={LocaleStrings.SelectTournamentPlaceHolder}
+                      selectedKey={this.state.myTournamentName}
+                      options={this.state.myTournamentsList}
+                      onChange={this.getMyTournamentActions.bind(this)}
+                    />
+                  </Col>
+                )}
+                {this.state.myTournamentsList.length > 0 && this.state.activeTournamentsList.length > 0 && (
+                  <Col md={1} className={styles.labelCol} >
+                    <span className={styles.labelHeading}>{LocaleStrings.OrLabel}</span>
+                  </Col>
+                )}
+                {this.state.activeTournamentsList.length > 0 && (
+                  <Col md={5}>
+                    <span className={styles.labelHeading}>{LocaleStrings.ActiveTournamentLabel} : </span>
+                    <ComboBox className={styles.dropdownCol}
+                      placeholder={LocaleStrings.SelectTournamentPlaceHolder}
+                      selectedKey={this.state.activeTournamentName}
+                      options={this.state.activeTournamentsList}
+                      onChange={this.getActiveTournamentActions.bind(this)}
+                    />
+                  </Col>
+                )}
+              </Row>
             </div>
 
             {this.state.tournamentName != "" && (
               <div>
                 {this.state.tournamentName != "" && (
                   <ul className={styles.listArea}>
-                    <li className={styles.listVal}>
-                      <span className={styles.labelHeading}>Tournament</span>:
-                      <span className={styles.labelNormal}>
-                        {this.state.tournamentName}
-                      </span>
-                    </li>
                     {this.state.tournamentDescription && (
                       <li className={styles.listVal}>
-                        <span className={styles.labelHeading}>Description</span>:
+                        <span className={styles.labelHeading}>{LocaleStrings.DescriptionLabel}</span>:
                         <span className={styles.labelNormal}>
                           {this.state.tournamentDescription}
                         </span>
@@ -518,38 +723,39 @@ export default class TOTMyDashboard extends React.Component<
                 <Row>
                   <Col>
                     <Label className={styles.subHeaderUnderline}>
-                      Pending Actions
+                      {LocaleStrings.PendingActionsLabel}
                     </Label>
                     {this.state.noPendingActions && (
                       <Label className={styles.successMessage}>
                         <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
-                        There are no more pending actions in this tournament.
+                        {LocaleStrings.PendingActionsSuccessMessage}
                       </Label>
                     )}
                     <TreeView
                       items={this.state.actionsList}
-                      showCheckboxes={true}
-                      selectChildrenIfParentSelected={true}
-                      selectionMode={TreeViewSelectionMode.Multiple}
                       defaultExpanded={true}
+                      selectionMode={TreeViewSelectionMode.Multiple}
+                      selectChildrenMode={SelectChildrenMode.Select | SelectChildrenMode.Unselect}
+                      showCheckboxes={true}
+                      defaultSelectedKeys={this.state.treeViewSelectedKeys}
                       onSelect={this.onActionSelected}
                     />
                     {this.state.actionsError && (
                       <Label className={styles.errorMessage}>
-                        Select atleast one action to proceed.
+                        {LocaleStrings.SelectActionsErrorMessage}
                       </Label>
                     )}
                     {this.state.showSpinner && (
                       <Spinner
-                        label={stringsConstants.formSavingMessage}
+                        label={LocaleStrings.FormSavingMessage}
                         size={SpinnerSize.large}
                       />
                     )}
                     <div className={styles.btnArea}>
                       {this.state.actionsList.length != 0 && (
                         <PrimaryButton
-                          text="Save"
-                          title="Save"
+                          text={LocaleStrings.SaveButton}
+                          title={LocaleStrings.SaveButton}
                           iconProps={saveIcon}
                           onClick={this.saveActions}
                           className={styles.saveBtn}
@@ -557,8 +763,8 @@ export default class TOTMyDashboard extends React.Component<
                       )}
                       &nbsp; &nbsp;
                       <PrimaryButton
-                        text="Back"
-                        title="Back"
+                        text={LocaleStrings.BackButton}
+                        title={LocaleStrings.BackButton}
                         iconProps={backIcon}
                         onClick={() => this.props.onClickCancel()}
                         styles={backBtnStyles}
@@ -567,7 +773,7 @@ export default class TOTMyDashboard extends React.Component<
                   </Col>
                   <Col>
                     <Label className={styles.subHeaderUnderline}>
-                      Completed Actions
+                      {LocaleStrings.CompletedActionsLabel}
                     </Label>
                     <TreeView
                       items={this.state.completedActionsList}

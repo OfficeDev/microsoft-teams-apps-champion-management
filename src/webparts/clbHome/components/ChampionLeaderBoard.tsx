@@ -15,6 +15,7 @@ import * as _ from "lodash";
 import Sidebar from "./Sidebar";
 import ChampionvView from "./ChampionvView";
 import siteconfig from "../config/siteconfig.json";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 
 type NewType = IPivotStyles;
 
@@ -56,15 +57,15 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
 
   const _renderListAsync = async () => {
     props.context.spHttpClient
-      .get( "/" + inclusionpath + "/" + siteName + "/_api/web/lists/GetByTitle('Events List')/Items", SPHttpClient.configurations.v1)
+      .get("/" + inclusionpath + "/" + siteName + "/_api/web/lists/GetByTitle('Events List')/Items", SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => {
         response
           .json()
           .then((eventdata) => {
             if (!eventdata.error) {
               setEventDropDown(_.orderBy(eventdata.value.filter(ed => ed.IsActive), ['Id'], ['asc']));
-               props.context.spHttpClient.get( 
-                "/"+inclusionpath+"/"+siteName+ "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000&$filter= Status eq 'Approved'", SPHttpClient.configurations.v1)
+              props.context.spHttpClient.get(
+                "/" + inclusionpath + "/" + siteName + "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000&$filter= Status eq 'Approved'", SPHttpClient.configurations.v1)
                 // tslint:disable-next-line: no-shadowed-variable
                 .then((response: SPHttpClientResponse) => {
                   response.json().then((datada) => {
@@ -89,7 +90,7 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
 
   const getUserPoints = (id: any) => {
     return props.context.spHttpClient.get(
-     
+
       "/" +
       inclusionpath +
       "/" +
@@ -124,8 +125,8 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
         if (c === usersd.length) {
           props.context.spHttpClient
             .get(
-            
-              "/"+inclusionpath+"/"+siteName+ 
+
+              "/" + inclusionpath + "/" + siteName +
               "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Region')",
               SPHttpClient.configurations.v1
             )
@@ -134,9 +135,9 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
                 if (!focusAreas.error) {
                   props.context.spHttpClient
                     .get(
-                     
-                      "/"+
-                      inclusionpath+"/"+siteName+ 
+
+                      "/" +
+                      inclusionpath + "/" + siteName +
                       "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('FocusArea')",
                       SPHttpClient.configurations.v1
                     )
@@ -225,6 +226,20 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
             callBack={_renderListAsync}
           />
           <div className="p-0 content-tab">
+            <div className="ClbPath">
+              <img src={require("../assets/CMPImages/BackIcon.png")}
+                className="backImg"
+              />
+              <span
+                className="backLabel"
+                onClick={() => { props.onClickCancel(); }}
+                title={LocaleStrings.CMPBreadcrumbLabel}
+              >
+                {LocaleStrings.CMPBreadcrumbLabel}
+              </span>
+              <span className="ClbBorder"></span>
+              <span className="ClbLabel">{LocaleStrings.ChampionLeaderBoardLabel}</span>
+            </div>
             <Pivot
               aria-label=""
               styles={pivotStyles}
@@ -234,7 +249,7 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
               className="pivotControl"
             >
               <PivotItem
-                headerText="Global"
+                headerText={LocaleStrings.PivotHeaderGlobal}
                 headerButtonProps={{
                   "data-order": 1,
                   "data-title": "Global Data",
@@ -242,44 +257,44 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
               >
                 <Champions
                   users={users}
-                  type="Global"
+                  type={LocaleStrings.PivotHeaderGlobal}
                   events={eventDropdown}
                   fromV={""}
                   filterBy=""
                   callBack={_renderListAsync}
                 />
               </PivotItem>
-              <PivotItem headerText="Near Me">
+              <PivotItem headerText={LocaleStrings.PivotHeaderNearMe}>
                 <Dropdown
                   onChange={(event: any) => filterUsers("Region", event)}
-                  placeholder="Select Near Me"
+                  placeholder= {LocaleStrings.NearMePlaceHolder}
                   options={options(regionDropdown)}
                   styles={dropdownStyles}
                   onRenderCaretDown={onRenderCaretDown}
                 />
                 <Champions
                   users={users}
-                  type="Near Me"
+                  type={LocaleStrings.PivotHeaderNearMe}
                   events={eventDropdown}
                   fromV={""}
-                  filterBy={filterByFocusArea}                  
-                  callBack={_renderListAsync}                  
+                  filterBy={filterByFocusArea}
+                  callBack={_renderListAsync}
                 />
               </PivotItem>
-              <PivotItem headerText="By Specialty">
+              <PivotItem headerText={LocaleStrings.PivotHeaderBySpeciality}>
                 <Dropdown
                   onChange={(event: any) => filterUsers("FocusArea", event)}
-                  placeholder="Select By Specialty"
+                  placeholder={LocaleStrings.BySpecialityPlaceHolder}
                   options={options(countryDropdown)}
                   styles={dropdownStyles}
                   onRenderCaretDown={onRenderCaretDown}
                 />
                 <Champions
                   users={users}
-                  type="By Specialty"
+                  type={LocaleStrings.PivotHeaderBySpeciality}
                   events={eventDropdown}
                   fromV={""}
-                  filterBy={filterBySpeciality}                  
+                  filterBy={filterBySpeciality}
                   callBack={_renderListAsync}
                 />
               </PivotItem>

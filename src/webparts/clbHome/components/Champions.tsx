@@ -7,6 +7,8 @@ import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import * as microsoftTeams from "@microsoft/teams-js";
 import { ILabelStyles, IStyleSet, Label, Icon, initializeIcons, } from "office-ui-fabric-react";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
+
 initializeIcons();
 
 const labelStyles: Partial<IStyleSet<ILabelStyles>> = {
@@ -62,13 +64,13 @@ export default class Champions extends Component<
         {this.props.type && (
           <Label className="gtcLabel">            
             <span className="gtc">
-              <b>{this.props.type}</b> Top {this.props.filterBy} Champions
+              <b>{this.props.type}</b> {LocaleStrings.TopChampionsLabel}
             </span>
           </Label>
         )}
         {this.props.users.length === 0 && (
           <div className="m-4 card">
-            <b className="card-title p-4 text-center">Records Not Found</b>
+            <b className="card-title p-4 text-center">{LocaleStrings.RecordsNotFound}</b>
           </div>
         )}
         {this.props.users.length > 0 && (
@@ -162,8 +164,8 @@ export default class Champions extends Component<
               {this.props.type && (
                 <React.Fragment>
                   <span className="gtc">
-                    <b>{this.props.type}</b> Top {this.props.filterBy} Champions
-                    : <b>My Rank</b>
+                    <b>{this.props.type}</b> {LocaleStrings.TopChampionsLabel}
+                    : <b>{LocaleStrings.MyRankLabel}</b>
                   </span>
                   <div className="table-content">
                     {this.state.isLoaded && (
@@ -196,7 +198,7 @@ export default class Champions extends Component<
                                       </div>
                                       <div className="vline"></div>
                                       <div className="gttc-rank">
-                                        Rank <b>{ind + 1}</b>
+                                      {LocaleStrings.RankLabel} <b>{ind + 1}</b>
                                       </div>
                                   </div>
                                 </Accordion.Toggle>
@@ -205,8 +207,8 @@ export default class Champions extends Component<
                                     <Table>
                                       {Object.keys(rankedMember.eventpoints).length != 0 &&
                                         <tr>
-                                          <th>Event Type</th>
-                                          <th className="countHeader">Count</th>
+                                          <th>{LocaleStrings.EventTypeLabel}</th>
+                                          <th className="countHeader">{LocaleStrings.CountLabel}</th>
                                         </tr>
                                       }
                                       {Object.keys(rankedMember.eventpoints).map((e, i) => {

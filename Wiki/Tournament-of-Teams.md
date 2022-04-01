@@ -6,7 +6,13 @@ Tournament of Teams is not enabled by default. CMP admin needs to enable it from
 
 On enabling “Tournament of Teams”: 
 
-1. The lists are provisioned in the CMP share point site 
+1. Below lists are provisioned in the CMP share point site:
+
+> * Actions List
+> * ToT Admins
+> * Tournament Actions
+> * Tournaments
+> * User Actions
 
 2. “Tournament of Teams” link is visible under “Quick Start Guide” section of CMP home page. This link navigates the users to “Tournament of Teams” landing page. 
 
@@ -35,19 +41,24 @@ Below are the master lists in Share Point that need to be managed by the TOT Adm
 
 ![Quick Start Guide](../Images/CreateTournament.png) 
 
-### Start/End Tournament 
+### Manage Tournaments 
 
- - A tournament can be started or ended by an admin using “Start/End Tournament” screen. 
+ - A tournament can be started or ended by an admin using “Manage Tournaments” screen. 
 
- - Only one tournament can be active at a time. To start a new tournament the active tournament must be ended. 
+ - Multiple tournaments can be can be active at a time. 
+
 
 ![Quick Start Guide](../Images/ManageTournament.png) 
 
 ### My Dashboard
 
-- Champions can start participating in the active tournament using “My Dashboard”.  
+- Champions can start participating in any of the active tournaments using “My Dashboard”.  
 
-- “My Dashboard” shows the Teams Actions available in the current active tournament. The champions can select the completed actions and save to earn points and a rank in that tournament which is displayed on the left side section of the page. 
+- Champions can select the tournament from either "My Tournaments" or "Active Tournaments" dropdown list. If a user has participated in any of the active tournaments already they will be listed under "My Tournaments" list. All the other active tournaments will be listed under "Active Tournaments" list.
+
+- “My Dashboard” will show the Teams Actions available in the selected tournament. The champions can select the completed actions and save to earn points and a rank in that tournament which is displayed on the left side section of the page. 
+
+- By default, the first tournament in the "My Tournaments" will be selected. If the user has not participated in any of the tournaments yet, first tournament in the "Active Tournaments" will be selected.
 
 - The users must complete at least one action to be considered as a participant in that tournament. The ranks are calculated only among the participants. 
 
@@ -55,6 +66,8 @@ Below are the master lists in Share Point that need to be managed by the TOT Adm
 
 ### Leaderboard
 
-Leader board is available to everyone. It shows the list of all participants in the current active tournament along with their points and ranks. 
+- Leader board is available to everyone. It shows the list of all participants in the selected active tournament along with their points and ranks. 
+- By default, the first tournament in the "My Tournaments" will be selected. If the user has not participated in any of the tournaments yet, first tournament in the "Active Tournaments" will be selected.
+
 
 ![Quick Start Guide](../Images/TOTLeaderBoard.png) 

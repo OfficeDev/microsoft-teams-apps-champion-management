@@ -1,3 +1,5 @@
+export const ToTLabel = "Tournament of Teams";
+export const CMPLabel = "Champion Management Platform";
 export const PropertyPaneDescription = "Description";
 export const BasicGroupName = "Group Name";
 export const DescriptionFieldLabel = "Description Field";
@@ -77,6 +79,9 @@ export const UserActionsList = "User Actions";
 export const NoActiveTournamentMessage = "There is no active tournament at the moment. Please check back later.";
 export const formSavingMessage = "Saving your details....";
 export const DigitalBadgeLibrary = "Digital Badge Assets";
+export const CMPLogoLibrary = "CMP Logo";
+export const MSLogo ="MSLogo.jpg";
+export const MemberList = "Member List";
 export const NoActiveParticipantsMessage = "There are no active participants at the moment. Be the first to participate and log an activity from My Dashboard!";
 
 
@@ -91,6 +96,7 @@ export const FeedbackUrl = "https://aka.ms/adoptionfeedback";
 export const M365CMP = "https://aka.ms/m365cmp";
 export const M365CmpApp = "https://aka.ms/m365cmpapp";
 
+
 //ManageTournaments
-export const ManageTotLabel1 = "One tournament can be enabled at a time. See below for the current active tournament, ability to end the tournament, as well as the ability to start a new tournament.";
-export const ManageTotLabel2 = "Once a tournament has been started and completed it will not be available to start again; however, you can create a new tournament using the same actions if you would like to complete a similar tournament!";
+export const StartTournamentAction = "Start";
+export const EndTournamentAction = "End";

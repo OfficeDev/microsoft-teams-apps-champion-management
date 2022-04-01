@@ -23,6 +23,7 @@ import {
   TreeViewSelectionMode,
 } from "@pnp/spfx-controls-react/lib/TreeView";
 import { ITextFieldStyles } from "office-ui-fabric-react/lib/components/TextField/TextField.types";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 
 export interface ICreateTournamentProps {
   context?: WebPartContext;
@@ -340,7 +341,7 @@ export default class TOTCreateTournament extends React.Component<
           this.setState({
             showError: true,
             errorMessage:
-              "Tournament name already exists. Enter another name for tournament.",
+              LocaleStrings.DuplicateTournamentNameError,
           });
         }
       }
@@ -367,18 +368,18 @@ export default class TOTCreateTournament extends React.Component<
           <span
             className={styles.backLabel}
             onClick={() => this.props.onClickCancel()}
-            title="Tournament of Teams"
+            title={LocaleStrings.TOTBreadcrumbLabel}
           >
-            Tournament of Teams
+            {LocaleStrings.TOTBreadcrumbLabel}
           </span>
           <span className={styles.border}></span>
-          <span className={styles.createTournamentLabel}>Create Tournament</span>
+          <span className={styles.createTournamentLabel}>{LocaleStrings.CreateTournamentPageTitle}</span>
         </div>
         <div>
           {this.state.showSuccess && (
             <Label className={styles.successMessage}>
               <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
-              Tournament created successfully.
+              {LocaleStrings.CreateTournamentSuccessLabel}
             </Label>
           )}
 
@@ -394,9 +395,9 @@ export default class TOTCreateTournament extends React.Component<
             <Row>
               <Col md={6}>
                 <TextField
-                  label="Tournament Name"
+                  label={LocaleStrings.TournamentNameLabel}
                   required
-                  placeholder="Tournament Name"
+                  placeholder={LocaleStrings.TournamentNameLabel}
                   maxLength={255}
                   value={this.state.tournamentName}
                   onChange={(evt) => this.handleInput(evt, "tournamentName")}
@@ -404,7 +405,7 @@ export default class TOTCreateTournament extends React.Component<
                 />
                 {this.state.tournamentError && (
                   <Label className={styles.errorMessage}>
-                    Tournament Name is required.
+                    {LocaleStrings.TournamentNameErrorLabel}
                   </Label>
                 )}
               </Col>
@@ -413,10 +414,10 @@ export default class TOTCreateTournament extends React.Component<
             <Row>
               <Col md={6}>
                 <TextField
-                  label="Tournament Description"
+                  label={LocaleStrings.TournamentDescriptionLabel}
                   multiline
                   maxLength={500}
-                  placeholder="Tournament Description(Max 500 characters)"
+                  placeholder={LocaleStrings.TournamentDescPlaceHolderLabel}
                   value={this.state.tournamentDescription}
                   onChange={(evt) =>
                     this.handleInput(evt, "tournamentDescription")
@@ -430,11 +431,11 @@ export default class TOTCreateTournament extends React.Component<
               <Col className={styles.treeViewContent}>
                 <div className={styles.selectTeamActionArea}>
                   <Label className={styles.selectTeamActionLabel}>
-                    Select Teams Actions:{" "}
+                    {LocaleStrings.SelectTeamsActionsLabel}{" "}
                     <span className={styles.asteriskStyle}>*</span>
                   </Label>
                   <TooltipHost
-                    content="Select from the below available Teams actions to include in the new tournament. To add new tournament actions to choose from, visit the Manage Tournament Actions from the Admin Tools."
+                    content={LocaleStrings.TeamsActionInfoToolTip}
                     calloutProps={calloutProps}
                     styles={hostStyles}
                   >
@@ -452,7 +453,7 @@ export default class TOTCreateTournament extends React.Component<
                 />
                 {this.state.actionsError && (
                   <Label className={styles.errorMessage}>
-                    Select atleast one action to create a tournament.
+                   {LocaleStrings.ActionErrorLabel}
                   </Label>
                 )}
               </Col>
@@ -464,8 +465,8 @@ export default class TOTCreateTournament extends React.Component<
             <Col>
               {this.state.showForm && (
                 <PrimaryButton
-                  text="Create Tournament"
-                  title="Create Tournament"
+                  text={LocaleStrings.CreateTournamentButton}
+                  title={LocaleStrings.CreateTournamentButton}
                   iconProps={addIcon}
                   onClick={this.saveTournament}
                   className={styles.createBtn}
@@ -473,8 +474,8 @@ export default class TOTCreateTournament extends React.Component<
               )}
               &nbsp; &nbsp;
               <PrimaryButton
-                text="Back"
-                title="Back"
+                text={LocaleStrings.BackButton}
+                title={LocaleStrings.BackButton}
                 iconProps={backIcon}
                 onClick={() => this.props.onClickCancel()}
                 styles={backBtnStyles}
