@@ -41,7 +41,7 @@
     "bootstrap": "^4.6.0",
     "classnames": "^2.3.1",
     "ejs": "^3.1.6",
-    "follow-redirects": "^1.14.7",
+    "follow-redirects": "^1.14.8",
     "gulp-update": "0.0.2",
     "immer": "^9.0.6",
     "jquery": "^3.6.0",
