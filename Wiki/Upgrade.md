@@ -1,33 +1,37 @@
-### Upgrade to version 2.0 from 1.3 and 1.2
+### Upgrade to version 2.1 from 2.0, 1.3 and 1.2
 
-If you are already having version 1.3 or 1.2 installed on your tenant follow the below steps to upgrade to version 2.0:
+If you are already having version 2.0, 1.3 or 1.2 installed on your tenant follow the below steps to upgrade to version 2.1 with an admin account:
 
-1.  Navigate to App Catalog with a tenant Admin account. Do not delete the existing  1.3 or 1.2 package. Upload the new package that is downloaded from "sharepoint/solution" folder which will replace the existing package.  
+1.  Navigate to App Catalog with a tenant Admin account. Do not delete the existing package. Upload the new package that is downloaded from "sharepoint/solution" folder which will replace the existing package.  
 
-![Upgrade 1.3](../Images/Upgrade2.0-1.png) 
+![Upgrade 1.3](../Images/Upgrade-1.png) 
 
 2. Click on "Deploy".
 
-![Upgrade 1.3](../Images/Upgrade2.0-2.png) 
+![Upgrade 1.3](../Images/Upgrade-2.png) 
 
 3. "Check In" the package.
 
 ![Upgrade 1.3](../Images/Upgrade2.0-3.png) 
 
-4. Select the package and click "Sync to Teams" from the ribbon and wait for the "Successfully synced to teams solution" message to appear
+4. Select the package and click "Sync to Teams" from the ribbon and wait for the "Successfully synced to teams solution" message to appear.
 
-![Upgrade 1.3](../Images/SyncToTeams.png) 
+![SyncToTeams](../Images/SyncToTeams.png) 
 
-5. Navigate to SharePoint admin center. Under Advanced menu in the left navigation select API access. Select and approve the additional pending request associated with championmanagement as shown below. 
-After approving the permission, it would take some time for it to take effect. 
+5. The Champion Management Platform will be updated to the latest version and you will see changes reflected in Teams. Please note that if you do not see changes reflected in Teams after 30 minutes you can log out and back in and clear the Teams cache to see changes immediately. 
 
-![Upgrade 1.3](../Images/Upgrade2.0-4.png) 
+6. If you already had "Tournament of Teams" enabled before the upgrade, click on "Enable Tournament of Teams" under "Admin Tools" section again. This is to upgrade the Tournament of Teams module which includes the bug fix for inaccurate tournament rankings and points. "Tournament of Teams" icon will not be visible in the "Get Started" section without this step.
+NOTE: If there is any active tournament before the upgrade the leader board will show emails instead of User Display Names after the upgrade. This will not happen for new users or new tournaments. 
 
-6. The Champion Management Platform will be updated to the latest version and you will see changes reflected in Teams. Please note that if you do not see changes reflected in Teams after 30 minutes you can log out and back in and clear the Teams cache to see changes immediately. 
+![Upgrade-3](../Images/Upgrade-3.png) 
 
-### Upgrade to version 2.0 from 1.1
+7. The below graph permission can be removed from "API Permissions" in sharePoint admin portal only if this permission is not used in any other apps in your tenant. The upgraded package for CMP is not using this API anymore.
 
-If you are already having 1.1 installed on your tenant and want to upgrade to 2.0 the existing app and SharePoint site 'ChampionManagementSite' have to be deleted. 
+![Upgrade-4](../Images/Upgrade-4.png) 
+
+### Upgrade to version 2.1 from 1.1
+
+If you are already having 1.1 installed on your tenant and want to upgrade to 2.1 the existing app and SharePoint site 'ChampionManagementSite' have to be deleted. 
 
 If you have current members and events you will want to export those list items and import re-import them into the respective list areas. We have expanded our lists to have some additional data as well so you may need to populate additional fields. 
 

@@ -8,6 +8,7 @@ import { mergeStyleSets } from '@fluentui/react/lib/Styling';
 import { TooltipHost, ITooltipHostStyles } from '@fluentui/react/lib/Tooltip';
 import { Callout, Link, Text, FontWeights } from 'office-ui-fabric-react';
 import * as Strings from '../constants/strings';
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 
 // Import package version
 const packageSolution: any = require("../../../../config/package-solution.json");
@@ -60,6 +61,7 @@ const style = mergeStyleSets({
 interface IHeaderProps {
   showSearch: boolean;
   clickcallback: () => void; //will redirects to home
+  logoImageURL: string;
 }
 interface HeaderState {
   isCalloutVisible: boolean;
@@ -87,18 +89,18 @@ export default class Header extends Component<IHeaderProps, HeaderState> {
       <Navbar className={styles.navbg}>
         <Navbar.Brand href="#home" className={styles.white}>
           <img
-            src={require("../assets/CMPImages/MsLogo.png")}
+            src={this.props.logoImageURL}
             className={`d-inline-block ${styles.clbHeaderLogo}`}
-            alt="mslogo"
+            alt="applogo"
             onClick={this.homeRedirect}
-            title="Home"
+            title={LocaleStrings.AppLogoToolTip}
           />
-          <span onClick={this.homeRedirect} className={styles.clbHeading} title="Home">Champion Management Platform</span>
+          <span onClick={this.homeRedirect} className={styles.clbHeading} title={LocaleStrings.AppLogoToolTip}>{LocaleStrings.AppHeaderTitleLabel}</span>
         </Navbar.Brand>
         <Nav.Item className="ml-auto" style={{ marginRight: "1%" }}>
           <div className={styles.icon}>
             <TooltipHost
-              content="More Info"
+              content={LocaleStrings.MoreInfoToolTip}
               delay={2}
               calloutProps={calloutProps}
               styles={hostStyles}
@@ -117,43 +119,43 @@ export default class Header extends Component<IHeaderProps, HeaderState> {
                 directionalHint={3}
               >
                 <Text block variant="xLarge" className={style.title}>
-                  About the Champion Management Platform (CMP):
+                {LocaleStrings.AboutHeaderLabel}
                 </Text>
                 <Text block variant="small" className={style.titlebody}>
-                  Our Champion Management Platform was created with organizational Champions / Adoption Specialists in mind. Hearing from the Microsoft 365 Champion Community this app was developed to deliver a platform to help create and sustain your own communities. Starting with inspiration through execution in helping you achieve more within your own communities!
+                {LocaleStrings.AboutContentLabel}
                 </Text>
                 <Text block variant="xLarge" className={style.title}>
-                  Additional Resources:
+                {LocaleStrings.AdditionalResourcesHeaderLabel}
                 </Text>
                 <Text block variant="small" className={style.titlebody}>
-                  The Microsoft Teams Customer Advocacy Group is focused on delivering solutions like these to inspire and help you achieve your goals. Follow and join in through these other resources to learn more from us and the community:
+                {LocaleStrings.AdditionalResourcesContentLabel}
                 </Text>
                 <Link href={Strings.M365Champions} target="_blank" className={`${style.link} ${style.linkFont}`}>
-                  Microsoft 365 Champion Community
+                {LocaleStrings.M365ChampionCommunityLinkLabel}
                 </Link>
                 <Link href={Strings.DrivingAdoption} target="_blank" className={`${style.link} ${style.linkFont}`}>
-                  Driving Adoption on the Microsoft Technical Community
+                {LocaleStrings.DrivingAdoptionLinkLabel}
                 </Link>
                 <Text block variant="xLarge" className={style.title}>
                   ----
                 </Text>
                 <Text block variant="small">
-                  Current Version: {packageSolution.solution.version}
+                {LocaleStrings.CurrentVersionLabel} {packageSolution.solution.version}
                 </Text>
                 <Text block variant="small">
-                  Latest Version: <Link href={Strings.LatestVersion} target="_blank">CMP GitHub</Link>
+                {LocaleStrings.LatestVersionLabel} <Link href={Strings.LatestVersion} target="_blank">{LocaleStrings.CMPGitHubLinkLabel}</Link>
                 </Text>
                 <Text block variant="xLarge" className={style.title}>
                   ----
                 </Text>
                 <Text block variant="small">
-                  Visit the Champion Management Platform pages to learn more:
+                {LocaleStrings.VisitLabel}
                 </Text>
                 <Text block variant="small">
-                  Overview & Information on our <Link href={Strings.M365CMP} target="_blank">Microsoft Adoption Hub</Link>
+                {LocaleStrings.OverviewLabel} <Link href={Strings.M365CMP} target="_blank">{LocaleStrings.MSAdoptionHubLinkLabel}</Link>
                 </Text>
                 <Text block variant="small">
-                  Solution technical documentation and architectural overview on <Link href={Strings.M365CmpApp} target="_blank">GitHub</Link>
+                {LocaleStrings.DocumentationLabel} <Link href={Strings.M365CmpApp} target="_blank">{LocaleStrings.CMPGitHubLinkLabel}</Link>
                 </Text>
               </Callout>
             )}
@@ -164,7 +166,7 @@ export default class Header extends Component<IHeaderProps, HeaderState> {
           <div className={styles.icon}>
             <a href={Strings.HelpUrl} target="_blank">
               <TooltipHost
-                content="Support"
+                content={LocaleStrings.SupportToolTip}
                 delay={2}
                 calloutProps={calloutProps}
                 styles={hostStyles}
@@ -178,7 +180,7 @@ export default class Header extends Component<IHeaderProps, HeaderState> {
           <div className={styles.fbIcon}>
             <a href={Strings.FeedbackUrl} target="_blank">
               <TooltipHost
-                content="Feedback"
+                content={LocaleStrings.FeedbackToolTip}
                 delay={2}
                 calloutProps={calloutProps}
                 styles={hostStyles}

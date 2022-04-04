@@ -15,6 +15,8 @@ import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import { Icon, initializeIcons } from "office-ui-fabric-react";
 import siteconfig from "../config/siteconfig.json";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
+
 initializeIcons();
 export interface ISidebarStateProps {
   becomec: boolean;
@@ -112,7 +114,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       roles: [],
       status: [],
       memberData: { region: "", role: "", status: "", country: "" },
-      buttonText: "Become a Champion",
+      buttonText: LocaleStrings.BecomeChampionLabel,
       bFlag: true,
       isMember: false,
       emailValue: "",
@@ -302,14 +304,14 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     this.setState({
                       emailValue: datauser.Email,
                       isMember: false,
-                      buttonText: "Become a Champion", //if employee want to become a champion enabling this button
+                      buttonText: LocaleStrings.BecomeChampionLabel, //if employee want to become a champion enabling this button
                       isLoaded: true,
                     });
                   else
                     this.setState({
                       emailValue: datauser.Email,
                       isMember: true,
-                      buttonText: "Champion submission pending", //if employee already raised for a champion enabling this button
+                      buttonText: LocaleStrings.ChampionSubmissionPendingLabel, //if employee already raised for a champion enabling this button
                       isLoaded: true,
                     });
                   localStorage.setItem("memberid", memberData); // storing memberid in local storage
@@ -491,7 +493,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
           .post(url, SPHttpClient.configurations.v1, spHttpClientOptions)
           .then((response: SPHttpClientResponse) => {
             if (response.status === 201) {
-              alert("Champion request submission successful");
+              alert(LocaleStrings.ChampionRequestSubmitSuccessMessage);
               {
                 this.props.onClickCancel();
               }
@@ -579,10 +581,6 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       <div className="Championleaderboard">
         {this.state.isLoaded && (
           <div className="sidenav">
-            <div className="back-btn" onClick={this.props.onClickCancel}>
-              <Icon iconName="ChevronLeftSmall" id="chevLeft" />
-              <span className="backText" title="Back">Back</span>
-            </div>
             <div>
               {/* user profile image*/}
               <img
@@ -605,12 +603,12 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                   <div className="insidecircle">
                     <div className="pointsscale">
                       <div><Icon iconName="FavoriteStarFill" id="star" className="yellowStar" /></div>
-                      <div>{this.state.totalUserPointsfromList} Points</div>
+                      <div>{this.state.totalUserPointsfromList} {LocaleStrings.CMPSideBarPointsLabel}</div>
                     </div>
                     <div className="line"></div>
                     <div className="globalrank">
-                      <span className="bold">{this.state.userRank}</span> Global Rank <br />
-                      of {this.state.totalUsers} Champions
+                      <span className="bold">{this.state.userRank}</span> {LocaleStrings.CMPSideBarGlobalRankLabel} <br />
+                      of {this.state.totalUsers} {LocaleStrings.CMPSideBarChampionsLabel}
                     </div>
                   </div>
                 </div>
@@ -640,7 +638,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
               <div>
                 <div className="bc-form">
                   <label htmlFor="fname" className="bc-label">
-                    First Name
+                  {LocaleStrings.FirstNameLabel}
                   </label>
                   <TextField
                     value={
@@ -651,7 +649,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     onChange={(evt) => this.handleInput(evt, "FirstName")}
                   />
                   <label htmlFor="lname" className="bc-label">
-                    Last Name
+                  {LocaleStrings.LastNameLabel}
                   </label>
                   <TextField
                     value={
@@ -662,7 +660,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     onChange={(evt) => this.handleInput(evt, "LastName")}
                   />
                   <label htmlFor="email" className="bc-label">
-                    Email Id
+                  {LocaleStrings.EmailIDLabel}
                   </label>
                   <TextField
                     value={
@@ -673,48 +671,48 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     onChange={(evt) => this.handleInput(evt, "Title")}
                   />
                   <label htmlFor="Region" className="bc-label">
-                    Region
+                  {LocaleStrings.RegionGridHeader}
                   </label>
                   <Dropdown
                     onChange={(event: any) => this.filterUsers("region", event)}
-                    placeholder="Select an Region"
+                    placeholder={LocaleStrings.RegionPlaceholder}
                     options={this.options(this.state.regions)}
                     styles={this.dropdownStyles}
                     onRenderCaretDown={this.onRenderCaretDown}
                     defaultValue={this.state.currentUser.Region}
                   />
                   <label htmlFor="Country" className="bc-label">
-                    Country
+                  {LocaleStrings.CountryGridHeader}
                   </label>
                   <Dropdown
                     onChange={(event: any) =>
                       this.filterUsers("country", event)
                     }
-                    placeholder="Select an Country"
+                    placeholder={LocaleStrings.CountryPlaceholder}
                     options={this.options(this.state.coutries)}
                     styles={this.dropdownStyles}
                     onRenderCaretDown={this.onRenderCaretDown}
                     defaultValue={this.state.currentUser.Country}
                   />
                   <label htmlFor="Focus Area" className="bc-label">
-                    Focus Area
+                  {LocaleStrings.FocusAreaGridHeader}
                   </label>
                   <Dropdown
                     onChange={(event: any) =>
                       this.filterUsers("focusarea", event)
                     }
-                    placeholder="Select Focus Area"
+                    placeholder={LocaleStrings.FocusAreaPlaceholder}
                     options={this.options(this.state.status)}
                     styles={this.dropdownStyles}
                     onRenderCaretDown={this.onRenderCaretDown}
                     defaultValue={this.state.currentUser.FocusArea}
                   />
                   <label htmlFor="Group" className="bc-label">
-                    Group
+                  {LocaleStrings.GroupGridHeader}
                   </label>
                   <Dropdown
                     onChange={(event: any) => this.filterUsers("group", event)}
-                    placeholder="Select Group"
+                    placeholder={LocaleStrings.GroupPlaceholder}
                     options={this.options(this.state.roles)}
                     styles={this.dropdownStyles}
                     onRenderCaretDown={this.onRenderCaretDown}
@@ -725,7 +723,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     type="reset"
                     onClick={() => this._createorupdateItem()}
                   >
-                    Submit
+                    {LocaleStrings.SubmitButton}
                   </Button>
                 </div>
               </div>

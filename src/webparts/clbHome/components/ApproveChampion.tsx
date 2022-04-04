@@ -7,6 +7,7 @@ import { sp } from "@pnp/sp";
 import * as React from "react";
 import siteconfig from "../config/siteconfig.json";
 import styles from "../scss/CMPApproveChampion.module.scss";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 
 
 
@@ -143,12 +144,12 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
         } else {
           if (status === 'Approved') {
             this.setState({
-              approveMessage: `Your response has been ${status}.`
+              approveMessage: LocaleStrings.ChampionApprovedMessage
             });
           }
           if (status === 'Rejected') {
             this.setState({
-              rejectMessage: `Your response has been ${status}.`
+              rejectMessage: LocaleStrings.ChampionRejectedMessage
             });
           }
           this._getListData();
@@ -166,12 +167,12 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
           <span
             className={styles.backLabel}
             onClick={() => { this.props.onClickAddmember(); }}
-            title="Back"
+            title={LocaleStrings.CMPBreadcrumbLabel}
           >
-            Back
+            {LocaleStrings.CMPBreadcrumbLabel}
           </span>
           <span className={styles.border}></span>
-          <span className={styles.approveChampionLabel}>Manage Approval</span>
+          <span className={styles.approveChampionLabel}>{LocaleStrings.ManageApprovalsPageTitle}</span>
         </div>
         {this.state.approveMessage &&
           <Label className={styles.approveMessage}>
@@ -184,16 +185,16 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
             {this.state.rejectMessage}
           </Label>
         }
-        <div className={styles.listHeading}>Champion List</div>
+        <div className={styles.listHeading}>{LocaleStrings.ChampionsListPageTitle}</div>
         <table className="table table-bodered">
           <thead className={styles.listHeader}>
-            <th>People Name</th>
-            <th>Region</th>
-            <th>Country</th>
-            <th>FocusArea</th>
-            <th>Group</th>
-            {!this.props.isEmp && <th>Status</th>}
-            <th>Action</th>
+            <th>{LocaleStrings.PeopleNameGridHeader}</th>
+            <th>{LocaleStrings.RegionGridHeader}</th>
+            <th>{LocaleStrings.CountryGridHeader}</th>
+            <th>{LocaleStrings.FocusAreaGridHeader}</th>
+            <th>{LocaleStrings.GroupGridHeader}</th>
+            {!this.props.isEmp && <th>{LocaleStrings.StatusGridHeader}</th>}
+            <th>{LocaleStrings.ActionGridHeader}</th>
           </thead>
           <tbody className={styles.listBody}>
             {this.state.list &&
@@ -217,18 +218,18 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
                         <button
                           className={`btn ${styles.rejectBtn}`}
                           onClick={e => this.updateItem(e, item.ID)}
-                          title="Reject"
+                          title={LocaleStrings.RejectButton}
                         >
                           <Icon iconName="ErrorBadge" className={`${classes.rejectIcon}`} />
-                          <span className={styles.rejectBtnLabel}>Reject</span>
+                          <span className={styles.rejectBtnLabel}>{LocaleStrings.RejectButton}</span>
                         </button>
                         <button
                           className={`btn ${styles.approveBtn}`}
                           onClick={e => this.updateItem(e, item.ID)}
-                          title="Approve"
+                          title={LocaleStrings.ApproveButton}
                         >
                           <Icon iconName="Completed" className={`${classes.approveIcon}`} />
-                          <span className={styles.approveBtnLabel}>Approve</span>
+                          <span className={styles.approveBtnLabel}>{LocaleStrings.ApproveButton}</span>
                         </button>
                       </td>
                     </tr>
@@ -248,7 +249,7 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
                 alt="norecordsicon"
                 className={styles.noRecordsImg}
               />
-              <span className={styles.noRecordsLabels}>NO CHAMPION REQUESTS AVAILABLE</span>
+              <span className={styles.noRecordsLabels}>{LocaleStrings.NoChampionsMessage}</span>
             </div>
           )
         }

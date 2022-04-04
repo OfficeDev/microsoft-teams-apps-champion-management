@@ -69,6 +69,8 @@ Continuing below steps you can take the cmp.sppkg file from the ***cmp.sppkg*** 
 
 ### Deploy your Package to SharePoint
 
+<b>IMPORTANT NOTE:</b> If you have just created a new tenant please wait for around 15 minutes before starting with the below steps.
+
 1.	Open SharePoint and sign in using the administrator account. Click on the "dots" icon in the top left corner of the banner.
  <br/>
 
@@ -119,7 +121,7 @@ Continuing below steps you can take the cmp.sppkg file from the ***cmp.sppkg*** 
 10.	A confirmation dialog is displayed. Ensure the checkbox for "Make this solution available to all sites in the organization" is chosen and click ***Deploy***.
   <br/>
 
-![Quick Start Guide](../Images/Upgrade2.0-2.png) 
+![Quick Start Guide](../Images/Upgrade-2.png) 
 <br/>
 11.	Return to the ***SharePoint admin center***. Under expand the ***Advanced*** menu in the left navigation and select ***API access***. Select and approve all pending requests associated with ***championmanagement***
   <br/>
@@ -128,11 +130,14 @@ Continuing below steps you can take the cmp.sppkg file from the ***cmp.sppkg*** 
 <br/>
 12.	Return to app list in the App Catalog and select the ***championmanagement*** app. Select the Files tab in the ribbon and click the ***Sync to Teams*** button.
   <br/>
+  
 
 ![Quick Start Guide](../Images/SyncToTeams.png) 
 <br/>
 
-### First Run Experience:Add ***Champion Management Platform*** Tab in Teams
+### First Run Experience:Add ***Champion Management Platform*** Tab in Teamst
+
+<b>IMPORTANT NOTE:</b> Please wait for around 20 minutes for API access approvals done in the previous section to take effect before proceeding with the below steps.
 
 1.	Navigate to Microsoft teams, select the Team and channel where you want to install Champion Management Platform. Click ***Add a tab***, choose ***Champion Management Platform*** from the app list, and Save. (Search for Champion)
 
@@ -146,11 +151,21 @@ This first run experience needs to be completed by the person who will be an adm
 ![Quick Start Guide](../Images/AddTab_ChampionAdd.png) 
 
 2. Click 'Add' to create the ***'Champion Management Platform'*** tab to your Teams (Alternately you can also just load the app as a personal app in the left rail here too).
-3. The landing page for an Admin will have access to the *Champion Leaderboard, Digital Badge, Enable Tournament of Teams* and the SharePoint lists (*Champions, Events,Event track Details, Digital Badges*), as well as Manage Approvals.
+3. After clicking on 'Add', the app set up will start and you will see a spinner as shown below. The set up may take around 1-2 minutes.<br/>
+![App Set Up](../Images/AppLoading.png)
+4. After the set up is complete a success message is shown as below. The below snapshot is from Teams in browser. The same message would look different in Teams client.
+<br/>
+![App Set Up](../Images/SuccessMessage.png) 
+5. On clicking 'OK' the landing page is displayed. <br />
+![App Set Up](../Images/AddTab_Teams.png)
+6. If you still see the spinner message and do not see the success message even after 2 minutes or if you see any error alerts, try clicking on refresh icon on top right. If you see the landing page with all the icons shown in the above picture the app set up is complete.<br />
+![App Set Up](../Images/Apprefresh.png)
+If you still do not see the landing page after refresh please create an issue in the Github.
+7. The landing page for an Admin will have access to the *Champion Leaderboard, Digital Badge, Enable Tournament of Teams* and the SharePoint lists (*Champions, Events,Event track Details, Digital Badges*), as well as Manage Approvals.
   <br/>
 
 ![Quick Start Guide](../Images/AddTab_Teams.png) 
-4. Grant Permissions to users:
+8. Grant Permissions to users:
 
 · Navigate to the URL for the Champion Management Platform site as the administrator. 
 

@@ -24,7 +24,8 @@ import EmployeeView from "./EmployeeView";
 import Header from "./Header";
 import { IClbHomeProps } from "./IClbHomeProps";
 import TOTLandingPage from "./TOTLandingPage";
-
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import * as stringsConstants from "../constants/strings";
 initializeIcons();
 
 export interface IClbHomeState {
@@ -48,6 +49,7 @@ export interface IClbHomeState {
   isUserAdded: boolean;
   userStatus: string;
   firstName: string;
+  appLogoURL: string;
 }
 
 //Global Variables
@@ -83,7 +85,8 @@ export default class ClbHome extends React.Component<
       isTOTEnabled: false,
       isUserAdded: false,
       userStatus: "",
-      firstName: ""
+      firstName: "",
+      appLogoURL: "",
     };
     this.checkUserRole = this.checkUserRole.bind(this);
 
@@ -590,6 +593,8 @@ export default class ClbHome extends React.Component<
                   });
                   //site is newly created and got 200 response, now create Digital Lib
                   this.createDigitalBadgeLib();
+                  //create CMP Logo Library to store the organization logo that allows users to customize it.
+                  this.getAppLogoImage();
                 }
 
               }).catch((error) => {
@@ -797,7 +802,8 @@ export default class ClbHome extends React.Component<
               });
             //site exists, check if Digital Badge lib exists, create if not present
             this.createDigitalBadgeLib();
-
+           //check if CMP Logo lib exists, create if not present
+            this.getAppLogoImage();
           }//End of else part - CMP site already exists create only lists. 
 
         }//First IF END
@@ -811,7 +817,46 @@ export default class ClbHome extends React.Component<
       console.error("CMP_CLBHome_createSiteAndLists \n", error);
       alert(errorMessage + "while creating site and lists. Below are the details: \n" + error);
     }
+  }
 
+  //Create CMP Logo library to store organization logo
+  public async getAppLogoImage(): Promise<any> {
+    try {
+      let logoImageURL: string;
+      const spListTitle: string = stringsConstants.CMPLogoLibrary;
+      //check if CMP Logo lib exists, create if doesn't exists and upload default logo 
+      await spweb.lists.getByTitle(spListTitle).get().then(async () => {
+        var logoImageArray: any[] = [];
+        logoImageArray = await spweb.lists.getByTitle(spListTitle).items.select("File/Name").expand("File").get();
+        if (logoImageArray.length > 0) {
+          for (let i = 0; i < logoImageArray.length; i++) {
+            if (logoImageArray[i].File.Name.toLowerCase() == "applogo.jpg") {
+              logoImageURL = rootSiteURL + "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/" + spListTitle + "/" + logoImageArray[i].File.Name;
+              this.setState({
+                appLogoURL: logoImageURL,
+              });
+            }
+          }
+        } else {
+          this.setState({
+            appLogoURL: require("../assets/CMPImages/" + stringsConstants.MSLogo),
+          });
+        }
+      }).catch(async () => {
+        //create library in SharePoint site to store the organization logo image
+        await spweb.lists.add(spListTitle, "", 101, true).then(async () => {
+          fetch(require("../assets/CMPImages/" + stringsConstants.MSLogo)).then(res => res.blob()).then((blob) => {
+            spweb.getFolderByServerRelativeUrl("/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/" + spListTitle).files.add("AppLogo.jpg", blob, true);
+            this.setState({
+              appLogoURL: require("../assets/CMPImages/" + stringsConstants.MSLogo),
+            });
+          });
+        });
+      });  //catch end         
+    }
+    catch (error) {
+      console.error("CMP_CLBHome_getAppLogoImage \n", error);
+    }
   }
   //create digital lib to store the badges
   private async createDigitalBadgeLib() {
@@ -918,6 +963,7 @@ export default class ClbHome extends React.Component<
         < div className={styles.container} >
           <div>
             <Header
+              logoImageURL={this.state.appLogoURL}
               showSearch={this.state.cB}
               clickcallback={() =>
                 this.setState({
@@ -937,10 +983,10 @@ export default class ClbHome extends React.Component<
             !this.state.dB && !this.state.enableTOT && (
               <div>
                 <div className={styles.imgheader}>
-                  <span className={styles.cmpPageHeading}>Welcome {this.state.firstName}!</span>
+                  <span className={styles.cmpPageHeading}>{LocaleStrings.WelcomeLabel} {this.state.firstName}!</span>
                 </div>
                 <div className={styles.grid}>
-                  <div className={styles.quickguide}>Get Started</div>
+                  <div className={styles.quickguide}>{LocaleStrings.GetStartedLabel}</div>
                   <Row className="mt-4">
                     <Col sm={3} className={styles.imageLayout}>
                       <Media
@@ -950,12 +996,12 @@ export default class ClbHome extends React.Component<
                         <div className={styles.mb}>
                           <img
                             src={require("../assets/CMPImages/ChampionLeaderBoard.svg")}
-                            alt="Champion Leader Board"
-                            title="Champion Leader Board"
+                            alt={LocaleStrings.ChampionLeaderBoardLabel}
+                            title={LocaleStrings.ChampionLeaderBoardLabel}
                             className={styles.dashboardimgs}
                           />
-                          <div className={styles.center} title="Champion Leader Board">
-                            Champion Leader Board
+                          <div className={styles.center} title={LocaleStrings.ChampionLeaderBoardLabel}>
+                          {LocaleStrings.ChampionLeaderBoardLabel}
                           </div>
                         </div>
                       </Media>
@@ -973,11 +1019,13 @@ export default class ClbHome extends React.Component<
                           <div className={styles.mb}>
                             <img
                               src={require("../assets/CMPImages/AddMembers.svg")}
-                              alt="Adding Members Start adding the people you will collaborate with in your..."
-                              title="Adding Members Start adding the people you will collaborate with in your..."
+                              alt={LocaleStrings.AddMembersToolTip}
+                              title={LocaleStrings.AddMembersToolTip}
                               className={styles.dashboardimgs}
                             />
-                            <div className={styles.center} title="Add Members">Add Members</div>
+                            <div className={styles.center} title={(this.state.clB && !this.state.cV) ? LocaleStrings.AddMemberLabel : LocaleStrings.NominateMemberLabel}>
+                              {(this.state.clB && !this.state.cV) ? LocaleStrings.AddMemberLabel : LocaleStrings.NominateMemberLabel}
+                            </div>
                           </div>
                         </Media>
                       </Col>
@@ -991,11 +1039,11 @@ export default class ClbHome extends React.Component<
                           <div className={styles.mb}>
                             <img
                               src={require("../assets/CMPImages/DigitalBadge.svg")}
-                              alt="Digital Badge, Get your Champion Badge"
-                              title="Digital Badge, Get your Champion Badge"
+                              alt={LocaleStrings.DigitalMembersToolTip}
+                              title={LocaleStrings.DigitalMembersToolTip}
                               className={styles.dashboardimgs}
                             />
-                            <div className={styles.center} title="Digital Badge">Digital Badge</div>
+                            <div className={styles.center} title={LocaleStrings.DigitalBadgeLabel}>{LocaleStrings.DigitalBadgeLabel}</div>
                           </div>
                         </Media>
                       </Col>
@@ -1010,12 +1058,12 @@ export default class ClbHome extends React.Component<
                             <div className={styles.mb}>
                               <img
                                 src={require("../assets/CMPImages/TournamentOfTeams.svg")}
-                                alt="Tournament of Teams"
-                                title="Tournament of Teams"
+                                alt={LocaleStrings.TOTLabel}
+                                title={LocaleStrings.TOTLabel}
                                 className={styles.dashboardimgs}
                               />
-                              {this.state.isTOTEnabled && (<div className={`${styles.center} ${styles.totLabel}`} title="Tournament of Teams">
-                                Tournament of Teams</div>)}
+                              {this.state.isTOTEnabled && (<div className={`${styles.center} ${styles.totLabel}`} title={LocaleStrings.TOTLabel}>
+                              {LocaleStrings.TOTLabel}</div>)}
                             </div>
                           </Media>
                         </div>
@@ -1023,7 +1071,7 @@ export default class ClbHome extends React.Component<
                   </Row>
 
                   {this.state.clB && !this.state.cV && (
-                    <div className={styles.admintools}>Admin Tools</div>)}
+                    <div className={styles.admintools}>{LocaleStrings.AdminToolsLabel}</div>)}
 
                   {this.state.clB && !this.state.cV && (
                     <Row className="mt-4">
@@ -1036,12 +1084,12 @@ export default class ClbHome extends React.Component<
                             >
                               <img
                                 src={require("../assets/CMPImages/ChampionList.svg")}
-                                alt="Accessing Champions List"
-                                title="Accessing Champions List"
+                                alt={LocaleStrings.ChampionsListToolTip}
+                                title={LocaleStrings.ChampionsListToolTip}
                                 className={styles.dashboardimgs}
                               />
                             </a>
-                            <div className={styles.center} title="Champions List">Champions List</div>
+                            <div className={styles.center} title={LocaleStrings.ChampionListLabel}>{LocaleStrings.ChampionListLabel}</div>
                           </div>
                         </Media>
                       </Col>
@@ -1054,12 +1102,12 @@ export default class ClbHome extends React.Component<
                             >
                               <img
                                 src={require("../assets/CMPImages/EventsList.svg")}
-                                alt="Accessing Events List"
-                                title="Accessing Events List"
+                                alt={LocaleStrings.EventsListToolTip}
+                                title={LocaleStrings.EventsListToolTip}
                                 className={styles.dashboardimgs}
                               />
                             </a>
-                            <div className={styles.center} title="Events List">Events List</div>
+                            <div className={styles.center} title={LocaleStrings.EventsListLabel}>{LocaleStrings.EventsListLabel}</div>
                           </div>
                         </Media>
                       </Col>
@@ -1072,13 +1120,13 @@ export default class ClbHome extends React.Component<
                             >
                               <img
                                 src={require("../assets/CMPImages/EventTrackList.svg")}
-                                alt="Accessing Event Track List"
-                                title="Accessing Event Track List"
+                                alt={LocaleStrings.EventTrackListToolTip}
+                                title={LocaleStrings.EventTrackListToolTip}
                                 className={styles.dashboardimgs}
                               />
                             </a>
-                            <div className={styles.center} title="Event Track List">
-                              Event Track List
+                            <div className={styles.center} title={LocaleStrings.EventsTrackListLabel}>
+                            {LocaleStrings.EventsTrackListLabel}
                             </div>
                           </div>
                         </Media>
@@ -1095,12 +1143,12 @@ export default class ClbHome extends React.Component<
                           <div className={styles.mb}>
                             <img
                               src={require("../assets/CMPImages/ManageApprovals.svg")}
-                              alt="Approve Champion"
-                              title="Approve Champion"
+                              alt={LocaleStrings.ManageApprovalToolTip}
+                              title={LocaleStrings.ManageApprovalToolTip}
                               className={styles.dashboardimgs}
                             />
-                            <div className={styles.center} title="Manage Approvals">
-                              Manage Approvals
+                            <div className={styles.center} title={LocaleStrings.ManageApprovalsLabel}>
+                            {LocaleStrings.ManageApprovalsLabel}
                             </div>
                           </div>
                         </Media>
@@ -1114,12 +1162,12 @@ export default class ClbHome extends React.Component<
                             <div className={styles.mb}>
                               <img
                                 src={require("../assets/CMPImages/EnableTOT.svg")}
-                                alt="Enable Tournament of Teams"
-                                title="Enable Tournament of Teams"
+                                alt={LocaleStrings.EnableTOTToolTip}
+                                title={LocaleStrings.EnableTOTToolTip}
                                 className={styles.dashboardimgs}
                               />
-                              {!this.state.isTOTEnabled && (<div className={`${styles.center} ${styles.enableTournamentLabel}`} title="Enable Tournament of Teams">
-                                Enable Tournament of Teams</div>)}
+                              {!this.state.isTOTEnabled && (<div className={`${styles.center} ${styles.enableTournamentLabel}`} title={LocaleStrings.EnableTOTLabel}>
+                              {LocaleStrings.EnableTOTLabel}</div>)}
                             </div>
                           </Media>
                         </Col>)}
@@ -1132,13 +1180,33 @@ export default class ClbHome extends React.Component<
                             >
                               <img
                                 src={require("../assets/CMPImages/ManageDigitalBadges.svg")}
-                                alt="Manage Digital Badges"
-                                title="Manage Digital Badges"
+                                alt={LocaleStrings.ManageDigitalBadgesToolTip}
+                                title={LocaleStrings.ManageDigitalBadgesToolTip}
                                 className={styles.dashboardimgs}
                               />
                             </a>
-                            <div className={styles.center} title="Manage Digital Badges">
-                              Manage Digital Badges
+                            <div className={styles.center} title={LocaleStrings.ManageDigitalBadgesLabel}>
+                            {LocaleStrings.ManageDigitalBadgesLabel}
+                            </div>
+                          </div>
+                        </Media>
+                      </Col>
+                      <Col sm={3} className={styles.imageLayout}>
+                        <Media className={styles.cursor}>
+                          <div className={styles.mb}>
+                            <a
+                              href={`/${this.state.inclusionpath}/${this.state.sitename}/CMP%20Logo/Forms/AllItems.aspx`}
+                              target="_blank"
+                            >
+                              <img
+                                src={require("../assets/CMPImages/ManageAppLogo.svg")}
+                                alt={LocaleStrings.ManageAppLogoToolTip}
+                                title={LocaleStrings.ManageAppLogoToolTip}
+                                className={styles.dashboardimgs}
+                              />
+                            </a>
+                            <div className={styles.center} title={LocaleStrings.ManageAppLogoLabel}>
+                            {LocaleStrings.ManageAppLogoLabel}
                             </div>
                           </div>
                         </Media>
@@ -1187,6 +1255,7 @@ export default class ClbHome extends React.Component<
               <ClbAddMember
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
+                isAdmin={this.state.clB && !this.state.cV}
                 onClickCancel={() =>
                   this.setState({ addMember: false, ChampionsList: true, isUserAdded: false })
                 }

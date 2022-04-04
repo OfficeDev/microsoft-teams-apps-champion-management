@@ -7,6 +7,7 @@ import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 import * as microsoftTeams from "@microsoft/teams-js";
 import Champions from "./Champions";
 import siteconfig from "../config/siteconfig.json";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 interface EmployeeViewState {
   siteUrl: string;
   users: any;
@@ -104,7 +105,7 @@ export default class EmployeeView extends Component<
         {this.state.isLoaded && (
           <div className="main">
             <SearchBox
-              placeholder="Search"
+              placeholder={LocaleStrings.SearchLabel}
               onChange={this.onchange}
               className="search"
             />

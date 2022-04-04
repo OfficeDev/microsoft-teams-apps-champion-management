@@ -1,434 +1,518 @@
 .Championleaderboard {
-    display: flex !important;
-    .sidenav {
-        background: transparent url("../assets/CMPImages/Sidebar.svg") 0% 0% no-repeat padding-box;
-        width: 212px;
-        min-height: 100vh;
-        height: 1018px;
-        opacity: 1;
-        .profilepic {
-            height: 100px;
-            width: 100px;
-            border-radius: 50%;
-            margin-top: 5rem;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            border-radius: 50%;
-            background-color: #7577b9;
-            border: 4px solid #464775;
-            box-shadow: 0 0 0 3px #fff;
-        }
-        .championname {
-            font-size: 16px;
-            font: normal normal bold 18px/24px Segoe UI;
-            font-weight: 600;
-            color: white;
-            margin-top: 0.5rem;
-            text-align: center;
-        }
-        .pointcircle {
-            border-radius: 50%;
-            background-color: #7577b9;
-            border: 4px solid #464775;
-            box-shadow: 0 0 0 3px #fff;
-            background: #7577b9 0% 0% no-repeat padding-box;
-            width: 153px;
-            height: 154px;
-            border-radius: 102px;
-            margin-top: 2.2rem;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            .insidecircle {
-                text-align: center;
-                color: white;
-                margin: 1rem;
-                .pointsscale {
-                    text-align: center;
-                    .yellowStar {
-                        color: #ffc206;
-                        width: 25px;
-                        height: 23px;
-                    }
-                }
-            }
-            .score {
-                font-weight: 800;
-                font-size: 14px;
-                margin: auto;
-            }
-            .monthlypoints {
-                font-size: 14px;
-            }
-            .line {
-                height: 1px;
-                width: auto;
-                background-color: #39f;
-                margin: 0.5rem;
-            }
-            .globalrank {
-                font: normal normal normal 14px/19px Segoe UI;
-            }
-            .bold {
-                font-size: 14px;
-                font-weight: 800;
-            }
-        }
-        .myrank {
-            margin-top: 5%;
-            color: #fff;
-            width: 60px;
-            margin-left: auto;
-            margin-right: auto;
-            font-weight: 600;
-        }
-        .Countscale {
-            text-align: center;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            #star {
-                color: #f3ca3e;
-                vertical-align: bottom;
-                margin-right: 4px;
-            }
-            & {
-                color: white;
-            }
-        }
-        .Count {
-            text-align: center;
-            font-size: 12px;
-            color: white;
-        }
-        .bc-btn, .bc-btn:active {
-            display: block;
-            margin: 4rem auto;
-            font: normal normal 700 14px/20px Segoe UI;
-            background-color: #6264a7;
-            color: #fff;
-            border-color: #6264a7;
-        }
-        .bc-btn:active {
-            background-color: #6264a7
-        }
-        .bc-form {
-            margin: 1rem;
-            border: 1px solid white;
-            border-radius: 6px;
-            padding: 1rem;
-            .bc-label {
-                color: white;
-            }
-            .sub-btn {
-                text-align: center;
-                margin: 1rem auto;
-                display: block;
-                background-color: #464775;
-                color: #fff;
-                border-color: #464775;
-                font: normal normal 700 14px/20px Segoe UI;
-            }
-        }
-        .back-btn {
-            margin-top: 5%;
-            color: #fff;
-            width: 60px;
-            margin-left: auto;
-            margin-right: auto;
-            :hover {
-                cursor: pointer;
-            }
-            .backText {
-                padding-left: 2px;
-                position: relative;
-                top: -2px;
-            }
-            .back {
-                position: relative;
-                margin: auto;
-                display: block;
-            }
-        }
-    }
-    .gtcLabel{
-        margin-top: 2%;
-    }
-    .content-tab {
-        width: 100vw;
-        min-height: 100vh;
-        margin: 2% 4%;
-        .location-icon {
-            vertical-align: bottom;
-            height: 34px;
-            width: auto;
-            padding: 0rem 0.2rem;
-        }
-        .paddingTop {
-            padding-top: 4%;
-        }
-        .gtc {
-            color: #000;
-            font: normal normal normal 18px/24px Segoe UI;
-        }
-        .gtc-cards {
-            margin: 0 2%;
-            .cards {
-                width: 160px;
-                height: 160px;
-                background: #F4F4F8 0% 0% no-repeat padding-box;
-                box-shadow: 3px 6px 12px #00000029;
-                margin: 2% 5% 0 0;
-                border-radius: 6px;
-                img {
-                    display: block;
-                    position: relative;
-                    float: right;
-                    height: 50px;
-                }
-                .rank {
-                    position: relative;
-                    top: 9%;
-                    left: 85%;
-                    transform: translate(0%, 0%);
-                    font: normal normal bold 9px/12px Segoe UI;
-                    color: #464775;
-                }
-                .profile-img {
-                    margin: -2rem 2.5rem;
-                    height: 85px;
-                    width: 84px;
-                    border-radius: 50%;
-                    border: 4px solid #7d7ebc;
-                }
-                .gtc-name {
-                    text-align: center;
-                    color: #464775;
-                    margin-top: 5.7rem;
-                    font-weight: 600;
-                    width: auto;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    padding: 0 0.5rem;
-                }
-                .gtc-name2 {
-                    text-align: center;
-                    color: #464775;
-                    margin-top: 5.7rem;
-                    font-weight: 600;
-                    width: auto;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    padding: 0 0.5rem;
-                }
-                .gtc-star {
-                    text-align: center;
-                    color: white;
-                    font-weight: 600;
-                    #count {
-                        margin-right: 2px;
-                        color: #f3ca3e;
-                    }
-                    .chat-icon {
-                        display: inline-flex;
-                        position: relative;
-                        float: left;
-                        margin: 0 0.5rem;
-                        cursor: pointer;
-                        color: #464775;
-                        font-size: 20px;
-                    }
-                    .mail-icon {
-                        float: right;
-                        color: #464775;
-                        font-size: 20px;
-                        margin: 0 0.5rem;
-                        cursor: pointer;
-                    }
-                    .totalPoints{
-                        color: #464775;
-                        padding-left: 2px;
-                    }
-                }
-            }
-            .top-card {
-                height: 175px;
-                bottom: 0.8rem;
-                position: relative;
-            }
-        }
-        .table-content {
-            margin: 1rem 0rem;
-            position: relative;
-            overflow: auto;
-            .topChampCards {
-                border: 0 !important;
-                border-radius: 0 !important;
-            }
-            .gttc-row-left {
-                cursor: pointer;
-                width: 74%;
-                float: left;
-                padding-top: 1px;
-                background-color: #BDBDE6;
-            }
-            .gttc-row-right {
-                cursor: pointer;
-                float: right;
-                width: 26%;
-                background-color: #6264A7;
-                padding: 8px 8px 6.5px 8px;
-                color: #fff;
-            }
-            .gttc-img {
-                height: 31px;
-                width: 31px;
-                border-radius: 50%;
-                display: inline;
-                margin: 5px;
-            }
-            .gttc-img-name {
-                font-size: 14px;
-                color: #000;
-                display: inline-block;
-                padding-left: 0.5rem;
-                position: relative;
-                width: 30%;
-                vertical-align: middle;
-            }
-            .gttc-star {
-                font-weight: 600;
-                display: inline-block;
-                vertical-align: middle;
-                width: 45%;
-                #count2 {
-                    color: #f3ca3e;
-                    margin-right: 2px;
-                }
-                .points {
-                    padding-left: 5px;
-                    vertical-align: top;
-                }
-            }
-            .vline {
-                height: 1.6rem;
-                width: 2px;
-                background: #f5f5f5;
-                display: inline-block;
-                margin-right: 10px;
-                vertical-align: middle;
-            }
-            .gttc-rank {
-                text-align: center;
-                font-size: 14px;
-                display: inline;
-                padding: 0;
-                vertical-align: middle;
-            }
-            .card-header {
-                padding: 0 !important;
-                margin-bottom: 5px;
-                border: 0 !important;
-            }
-            .card-body {
-                width: 70%;
-            }
-            .table {
-                margin-bottom: 0 !important;
-                // color: white;
-                .td {
-                    border: none !important;
-                }
-            }
-            .countHeader {
-                text-align: center;
-            }
-            .eventTypeCol {
-                width: 100%;
-            }
-            .gttc-tap-data {
-                text-align: center;
-            }
-            .you {
-                display: inline-block;
-                padding: 0 0.2rem;
-                color: white;
-            }
-        }
-        /* width */
-        ::-webkit-scrollbar {
-            width: 5px;
-        }
+  display: flex !important;
 
-        /* Track */
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
+  .sidenav {
+    background: transparent url("../assets/CMPImages/Sidebar.svg") 0% 0% no-repeat padding-box;
+    background-color: #6264a7;
+    width: 212px;
+    min-height: 100vh;
+    height: auto;
+    opacity: 1;
 
-        /* Handle */
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-        }
-
-        /* Handle on hover */
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-        .pivotControl {
-            div[role="tablist"] {
-                button {
-                    width: 33.33%;
-                    div {
-                        display: inline;
-                    }
-                }
-            }
-            button {
-                height: 51px;
-                cursor: pointer;
-                text-align: center;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                font: normal normal 600 18px/24px Segoe UI;
-                margin-right: 0px;
-                color: #000000;
-                background: #dedef3 0% 0% no-repeat padding-box;
-                &:hover {
-                    background-color: lightgrey;
-                    border-color: lightgrey;
-                }
-                &[aria-selected="true"] {
-                    background: #6264a7 0% 0% no-repeat padding-box;
-                    color: #fff;
-                    fill: #fff;
-                }
-            }
-        }
+    .profilepic {
+      height: 100px;
+      width: 100px;
+      border-radius: 50%;
+      margin-top: 5rem;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 50%;
+      background-color: #7577b9;
+      border: 4px solid #464775;
+      box-shadow: 0 0 0 3px #fff;
     }
-    .loader {
-        border: 16px solid #dde2eb;
-        border-radius: 50%;
-        border-top: 10px solid #3498db;
-        width: 120px;
-        height: 120px;
-        -webkit-animation: spin 2s linear infinite;
-        animation: spin 2s linear infinite;
+
+    .championname {
+      font-size: 16px;
+      font: normal normal bold 18px/24px Segoe UI;
+      font-weight: 600;
+      color: white;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+
+    .pointcircle {
+      border-radius: 50%;
+      background-color: #7577b9;
+      border: 4px solid #464775;
+      box-shadow: 0 0 0 3px #fff;
+      background: #7577b9 0% 0% no-repeat padding-box;
+      width: 153px;
+      height: 154px;
+      border-radius: 102px;
+      margin-top: 2.2rem;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+
+      .insidecircle {
+        text-align: center;
+        color: white;
+        margin: 1rem;
+
+        .pointsscale {
+          text-align: center;
+
+          .yellowStar {
+            color: #ffc206;
+            width: 25px;
+            height: 23px;
+          }
+        }
+      }
+
+      .score {
+        font-weight: 800;
+        font-size: 14px;
         margin: auto;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        position: fixed;
+      }
+
+      .monthlypoints {
+        font-size: 14px;
+      }
+
+      .line {
+        height: 1px;
+        width: auto;
+        background-color: #39f;
+        margin: 0.5rem;
+      }
+
+      .globalrank {
+        font: normal normal normal 14px/19px Segoe UI;
+      }
+
+      .bold {
+        font-size: 14px;
+        font-weight: 800;
+      }
     }
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
+
+    .myrank {
+      margin-top: 5%;
+      color: #fff;
+      width: 60px;
+      margin-left: auto;
+      margin-right: auto;
+      font-weight: 600;
     }
+
+    .Countscale {
+      text-align: center;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+
+      #star {
+        color: #f3ca3e;
+        vertical-align: bottom;
+        margin-right: 4px;
+      }
+
+      & {
+        color: white;
+      }
+    }
+
+    .Count {
+      text-align: center;
+      font-size: 12px;
+      color: white;
+    }
+
+    .bc-btn,
+    .bc-btn:active {
+      display: block;
+      margin: 4rem auto;
+      font: normal normal 700 14px/20px Segoe UI;
+      background-color: #6264a7;
+      color: #fff;
+      border-color: #6264a7;
+    }
+
+    .bc-btn:active {
+      background-color: #6264a7
+    }
+
+    .bc-form {
+      margin: 1rem;
+      border: 1px solid white;
+      border-radius: 6px;
+      padding: 1rem;
+
+      .bc-label {
+        color: white;
+      }
+
+      .sub-btn {
+        text-align: center;
+        margin: 1rem auto;
+        display: block;
+        background-color: #464775;
+        color: #fff;
+        border-color: #464775;
+        font: normal normal 700 14px/20px Segoe UI;
+      }
+    }
+  }
+
+  .gtcLabel {
+    margin-top: 2%;
+  }
+
+  .content-tab {
+    width: 100vw;
+    min-height: 100vh;
+    margin: 1% 4% 2%;
+
+    .ClbPath {
+      display: inline-flex;
+      margin-bottom: 2%;
+      text-align: center;
+      letter-spacing: 0px;
+      color: #33344A;
+      opacity: 1;
+
+      .backImg {
+        width: 7px;
+        height: 12px;
+        margin-right: 10px;
+        margin-top: 6px;
+      }
+
+      .backLabel {
+        padding-right: 10px;
+        cursor: pointer;
+        font: normal normal bold 14px/24px Segoe UI;
+      }
+
+      .ClbBorder {
+        width: 0px;
+        height: 14px;
+        border: 1px solid #33344A;
+        margin-top: 5px;
+      }
+
+      .ClbLabel {
+        padding-left: 10px;
+        font: normal normal bold 18px/23px Segoe UI;
+      }
+    }
+
+    .location-icon {
+      vertical-align: bottom;
+      height: 34px;
+      width: auto;
+      padding: 0rem 0.2rem;
+    }
+
+    .paddingTop {
+      padding-top: 4%;
+    }
+
+    .gtc {
+      color: #000;
+      font: normal normal normal 18px/24px Segoe UI;
+    }
+
+    .gtc-cards {
+      margin: 0 2%;
+
+      .cards {
+        width: 160px;
+        height: 160px;
+        background: #F4F4F8 0% 0% no-repeat padding-box;
+        box-shadow: 3px 6px 12px #00000029;
+        margin: 2% 5% 0 0;
+        border-radius: 6px;
+
+        img {
+          display: block;
+          position: relative;
+          float: right;
+          height: 50px;
+        }
+
+        .rank {
+          position: relative;
+          top: 9%;
+          left: 85%;
+          transform: translate(0%, 0%);
+          font: normal normal bold 9px/12px Segoe UI;
+          color: #464775;
+        }
+
+        .profile-img {
+          margin: -2rem 2.5rem;
+          height: 85px;
+          width: 84px;
+          border-radius: 50%;
+          border: 4px solid #7d7ebc;
+        }
+
+        .gtc-name {
+          text-align: center;
+          color: #464775;
+          margin-top: 5.7rem;
+          font-weight: 600;
+          width: auto;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          padding: 0 0.5rem;
+        }
+
+        .gtc-name2 {
+          text-align: center;
+          color: #464775;
+          margin-top: 5.7rem;
+          font-weight: 600;
+          width: auto;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          padding: 0 0.5rem;
+        }
+
+        .gtc-star {
+          text-align: center;
+          color: white;
+          font-weight: 600;
+
+          #count {
+            margin-right: 2px;
+            color: #f3ca3e;
+          }
+
+          .chat-icon {
+            display: inline-flex;
+            position: relative;
+            float: left;
+            margin: 0 0.5rem;
+            cursor: pointer;
+            color: #464775;
+            font-size: 20px;
+          }
+
+          .mail-icon {
+            float: right;
+            color: #464775;
+            font-size: 20px;
+            margin: 0 0.5rem;
+            cursor: pointer;
+          }
+
+          .totalPoints {
+            color: #464775;
+            padding-left: 2px;
+          }
+        }
+      }
+
+      .top-card {
+        height: 175px;
+        bottom: 0.8rem;
+        position: relative;
+      }
+    }
+
+    .table-content {
+      margin: 1rem 0rem;
+      position: relative;
+      overflow: auto;
+
+      .topChampCards {
+        border: 0 !important;
+        border-radius: 0 !important;
+      }
+
+      .gttc-row-left {
+        cursor: pointer;
+        width: 74%;
+        float: left;
+        padding-top: 1px;
+        background-color: #BDBDE6;
+      }
+
+      .gttc-row-right {
+        cursor: pointer;
+        float: right;
+        width: 26%;
+        background-color: #6264A7;
+        padding: 8px 8px 6.5px 8px;
+        color: #fff;
+      }
+
+      .gttc-img {
+        height: 31px;
+        width: 31px;
+        border-radius: 50%;
+        display: inline;
+        margin: 5px;
+      }
+
+      .gttc-img-name {
+        font-size: 14px;
+        color: #000;
+        display: inline-block;
+        padding-left: 0.5rem;
+        position: relative;
+        width: 30%;
+        vertical-align: middle;
+      }
+
+      .gttc-star {
+        font-weight: 600;
+        display: inline-block;
+        vertical-align: middle;
+        width: 45%;
+
+        #count2 {
+          color: #f3ca3e;
+          margin-right: 2px;
+        }
+
+        .points {
+          padding-left: 5px;
+          vertical-align: top;
+        }
+      }
+
+      .vline {
+        height: 1.6rem;
+        width: 2px;
+        background: #f5f5f5;
+        display: inline-block;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+
+      .gttc-rank {
+        text-align: center;
+        font-size: 14px;
+        display: inline;
+        padding: 0;
+        vertical-align: middle;
+      }
+
+      .card-header {
+        padding: 0 !important;
+        margin-bottom: 5px;
+        border: 0 !important;
+      }
+
+      .card-body {
+        width: 70%;
+      }
+
+      .table {
+        margin-bottom: 0 !important;
+
+        // color: white;
+        .td {
+          border: none !important;
+        }
+      }
+
+      .countHeader {
+        text-align: center;
+      }
+
+      .eventTypeCol {
+        width: 100%;
+      }
+
+      .gttc-tap-data {
+        text-align: center;
+      }
+
+      .you {
+        display: inline-block;
+        padding: 0 0.2rem;
+        color: white;
+      }
+    }
+
+    /* width */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    .pivotControl {
+      div[role="tablist"] {
+        button {
+          width: 33.33%;
+
+          div {
+            display: inline;
+          }
+        }
+      }
+
+      button {
+        height: 51px;
+        cursor: pointer;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font: normal normal 600 18px/24px Segoe UI;
+        margin-right: 0px;
+        color: #000000;
+        background: #dedef3 0% 0% no-repeat padding-box;
+
+        &:hover {
+          background-color: lightgrey;
+          border-color: lightgrey;
+        }
+
+        &[aria-selected="true"] {
+          background: #6264a7 0% 0% no-repeat padding-box;
+          color: #fff;
+          fill: #fff;
+        }
+      }
+    }
+  }
+
+  .loader {
+    border: 16px solid #dde2eb;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    position: fixed;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 }

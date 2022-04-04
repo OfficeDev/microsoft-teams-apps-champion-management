@@ -3,7 +3,6 @@ import { WebPartContext } from "@microsoft/sp-webpart-base";
 import commonServices from "../Common/CommonServices";
 import * as stringsConstants from "../constants/strings";
 import styles from "../scss/TOTEnableTournament.module.scss";
-import * as strings from "../constants/strings";
 
 //React Boot Strap
 import Row from "react-bootstrap/Row";
@@ -14,10 +13,8 @@ import { IButtonStyles, IChoiceGroupStyles, PrimaryButton } from "@fluentui/reac
 import { Label } from "@fluentui/react/lib/Label";
 import { ChoiceGroup, IChoiceGroupOption } from "@fluentui/react";
 import { Dialog, DialogType, DialogFooter } from "@fluentui/react/lib/Dialog";
-import { Icon, IIconProps } from '@fluentui/react/lib/Icon';
-import { mergeStyleSets } from '@fluentui/react/lib/Styling';
-import { TooltipHost, ITooltipHostStyles } from '@fluentui/react/lib/Tooltip';
-import { DirectionalHint } from "@microsoft/office-ui-fabric-react-bundle";
+import { IIconProps } from '@fluentui/react/lib/Icon';
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 
 //Global Variables
 let commonServiceManager: commonServices;
@@ -62,37 +59,27 @@ export interface IEnableTournamentProps {
 
 interface IEnableTournamentState {
   tournamentsList: any;
+  activeTournamentsList: any;
   selectedTournament: string;
   selectedTournamentId: string;
-  activeTournament: string;
+  selectedActiveTournament: string;
+  selectedActiveTournamentId: string;
   activeTournamentId: string;
   activeTournamentFlag: boolean;
   showSuccess: boolean;
   successMessage: string;
   showError: boolean;
   errorMessage: string;
-  tournamentError: boolean;
+  startTournamentError: boolean;
+  endTournamentError: boolean;
   hideDialog: boolean;
   noTournamentsFlag: boolean;
+  tournamentAction: string;
 }
-
-const tooltipStyles = {
-  calloutProps: { gapSpace: 0, style: { paddingLeft: "4%" } }
-};
-
-const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
-
-const classes = mergeStyleSets({
-  icon: {
-    fontSize: '16px',
-    color: '#1d0f62',
-    cursor: 'pointer',
-    fontWeight: 'bolder',
-  }
-});
 
 const endButtonStyles: Partial<IButtonStyles> = {
   root: {
+    marginTop: "32px",
     marginBottom: "20px",
     height: "38px"
   },
@@ -144,41 +131,49 @@ export default class TOTEnableTournament extends React.Component<
     //Set default values for state
     this.state = {
       tournamentsList: [],
+      activeTournamentsList: [],
       selectedTournament: "",
-      activeTournament: "None",
+      selectedTournamentId: "",
+      selectedActiveTournament: "",
+      selectedActiveTournamentId: "",
       activeTournamentId: "",
       activeTournamentFlag: true,
-      selectedTournamentId: "",
       showSuccess: false,
       showError: false,
       errorMessage: "",
-      tournamentError: false,
+      startTournamentError: false,
+      endTournamentError: false,
       successMessage: "",
       hideDialog: true,
       noTournamentsFlag: false,
+      tournamentAction: "",
+
     };
     commonServiceManager = new commonServices(
       this.props.context,
       this.props.siteUrl
     );
     //Bind Methods
-    this.getTournamentsList = this.getTournamentsList.bind(this);
+    this.getPendingTournaments = this.getPendingTournaments.bind(this);
     this.onTournamentSelect = this.onTournamentSelect.bind(this);
+    this.onActiveTournamentSelect = this.onActiveTournamentSelect.bind(this);
     this.enableTournament = this.enableTournament.bind(this);
-    this.getActiveTournament = this.getActiveTournament.bind(this);
+    this.getActiveTournaments = this.getActiveTournaments.bind(this);
     this.completeTournament = this.completeTournament.bind(this);
+    this.startTournament = this.startTournament.bind(this);
+    this.endTournament = this.endTournament.bind(this);
   }
 
-  //On load of app bind tournaments to choice list and populate the current Active tournament
+  //On load of app bind active and pending tournaments to choice lists
   public async componentDidMount() {
-    this.getTournamentsList();
-    this.getActiveTournament();
+    this.getPendingTournaments();
+    this.getActiveTournaments();
   }
 
-  //get active tournament from master list and populate the label
-  private async getActiveTournament() {
+  //get active tournament from Tournaments list and populate the label
+  private async getActiveTournaments() {
     console.log(
-      stringsConstants.TotLog + "Getting active tournament from master list."
+      stringsConstants.TotLog + "Getting active tournament from Tournaments list."
     );
     try {
       let filterActive: string =
@@ -189,14 +184,24 @@ export default class TOTEnableTournament extends React.Component<
           filterActive
         );
 
-      if (activeTournamentsArray.length > 0)
-        this.setState({
-          activeTournament: activeTournamentsArray[0]["Title"],
-          activeTournamentId: activeTournamentsArray[0]["Id"],
+      var activeTournamentsChoices = [];
+      if (activeTournamentsArray.length > 0) {
+        //Loop through all "Active" tournaments and create an array with key and text
+        await activeTournamentsArray.forEach((eachTournament) => {
+          activeTournamentsChoices.push({
+            key: eachTournament["Id"],
+            text: eachTournament["Title"],
+          });
         });
-      else this.setState({ activeTournamentFlag: false });
+
+        this.setState({ activeTournamentsList: activeTournamentsChoices });
+      }
+      //If no active tournaments are found in the Tournaments list, set the flag
+      else
+        this.setState({ activeTournamentFlag: false });
+
     } catch (error) {
-      console.error("TOT_TOTEnableTournament_getActiveTournament \n", error);
+      console.error("TOT_TOTEnableTournament_getActiveTournaments \n", error);
       this.setState({
         showError: true,
         errorMessage:
@@ -207,10 +212,10 @@ export default class TOTEnableTournament extends React.Component<
     }
   }
 
-  // Get a list of all tournaments that are "Not Started" and to bind to Choice List
-  private async getTournamentsList() {
+  // Get a list of all tournaments that are in "Not Started" status and to bind to Choice List
+  private async getPendingTournaments() {
     console.log(
-      stringsConstants.TotLog + "Getting tournaments from master list."
+      stringsConstants.TotLog + "Getting tournaments with 'Not Started' status from Tournaments list."
     );
     try {
       let selectFilter: string =
@@ -232,10 +237,10 @@ export default class TOTEnableTournament extends React.Component<
 
         this.setState({ tournamentsList: tournamentsChoices });
       }
-      //If no tournaments are found in the master list set the flag
+      //If no pending tournaments are found in the Tournaments list, set the flag
       else this.setState({ noTournamentsFlag: true });
     } catch (error) {
-      console.error("TOT_TOTEnableTournament_getTournamentsList \n", error);
+      console.error("TOT_TOTEnableTournament_getPendingTournaments \n", error);
       this.setState({
         showError: true,
         errorMessage:
@@ -246,7 +251,7 @@ export default class TOTEnableTournament extends React.Component<
     }
   }
 
-  //on select of a tournament set the state
+  //on select of a tournament, set the state
   private onTournamentSelect = async (
     ev: React.FormEvent<HTMLInputElement>,
     option: IChoiceGroupOption
@@ -257,19 +262,50 @@ export default class TOTEnableTournament extends React.Component<
     });
   }
 
-  //On enabling a tournament change the status in master list
-  private enableTournament() {
+  //on select of an active tournament, set the state
+  private onActiveTournamentSelect = async (
+    ev: React.FormEvent<HTMLInputElement>,
+    option: IChoiceGroupOption
+  ): Promise<void> => {
+    this.setState({
+      selectedActiveTournament: option.text,
+      selectedActiveTournamentId: option.key,
+    });
+  }
+
+  //Start Tournament
+
+  //Show popup for starting a tournament
+  private startTournament() {
+    //clear previous error messages on the form
+    this.setState({
+      showError: false,
+      startTournamentError: false,
+      hideDialog: true,
+      errorMessage: "",
+      successMessage: "",
+      showSuccess: false,
+    });
+
+    if (this.state.selectedTournament == "")
+      this.setState({ startTournamentError: true });
+    else
+      this.setState({ hideDialog: false, tournamentAction: stringsConstants.StartTournamentAction });
+  }
+
+  //On enabling a tournament change the status in Tournaments list
+  private async enableTournament() {
     try {
       //clear previous error messages on the form
       this.setState({
         showError: false,
-        tournamentError: false,
+        startTournamentError: false,
         hideDialog: true,
       });
+      console.log(stringsConstants.TotLog + "Enabling selected tournament.");
       if (this.state.selectedTournament == "")
-        this.setState({ tournamentError: true });
+        this.setState({ startTournamentError: true });
       else {
-        console.log(stringsConstants.TotLog + "Enabling selected tournament.");
         let submitTournamentObject: any = {
           Status: stringsConstants.TournamentStatusActive,
         };
@@ -280,38 +316,36 @@ export default class TOTEnableTournament extends React.Component<
             this.state.selectedTournamentId
           )
           .then((result) => {
-            //Set Enabled tournament as Active tournament once enabled
-            this.setState({
-              activeTournamentFlag: true,
-              activeTournament: this.state.selectedTournament,
-              activeTournamentId: this.state.selectedTournamentId,
+            //Set selected tournament as Active tournament once enabled
+
+            let addSelectedTournament: any[] = this.state.activeTournamentsList;
+            addSelectedTournament.push({
+              key: this.state.selectedTournamentId,
+              text: this.state.selectedTournament,
             });
-            //clear the state values
-            this.setState({ selectedTournament: "", selectedTournamentId: "" });
-            //Show success message
-            this.setState({
-              showSuccess: true,
-              successMessage: "Tournament enabled successfully.",
-            });
+            this.setState({ activeTournamentsList: addSelectedTournament, activeTournamentFlag: true, });
 
             //Refresh the tournaments list after enabling a tournament by deleting it from the array
             let newTournamentsRefresh: any[] = this.state.tournamentsList;
-            for (
-              var counter = 0;
-              counter < newTournamentsRefresh.length;
-              counter++
-            ) {
-              if (
-                newTournamentsRefresh[counter]["text"] ==
-                this.state.activeTournament
-              ) {
-                newTournamentsRefresh.splice(counter, 1);
-                this.setState({ tournamentsList: newTournamentsRefresh });
-                break;
-              }
-            }
-            if (newTournamentsRefresh.length == 0)
+
+            var removeIndex = newTournamentsRefresh.map((item) => {
+              return item.text;
+            }).indexOf(this.state.selectedTournament);
+
+            newTournamentsRefresh.splice(removeIndex, 1);
+            this.setState({ tournamentsList: newTournamentsRefresh });
+
+            if (newTournamentsRefresh.length == 0) {
               this.setState({ noTournamentsFlag: true });
+            }
+
+            //Show success message and clear state variable
+            this.setState({
+              showSuccess: true,
+              successMessage: LocaleStrings.EnableTournamentSuccessMessage,
+              selectedTournament: "",
+              selectedTournamentId: ""
+            });
           })
           .catch((error) => {
             console.error("TOT_TOTEnableTournament_enableTournament \n", error);
@@ -336,52 +370,81 @@ export default class TOTEnableTournament extends React.Component<
     }
   }
 
-  //On Completing a tournament change the status in the master list
-  private completeTournament() {
+  //Show popup for ending a tournament
+  private endTournament() {
+    //clear previous error messages on the form
+    this.setState({
+      showError: false,
+      endTournamentError: false,
+      hideDialog: true,
+      showSuccess: false,
+      successMessage: "",
+      errorMessage: ""
+    });
+    if (this.state.selectedActiveTournament == "")
+      this.setState({ endTournamentError: true });
+    else
+      this.setState({ hideDialog: false, tournamentAction: stringsConstants.EndTournamentAction });
+  }
+
+  //On Completing a tournament change the status in the Tournaments list
+  private async completeTournament() {
     try {
       //clear previous error messages on the form
       this.setState({
         showError: false,
-        tournamentError: false,
+        endTournamentError: false,
         hideDialog: true,
       });
       console.log(stringsConstants.TotLog + "Completing active tournament.");
 
-      let submitTournamentObject: any = {
-        Status: stringsConstants.TournamentStatusCompleted,
-      };
+      if (this.state.selectedActiveTournament == "")
+        this.setState({ endTournamentError: true });
+      else {
+        let submitTournamentObject: any = {
+          Status: stringsConstants.TournamentStatusCompleted,
+        };
 
-      commonServiceManager
-        .updateListItem(
-          stringsConstants.TournamentsMasterList,
-          submitTournamentObject,
-          this.state.activeTournamentId
-        )
-        .then((result) => {
-          //Reset the state
-          this.setState({
-            activeTournamentFlag: false,
-            activeTournament: "None",
-            activeTournamentId: "",
-            selectedTournament: "",
-            selectedTournamentId: "",
+        commonServiceManager
+          .updateListItem(
+            stringsConstants.TournamentsMasterList,
+            submitTournamentObject,
+            this.state.selectedActiveTournamentId
+          )
+          .then((result) => {
+            //Refresh the active tournaments list after completing a tournament by deleting it from the array
+            let newActiveTournamentsRefresh: any[] = this.state.activeTournamentsList;
+
+            var removeIndex = newActiveTournamentsRefresh.map((item) => {
+              return item.text;
+            }).indexOf(this.state.selectedActiveTournament);
+
+            newActiveTournamentsRefresh.splice(removeIndex, 1);
+            this.setState({ activeTournamentsList: newActiveTournamentsRefresh });
+
+            if (newActiveTournamentsRefresh.length == 0)
+              this.setState({ activeTournamentFlag: false });
+
+
+            //Show success message and clear state for selected item
+            this.setState({
+              selectedActiveTournament: "",
+              selectedActiveTournamentId: "",
+              showSuccess: true,
+              successMessage: LocaleStrings.EndTournamentSuccessMessage,
+            });
+          })
+          .catch((error) => {
+            console.error("TOT_TOTEnableTournament_completeTournament \n", error);
+            this.setState({
+              showError: true,
+              errorMessage:
+                stringsConstants.TOTErrorMessage +
+                "while completing the tournament. Below are the details: \n" +
+                JSON.stringify(error),
+            });
           });
-          //Show success message
-          this.setState({
-            showSuccess: true,
-            successMessage: "Tournament ended successfully.",
-          });
-        })
-        .catch((error) => {
-          console.error("TOT_TOTEnableTournament_completeTournament \n", error);
-          this.setState({
-            showError: true,
-            errorMessage:
-              stringsConstants.TOTErrorMessage +
-              "while completing the tournament. Below are the details: \n" +
-              JSON.stringify(error),
-          });
-        });
+      }
     } catch (error) {
       console.error("TOT_TOTEnableTournament_completeTournament \n", error);
       this.setState({
@@ -405,56 +468,57 @@ export default class TOTEnableTournament extends React.Component<
           <span
             className={styles.backLabel}
             onClick={() => this.props.onClickCancel()}
-            title="Tournament of Teams"
+            title={LocaleStrings.TOTBreadcrumbLabel}
           >
-            Tournament of Teams
+            {LocaleStrings.TOTBreadcrumbLabel}
           </span>
           <span className={styles.border}></span>
-          <span className={styles.manageTournamentLabel}>Manage Tournaments</span>
+          <span className={styles.manageTournamentLabel}>{LocaleStrings.ManageTournamentsPageTitle}</span>
         </div>
-        <h5 className={styles.pageHeader}>Manage Tournaments</h5>
+        <h5 className={styles.pageHeader}>{LocaleStrings.ManageTournamentsPageTitle}</h5>
         <div className={styles.textLabels}>
-          <Label>{strings.ManageTotLabel1}</Label>
-          <Label>{strings.ManageTotLabel2}</Label>
+          <Label>{LocaleStrings.ManageToTLabel1}</Label>
+          <Label>{LocaleStrings.ManageToTLabel2}</Label>
         </div>
         <br />
-        <Dialog
-          hidden={this.state.hideDialog}
-          onDismiss={() => this.setState({ hideDialog: true })}
-          dialogContentProps={{
-            type: DialogType.close,
-            title: "Confirm",
-            subText: this.state.activeTournamentFlag ? "Are you sure want to end the tournament?" : "Are you sure want to start the new tournament?",
-
-          }}
-          containerClassName={'ms-dialogMainOverride ' + styles.textDialog}
-          modalProps={{ isBlocking: false }}
-        >
-          <DialogFooter>
-            {this.state.activeTournamentFlag && (
+        {!this.state.hideDialog && (
+          <Dialog
+            hidden={this.state.hideDialog}
+            onDismiss={() => this.setState({ hideDialog: true })}
+            dialogContentProps={{
+              type: DialogType.close,
+              title: LocaleStrings.ConfirmLabel,
+              subText: this.state.tournamentAction == stringsConstants.StartTournamentAction ? LocaleStrings.StartTournamentDialogMessage : LocaleStrings.EndTournamentDialogMessage
+            }}
+            containerClassName={'ms-dialogMainOverride ' + styles.textDialog}
+            modalProps={{ isBlocking: false }}
+          >
+            <DialogFooter>
+              {this.state.tournamentAction == stringsConstants.EndTournamentAction && (
+                <PrimaryButton
+                  onClick={this.completeTournament}
+                  text={LocaleStrings.YesButton}
+                  className={styles.yesBtn}
+                  title={LocaleStrings.YesButton}
+                />
+              )}
+              {this.state.tournamentAction == stringsConstants.StartTournamentAction && (
+                <PrimaryButton
+                  onClick={this.enableTournament}
+                  text={LocaleStrings.YesButton}
+                  className={styles.yesBtn}
+                  title={LocaleStrings.YesButton}
+                />
+              )}
               <PrimaryButton
-                onClick={this.completeTournament}
-                text="Yes"
-                className={styles.yesBtn}
-                title="Yes"
+                onClick={() => this.setState({ hideDialog: true })}
+                text={LocaleStrings.NoButton}
+                className={styles.noBtn}
+                title={LocaleStrings.NoButton}
               />
-            )}
-            {!this.state.activeTournamentFlag && (
-              <PrimaryButton
-                onClick={this.enableTournament}
-                text="Yes"
-                className={styles.yesBtn}
-                title="Yes"
-              />
-            )}
-            <PrimaryButton
-              onClick={() => this.setState({ hideDialog: true })}
-              text="No"
-              className={styles.noBtn}
-              title="No"
-            />
-          </DialogFooter>
-        </Dialog>
+            </DialogFooter>
+          </Dialog>
+        )}
         <div>
           {this.state.showSuccess && (
             <Label className={styles.successMessage}>
@@ -462,7 +526,6 @@ export default class TOTEnableTournament extends React.Component<
               {this.state.successMessage}
             </Label>
           )}
-
           {this.state.showError && (
             <Label className={styles.errorMessage}>
               {this.state.errorMessage}
@@ -470,66 +533,65 @@ export default class TOTEnableTournament extends React.Component<
           )}
         </div>
         <div>
+          <div className={styles.tournamentStatus}>
+            <h4 className={styles.subHeaderUnderline}>{LocaleStrings.ActiveTournamentLabel}</h4>
+          </div>
           <Row>
-            <Col>
-              <div className={styles.tournamentStatus}>
-                <label>Active Tournament: </label>&nbsp;
-                <label> {this.state.activeTournament} </label>
-              </div>
+            <Col md={6}>
+              <ChoiceGroup
+                onChange={this.onActiveTournamentSelect.bind(this)}
+                options={this.state.activeTournamentsList}
+                styles={choiceGroupStyles}
+              />
+              {!this.state.activeTournamentFlag && (
+                <Label className={styles.errorMessage}>
+                  {LocaleStrings.NoActiveTournamentMessage}
+                </Label>
+              )}
+              {this.state.endTournamentError && (
+                <Label className={styles.errorMessage}>
+                  {LocaleStrings.SelectEndTournamentMessage}
+                </Label>
+              )}
             </Col>
           </Row>
           <Row>
-            <Col>
-              <PrimaryButton
-                disabled={!this.state.activeTournamentFlag}
-                iconProps={{
-                  iconName: "StatusCircleErrorX"
-                }}
-                text="End Tournament"
-                title="End Tournament"
-                styles={endButtonStyles}
-                onClick={() => this.setState({ hideDialog: false })}
-                className={
-                  !this.state.activeTournamentFlag
-                    ? styles.disabledBtn
-                    : styles.completeBtn
-                }
-              />
+            <Col md={6}>
+              {this.state.activeTournamentFlag && (
+                <PrimaryButton
+                  iconProps={{
+                    iconName: "StatusCircleErrorX"
+                  }}
+                  text={LocaleStrings.EndTournamentButton}
+                  title={LocaleStrings.EndTournamentButton}
+                  styles={endButtonStyles}
+                  onClick={this.endTournament}
+                  className={styles.completeBtn}
+                />
+              )}
             </Col>
           </Row>
         </div>
         <br />
         <div className={styles.startTournmentArea}>
-          <h4 className={styles.subHeaderUnderline}>Start Tournament{" "}</h4>
-          <div className={styles.infoArea}>
-            <TooltipHost
-              content="A new tournament can only be started if there is no active tournament. To start a new tournament end the current tournament."
-              tooltipProps={tooltipStyles}
-              styles={hostStyles}
-              directionalHint={DirectionalHint.bottomCenter}
-            >
-              <Icon aria-label="Info" iconName="Info" className={classes.icon} />
-            </TooltipHost>
-          </div>
+          <h4 className={styles.subHeaderUnderline}>{LocaleStrings.StartTournamentHeaderLabel}</h4>
         </div>
         <div>
           <Row>
             <Col md={6}>
               <ChoiceGroup
-                disabled={this.state.activeTournamentFlag}
                 onChange={this.onTournamentSelect.bind(this)}
                 options={this.state.tournamentsList}
                 styles={choiceGroupStyles}
-
               />
               {this.state.noTournamentsFlag && (
                 <Label className={styles.errorMessage}>
-                  No tournaments found.
+                  {LocaleStrings.NoTournamentMessage}
                 </Label>
               )}
-              {this.state.tournamentError && (
+              {this.state.startTournamentError && (
                 <Label className={styles.errorMessage}>
-                  Select a tournament to enable.
+                  {LocaleStrings.SelectTournamentMessage}
                 </Label>
               )}
             </Col>
@@ -539,25 +601,20 @@ export default class TOTEnableTournament extends React.Component<
               <div className={styles.bottomBtnArea}>
                 {!this.state.noTournamentsFlag && (
                   <PrimaryButton
-                    disabled={this.state.activeTournamentFlag}
-                    text="Start Tournament"
-                    title="Start Tournament"
+                    text={LocaleStrings.StartTournamentButton}
+                    title={LocaleStrings.StartTournamentButton}
                     iconProps={{
                       iconName: "Play"
                     }}
                     styles={startButtonStyles}
-                    onClick={() => this.setState({ hideDialog: false })}
-                    className={
-                      this.state.activeTournamentFlag
-                        ? styles.disabledBtn
-                        : styles.enableBtn
-                    }
+                    onClick={this.startTournament}
+                    className={styles.enableBtn}
                   />
                 )}
                 &nbsp; &nbsp;
                 <PrimaryButton
-                  text="Back"
-                  title="Back"
+                  text={LocaleStrings.BackButton}
+                  title={LocaleStrings.BackButton}
                   iconProps={backIcon}
                   styles={backBtnStyles}
                   onClick={() => this.props.onClickCancel()}

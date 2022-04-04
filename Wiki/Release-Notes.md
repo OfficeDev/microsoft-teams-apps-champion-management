@@ -3,12 +3,25 @@ This page contains the different release details for Champion Management Platfor
 ## Version history
 | Version | Release Date |
 |----|----|
+| 2.1 | Apr 4, 2022 |
 | 2.0 | Dec 9, 2021 |
 | 1.3 | Sep 03, 2021 |
 | 1.2 | Jul 22, 2021 |
 | 1.1 | Apr 1, 2021 |
 
 ## Release notes
+
+### 2.1 (Apr 4, 2022)
+
+Below improvements released,
+
+- Bug Fix: Addressed an issue with tournament ranks/points not getting updated correctly for some customers within the Tournament of Teams leaderboard.
+- New Feature: Multi-Tournament support within the Tournament of Teams module. Organizations can now have multiple tournaments occurring at one time
+- New Feature: Introduced image preview feature for the Digital Badge module. Users can now preview their profile pictures with different badges available to them before applying it.
+- New Feature: Implemented the Digital Badge feature native to Tournament of Teams. Users can now use the Digital Badge feature without being added as a member of the Champion Management Platform.
+- New Feature: Implemented an ability that allows admins to update the logo of the Champion Management Platform that sits in the top application bar. Admins will now see a new icon "Manage App Logo" under the "Admin" section in the home page of the App. Upon replacing the image in the SharePoint library, the new app logo will be shown.
+- New Feature: Implemented multilingual support for the application. English support at the moment
+- Other Changes: Minor UI fixes.
 
 ### 2.0 (Dec 9, 2021)
 
