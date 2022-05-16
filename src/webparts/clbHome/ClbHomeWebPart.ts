@@ -1,10 +1,7 @@
 import * as React from "react";
 import * as ReactDom from "react-dom";
-import {
-  BaseClientSideWebPart,
-  IPropertyPaneConfiguration,
-  PropertyPaneTextField,
-} from "@microsoft/sp-webpart-base";
+import { BaseClientSideWebPart} from "@microsoft/sp-webpart-base";
+import { IPropertyPaneConfiguration, PropertyPaneTextField } from "@microsoft/sp-property-pane";
 
 import * as strings from "ClbHomeWebPartStrings";
 import ClbHome from "./components/ClbHome";

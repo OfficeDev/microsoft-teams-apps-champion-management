@@ -90,6 +90,7 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
         <div className={styles.championListPath}>
           <img src={require("../assets/CMPImages/BackIcon.png")}
             className={styles.backImg}
+            alt={LocaleStrings.BackButton}
           />
           <span
             className={styles.backLabel}

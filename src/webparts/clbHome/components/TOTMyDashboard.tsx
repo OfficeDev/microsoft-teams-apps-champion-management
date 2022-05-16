@@ -112,9 +112,13 @@ export default class TOTMyDashboard extends React.Component<
 > {
   private readonly _eventEmitter: RxJsEventEmitter =
     RxJsEventEmitter.getInstance();
+  public totMyDashboardTreeViewRef1: React.RefObject<HTMLDivElement>;
+  public totMyDashboardTreeViewRef2: React.RefObject<HTMLDivElement>;
   constructor(props: ITOTMyDashboardProps, state: ITOTMyDashboardState) {
     super(props);
     //Set default values
+    this.totMyDashboardTreeViewRef1 = React.createRef();
+    this.totMyDashboardTreeViewRef2 = React.createRef();
     this.state = {
       actionsList: [],
       selectedActionsList: [],
@@ -291,6 +295,27 @@ export default class TOTMyDashboard extends React.Component<
       this._eventEmitter.emit("rebindSideBar:start", {
         tournamentName: this.state.tournamentName,
       } as EventData);
+    }
+
+    //Update aria-label attribute to all Completed actions Treeview's info-icon-buttons.
+    if (prevState.completedActionsList.length !== this.state.completedActionsList.length) {
+      const infoButtons1 = this.totMyDashboardTreeViewRef2.current.getElementsByClassName('ms-Button--commandBar');
+      for (let i = 0; i < infoButtons1.length; i++) {
+        infoButtons1[i].setAttribute("aria-label", "info button");
+      }
+    }
+
+    //Update aria-label attribute to all Active actions Treeview's info-icon-buttons and Checkbox inputs.
+    if (prevState.actionsList.length !== this.state.actionsList.length) {
+      const infoButtons2 = this.totMyDashboardTreeViewRef1.current.getElementsByClassName('ms-Button--commandBar');
+      for (let i = 0; i < infoButtons2.length; i++) {
+        infoButtons2[i].setAttribute("aria-label", "info button");
+      }
+
+      const checkboxes = this.totMyDashboardTreeViewRef1.current.getElementsByTagName('input');
+      for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].setAttribute("aria-label", checkboxes[i].getAttribute('id'));
+      }
     }
   }
 
@@ -627,6 +652,7 @@ export default class TOTMyDashboard extends React.Component<
               <div className={styles.totDashboardPath}>
                 <img src={require("../assets/CMPImages/BackIcon.png")}
                   className={styles.backImg}
+                  alt={LocaleStrings.BackButton}
                 />
                 <span
                   className={styles.backLabel}
@@ -680,6 +706,7 @@ export default class TOTMyDashboard extends React.Component<
                       selectedKey={this.state.myTournamentName}
                       options={this.state.myTournamentsList}
                       onChange={this.getMyTournamentActions.bind(this)}
+                      ariaLabel={LocaleStrings.MyTournamentsLabel + ' list'}
                     />
                   </Col>
                 )}
@@ -696,6 +723,7 @@ export default class TOTMyDashboard extends React.Component<
                       selectedKey={this.state.activeTournamentName}
                       options={this.state.activeTournamentsList}
                       onChange={this.getActiveTournamentActions.bind(this)}
+                      ariaLabel={LocaleStrings.ActiveTournamentLabel + ' list'}
                     />
                   </Col>
                 )}
@@ -731,15 +759,17 @@ export default class TOTMyDashboard extends React.Component<
                         {LocaleStrings.PendingActionsSuccessMessage}
                       </Label>
                     )}
-                    <TreeView
-                      items={this.state.actionsList}
-                      defaultExpanded={true}
-                      selectionMode={TreeViewSelectionMode.Multiple}
-                      selectChildrenMode={SelectChildrenMode.Select | SelectChildrenMode.Unselect}
-                      showCheckboxes={true}
-                      defaultSelectedKeys={this.state.treeViewSelectedKeys}
-                      onSelect={this.onActionSelected}
-                    />
+                    <div className={styles.myDashBoardTreeView1} ref={this.totMyDashboardTreeViewRef1}>
+                      <TreeView
+                        items={this.state.actionsList}
+                        defaultExpanded={true}
+                        selectionMode={TreeViewSelectionMode.Multiple}
+                        selectChildrenMode={SelectChildrenMode.Select | SelectChildrenMode.Unselect}
+                        showCheckboxes={true}
+                        defaultSelectedKeys={this.state.treeViewSelectedKeys}
+                        onSelect={this.onActionSelected}
+                      />
+                    </div>
                     {this.state.actionsError && (
                       <Label className={styles.errorMessage}>
                         {LocaleStrings.SelectActionsErrorMessage}
@@ -775,10 +805,12 @@ export default class TOTMyDashboard extends React.Component<
                     <Label className={styles.subHeaderUnderline}>
                       {LocaleStrings.CompletedActionsLabel}
                     </Label>
-                    <TreeView
-                      items={this.state.completedActionsList}
-                      defaultExpanded={true}
-                    />
+                    <div className={styles.myDashBoardTreeView2} ref={this.totMyDashboardTreeViewRef2}>
+                      <TreeView
+                        items={this.state.completedActionsList}
+                        defaultExpanded={true}
+                      />
+                    </div>
                   </Col>
                 </Row>
               </div>

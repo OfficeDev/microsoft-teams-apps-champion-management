@@ -12,15 +12,14 @@ import {
   PeoplePicker,
   PrincipalType
 } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 import { Dropdown, IDropdownStyles } from "office-ui-fabric-react/lib/Dropdown";
 import { Label } from 'office-ui-fabric-react/lib/Label';
-import { autobind } from "office-ui-fabric-react/lib/Utilities";
 import * as React from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import siteconfig from "../config/siteconfig.json";
 import styles from "../scss/CMPAddMember.module.scss";
-import * as LocaleStrings from 'ClbHomeWebPartStrings';
 
 
 
@@ -135,11 +134,15 @@ const dropdownStyles: Partial<IDropdownStyles> = {
 };
 
 class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
+  public addMemberPeoplePickerParentRef: React.RefObject<HTMLDivElement>;
+  public addMemberPeoplePickerRef: React.RefObject<PeoplePicker>;
   constructor(props: IClbAddMemberProps) {
     super(props);
     sp.setup({
       spfxContext: this.props.context,
     });
+    this.addMemberPeoplePickerParentRef = React.createRef();
+    this.addMemberPeoplePickerRef = React.createRef();
     this.state = {
       list: { value: [] },
       isAddChampion: false,
@@ -163,6 +166,9 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
       inclusionpath: siteconfig.inclusionPath,
       load: false
     };
+
+    this.updatePeoplePickerMenuAttributes = this.updatePeoplePickerMenuAttributes.bind(this);
+    this.removeButtonEvent = this.removeButtonEvent.bind(this);
   }
 
   public componentDidMount() {
@@ -225,9 +231,72 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
           }
         });
       });
+
+    //Update Aria Label attribute to people picker control
+    const peoplePickerElement = this.addMemberPeoplePickerParentRef.current.getElementsByClassName('ms-FocusZone');
+    const peoplePickerAriaLabel = this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle;
+    peoplePickerElement[0].setAttribute('aria-label', peoplePickerAriaLabel);
+
+    this.updatePeoplePickerMenuAttributes();
   }
 
-  @autobind
+  //Update Aria Label attribute to people picker control's suggestions Menu
+  private updatePeoplePickerMenuAttributes = () => {
+    const inputElement = this.addMemberPeoplePickerParentRef.current.getElementsByTagName('input')[0];
+
+    inputElement.onchange = () => {
+      const peopleSuggestions = document.getElementsByClassName('ms-Suggestions-itemButton');
+
+      if (this.addMemberPeoplePickerRef.current.state.mostRecentlyUsedPersons.length > 0 && peopleSuggestions.length > 0) {
+        const peoplePickerMenu = document.getElementsByClassName('ms-Suggestions-container')[0];
+        peoplePickerMenu.setAttribute("aria-label", this.addMemberPeoplePickerRef.current.props.placeholder);
+      }
+    };
+
+    const inputEvent = () => {
+      setTimeout(() => {
+        const peoplePicker = this.addMemberPeoplePickerParentRef.current.getElementsByClassName('ms-FocusZone');
+        const peopleSuggestions = document.getElementsByClassName('ms-Suggestions-itemButton');
+        if (peoplePicker[0].getAttribute('aria-expanded') === "true" && this.addMemberPeoplePickerRef.current.state.mostRecentlyUsedPersons.length > 0 && peopleSuggestions.length > 0) {
+          const peoplePickerMenu = document.getElementsByClassName('ms-Suggestions-container')[0];
+          peoplePickerMenu.setAttribute("aria-label", this.addMemberPeoplePickerRef.current.props.placeholder);
+        }
+      }, 1000);
+    };
+
+    inputElement.onclick = inputEvent;
+    inputElement.onfocus = inputEvent;
+
+  }
+
+  //onclick event to the people remove button
+  private removeButtonEvent = () => {
+    if (this.state.UserDetails.length > 0) {
+      const removeBtn = this.addMemberPeoplePickerParentRef.current.getElementsByClassName('ms-PickerItem-removeButton')[0];
+      if (removeBtn !== undefined) {
+        removeBtn.addEventListener('click', () => {
+          setTimeout(() => {
+            const peoplePicker = this.addMemberPeoplePickerParentRef.current.getElementsByClassName('ms-FocusZone');
+            const peopleSuggestions = document.getElementsByClassName('ms-Suggestions-itemButton');
+            if (peoplePicker[0].getAttribute('aria-expanded') === "true" && this.addMemberPeoplePickerRef.current.state.mostRecentlyUsedPersons.length > 0 && peopleSuggestions.length > 0) {
+              const peoplePickerMenu = document.getElementsByClassName('ms-Suggestions-container')[0];
+              peoplePickerMenu.setAttribute("aria-label", this.addMemberPeoplePickerRef.current.props.placeholder);
+            }
+            this.updatePeoplePickerMenuAttributes();
+          }, 1000);
+        });
+      }
+    }
+  }
+
+  public componentDidUpdate(prevProps: Readonly<IClbAddMemberProps>, prevState: Readonly<IState>, snapshot?: any): void {
+    //Update aria label to suggestions menu when people picker control re-renders on selection
+    if (prevState.UserDetails.length !== this.state.UserDetails.length) {
+      this.removeButtonEvent();
+    }
+  }
+
+  
   private _getPeoplePickerItems(items: any[]) {
     let userarr: IUserDetail[] = [];
     items.forEach((user) => {
@@ -410,13 +479,14 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
           <div className={styles.addMembersPath}>
             <img src={require("../assets/CMPImages/BackIcon.png")}
               className={styles.backImg}
+              alt={LocaleStrings.BackButton}
             />
             <span
               className={styles.backLabel}
               onClick={() => { this.props.onClickBack(); }}
               title={LocaleStrings.CMPBreadcrumbLabel}
             >
-             {LocaleStrings.CMPBreadcrumbLabel}
+              {LocaleStrings.CMPBreadcrumbLabel}
             </span>
             <span className={styles.border}></span>
             <span className={styles.addMemberLabel}>{this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle}</span>
@@ -429,17 +499,20 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
           {this.state.errorMessage !== "" ?
             <Label className={styles.errorMessage}>{this.state.errorMessage} </Label> : null}
           <Label className={styles.pickerLabel}>{this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle} <span className={styles.asterisk}>*</span></Label>
-          <PeoplePicker
-            context={this.props.context}
-            personSelectionLimit={1}
-            required={true}
-            onChange={this._getPeoplePickerItems}
-            showHiddenInUI={false}
-            principalTypes={[PrincipalType.User]}
-            defaultSelectedUsers={this.state.selectedusers}
-            resolveDelay={1000}
-            placeholder={LocaleStrings.PeoplePickerPlaceholder}
-          />
+          <div ref={this.addMemberPeoplePickerParentRef}>
+            <PeoplePicker
+              context={this.props.context}
+              personSelectionLimit={1}
+              required={true}
+              onChange={this._getPeoplePickerItems.bind(this)}
+              showHiddenInUI={false}
+              principalTypes={[PrincipalType.User]}
+              defaultSelectedUsers={this.state.selectedusers}
+              resolveDelay={1000}
+              placeholder={LocaleStrings.PeoplePickerPlaceholder}
+              ref={this.addMemberPeoplePickerRef}
+            />
+          </div>
           <br></br>
           <Row>
             <Col md={3}>
@@ -448,6 +521,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                 placeholder={LocaleStrings.RegionPlaceholder}
                 options={this.options(this.state.regions)}
                 styles={dropdownStyles}
+                ariaLabel={LocaleStrings.RegionPlaceholder}
               />
             </Col>
             <Col md={3}>
@@ -456,6 +530,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                 placeholder={LocaleStrings.CountryPlaceholder}
                 options={this.options(this.state.coutries)}
                 styles={dropdownStyles}
+                ariaLabel={LocaleStrings.CountryPlaceholder}
               />
             </Col>
             <Col md={3}>
@@ -464,6 +539,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                 placeholder={LocaleStrings.GroupPlaceholder}
                 options={this.options(this.state.groups)}
                 styles={dropdownStyles}
+                ariaLabel={LocaleStrings.GroupPlaceholder}
               />
             </Col>
             <Col md={3}>
@@ -472,6 +548,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                 placeholder={LocaleStrings.FocusAreaPlaceholder}
                 options={this.options(this.state.focusAreas)}
                 styles={dropdownStyles}
+                ariaLabel={LocaleStrings.FocusAreaPlaceholder}
               />
             </Col>
           </Row>

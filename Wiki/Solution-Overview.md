@@ -55,7 +55,9 @@ Leader board encourages the employees to get connected to the Champions in their
 ### Add Members 
 Admin and current Champions of the program can nominate(***Add Members***) peers as Champions. Additional responsibility falls on the admin to maintain the Champions SharePoint list. *The approval process stays with the Admin only.*
 
-The Admin can approve/Reject the champion nominations using Manage Approvals screen. 
+Manage Approvals icon will show a notification indicator when there are any pending champion approvals. The Admin can Approve/Reject the nominated champions using Manage Approvals screen.
+
+![Quick Start Guide](../Images/ManageApproval.png) 
 
 ### Manage App Logo
 ![ManageAppLogo](../Images/ManageAppLogo.png)     

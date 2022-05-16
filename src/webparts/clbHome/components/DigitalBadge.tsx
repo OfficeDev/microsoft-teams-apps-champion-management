@@ -68,7 +68,7 @@ const classNames = mergeStyleSets({
   },
   listGridTile: {
     width: '25%',
-    marginBottom: '8%',
+    marginBottom: '3%',
     textAlign: 'center',
     outline: 'none',
     position: 'relative',
@@ -86,7 +86,7 @@ const classNames = mergeStyleSets({
     },
   },
   listGridSizer: {
-    paddingBottom: '100%',
+    paddingBottom: '180px',
   },
   listGridPadder: {
     position: 'absolute',
@@ -108,8 +108,11 @@ const classNames = mergeStyleSets({
     height: '28px',
     boxSizing: 'border-box',
     font: "normal normal bold 16px/21px Segoe UI",
-    paddingTop: '3px',
-    overflowX: 'hidden'
+    padding: "3px 3px 3px 1px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    cursor: "pointer",
+    whiteSpace: "nowrap"
   },
   listGridImage: {
     position: 'absolute',
@@ -234,7 +237,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
           <div className={classNames.listGridSizer}>
             <div className={classNames.listGridPadder}>
               <a href="#" onClick={() => { this.onBadgeSelected(item.url); }}>
-              {this.state.profileImage.url &&
+                {this.state.profileImage.url &&
                   this.state.profileImage.url !==
                   "../assets/images/noimage.png" && (
                     <div
@@ -242,7 +245,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
                     >
                       <img
                         style={{
-                          width: `150px`,
+                          width: `120px`,
                         }}
                         src={this.state.profileImage.url}
                         className={classNames.profileImage}
@@ -250,8 +253,8 @@ export default class DigitalBadge extends TeamsBaseComponent<
                       />
                       <img
                         style={{
-                          width: `150px`,
-                          marginTop: `-150px`,
+                          width: `120px`,
+                          marginTop: `-120px`,
                         }}
                         className={classNames.profileImage}
                         alt={LocaleStrings.BadgeImageAlt}
@@ -268,16 +271,16 @@ export default class DigitalBadge extends TeamsBaseComponent<
                     >
                       <img
                         src={require("../assets/images/noimage.png")}
-                        style={{ width: `100px` }}
+                        style={{ width: `120px` }}
                         className={classNames.profileImage}
                         alt={LocaleStrings.ProfileImageAlt}
                       />
-                      <span className={classNames.listGridLabel} title={this.state.userletters}>{this.state.userletters}</span>
+
 
                       <img
                         style={{
-                          width: `100px`,
-                          marginTop: `-100px`,
+                          width: `120px`,
+                          marginTop: `-120px`,
                         }}
                         className={classNames.profileImage}
                         alt={LocaleStrings.BadgeImageAlt}
@@ -285,8 +288,9 @@ export default class DigitalBadge extends TeamsBaseComponent<
                       />
                     </div>
                   )}
-              </a>                               
-              <span className={classNames.listGridLabel} title={item.title}>{item.title}</span>
+              </a>
+              <span className={classNames.listGridLabel} title={this.state.userletters}>{this.state.userletters}</span>
+              <span onClick={() => { this.onBadgeSelected(item.url); }} className={classNames.listGridLabel} title={item.title}>{item.title}</span>
             </div>
           </div>
         </div>
@@ -358,30 +362,30 @@ export default class DigitalBadge extends TeamsBaseComponent<
         .then((responseuser: SPHttpClientResponse) => {
           responseuser.json().then((datauser: any) => {
 
-                    let userassignletters = "";
-                    let usernamearray = datauser.DisplayName.split(" ");
-                    if (usernamearray.length === 1) {
-                      userassignletters = usernamearray[0][0].toUpperCase();
-                    } else if (usernamearray.length > 1) {
-                      userassignletters =
-                        usernamearray[0][0].toUpperCase() +
-                        usernamearray[
-                          usernamearray.length - 1
-                        ][0].toUpperCase();
-                    }
-                    this.setState({
-                      showAccept: true,
-                      userletters: userassignletters,
-                    });
-                
-                  this.updateTheme(context.theme);
-                  upn = datauser.Email;
-                  this.setState({
-                    isLoading: false,
-                    entityId: context.entityId,
-                    upn: context.upn,
-                  });
-                  this.showUserInformation(upn);                
+            let userassignletters = "";
+            let usernamearray = datauser.DisplayName.split(" ");
+            if (usernamearray.length === 1) {
+              userassignletters = usernamearray[0][0].toUpperCase();
+            } else if (usernamearray.length > 1) {
+              userassignletters =
+                usernamearray[0][0].toUpperCase() +
+                usernamearray[
+                  usernamearray.length - 1
+                ][0].toUpperCase();
+            }
+            this.setState({
+              showAccept: true,
+              userletters: userassignletters,
+            });
+
+            this.updateTheme(context.theme);
+            upn = datauser.Email;
+            this.setState({
+              isLoading: false,
+              entityId: context.entityId,
+              upn: context.upn,
+            });
+            this.showUserInformation(upn);
           });
         });
     });
@@ -441,6 +445,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
                         <div className={dbStyles.digitalBadgePath}>
                           <img src={require("../assets/CMPImages/BackIcon.png")}
                             className={dbStyles.backImg}
+                            alt={LocaleStrings.BackButton}
                           />
                           <span
                             className={dbStyles.backLabel}
@@ -475,7 +480,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                   {!this.state.hasAccepted && (
                                     <div className={dbStyles.divChild1}>
                                       <span className={dbStyles.imgText}>
-                                      {LocaleStrings.PreAcceptPageTitle}
+                                        {LocaleStrings.PreAcceptPageTitle}
                                       </span>
                                       <br /> <br />
                                       <img
@@ -516,7 +521,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                             )}
                                           />
                                           <p onClick={this.props.clickcallback}>
-                                          {LocaleStrings.HowtoGetDigitalBadgeText}
+                                            {LocaleStrings.HowtoGetDigitalBadgeText}
                                           </p>
                                         </div>
                                       )}
@@ -547,7 +552,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                 )}
                                 {this.state.hasAccepted && this.state.hasImageSelected && (
                                   <div className={dbStyles.badgeDetailsHeading}>
-                                  {LocaleStrings.DigitalBadgeSubPageTitle}
+                                    {LocaleStrings.DigitalBadgeSubPageTitle}
                                   </div>
                                 )}
                                 <div className={dbStyles.badgeDetailsContainer}>
@@ -564,7 +569,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                           >
                                             <img
                                               style={{
-                                                width: `150px`,
+                                                width: `120px`,
                                               }}
                                               src={this.state.profileImage.url}
                                               id={"profileImage"}
@@ -572,8 +577,8 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                             />
                                             <img
                                               style={{
-                                                width: `150px`,
-                                                marginTop: `-150px`,
+                                                width: `120px`,
+                                                marginTop: `-120px`,
                                               }}
                                               id={"badgeImage"}
                                               alt={LocaleStrings.BadgeImageAlt}
@@ -592,7 +597,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                           >
                                             <img
                                               src={require("../assets/images/noimage.png")}
-                                              style={{ width: `100px` }}
+                                              style={{ width: `120px` }}
                                               id={"profileImage"}
                                               alt={LocaleStrings.ProfileImageAlt}
                                             />
@@ -601,8 +606,8 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                             </div>
                                             <img
                                               style={{
-                                                width: `100px`,
-                                                marginTop: `-100px`,
+                                                width: `120px`,
+                                                marginTop: `-120px`,
                                               }}
                                               id={"badgeImage"}
                                               alt={LocaleStrings.BadgeImageAlt}
@@ -632,9 +637,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                       !this.state.isApplied && (
                                         <div className={`buttonContainer ${dbStyles.buttonArea}`}>
                                           <PrimaryButton
-                                            className={primaryButton(
-                                              contextCSS
-                                            )}
+                                            className={`${primaryButton(contextCSS)} ${dbStyles.applyBtn}`}
                                             onClick={this._onApplyProfileImage}
                                             ariaLabel={LocaleStrings.ApplyButtonText}
                                             ariaDescription={
@@ -654,17 +657,15 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                           {this.state.profileImage.url !==
                                             "../assets/images/noimage.png" && (
                                               <div className={dbStyles.downloadArea}>
-                                                <CompoundButton
+                                                <PrimaryButton
                                                   iconProps={{
                                                     iconName: "Download",
                                                     className: classNames.downloadIcon
                                                   }}
-                                                  className={`
-                                                    ${compoundButton(contextCSS)
-                                                      .container} ${dbStyles.downloadBtn}`
-                                                  }
-                                                  style={{ ...styleProps }}
-                                                  title={LocaleStrings.DownloadButtonText}
+                                                  className={`${primaryButton(contextCSS)} ${dbStyles.downloadBtn}`}
+                                                  title={this.state.imageDownloaded
+                                                    ? LocaleStrings.DownloadedButtonSecondaryText
+                                                    : LocaleStrings.DownloadButtonSecondaryText}
                                                   onClick={this._onDownloadImage}
                                                   ariaLabel={
                                                     LocaleStrings.DownloadButtonText
@@ -679,18 +680,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
                                                   }
                                                 >
                                                   {this.state.downloadText}
-                                                </CompoundButton> <br />
-                                                <Label
-                                                  style={styleProps}
-                                                  className={dbStyles.downloadMsg}
-                                                >
-                                                  {
-                                                    this.state.imageDownloaded
-                                                      ? LocaleStrings.DownloadedButtonSecondaryText
-                                                      : LocaleStrings.DownloadButtonSecondaryText
-
-                                                  }
-                                                </Label>
+                                                </PrimaryButton>
                                               </div>
                                             )}
                                         </div>

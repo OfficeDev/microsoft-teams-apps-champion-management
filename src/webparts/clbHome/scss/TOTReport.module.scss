@@ -1,0 +1,331 @@
+:global {
+
+    .totReportComboBoxCallout {
+        width: 350px;
+        border-radius: 3px;
+    }
+
+    .react-bootstrap-table-pagination {
+        width: 80%;
+
+        div:nth-child(1) {
+            margin-bottom: 15px;
+        }
+    }
+
+}
+
+.container {
+    height: 100%;
+    width: 100%;
+    padding: 2% 5% 150px 5%;
+}
+
+.totReportPath {
+    display: inline-flex;
+    margin-bottom: 26px;
+    text-align: center;
+    font: normal normal bold 14px/24px Segoe UI;
+    letter-spacing: 0px;
+    color: #33344A;
+    opacity: 1;
+
+    .backImg {
+        width: 7px;
+        height: 12px;
+        margin-right: 10px;
+        margin-top: 6px;
+    }
+
+    .backLabel {
+        padding-right: 10px;
+        cursor: pointer;
+    }
+
+    .border {
+        width: 0px;
+        height: 14px;
+        border: 1px solid #33344A;
+        margin-top: 5px;
+    }
+
+    .totReportLabel {
+        font: normal normal bold 18px/23px Segoe UI;
+        padding-left: 10px;
+    }
+}
+
+.totReportDropdown {
+    display: inline-flex;
+    margin-bottom: 30px;
+
+    label {
+        margin-right: 10px;
+        text-align: left;
+        font: normal normal normal 20px/27px Segoe UI;
+        letter-spacing: 0.28px;
+        color: #020000;
+        opacity: 1;
+    }
+    label::after {
+        content: ' :';
+    }
+
+    i {
+        padding-top: 2px;
+        color: #888686 !important;
+    }
+
+}
+
+.totReportDropdown>div {
+    background: #FFFFFF;
+    box-shadow: 0px 3px 6px #00000029;
+    width: 350px;
+    height: 40px;
+    border-radius: 3px;
+
+    button,
+    button:hover {
+        background-color: #FFFFFF;
+    }
+}
+
+.totReportDropdown>div::after {
+    border: 0.5px solid #888686;
+    border-radius: 3px;
+}
+
+
+
+.dDInfoIconArea {
+    margin-left: 15px;
+    position: relative;
+    top: 3px;
+
+    .dDInfoIcon {
+        font-size: 20px;
+        color: #888686;
+        cursor: pointer;
+    }
+}
+
+.mainCard {
+    opacity: 1;
+    border: none;
+    box-shadow: 0px 3px 6px #00000029;
+    padding: 0;
+    margin-bottom: 20px;
+
+    .cardBody {
+        padding: 0;
+        text-align: center;
+        border-radius: 4px;
+
+        .cardTitleText {
+            background-color: #FFDC7F;
+            font: normal normal normal 18px/27px Segoe UI;
+            letter-spacing: 0.28px;
+            color: #020000;
+            opacity: 1;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .cardValue {
+            color: unset;
+        }
+    }
+}
+
+
+.chartArea {
+    padding: 10px;
+    box-shadow: 0px 6px 6px #00000029;
+    border-radius: 4px;
+    margin-bottom: 15px;
+
+    .chartHeading {
+        text-align: left;
+        font: normal normal normal 16px/24px Segoe UI;
+        letter-spacing: 0px;
+        color: #020000;
+        opacity: 1;
+        margin-bottom: 10px;
+    }
+
+    .refreshIconArea {
+        float: right;
+
+        .refreshIcon {
+            cursor: pointer;
+            color: #000000;
+            font-size: 15px;
+        }
+
+        .refreshIcon:hover {
+            color: cornflowerblue;
+        }
+    }
+}
+
+.searchArea {
+    display: inline-flex;
+    margin-bottom: 20px;
+
+    input {
+        width: 250px;
+        background-color: #ffffff !important;
+        border-radius: 0.25rem 0 0 0.25rem;
+        box-shadow: 0px 3px 6px #00000029;
+        border-color: #888686;
+    }
+
+    input:focus {
+        box-shadow: none;
+    }
+
+    input::placeholder {
+        text-align: left;
+        font: normal normal normal 16px/21px Segoe UI;
+        letter-spacing: 0;
+        color: #888686;
+        opacity: 1;
+    }
+
+    .IconArea {
+        width: 40px;
+        height: calc(1.5em + .75rem + 2px);
+        background-color: #464775;
+        border-radius: 0 0.25rem 0.25rem 0;
+        box-shadow: 0px 3px 6px #00000029;
+
+        .cancelIcon {
+            color: #FFFFFF;
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+            margin-top: 3px;
+        }
+
+        .searchIcon {
+            color: #FFFFFF;
+            font-size: 20px;
+            margin-left: 10px;
+            margin-top: 3px;
+            -webkit-transform: scaleX(-1);
+            transform: scaleX(-1);
+        }
+    }
+}
+
+.tableHeadingAndCSVBtn {
+    display: inline-flex;
+    width: 100%;
+    margin-bottom: 10px;
+
+    .tableHeading {
+        text-align: left;
+        font: normal normal normal 20px/27px Segoe UI;
+        letter-spacing: 0;
+        color: #020000;
+        opacity: 1;
+    }
+
+    .csvLink {
+        margin-left: auto;
+        margin-right: 20%;
+        position: relative;
+        bottom: 9px;
+        box-shadow: none;
+
+        .excelIcon {
+            width: 35px;
+            height: 35px;
+            opacity: 1;
+            margin-right: 5px;
+        }
+
+        .downloadText {
+            text-align: left;
+            font: normal normal normal 16px/27px Segoe UI;
+            letter-spacing: 0;
+            color: #020000;
+            opacity: 1;
+        }
+    }
+}
+
+.participantsGrid {
+    table {
+        width: 80%;
+
+        th {
+            background-color: #464775;
+            border: none;
+            text-align: left;
+            font: normal normal normal 18px/27px Segoe UI;
+            letter-spacing: 0.28px;
+            color: #FFFFFF;
+            opacity: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+        }
+
+        th:nth-child(1) {
+            width: 25%;
+        }
+
+        th:nth-child(2) {
+            width: 22%;
+        }
+
+        th:nth-child(3) {
+            width: 12%;
+        }
+
+        tbody {
+            box-shadow: 0px 3px 6px #00000029;
+
+            tr {
+                background-color: #E0F2FB;
+                text-align: left;
+                font: normal normal normal 18px/24px Segoe UI;
+                letter-spacing: 0.25px;
+                color: #000000;
+                opacity: 1;
+
+                td {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+
+                    .progressBar {
+                        appearance: none;
+                        width: 70%;
+                        height: 10px;
+                    }
+
+                    .progressBar::-webkit-progress-bar {
+                        background-color: #C9C7C6;
+                        border-radius: 20px;
+                    }
+
+                    .progressBar::-webkit-progress-value {
+                        background-color: #00AD56;
+                        border-radius: 20px;
+                        background-size: 20px 15px, 100% 100%, 100% 100%;
+                    }
+
+                    .percentage {
+                        margin-right: 10px;
+                        width: 40px !important;
+                        display: inline-flex;
+                        justify-content: center;
+                    }
+                }
+            }
+        }
+    }
+}

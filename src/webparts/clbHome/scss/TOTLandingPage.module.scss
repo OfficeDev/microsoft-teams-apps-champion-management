@@ -35,19 +35,19 @@
         text-overflow: center;
 
         .errorMessage {
-          color: #ED2939;
+          color: #e12636;
           text-align: left;
-          font: normal normal 600 18px/24px Segoe UI;
+          font: normal normal normal 18px/24px Segoe UI;
           letter-spacing: 0px;
           opacity: 1;
         }
 
         .successMessage {
           text-align: left;
-          font: normal normal 600 18px/24px Segoe UI;
+          font: normal normal normal 18px/24px Segoe UI;
           letter-spacing: 0px;
           opacity: 1;
-          color: #8bc832;
+          color: #000000;
 
           .tickImage {
             width: 28px;
@@ -56,6 +56,13 @@
             margin-bottom: 7px;
           }
         }
+      }
+
+      .setupMessage {
+        color: blue;
+        font-weight: lighter;
+        font-style: italic;
+        margin-left: 3.5%;
       }
 
       .pageSubHeader {

@@ -5,9 +5,9 @@
 }
 
 .errorMessage {
-  color: #ED2939;
+  color: #e12636;
   margin-left: 2%;
-  font: normal normal 600 18px/24px Segoe UI;
+  font: normal normal normal 18px/24px Segoe UI;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -21,8 +21,8 @@
 
 .successMessage {
   margin-left: 1%;
-  color: #8BC832;
-  font: normal normal 600 18px/24px Segoe UI;
+  color: #000000;
+  font: normal normal normal 18px/24px Segoe UI !important;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -139,8 +139,11 @@
 }
 
 .labelCol {
- margin-top: auto;
+  margin-top: auto;
+  text-align: -webkit-center;
+  align-self: center;
 }
+
 .contentTab {
   width: 100vw;
   min-height: 100vh;
@@ -164,6 +167,13 @@
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
     background: #555;
+  }
+}
+
+.myDashBoardTreeView1>div>div>div:nth-child(2),
+.myDashBoardTreeView2>div>div>div:nth-child(2) {
+  div[class^='labels_']>div[class^='itemSubLabel_'] {
+    color: #757575;
   }
 }
 

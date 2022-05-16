@@ -13,6 +13,9 @@ On enabling “Tournament of Teams”:
 > * Tournament Actions
 > * Tournaments
 > * User Actions
+> * Tournaments Report
+> * Participants Report
+
 
 2. “Tournament of Teams” link is visible under “Quick Start Guide” section of CMP home page. This link navigates the users to “Tournament of Teams” landing page. 
 
@@ -43,9 +46,9 @@ Below are the master lists in Share Point that need to be managed by the TOT Adm
 
 ### Manage Tournaments 
 
- - A tournament can be started or ended by an admin using “Manage Tournaments” screen. 
+ - A tournament can be started or completed by an admin using “Manage Tournaments” screen. 
 
- - Multiple tournaments can be can be active at a time. 
+ - Multiple tournaments can be active at a time. 
 
 
 ![Quick Start Guide](../Images/ManageTournament.png) 
@@ -71,3 +74,11 @@ Below are the master lists in Share Point that need to be managed by the TOT Adm
 
 
 ![Quick Start Guide](../Images/TOTLeaderBoard.png) 
+
+### Tournaments Report
+
+- Tournaments Report is available only to admins under "Admin Tools" section.
+- Report feature is available only for completed tournaments.
+- A report can be generated for "All Tournaments" or a particular tournament.
+
+![Quick Start Guide](../Images/TOTReports.png) 

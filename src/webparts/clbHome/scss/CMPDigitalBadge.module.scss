@@ -100,17 +100,18 @@
       margin-left: 20%;
       margin-top: 10%;
 
+      .applyBtn {
+        border: none !important;
+        padding: 0.4rem !important;
+      }
+
       .downloadArea {
         display: inline-block;
         width: 50%;
 
         .downloadBtn {
-          min-height: 2rem;
-          padding: 0 12px 0 12px;
-        }
-
-        .downloadMsg {
-          font-size: small;
+          border: none !important;
+          padding: 0.4rem !important;
         }
       }
     }

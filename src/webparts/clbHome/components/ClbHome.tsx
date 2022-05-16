@@ -50,12 +50,28 @@ export interface IClbHomeState {
   userStatus: string;
   firstName: string;
   appLogoURL: string;
+  list: ISPLists;
+  isApprovalPending: boolean;
+}
+export interface ISPLists {
+  value: ISPList[];
+}
+export interface ISPList {
+  Title: string;
+  FirstName: string;
+  LastName: string;
+  Country: String;
+  Status: String;
+  FocusArea: String;
+  Group: String;
+  Role: String;
+  Region: string;
+  Points: number;
+  ID: number;
 }
 
 //Global Variables
-const cmpLog: string = "CMP Logs: ";
 let flagCheckUserRole: boolean = true;
-const errorMessage: string = "An unexpected error occured ";
 let rootSiteURL: string;
 let spweb: any;
 
@@ -87,6 +103,8 @@ export default class ClbHome extends React.Component<
       userStatus: "",
       firstName: "",
       appLogoURL: "",
+      list: { value: [] },
+      isApprovalPending: false
     };
     this.checkUserRole = this.checkUserRole.bind(this);
 
@@ -127,6 +145,8 @@ export default class ClbHome extends React.Component<
           this.createSiteAndLists().then(() => {
             //Check current user's role and set UI components
             this.checkUserRole(datauser.Email);
+            //Get list of Members from member List
+            this.getMembersListData();
           });
           var props = {};
           datauser.UserProfileProperties.forEach((prop) => {
@@ -136,7 +156,7 @@ export default class ClbHome extends React.Component<
           this.setState({ firstName: datauser.userProperties.FirstName });
         });
       }).catch((error) => {
-        alert(errorMessage + "while retrieving user details. Below is the " + JSON.stringify(error));
+        alert(stringsConstants.CMPErrorMessage + "while retrieving user details. Below is the " + JSON.stringify(error));
         console.error("CMP_CLBHome_componentDidMount_FailedToGetUserDetails \n", JSON.stringify(error));
       });
 
@@ -175,7 +195,7 @@ export default class ClbHome extends React.Component<
       });
     }
     catch (error) {
-      alert(errorMessage + "while verifying tournament of Teams is enabled. Below is the " + JSON.stringify(error));
+      alert(stringsConstants.CMPErrorMessage + "while verifying tournament of Teams is enabled. Below is the " + JSON.stringify(error));
       console.error("CMP_CLBHome_checkTOTIsEnabled_FailedToVerifyListsFields \n", JSON.stringify(error));
 
     }
@@ -202,7 +222,7 @@ export default class ClbHome extends React.Component<
       return totalFieldsToCreate;
     }
     catch (error) {
-      alert(errorMessage + "while checking required fields exists. Below are the details: \n" + JSON.stringify(error));
+      alert(stringsConstants.CMPErrorMessage + "while checking required fields exists. Below are the details: \n" + JSON.stringify(error));
       console.error("CMP_clbhome_checkFieldExists \n", error);
     }
   }
@@ -220,7 +240,7 @@ export default class ClbHome extends React.Component<
           .post(item, (errClbHome, _res, rawresponse) => {
             if (!errClbHome) {
               if (rawresponse.status === 201) {
-                console.log(cmpLog + "List created: " + "'" + item.displayName + "'");
+                console.log(stringsConstants.CMPLog + "List created: " + "'" + item.displayName + "'");
                 setTimeout(() => {
                   this.props.context.spHttpClient
                     .get(
@@ -358,14 +378,14 @@ export default class ClbHome extends React.Component<
             }
           });
       }).catch((error) => {
-        alert(errorMessage + "while creating new list. Below are the details: \n" + JSON.stringify(error));
+        alert(stringsConstants.CMPErrorMessage + "while creating new list. Below are the details: \n" + JSON.stringify(error));
         console.error("CMP_CLBHome_createNewList_FailedtoCreateList \n", JSON.stringify(error));
       });
   }
 
   //When app is installed create new site collection and lists if not existing already
   private async createSiteAndLists() {
-    console.log(cmpLog + "Checking if site exists already.");
+    console.log(stringsConstants.CMPLog + "Checking if site exists already.");
     //Set Variables
     var exSiteId;
     try {
@@ -375,7 +395,7 @@ export default class ClbHome extends React.Component<
           //If CMP site does not exist, create the site and lists
           if (!response) {
             flagCheckUserRole = false;
-            console.log(cmpLog + "Creating new site collection: '" + this.state.sitename + "'");
+            console.log(stringsConstants.CMPLog + "Creating new site collection: '" + this.state.sitename + "'");
             //Create a new site collection
             const createSiteUrl: string = "/_api/SPSiteManager/create";
             const siteDefinition: any = {
@@ -409,13 +429,13 @@ export default class ClbHome extends React.Component<
               .then((siteResponse: SPHttpClientResponse) => {
                 //If site is succesfully created
                 if (siteResponse.status === 200) {
-                  console.log(cmpLog + "Created new site collection: '" + this.state.sitename + "'");
+                  console.log(stringsConstants.CMPLog + "Created new site collection: '" + this.state.sitename + "'");
                   siteResponse.json().then((siteData: any) => {
                     if (siteData.SiteId) {
                       exSiteId = siteData.SiteId;
                       this.setState({ siteId: siteData.SiteId }, () => {
                         let isMembersListNotExists = false;
-                        console.log(cmpLog + "Creating Lists in new site");
+                        console.log(stringsConstants.CMPLog + "Creating Lists in new site");
                         //Create 3 lists in the newly created site
                         if (exSiteId) {
                           let lists = [];
@@ -598,7 +618,7 @@ export default class ClbHome extends React.Component<
                 }
 
               }).catch((error) => {
-                alert(errorMessage + "while creating new site. Below are the details: \n" + JSON.stringify(error));
+                alert(stringsConstants.CMPErrorMessage + "while creating new site. Below are the details: \n" + JSON.stringify(error));
                 console.error("CMP_CLBHome_createSiteAndLists_FailedToCreateSite \n", JSON.stringify(error));
               });
 
@@ -611,22 +631,22 @@ export default class ClbHome extends React.Component<
               .then((responseMemberList: SPHttpClientResponse) => {
                 if (responseMemberList.status === 404) {
                   //If lists do not exist create lists. Else no action is required
-                  console.log(cmpLog + "Site already existing but lists not found");
-                  console.log(cmpLog + "Getting site collection ID for creating lists");
+                  console.log(stringsConstants.CMPLog + "Site already existing but lists not found");
+                  console.log(stringsConstants.CMPLog + "Getting site collection ID for creating lists");
                   flagCheckUserRole = false;
                   //Get Sitecollection ID for creating lists   
                   this.props.context.spHttpClient
                     .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/site/id", SPHttpClient.configurations.v1)
                     .then((responseuser: SPHttpClientResponse) => {
                       if (responseuser.status === 404) {
-                        alert(errorMessage + "while setting up the App. Please try refreshing or loading after some time.");
+                        alert(stringsConstants.CMPErrorMessage + "while setting up the App. Please try refreshing or loading after some time.");
                         console.error("CMP_CLBHome_createSiteAndLists_FailedToGetSiteID \n");
                       }
                       else {
                         responseuser.json().then((datauser: any) => {
                           exSiteId = datauser.value;
                           if (exSiteId) {
-                            console.log(cmpLog + "Creating lists");
+                            console.log(stringsConstants.CMPLog + "Creating lists");
                             //Set up List Creation Information
                             let lists = [];
                             siteconfig.lists.forEach((item) => {
@@ -791,31 +811,31 @@ export default class ClbHome extends React.Component<
                         });
                       }
                     }).catch((error) => {
-                      alert(errorMessage + "while retrieving SiteID. Below are the details: \n" + JSON.stringify(error));
+                      alert(stringsConstants.CMPErrorMessage + "while retrieving SiteID. Below are the details: \n" + JSON.stringify(error));
                       console.error("CMP_CLBHome_createSiteAndLists_FailedToGetSiteID \n", JSON.stringify(error));
                     });
 
                 }
               }).catch((error) => {
-                alert(errorMessage + "while checking if MemberList exists. Below are the details: \n" + JSON.stringify(error));
+                alert(stringsConstants.CMPErrorMessage + "while checking if MemberList exists. Below are the details: \n" + JSON.stringify(error));
                 console.error("CMP_CLBHome_createSiteAndLists_FailedToCheckMemberListExists \n", JSON.stringify(error));
               });
             //site exists, check if Digital Badge lib exists, create if not present
             this.createDigitalBadgeLib();
-           //check if CMP Logo lib exists, create if not present
+            //check if CMP Logo lib exists, create if not present
             this.getAppLogoImage();
           }//End of else part - CMP site already exists create only lists. 
 
         }//First IF END
 
       }).catch((error) => {
-        alert(errorMessage + "while checking if site exists. Below are the details: \n" + JSON.stringify(error));
+        alert(stringsConstants.CMPErrorMessage + "while checking if site exists. Below are the details: \n" + JSON.stringify(error));
         console.error("CMP_CLBHome_createSiteAndLists_FailedtoCheckIfSiteExists \n", JSON.stringify(error));
       });
     }
     catch (error) {
       console.error("CMP_CLBHome_createSiteAndLists \n", error);
-      alert(errorMessage + "while creating site and lists. Below are the details: \n" + error);
+      alert(stringsConstants.CMPErrorMessage + "while creating site and lists. Below are the details: \n" + error);
     }
   }
 
@@ -830,25 +850,30 @@ export default class ClbHome extends React.Component<
         logoImageArray = await spweb.lists.getByTitle(spListTitle).items.select("File/Name").expand("File").get();
         if (logoImageArray.length > 0) {
           for (let i = 0; i < logoImageArray.length; i++) {
-            if (logoImageArray[i].File.Name.toLowerCase() == "applogo.jpg") {
+            if (logoImageArray[i].File.Name.toLowerCase() == stringsConstants.AppLogoLowerCase) {
               logoImageURL = rootSiteURL + "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/" + spListTitle + "/" + logoImageArray[i].File.Name;
               this.setState({
                 appLogoURL: logoImageURL,
               });
             }
+            else {
+              this.setState({
+                appLogoURL: require("../assets/CMPImages/" + stringsConstants.AppLogo),
+              });
+            }
           }
         } else {
           this.setState({
-            appLogoURL: require("../assets/CMPImages/" + stringsConstants.MSLogo),
+            appLogoURL: require("../assets/CMPImages/" + stringsConstants.AppLogo),
           });
         }
       }).catch(async () => {
         //create library in SharePoint site to store the organization logo image
         await spweb.lists.add(spListTitle, "", 101, true).then(async () => {
-          fetch(require("../assets/CMPImages/" + stringsConstants.MSLogo)).then(res => res.blob()).then((blob) => {
-            spweb.getFolderByServerRelativeUrl("/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/" + spListTitle).files.add("AppLogo.jpg", blob, true);
+          fetch(require("../assets/CMPImages/" + stringsConstants.AppLogo)).then(res => res.blob()).then((blob) => {
+            spweb.getFolderByServerRelativeUrl("/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/" + spListTitle).files.add(stringsConstants.AppLogo, blob, true);
             this.setState({
-              appLogoURL: require("../assets/CMPImages/" + stringsConstants.MSLogo),
+              appLogoURL: require("../assets/CMPImages/" + stringsConstants.AppLogo),
             });
           });
         });
@@ -896,14 +921,12 @@ export default class ClbHome extends React.Component<
     }
   }
 
-
-
   //Check current users's role from "Member List" and set the UI components accordingly
   private async checkUserRole(userEmail: string) {
     try {
       if (flagCheckUserRole) {
 
-        console.log(cmpLog + "Checking user role and setting the UI components");
+        console.log(stringsConstants.CMPLog + "Checking user role and setting the UI components");
         this.props.context.spHttpClient
           .get(
             "/" +
@@ -945,14 +968,53 @@ export default class ClbHome extends React.Component<
               }
             });
           }).catch((error) => {
-            alert(errorMessage + "while retrieving user role. Below are the details: \n" + JSON.stringify(error));
+            alert(stringsConstants.CMPErrorMessage + "while retrieving user role. Below are the details: \n" + JSON.stringify(error));
             console.error("CMP_CLBHome_checkUserRole_FailedtoGetUserRole \n", JSON.stringify(error));
           });
       }
     }
     catch (error) {
       console.error("CMP_CLBHome_checkUserRole \n", error);
-      alert(errorMessage + " while retrieving user role. Below are the details: \n" + error);
+      alert(stringsConstants.CMPErrorMessage + " while retrieving user role. Below are the details: \n" + error);
+    }
+  }
+
+  //Get the list of Members from member List
+  private getMembersListData(): Promise<ISPLists> {
+    return this.props.context.spHttpClient
+      .get(
+        "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/_api/web/lists/GetByTitle('" + stringsConstants.MemberList + "')/Items?$top=1000",
+        SPHttpClient.configurations.v1
+      )
+      .then((response: SPHttpClientResponse) => {
+        let res = response.json();
+        if (response.status === 200) {
+          res.then((responseJSON: any) => {
+            let pendingApprovals = responseJSON.value.filter(i => i.Status === 'Pending');
+            this.setState({
+              list: { value: responseJSON.value },
+              isApprovalPending: pendingApprovals.length === 0 ? false : true
+            });
+          });
+          return res;
+        }
+      });
+  }
+
+  //callback function
+  private callBackFunction = (updatedListData: ISPLists) => {
+    try {
+      //Get the list of Members from member List
+      this.getMembersListData();
+
+      this.setState({
+        cB: false,
+        ChampionsList: false,
+        addMember: false,
+        approveMember: false
+      });
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -1001,7 +1063,7 @@ export default class ClbHome extends React.Component<
                             className={styles.dashboardimgs}
                           />
                           <div className={styles.center} title={LocaleStrings.ChampionLeaderBoardLabel}>
-                          {LocaleStrings.ChampionLeaderBoardLabel}
+                            {LocaleStrings.ChampionLeaderBoardLabel}
                           </div>
                         </div>
                       </Media>
@@ -1063,7 +1125,7 @@ export default class ClbHome extends React.Component<
                                 className={styles.dashboardimgs}
                               />
                               {this.state.isTOTEnabled && (<div className={`${styles.center} ${styles.totLabel}`} title={LocaleStrings.TOTLabel}>
-                              {LocaleStrings.TOTLabel}</div>)}
+                                {LocaleStrings.TOTLabel}</div>)}
                             </div>
                           </Media>
                         </div>
@@ -1126,7 +1188,7 @@ export default class ClbHome extends React.Component<
                               />
                             </a>
                             <div className={styles.center} title={LocaleStrings.EventsTrackListLabel}>
-                            {LocaleStrings.EventsTrackListLabel}
+                              {LocaleStrings.EventsTrackListLabel}
                             </div>
                           </div>
                         </Media>
@@ -1142,13 +1204,13 @@ export default class ClbHome extends React.Component<
                         >
                           <div className={styles.mb}>
                             <img
-                              src={require("../assets/CMPImages/ManageApprovals.svg")}
+                              src={this.state.isApprovalPending ? require("../assets/CMPImages/ManagePendingApprovals.svg") : require("../assets/CMPImages/ManageApprovals.svg")}
                               alt={LocaleStrings.ManageApprovalToolTip}
                               title={LocaleStrings.ManageApprovalToolTip}
                               className={styles.dashboardimgs}
                             />
                             <div className={styles.center} title={LocaleStrings.ManageApprovalsLabel}>
-                            {LocaleStrings.ManageApprovalsLabel}
+                              {LocaleStrings.ManageApprovalsLabel}
                             </div>
                           </div>
                         </Media>
@@ -1167,7 +1229,7 @@ export default class ClbHome extends React.Component<
                                 className={styles.dashboardimgs}
                               />
                               {!this.state.isTOTEnabled && (<div className={`${styles.center} ${styles.enableTournamentLabel}`} title={LocaleStrings.EnableTOTLabel}>
-                              {LocaleStrings.EnableTOTLabel}</div>)}
+                                {LocaleStrings.EnableTOTLabel}</div>)}
                             </div>
                           </Media>
                         </Col>)}
@@ -1186,7 +1248,7 @@ export default class ClbHome extends React.Component<
                               />
                             </a>
                             <div className={styles.center} title={LocaleStrings.ManageDigitalBadgesLabel}>
-                            {LocaleStrings.ManageDigitalBadgesLabel}
+                              {LocaleStrings.ManageDigitalBadgesLabel}
                             </div>
                           </div>
                         </Media>
@@ -1206,7 +1268,7 @@ export default class ClbHome extends React.Component<
                               />
                             </a>
                             <div className={styles.center} title={LocaleStrings.ManageAppLogoLabel}>
-                            {LocaleStrings.ManageAppLogoLabel}
+                              {LocaleStrings.ManageAppLogoLabel}
                             </div>
                           </div>
                         </Media>
@@ -1272,14 +1334,8 @@ export default class ClbHome extends React.Component<
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
                 isEmp={this.state.cV === true || this.state.clB === true}
-                onClickAddmember={() =>
-                  this.setState({
-                    cB: false,
-                    ChampionsList: false,
-                    addMember: false,
-                    approveMember: false
-                  })
-                }
+                list={this.state.list}
+                onClickAddmember={this.callBackFunction}
               />
             )
           }
@@ -1291,14 +1347,7 @@ export default class ClbHome extends React.Component<
                 isEmp={this.state.cV === true || this.state.clB === true}
                 userAdded={this.state.isUserAdded}
                 userStatus={this.state.userStatus}
-                onClickAddmember={() =>
-                  this.setState({
-                    cB: false,
-                    ChampionsList: false,
-                    addMember: false,
-                    approveMember: false
-                  })
-                }
+                onClickAddmember={this.callBackFunction}
               />
             )
           }

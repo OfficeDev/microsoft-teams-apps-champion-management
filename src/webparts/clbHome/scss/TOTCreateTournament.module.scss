@@ -5,17 +5,17 @@
 }
 
 .errorMessage {
-  color: #ED2939;
-  font: normal normal 600 18px/24px Segoe UI;
+  color: #e12636;
+  font: normal normal normal 18px/24px Segoe UI;
   letter-spacing: 0px;
   opacity: 1;
 }
 
 .successMessage {
-  font: normal normal 600 18px/24px Segoe UI;
+  font: normal normal normal 18px/24px Segoe UI;
   letter-spacing: 0px;
   opacity: 1;
-  color: #8bc832;
+  color: #000000;
 }
 
 .asteriskStyle {
@@ -94,5 +94,11 @@
   div[class^='treeView_']>div>div:first-child {
     background-color: #BDBDE6;
     padding: 5px 5px 0 5px;
+  }
+
+  div[class^='treeView_']>div>div:nth-child(2) {
+    div[class^='itemSubLabel_'] {
+      color: #757575;
+    }
   }
 }

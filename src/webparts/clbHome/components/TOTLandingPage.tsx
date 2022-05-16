@@ -20,6 +20,8 @@ import Navbar from "react-bootstrap/Navbar";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
 import DigitalBadge from "./DigitalBadge";
 import { ThemeStyle } from "msteams-ui-styles-core";
+import { Spinner, SpinnerSize } from "@fluentui/react";
+import TOTReport from "./TOTReport";
 
 export interface ITOTLandingPageProps {
   context?: any;
@@ -40,6 +42,10 @@ interface ITOTLandingPageState {
   isAdmin: boolean;
   isShowLoader: boolean;
   digitalBadge: boolean;
+  spinnerMessage: string;
+  setupMessage: string;
+  tournamentReport: boolean;
+
 }
 let commonService: commonServices;
 class TOTLandingPage extends React.Component<
@@ -60,8 +66,11 @@ class TOTLandingPage extends React.Component<
       manageTournament: false,
       leaderBoard: false,
       isAdmin: false,
-      isShowLoader: false,
-      digitalBadge: false
+      isShowLoader: true,
+      digitalBadge: false,
+      spinnerMessage: "",
+      setupMessage: "",
+      tournamentReport: false,
     };
     commonService = new commonServices(this.props.context, this.props.siteUrl);
     this.redirectTotHome = this.redirectTotHome.bind(this);
@@ -73,20 +82,33 @@ class TOTLandingPage extends React.Component<
   //else run provisioning code 
   private async initialChecks() {
     try {
-      this.setState({
-        isShowLoader: true,
-      });
       //if isTOTEnabled is true then just check for role else run provisioning to add missing lists and fields
       if (this.props.isTOTEnabled == true) {
         this.checkUserRole();
       }
       else {
+        this.setState({
+          setupMessage: LocaleStrings.EnableTOTSpinnerMessage,
+          spinnerMessage: LocaleStrings.SpinnerListCreationMessage
+        });
         //verify tot lists/fields are present, create missing lists/fields
-        await this.provisionTOTListsAndFields().then((res) => {
+        await this.provisionTOTListsAndFields().then(async (res) => {
           //if provision of lists is completed then create lookup
           if (res == "Success") {
-            this.createLookupField();
+            await this.createLookupField();
+            //Loading historic data into report lists for already completed tournaments while upgrading the app.
+            await this.dataLoadForReport().then((response) => {
+              if (response)
+                console.log("TOT_TOTLandingPage_initialChecks_Report data loaded successfully");
+              else
+                console.log("TOT_TOTLandingPage_initialChecks_Error occurred in loading report data");
+            });
+
+            if (this.state.showError == false) {
+              this.setState({ showSuccess: true });
+            }
           }
+          await this.checkUserRole();
         });
       }
     }
@@ -94,6 +116,33 @@ class TOTLandingPage extends React.Component<
       console.error("TOT_TOTLandingPage_componentDidMount_FailedToGetUserDetails \n", error);
       this.setState({ showError: true, errorMessage: stringsConstants.TOTErrorMessage + "while getting user details. Below are the details: \n" + JSON.stringify(error), showSuccess: false });
     }
+  }
+
+  //Loading data into 'Tournaments Report' and 'Participants Report' lists
+  private async dataLoadForReport(): Promise<any> {
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+
+        let tournamentsReportListItems = await commonService.getAllListItems(stringsConstants.TournamentsReportList);
+        if (tournamentsReportListItems.length == 0) {
+
+          let filterString: string = "Status eq '" + stringsConstants.TournamentStatusCompleted + "'";
+          let tournamentsListItems = await commonService.getItemsWithOnlyFilter(stringsConstants.TournamentsMasterList, filterString);
+
+          if (tournamentsListItems.length > 0) {
+            for (let counter = 0; counter < tournamentsListItems.length; counter++) {
+              await commonService.updateCompletedTournamentDetails(tournamentsListItems[counter].Title);
+            }
+          }
+        }
+        resolve(true);
+      }
+      catch (error) {
+        this.setState({ showError: true, showSuccess: false, errorMessage: stringsConstants.TOTErrorMessage + "while setting up Tournaments Report. Please delete 'Tournaments Report' and 'Participants Report' lists from the site and retry 'Enable Tournament Of Teams' from the home page." });
+        console.error("TOT_TOTLandingPage_dataLoadForReport_FailedtoLoadData \n", JSON.stringify(error));
+        reject(false);
+      }
+    });
   }
 
   //Check current users's is admin from "ToT admin List" and set the UI components accordingly
@@ -122,6 +171,7 @@ class TOTLandingPage extends React.Component<
       );
       this.setState({
         showError: true,
+        isShowLoader: false,
         errorMessage:
           stringsConstants.TOTErrorMessage +
           "while getting user from TOT Admin list. Below are the details: \n" +
@@ -395,34 +445,47 @@ class TOTLandingPage extends React.Component<
   private async provisionTOTListsAndFields(): Promise<any> {
     return new Promise<any>(async (resolve, reject) => {
       try {
+        const listPromise = [];
         //get all lists schema from siteconfig
         const listStructure: any = siteconfig.totLists;
-        listStructure.forEach(async (element) => {
-          const spListTitle: string = element["listName"];
-          const spListTemplate = element["listTemplate"];
-          const fieldsToCreate: string[] = element["fields"];
-          const masterDataToAdd: string[] = element["masterData"];
+
+        for (let element = 0; element < listStructure.length; element++) {
+          const spListTitle: string = listStructure[element]["listName"];
+          const spListTemplate = listStructure[element]["listTemplate"];
+          const fieldsToCreate: string[] = listStructure[element]["fields"];
+          const masterDataToAdd: string[] = listStructure[element]["masterData"];
           //Ensure list exists, creates if not found and add fields/data if already created
+          console.log("TOTLandingPage_Checking if list already exists. ", spListTitle);
           await sp.web.lists.getByTitle(spListTitle).get().then(async (list) => {
+            console.log("TOTLandingPage_Checking field exists. ", spListTitle);
             let totalFieldsToCreate = await this.checkFieldExists(spListTitle, fieldsToCreate);
             if (totalFieldsToCreate.length > 0) {
+              console.log("TOTLandingPage_Creating list fields. ", spListTitle);
               await commonService.createListFields(list.Title, totalFieldsToCreate).then(async (res) => {
                 if (res = "Success") {
-                  await this.checkUserRole();
-                  resolve("Success");
+                  console.log("TOTLandingPage_Created list fields successfully. ", spListTitle);
+                  listPromise.push(true);
+                } else {
+                  console.log("TOTLandingPage_Failed to create List fields. ", spListTitle);
+                  listPromise.push(false);
                 }
+              }).catch((err) => {
+                listPromise.push(false);
+                console.error("TOTLandingPage_provisionTOTListsAndFields. \n", err);
               });
             }
             else {
-              await this.checkUserRole();
-              resolve("Success");
+              console.log("TOTLandingPage_No fields to be created. ", spListTitle);
+              listPromise.push(true);
             }
           }).catch(async () => {
             await sp.web.lists.add(spListTitle, "", spListTemplate, false).then(async () => {
+              console.log("TOTLandingPage_Created list successfully. ", spListTitle);
               //verify field exists
               let totalFieldsToCreate = await this.checkFieldExists(spListTitle, fieldsToCreate);
               await commonService.createListFields(spListTitle, totalFieldsToCreate).
                 then(async (res) => {
+                  console.log("TOTLandingPage_List fields are created successfully. ", spListTitle);
                   if (res = "Success")
                     //rename title fields and upload master data
                     switch (spListTitle) {
@@ -446,50 +509,70 @@ class TOTLandingPage extends React.Component<
                         //rename title display name to User Email
                         await sp.web.lists.getByTitle(spListTitle).fields.getByTitle("Title").update({ Title: "User Email", Indexed: true });
                         break;
+                      case stringsConstants.TournamentsReportList:
+                        //rename title display name to Tournament Name and apply unique
+                        await sp.web.lists.getByTitle(spListTitle).fields.getByTitle("Title").update({ Title: "Tournament Name", Indexed: true });
+                        break;
+                      case stringsConstants.ParticipantsReportList:
+                        //rename title display name to Tournament Name and apply unique
+                        await sp.web.lists.getByTitle(spListTitle).fields.getByTitle("Title").update({ Title: "Tournament Name", Indexed: true });
+                        break;
+                      case stringsConstants.TopParticipantsList:
+                        //rename title display name to Tournament Name and apply unique
+                        await sp.web.lists.getByTitle(spListTitle).fields.getByTitle("Title").update({ Title: "User Name", Indexed: true });
+                        break;
                       default:
                     }
                   let statusOfCreation = await this.createMasterData(spListTitle, masterDataToAdd);
                   let promiseStatus = Promise.all(statusOfCreation);
                   promiseStatus.then(async () => {
-                    await this.checkUserRole();
-                    this.setState({ showSuccess: true });
-                    resolve("Success");
+                    listPromise.push(true);
                   }).catch((err) => {
+                    listPromise.push(false);
                     console.error("TOT_TOTLandingPage_provisionTOTListsAndFields_FailedToAddMasterData \n", err);
                     this.setState({ showError: true, errorMessage: stringsConstants.TOTErrorMessage + " while adding master data. Below are the details: \n" + JSON.stringify(err), showSuccess: false });
                   });
                 }).catch((err) => {
+                  listPromise.push(false);
                   console.error("TOT_TOTLandingPage_provisionTOTListsAndFields_FailedToCreatedField \n", err);
                   this.setState({ showError: true, errorMessage: stringsConstants.TOTErrorMessage + " while adding list fields. Below are the details: \n" + JSON.stringify(err), showSuccess: false });
                 });
             }).catch((err) => {
+              listPromise.push(false);
               console.error("TOT_TOTLandingPage_provisionTOTListsAndFields_FailedToAddList\n", err);
               this.setState({ showError: true, errorMessage: stringsConstants.TOTErrorMessage + " while adding list. Below are the details: \n" + JSON.stringify(err), showSuccess: false });
             });
           });
+        } //End of For loop
+        //Check if all the TOT lists are provisioned without failure and return promise
+        Promise.all(listPromise).then(async () => {
+          console.log("TOT_TOTLandingPage_Promises returned for all lists ", listPromise);
+          if (listPromise.includes(false)) {
+            reject("Failed");
+          }
+          else {
+            resolve("Success");
+          }
         });
-
       }
       catch (error) {
-        reject("Failed");
         console.error("TOT_TOTLandingPage_provisionTOTListsAndFields \n", error);
         this.setState({ showError: true, errorMessage: stringsConstants.TOTErrorMessage + " while adding list and/or fields. Below are the details: \n" + JSON.stringify(error), showSuccess: false });
+        reject("Failed");
       }
     });
   }
 
-
-
   public render(): React.ReactElement<ITOTLandingPageProps> {
     return (
       <div className={styles.totLandingPage}>
-        {this.state.isShowLoader && <div className={styles.load}></div>}
         <div className={styles.container}>
           {!this.state.leaderBoard &&
             !this.state.createTournament &&
             !this.state.dashboard &&
             !this.state.digitalBadge &&
-            !this.state.manageTournament && (
+            !this.state.manageTournament &&
+            !this.state.tournamentReport && (
               <div>
                 <div className={styles.totHeader}>
                   <span className={styles.totPageHeading} onClick={this.redirectTotHome}>{LocaleStrings.TOTBreadcrumbLabel}</span>
@@ -507,52 +590,62 @@ class TOTLandingPage extends React.Component<
                         {this.state.errorMessage}
                       </Label>
                     )}
+                    {this.state.isShowLoader && (
+                      <div><Label className={styles.setupMessage}>
+                        {this.state.setupMessage}
+                      </Label><Spinner
+                          label={this.state.spinnerMessage}
+                          size={SpinnerSize.large} /></div>
+                    )}
                   </div>
-                  <h5 className={styles.pageSubHeader}>{LocaleStrings.QuickLinksLabel}</h5>
-                  <Row className="mt-4">
-                    <Col sm={3} className={styles.imageLayout}>
-                      <Media
-                        className={styles.cursor}
-                        onClick={() =>
-                          this.setState({
-                            leaderBoard: !this.state.leaderBoard,
-                            showSuccess: false,
-                          })
-                        }
-                      >
-                        <div className={styles.mb}>
-                          <img
-                            src={require("../assets/TOTImages/LeaderBoard.svg")}
-                            alt={LocaleStrings.TOTLeaderBoardPageTitle}
-                            title={LocaleStrings.TOTLeaderBoardPageTitle}
-                            className={styles.dashboardimgs}
-                          />
-                          <div className={styles.center} title={LocaleStrings.TOTLeaderBoardPageTitle}>{LocaleStrings.TOTLeaderBoardPageTitle}</div>
-                        </div>
-                      </Media>
-                    </Col>
-                    <Col sm={3} className={styles.imageLayout}>
-                      <Media
-                        className={styles.cursor}
-                        onClick={() =>
-                          this.setState({
-                            dashboard: !this.state.dashboard,
-                            showSuccess: false,
-                          })
-                        }
-                      >
-                        <div className={styles.mb}>
-                          <img
-                            src={require("../assets/TOTImages/MyDashboard.svg")}
-                            alt={LocaleStrings.TOTMyDashboardPageTitle}
-                            title={LocaleStrings.TOTMyDashboardPageTitle}
-                            className={styles.dashboardimgs}
-                          />
-                          <div className={styles.center} title={LocaleStrings.TOTMyDashboardPageTitle}>{LocaleStrings.TOTMyDashboardPageTitle}</div>
-                        </div>
-                      </Media>
-                    </Col>
-                    <Col sm={3} className={styles.imageLayout}>
+                  {!this.state.isShowLoader && (
+                    <h5 className={styles.pageSubHeader}>{LocaleStrings.QuickLinksLabel}</h5>
+                  )}
+                  {!this.state.isShowLoader && (
+                    <Row className="mt-4">
+                      <Col sm={3} className={styles.imageLayout}>
+                        <Media
+                          className={styles.cursor}
+                          onClick={() =>
+                            this.setState({
+                              leaderBoard: !this.state.leaderBoard,
+                              showSuccess: false,
+                            })
+                          }
+                        >
+                          <div className={styles.mb}>
+                            <img
+                              src={require("../assets/TOTImages/LeaderBoard.svg")}
+                              alt={LocaleStrings.TOTLeaderBoardPageTitle}
+                              title={LocaleStrings.TOTLeaderBoardPageTitle}
+                              className={styles.dashboardimgs}
+                            />
+                            <div className={styles.center} title={LocaleStrings.TOTLeaderBoardPageTitle}>{LocaleStrings.TOTLeaderBoardPageTitle}</div>
+                          </div>
+                        </Media>
+                      </Col>
+                      <Col sm={3} className={styles.imageLayout}>
+                        <Media
+                          className={styles.cursor}
+                          onClick={() =>
+                            this.setState({
+                              dashboard: !this.state.dashboard,
+                              showSuccess: false,
+                            })
+                          }
+                        >
+                          <div className={styles.mb}>
+                            <img
+                              src={require("../assets/TOTImages/MyDashboard.svg")}
+                              alt={LocaleStrings.TOTMyDashboardPageTitle}
+                              title={LocaleStrings.TOTMyDashboardPageTitle}
+                              className={styles.dashboardimgs}
+                            />
+                            <div className={styles.center} title={LocaleStrings.TOTMyDashboardPageTitle}>{LocaleStrings.TOTMyDashboardPageTitle}</div>
+                          </div>
+                        </Media>
+                      </Col>
+                      <Col sm={3} className={styles.imageLayout}>
                         <Media
                           className={styles.cursor}
                           onClick={() => this.setState({ digitalBadge: !this.state.digitalBadge })}
@@ -568,7 +661,8 @@ class TOTLandingPage extends React.Component<
                           </div>
                         </Media>
                       </Col>
-                  </Row>
+                    </Row>
+                  )}
 
                   {this.state.isAdmin && (
                     <div>
@@ -593,7 +687,7 @@ class TOTLandingPage extends React.Component<
                               />
                             </a>
                             <div className={`${styles.center}`} title={LocaleStrings.ManageTournamentActionsLabel}>
-                            {LocaleStrings.ManageTournamentActionsLabel}
+                              {LocaleStrings.ManageTournamentActionsLabel}
                             </div>
                           </div>
                         </Media>
@@ -616,7 +710,7 @@ class TOTLandingPage extends React.Component<
                               className={styles.dashboardimgs}
                             />
                             <div className={styles.center} title={LocaleStrings.CreateTournamentPageTitle}>
-                            {LocaleStrings.CreateTournamentPageTitle}
+                              {LocaleStrings.CreateTournamentPageTitle}
                             </div>
                           </div>
                         </Media>
@@ -631,7 +725,7 @@ class TOTLandingPage extends React.Component<
                             })
                           }
                         >
-                         <div className={styles.mb}>
+                          <div className={styles.mb}>
                             <img
                               src={require("../assets/TOTImages/ManageTournaments.svg")}
                               alt={LocaleStrings.ManageTournamentsLabel}
@@ -676,8 +770,29 @@ class TOTLandingPage extends React.Component<
                               />
                             </a>
                             <div className={`${styles.center}`} title={LocaleStrings.ManageDigitalBadgesLabel}>
-                            {LocaleStrings.ManageDigitalBadgesLabel}
+                              {LocaleStrings.ManageDigitalBadgesLabel}
                             </div>
+                          </div>
+                        </Media>
+                      </Col>
+                      <Col sm={3} className={styles.imageLayout}>
+                        <Media
+                          className={styles.cursor}
+                          onClick={() =>
+                            this.setState({
+                              tournamentReport: !this.state.tournamentReport,
+                              showSuccess: false,
+                            })
+                          }
+                        >
+                          <div className={styles.mb}>
+                            <img
+                              src={require("../assets/TOTImages/TournamentsReport.svg")}
+                              alt={LocaleStrings.TournamentReportsPageTitle}
+                              title={LocaleStrings.TournamentReportsPageTitle}
+                              className={styles.dashboardimgs}
+                            />
+                            <div className={styles.center} title={LocaleStrings.TournamentReportsPageTitle}>{LocaleStrings.TournamentReportsPageTitle}</div>
                           </div>
                         </Media>
                       </Col>
@@ -713,7 +828,19 @@ class TOTLandingPage extends React.Component<
               />
             )
           }
-           {
+          {
+            this.state.tournamentReport && (
+              <TOTReport
+                siteUrl={this.props.siteUrl}
+                context={this.props.context}
+                onClickCancel={() => {
+                  this.setState({ tournamentReport: false });
+                }}
+              />
+            )
+          }
+
+          {
             this.state.digitalBadge && (
               <DigitalBadge
                 siteUrl={this.props.siteUrl}
