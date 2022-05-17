@@ -9,7 +9,7 @@
 }
 
 .errorMessage {
-  color: red;
+  color: #e12636;
   margin-left: 1.5%;
   font-weight: bolder;
   font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
@@ -137,6 +137,7 @@
 .contentArea {
   margin-left: 0.5%;
 }
+
 .dropdownArea {
   margin-left: 1%;
   margin-top: 2%;
@@ -147,8 +148,11 @@
 }
 
 .labelCol {
- margin-top: auto;
+  margin-top: auto;
+  text-align: -webkit-center;
+  align-self: center;
 }
+
 .backBtn {
   background-color: #fff !important;
   color: #000 !important;

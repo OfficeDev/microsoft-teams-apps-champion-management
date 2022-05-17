@@ -12,7 +12,7 @@ interface EmployeeViewState {
   siteUrl: string;
   users: any;
   isLoaded: boolean;
-  search: "";
+  search: string;
   filteredUsers: any;
   cb: boolean;
   Clb: boolean;
@@ -73,7 +73,7 @@ export default class EmployeeView extends Component<
       });
   }
 
-  public onchange = (value: any) => {
+  public onchange = (evt: any, value: string) => {
     if (value) {
       this.setState({
         search: value,

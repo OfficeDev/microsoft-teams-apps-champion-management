@@ -25,73 +25,76 @@ Roles can be categorized as:
 ### Admin/Moderator OR Champion view
 
 In our Champions program, Admin is a Champion by default.  The Champion view is to enable Administrator or Champions to identify all the members of the Champions program. 
-<br/>
 
 ![Quick Start Guide](../Images/Leaderboard.png)      
-
 
 An Admin / Champion can do the following: 
 
 1.	Access Champion Leaderboard
-- To view their current points total.
-- To view their Global rank and how they rank against others globally.
-- Access their dashboard with list of events they have supported.
-- Add and submit upcoming events to earn points associated with it.  Example, hosting office hours can earn 10 points, whereas writing a blog can earn 5 points. 
-2.	 Nominate and approve an employee to be a champion (Add members ) 
-- An Admin can add employee as a Champion.
-- Where as an existing Champion can nominate their peers. 
-- Admin will review and approve the nomination.
-3.	Earn a digital badge that can be displayed as an overlay on their profile image. *Refer to Digital Badge section. 
+    - To view their current points total.
+    - To view their Global rank and how they rank against others globally.
+    - Access their dashboard with list of events they have supported.
+    - Add and submit upcoming events to earn points associated with it.  Example, hosting office hours can earn 10 points, whereas writing a blog can earn 5 points. 
+1.	Nominate and approve an employee to be a champion (Add members ) 
+    - An Admin can add employee as a Champion.
+    - Where as an existing Champion can nominate their peers. 
+    - Admin will review and approve the nomination.
+1.	Earn a digital badge that can be displayed as an overlay on their profile image. *Refer to Digital Badge section. 
 
 ### Employee view
-Leader board encourages the employees to get connected to the Champions in their organization.
-1.	 Every employee can access the Champion Leader board.
-2.	Through Champion Leaderboard, an Employee can identify all the Champions globally or can filter by a particular Focus area or by region option.
-3.	Employee can also “Become a Champion” by submitting their information.
- <br/>
 
- ![Quick Start Guide](../Images/EmpView.png)     
+Leader board encourages the employees to get connected to the Champions in their organization.
+
+- Every employee can access the Champion Leader board.
+- Through Champion Leaderboard, an Employee can identify all the Champions globally or can filter by a particular Focus area or by region option.
+- Employee can also “Become a Champion” by submitting their information.
+
+    ![Quick Start Guide](../Images/EmpView.png)     
      
 ### Add Members 
-Admin and current Champions of the program can nominate(***Add Members***) peers as Champions. Additional responsibility falls on the admin to maintain the Champions SharePoint list. *The approval process stays with the Admin only.*
 
-The Admin can approve/Reject the champion nominations using Manage Approvals screen. 
+1. Admin and current Champions of the program can nominate(***Add Members***) peers as Champions. Additional responsibility falls on the admin to maintain the Champions SharePoint list. *The approval process stays with the Admin only.*
+
+1. Manage Approvals icon will show a notification indicator when there are any pending champion approvals. The Admin can Approve/Reject the nominated champions using Manage Approvals screen.
+
+    ![Quick Start Guide](../Images/ManageApproval.png) 
 
 ### Manage App Logo
-![ManageAppLogo](../Images/ManageAppLogo.png)     
+
 "Manage App Logo" option can be found under "Admin Tools" section on home page. Clicking on this icon opens the "CMP Logo" SharePoint library. New image can be uploaded to the library to replace the App logo. The new image needs to have below specifications:
 
-Name: AppLogo.jpg<br/>
-Type: JPG<br/>
-Dimensions: 32 X 32 <br/><br/>
+- Name: AppLogo.jpg
+- Type: JPG
+- Dimensions: 32 X 32
 
-### Digital Badge ![Champion logo](../Images/Champion_small.png)
-Digital Badge is intended to allow Microsoft 365 Champions to apply a ‘Champion’ badge on their profile image. It provides an easy and seamless process to share the recognition as a champion with the team.
- <br/>
+![ManageAppLogo](../Images/ManageAppLogo.png)    
 
-![Quick Start Guide](../Images/Digitalbadge.png) 
+### Digital Badge
 
-CMP administrators can upload multiple badges in the “Digital Badge Assets” library in the share point site. Champions can select from multiple badges, preview the profile picture and apply on their profile picture. 
-<br/><br/>
-![Quick Start Guide](../Images/MultipleBadges.png) 
+1. Digital Badge is intended to allow Microsoft 365 Champions to apply a ‘Champion’ badge on their profile image. It provides an easy and seamless process to share the recognition as a champion with the team.
 
+    ![Quick Start Guide](../Images/Digitalbadge.png) 
 
-Additionally, administrators can also tag a digital badge with a specific tournament in the "Digital Badge Assets" list in share point when Tournament of Teams is enabled. Champions would have to complete a tournament to earn tournament specific badges. 
+1. CMP administrators can upload multiple badges in the “Digital Badge Assets” library in the share point site. Champions can select from multiple badges, preview the profile picture and apply on their profile picture. 
 
-To make a digital badge open to all champions do not tag any tournament for that badge in the "Digital Badge Assets" list. The "Tournament" field in the list should be left empty.
-<br/><br/>
-![Quick Start Guide](../Images/DigitalBadgeList.png) 
+    ![Quick Start Guide](../Images/MultipleBadges.png) 
+
+1. Additionally, administrators can also tag a digital badge with a specific tournament in the "Digital Badge Assets" list in share point when Tournament of Teams is enabled. Champions would have to complete a tournament to earn tournament specific badges. 
+
+1. To make a digital badge open to all champions do not tag any tournament for that badge in the "Digital Badge Assets" list. The "Tournament" field in the list should be left empty.
+
+    ![Quick Start Guide](../Images/DigitalBadgeList.png) 
 
 ### Tournament of Teams
 
-- Tournament of Teams enables the organization to create and conduct tournaments for anyone in the organization to use to drive healthy usage habits and skilling on the areas of focus. The App also includes a gamification element where users gain points by completing activities assigned as part of the tournament. Users also gain access to tournament specific badges once they complete the tournaments. They can apply the badges using Digital Badge feature of Champion Management Platform. (note that at this time the digital badge component is only enabled for Champions and will be enabled in a future release for all users) 
-- Tournament of Teams is not enabled by default. It must be enabled by CMP admin from the CMP landing page’s Admin section. By default, the Champion Management Platform admin who enables “Tournament of Teams” from CMP Admin section will be added as Admin for Tournament of Teams. More admins can be added through the Manage Admins section of the Tournament of Teams landing page.
-<br/><br/>
-![Quick Start Guide](../Images/EnableTournaments.png) 
+1. Tournament of Teams enables the organization to create and conduct tournaments for anyone in the organization to use to drive healthy usage habits and skilling on the areas of focus. The App also includes a gamification element where users gain points by completing activities assigned as part of the tournament. Users also gain access to tournament specific badges once they complete the tournaments. They can apply the badges using Digital Badge feature of Champion Management Platform. (note that at this time the digital badge component is only enabled for Champions and will be enabled in a future release for all users) 
 
-After enabling Tournament of Teams, it is available for all the users on CMP home page.  
-<br/>
-![Quick Start Guide](../Images/TournamentofTeams.png) 
-<br/><br/><br/>
+1. Tournament of Teams is not enabled by default. It must be enabled by CMP admin from the CMP landing page’s Admin section. By default, the Champion Management Platform admin who enables “Tournament of Teams” from CMP Admin section will be added as Admin for Tournament of Teams. More admins can be added through the Manage Admins section of the Tournament of Teams landing page.
 
-![Quick Start Guide](../Images/TOTHome.png) 
+    ![Quick Start Guide](../Images/EnableTournaments.png) 
+
+1. After enabling Tournament of Teams, it is available for all the users on CMP home page.  
+
+    ![Quick Start Guide](../Images/TournamentofTeams.png) 
+
+    ![Quick Start Guide](../Images/TOTHome.png) 

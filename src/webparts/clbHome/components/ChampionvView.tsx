@@ -1,34 +1,32 @@
-import React, { Component } from "react";
-import "../scss/Championview.scss";
-import Sidebar from "../components/Sidebar";
+import { Icon } from '@fluentui/react/lib/Icon';
 import {
   DatePicker,
-  DayOfWeek,
-  IDatePickerStrings,
-} from "office-ui-fabric-react/lib/DatePicker";
-import { mergeStyleSets } from "office-ui-fabric-react/lib/Styling";
-import cx from "classnames";
-import { DefaultButton } from "office-ui-fabric-react";
-import { WebPartContext } from "@microsoft/sp-webpart-base";
-import { Dropdown, IDropdown } from "office-ui-fabric-react/lib/Dropdown";
-import { TextField } from "office-ui-fabric-react/lib/TextField";
-import { Icon } from '@fluentui/react/lib/Icon';
-import { sp } from "@pnp/sp";
+  DayOfWeek, IDatePickerStrings
+} from "@fluentui/react/node_modules/office-ui-fabric-react/lib/DatePicker";
+import { DataGrid } from "@material-ui/data-grid";
 import {
-  SPHttpClient,
-  SPHttpClientResponse,
-  ISPHttpClientOptions,
+  ISPHttpClientOptions, SPHttpClient,
+  SPHttpClientResponse
 } from "@microsoft/sp-http";
+import { WebPartContext } from "@microsoft/sp-webpart-base";
+import { sp } from "@pnp/sp";
+import cx from "classnames";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import _ from "lodash";
+import * as moment from "moment";
+import { DefaultButton } from "office-ui-fabric-react";
+import { Dropdown } from "office-ui-fabric-react/lib/Dropdown";
+import { mergeStyleSets } from "office-ui-fabric-react/lib/Styling";
+import { TextField } from "office-ui-fabric-react/lib/TextField";
+import React, { Component } from "react";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
-import Alert from "@material-ui/lab/Alert";
-import { DataGrid } from "@material-ui/data-grid";
-import * as moment from "moment";
-import siteconfig from "../config/siteconfig.json";
-import _ from "lodash";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import Sidebar from "../components/Sidebar";
+import siteconfig from "../config/siteconfig.json";
+import "../scss/Championview.scss";
+
 
 const columns = [
   {
@@ -676,6 +674,7 @@ export default class ChampionvView extends Component<
                               ariaLabel="Select a date"
                               onSelectDate={this.onChange}
                               value={this.state.DateOfEvent}
+                              styles={{ callout: { selectors: { '& .ms-DatePicker-day--outfocus': { color: "#757575" } } } }}
                             />
                             <div
                               className={cx(
@@ -690,6 +689,7 @@ export default class ChampionvView extends Component<
                                 id="drp"
                                 options={this.options()}
                                 onRenderCaretDown={onRenderCaretDown}
+                                styles={{ title: { color: "#757575" } }}
                               />
                             </div>
                             <div className={cx(

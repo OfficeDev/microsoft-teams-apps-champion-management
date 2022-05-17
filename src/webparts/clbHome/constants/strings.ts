@@ -53,13 +53,17 @@ export const MultipleBadgeMessage =
   "Select a badge from the below list. Selected badge will be applied on your profile picture.";
 export const NoBadgeMessage =
   "No badges found for you to select. Please check with your App Administrator.";
-
+export const CMPLog = "CMP Logs: ";
+export const CMPErrorMessage = "An unexpected error occurred ";
 
 export const ANCHOR_ID = "constAnchor";
 //Lists
 export const ActionsMasterList = "Actions List";
 export const TournamentActionsMasterList = "Tournament Actions";
 export const TournamentsMasterList = "Tournaments";
+export const ParticipantsReportList = "Participants Report";
+export const TournamentsReportList = "Tournaments Report";
+export const TopParticipantsList = "Top Participants";
 
 //Tournaments Status
 export const TournamentStatusNotStarted = "Not Started";
@@ -71,7 +75,7 @@ export const StringSeperatorPoints = "-";
 export const PointsDisplayString = " Pts - ";
 export const PointsReplaceString = " Pts";
 export const TotLog = "TOT Logs: ";
-export const TOTErrorMessage = "An unexpected error occured ";
+export const TOTErrorMessage = "An unexpected error occurred ";
 export const AdminList = "ToT Admins";
 export const UserActionsList = "User Actions";
 
@@ -80,7 +84,8 @@ export const NoActiveTournamentMessage = "There is no active tournament at the m
 export const formSavingMessage = "Saving your details....";
 export const DigitalBadgeLibrary = "Digital Badge Assets";
 export const CMPLogoLibrary = "CMP Logo";
-export const MSLogo ="MSLogo.jpg";
+export const AppLogo = "AppLogo.jpg";
+export const AppLogoLowerCase = "applogo.jpg";
 export const MemberList = "Member List";
 export const NoActiveParticipantsMessage = "There are no active participants at the moment. Be the first to participate and log an activity from My Dashboard!";
 
@@ -100,3 +105,25 @@ export const M365CmpApp = "https://aka.ms/m365cmpapp";
 //ManageTournaments
 export const StartTournamentAction = "Start";
 export const EndTournamentAction = "End";
+
+//TOT Report
+export const TopTournamentsChartLabel = "Top Tournaments";
+export const TopParticipantsChartLabel = "Top Participants";
+export const CompletedChartLabel = "Completed";
+export const NotCompletedChartLabel = "Not Completed";
+export const AllTournamentsLabel = "All Tournaments";
+export const AllLabel = "All";
+export const Name = "name";
+export const ActivitiesCompleted = "activitiesCompleted";
+export const Points = "points";
+export const TournamentCompletedPercentage = "tournamentCompletedPercentage";
+
+//List Columns
+export const TitleColumn = "Title";
+export const CompletedOnColumn = "Completed_x0020_On";
+export const PointsColumn = "Points";
+export const UserNameColumn = "User_x0020_Name";
+export const TotalParticipantsColumn = "Total_x0020_Participants";
+export const CompletedParticipantsColumn = "Completed_x0020_Participants";
+export const TotalPointsColumn = "Total_x0020_Points";
+export const TotalActivitiesColumn = "Total_x0020_Activities";

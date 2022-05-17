@@ -30,6 +30,7 @@ const pivotStyles: Partial<IStyleSet<NewType>> = {
 
 const dropdownStyles: Partial<IDropdownStyles> = {
   dropdown: { width: "auto", margin: "1rem 1rem 0 1rem" },
+  title: { color: "#757575" }
 };
 
 interface ChampionLeaderBoardProps {
@@ -229,6 +230,7 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
             <div className="ClbPath">
               <img src={require("../assets/CMPImages/BackIcon.png")}
                 className="backImg"
+                alt={LocaleStrings.BackButton}
               />
               <span
                 className="backLabel"
@@ -267,10 +269,11 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
               <PivotItem headerText={LocaleStrings.PivotHeaderNearMe}>
                 <Dropdown
                   onChange={(event: any) => filterUsers("Region", event)}
-                  placeholder= {LocaleStrings.NearMePlaceHolder}
+                  placeholder={LocaleStrings.NearMePlaceHolder}
                   options={options(regionDropdown)}
                   styles={dropdownStyles}
                   onRenderCaretDown={onRenderCaretDown}
+                  ariaLabel={LocaleStrings.NearMePlaceHolder}
                 />
                 <Champions
                   users={users}
@@ -288,6 +291,7 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
                   options={options(countryDropdown)}
                   styles={dropdownStyles}
                   onRenderCaretDown={onRenderCaretDown}
+                  ariaLabel={LocaleStrings.BySpecialityPlaceHolder}
                 />
                 <Champions
                   users={users}

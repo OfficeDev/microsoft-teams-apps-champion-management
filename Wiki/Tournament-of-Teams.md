@@ -13,6 +13,8 @@ On enabling “Tournament of Teams”:
 > * Tournament Actions
 > * Tournaments
 > * User Actions
+> * Tournaments Report
+> * Participants Report
 
 2. “Tournament of Teams” link is visible under “Quick Start Guide” section of CMP home page. This link navigates the users to “Tournament of Teams” landing page. 
 
@@ -20,9 +22,10 @@ On enabling “Tournament of Teams”:
 
 4. Sample actions, tournaments and tournament badges are added by default.  
 
-![Quick Start Guide](../Images/TOTHome.png) 
+    ![Quick Start Guide](../Images/TOTHome.png) 
 
 ### Master Lists
+
 “Manage Tournament Actions”, “Manage Admins”, “Manage Digital Badges” links open the master lists in the share point site. 
 
 Below are the master lists in Share Point that need to be managed by the TOT Admins:
@@ -32,23 +35,21 @@ Below are the master lists in Share Point that need to be managed by the TOT Adm
 3. "Digital Badge Assets" - Sample badges are loaded to this library by default and tagged to sample tournaments. Admins can upload new digital badges to be available to all champions. Admins also can load additional badges and map it to specific tournaments in this list. The tournament specific badges will show up only to the users who have completed that specific tournament.
 4. "User Actions" contains a report of all actions taken by users and can be used for reporting the completed actions throughout Tournaments from users.
 
-
 ### Create Tournament
 
 - Admins can create new tournaments by picking the Teams Actions from the list. New Teams Actions need to be added to the list “Actions List” in share point. 
 
 - Created Tournaments are not started by default. “Start Tournament” screen should be used to start the tournament. 
 
-![Quick Start Guide](../Images/CreateTournament.png) 
+    ![Quick Start Guide](../Images/CreateTournament.png) 
 
 ### Manage Tournaments 
 
- - A tournament can be started or ended by an admin using “Manage Tournaments” screen. 
+ - A tournament can be started or completed by an admin using “Manage Tournaments” screen. 
 
- - Multiple tournaments can be can be active at a time. 
+ - Multiple tournaments can be active at a time. 
 
-
-![Quick Start Guide](../Images/ManageTournament.png) 
+    ![Quick Start Guide](../Images/ManageTournament.png) 
 
 ### My Dashboard
 
@@ -62,7 +63,7 @@ Below are the master lists in Share Point that need to be managed by the TOT Adm
 
 - The users must complete at least one action to be considered as a participant in that tournament. The ranks are calculated only among the participants. 
 
-![Quick Start Guide](../Images/MyDashboard.png) 
+    ![Quick Start Guide](../Images/MyDashboard.png) 
 
 ### Leaderboard
 
@@ -70,4 +71,12 @@ Below are the master lists in Share Point that need to be managed by the TOT Adm
 - By default, the first tournament in the "My Tournaments" will be selected. If the user has not participated in any of the tournaments yet, first tournament in the "Active Tournaments" will be selected.
 
 
-![Quick Start Guide](../Images/TOTLeaderBoard.png) 
+    ![Quick Start Guide](../Images/TOTLeaderBoard.png) 
+
+### Tournaments Report
+
+- Tournaments Report is available only to admins under "Admin Tools" section.
+- Report feature is available only for completed tournaments.
+- A report can be generated for "All Tournaments" or a particular tournament.
+
+    ![Quick Start Guide](../Images/TOTReports.png) 

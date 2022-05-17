@@ -37,10 +37,29 @@ export default class CommonServices {
     return items;
   }
 
+   //Get list items based on only a filter and sorted
+   public async getItemsSortedWithFilter(listname: string, filterparametres: any, descColumn: any): Promise<any> {
+    var items: any[] = [];
+    items = await sp.web.lists.getByTitle(listname).items.filter(filterparametres).orderBy(descColumn, false)();
+    return items;
+  }
   //Get all items from a list
   public async getAllListItems(listname: string): Promise<any> {
     var items: any[] = [];
     items = await sp.web.lists.getByTitle(listname).items.getAll();
+    return items;
+  }
+  //Get all list items with specific columns
+  public async getAllItemsWithSpecificColumns(listname: string, columns: string): Promise<any> {
+    var items: any[] = [];
+    items = await sp.web.lists.getByTitle(listname).items.select(columns).getAll();
+    return items;
+  }
+
+  //Get all items with paged from a list
+  public async getAllListItemsPaged(listname: string): Promise<any> {
+    var items: any = [];
+    items = await sp.web.lists.getByTitle(listname).items.top(5000).getPaged();
     return items;
   }
 
@@ -50,6 +69,32 @@ export default class CommonServices {
     items = await sp.web.lists.getByTitle(listname).items.select(columns).filter(filter).getAll();
     return items;
   }
+  
+  //Get Top list items with specific columns and sort by order
+  public async getTopSortedItemsWithSpecificColumns(listname: string, columns: string, topVal: number, descColumn: string, ascColumn: string): Promise<any> {
+    var items: any[] = [];
+    items = await sp.web.lists.getByTitle(listname).items.select(columns).top(topVal).orderBy(descColumn, false).orderBy(ascColumn, true)();
+    return items;
+  }
+
+  //Get Top list items filtered with specific columns and sort by order
+  public async getFilteredTopSortedItemsWithSpecificColumns(listname: string, filter: string, columns: string, topVal: number, descColumn: string, ascColumn: string): Promise<any> {
+    var items: any[] = [];
+    items = await sp.web.lists.getByTitle(listname).items.select(columns).filter(filter).top(topVal).orderBy(descColumn, false).orderBy(ascColumn, true)();
+    return items;
+  }
+  
+  //Delete all items in a SP list
+  public async deleteListItems(listname: string): Promise<any> {
+    var list = sp.web.lists.getByTitle(listname);
+    list.items.getAll().then((items) => {
+      items.forEach(i => {
+        list.items.getById(i["ID"]).delete();
+      });
+    });
+    return true;
+  }
+
   //Create list item
   public async createListItem(listname: string, data: any): Promise<any> {
     return sp.web.lists.getByTitle(listname).items.add(data);
@@ -254,5 +299,152 @@ export default class CommonServices {
         reject("Failed");
       }
     });
+  }
+
+  //Get data from Tournament Actions and User Actions List for the tournament to calculate the required metrics for Tournament Report.
+  public async updateCompletedTournamentDetails(completedTournamentName: string, currentDate?: Date): Promise<any> {
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+
+        let allUserActionsArray: any = [];
+        let createParticipantReportItems: any = [];
+        let columns = "Title, Points, Author/Title";
+        let totalTournamentActivities: number = 0;
+        let totalTournamentPoints: number = 0;
+        let totalTournamentParticipants: number = 0;
+        let totalCompletedParticipants: number = 0;
+        let totalCompletionPercentage: number = 0;
+
+        let filterCondition = "Title eq '" + completedTournamentName.replace(/'/g, "''") + "'";
+        let filterQuery = "Tournament_x0020_Name eq '" + completedTournamentName.replace(/'/g, "''") + "'";
+
+
+        //Get count of actions and sum of points for the tournament from Tournament Actions List. 
+        let completedTournamentDetails: any = await sp.web.lists.getByTitle(stringsConstants.TournamentActionsMasterList).items.filter(filterCondition).getAll();
+        if (completedTournamentDetails.length > 0) {
+          totalTournamentActivities = completedTournamentDetails.length;
+          totalTournamentPoints = completedTournamentDetails.reduce((previousValue, currentValue) => { return previousValue + currentValue["Points"]; }, 0);
+        }
+
+        //Get first batch of items from User Actions list for the tournament
+        let userActionsArray = await sp.web.lists.getByTitle(stringsConstants.UserActionsList).items.filter(filterQuery).select(columns).expand("Author/Title").top(5000).getPaged();
+        if (userActionsArray.results.length > 0) {
+          allUserActionsArray.push(...userActionsArray.results);
+          //Get next batch, if more items found in User Actions list for the tournament
+          while (userActionsArray.hasNext) {
+            userActionsArray = await userActionsArray.getNext();
+            allUserActionsArray.push(...userActionsArray.results);
+          }
+
+          //Group the items by participants
+          let organizedParticipants = this.groupBy(allUserActionsArray, item => item.Title);
+
+          //Calculate the metrics for each participant and create an item in the Participants Report List
+          organizedParticipants.forEach(async (participant) => {
+
+            let participantName: string = participant[0].Author.Title;
+            let activitiesCompleted: number = participant.length;
+            let pointsCompleted: number = participant.reduce((previousValue, currentValue) => { return previousValue + currentValue["Points"]; }, 0);
+            let percentageCompletion: number = Math.round((activitiesCompleted * 100) / totalTournamentActivities);
+
+            let participantReportObject: any = this.createParticipantReportObject(completedTournamentName.trim(),
+              participantName, activitiesCompleted, pointsCompleted, percentageCompletion);
+
+            //Create an item in Participants Report List for each participant of the tournament
+            this.createListItem(stringsConstants.ParticipantsReportList, participantReportObject);
+
+            //Push the metrics of each participant into an array to calculate the total metrics for tournament.
+            createParticipantReportItems.push(participantReportObject);
+          });
+        }
+        //Calculate the total metrics related to participant details for the tournament
+        if (createParticipantReportItems.length > 0) {
+          totalTournamentParticipants = createParticipantReportItems.length;
+
+          const completedParticipants = createParticipantReportItems.filter(obj => {
+            return obj.Completion_x0020_Percentage === 100;
+          });
+
+          if (completedParticipants.length > 0)
+            totalCompletedParticipants = completedParticipants.length;
+
+          totalCompletionPercentage = Math.round(totalCompletedParticipants * 100 / totalTournamentParticipants);
+        }
+
+        let tournamentReportObject = this.createTournamentReportObject(completedTournamentName.trim(),
+          totalTournamentActivities, totalTournamentPoints, totalTournamentParticipants, totalCompletedParticipants,
+          totalCompletionPercentage, currentDate);
+
+        // Check if an item already exists in Tournaments Report list and create it if item does not exists.  
+        const tournamentItem: any[] = await this.getItemsWithOnlyFilter(
+          stringsConstants.TournamentsReportList, filterCondition);
+        if (tournamentItem.length == 0) {
+          // Create an item for the tournament in Tournaments Report list
+          await this.createListItem(stringsConstants.TournamentsReportList, tournamentReportObject);
+        }
+        resolve(true);
+      }
+      catch (error) {
+        console.error("CommonServices_updateCompletedTournamentDetails \n", error);
+        reject(false);
+      }
+    });
+  }
+
+
+  private createParticipantReportObject = (
+    tournamentName: string,
+    participantName: string,
+    activitiesCompleted: number,
+    completedPoints: number,
+    percentageCompletion: number) => {
+
+    return {
+      Title: tournamentName,
+      User_x0020_Name: participantName,
+      Activities_x0020_Completed: activitiesCompleted,
+      Points: completedPoints,
+      Completion_x0020_Percentage: percentageCompletion
+    };
+  }
+
+  private createTournamentReportObject = (
+    tournamentName: string,
+    totalActivities: number,
+    totalPoints: number,
+    totalParticipants: number,
+    completedParticipants: number,
+    percentageCompletion: number,
+    completedOn: Date) => {
+
+    return {
+      Title: tournamentName,
+      Total_x0020_Activities: totalActivities,
+      Total_x0020_Points: totalPoints,
+      Total_x0020_Participants: totalParticipants,
+      Completed_x0020_Participants: completedParticipants,
+      Completion_x0020_Percentage: percentageCompletion,
+      Completed_x0020_On: completedOn
+    };
+  }
+  // Group the array of objects based on the key
+  public groupBy = (list, keyGetter) => {
+    const map = new Map();
+    list.forEach((item) => {
+      const key = keyGetter(item);
+      const collection = map.get(key);
+      if (!collection) {
+        map.set(key, [item]);
+      } else {
+        collection.push(item);
+      }
+    });
+    return map;
+  }
+
+  // Format Date to MMM DD, YYYY
+  public formatDate = (date) => {
+    var utc = date.toUTCString(); // 'ddd, DD MMM YYYY HH:mm:ss GMT'
+    return utc.slice(8, 12) + utc.slice(5, 7) + ", " + utc.slice(12, 16);
   }
 }

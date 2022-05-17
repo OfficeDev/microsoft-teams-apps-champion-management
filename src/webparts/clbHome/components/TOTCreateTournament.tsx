@@ -109,9 +109,11 @@ export default class TOTCreateTournament extends React.Component<
   ICreateTournamentProps,
   ICreateTournamentState
 > {
+  public createTrmtTreeViewRef: React.RefObject<HTMLDivElement>;
   constructor(props: ICreateTournamentProps, state: ICreateTournamentState) {
     super(props);
     //Set default values for state
+    this.createTrmtTreeViewRef = React.createRef();
     this.state = {
       actionsList: [],
       tournamentName: "",
@@ -136,6 +138,17 @@ export default class TOTCreateTournament extends React.Component<
   public componentDidMount() {
     //Get Actions from Master list and bind it to Treeview
     this.getActions();
+  }
+
+  public componentDidUpdate(prevProps: Readonly<ICreateTournamentProps>, prevState: Readonly<ICreateTournamentState>, snapshot?: any): void {
+
+    //Update aria-label attribute to all Create Tournament Treeview's Checkbox inputs
+    if (prevState.actionsList.length !== this.state.actionsList.length) {
+      const checkboxes = this.createTrmtTreeViewRef.current.getElementsByTagName('input');
+      for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].setAttribute("aria-label", checkboxes[i].getAttribute('id'));
+      }
+    }
   }
 
   //Get Actions from Master list and bind it to Treeview
@@ -364,6 +377,7 @@ export default class TOTCreateTournament extends React.Component<
         <div className={styles.createTournamentPath}>
           <img src={require("../assets/CMPImages/BackIcon.png")}
             className={styles.backImg}
+            alt={LocaleStrings.BackButton}
           />
           <span
             className={styles.backLabel}
@@ -443,17 +457,19 @@ export default class TOTCreateTournament extends React.Component<
 
                   </TooltipHost>
                 </div>
-                <TreeView
-                  items={this.state.actionsList}
-                  showCheckboxes={true}
-                  selectChildrenIfParentSelected={true}
-                  selectionMode={TreeViewSelectionMode.Multiple}
-                  defaultExpanded={true}
-                  onSelect={this.onActionSelected}
-                />
+                <div ref={this.createTrmtTreeViewRef}>
+                  <TreeView
+                    items={this.state.actionsList}
+                    showCheckboxes={true}
+                    selectChildrenIfParentSelected={true}
+                    selectionMode={TreeViewSelectionMode.Multiple}
+                    defaultExpanded={true}
+                    onSelect={this.onActionSelected}
+                  />
+                </div>
                 {this.state.actionsError && (
                   <Label className={styles.errorMessage}>
-                   {LocaleStrings.ActionErrorLabel}
+                    {LocaleStrings.ActionErrorLabel}
                   </Label>
                 )}
               </Col>

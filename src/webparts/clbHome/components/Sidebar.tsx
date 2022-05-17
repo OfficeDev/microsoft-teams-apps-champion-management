@@ -590,6 +590,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                 }
                 className="profilepic"
                 onError={this.addDefaultSrc}
+                alt={displayName}
               />
               {/* username */}
               <div className="championname">
@@ -638,7 +639,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
               <div>
                 <div className="bc-form">
                   <label htmlFor="fname" className="bc-label">
-                  {LocaleStrings.FirstNameLabel}
+                    {LocaleStrings.FirstNameLabel}
                   </label>
                   <TextField
                     value={
@@ -649,7 +650,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     onChange={(evt) => this.handleInput(evt, "FirstName")}
                   />
                   <label htmlFor="lname" className="bc-label">
-                  {LocaleStrings.LastNameLabel}
+                    {LocaleStrings.LastNameLabel}
                   </label>
                   <TextField
                     value={
@@ -660,7 +661,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     onChange={(evt) => this.handleInput(evt, "LastName")}
                   />
                   <label htmlFor="email" className="bc-label">
-                  {LocaleStrings.EmailIDLabel}
+                    {LocaleStrings.EmailIDLabel}
                   </label>
                   <TextField
                     value={
@@ -671,7 +672,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     onChange={(evt) => this.handleInput(evt, "Title")}
                   />
                   <label htmlFor="Region" className="bc-label">
-                  {LocaleStrings.RegionGridHeader}
+                    {LocaleStrings.RegionGridHeader}
                   </label>
                   <Dropdown
                     onChange={(event: any) => this.filterUsers("region", event)}
@@ -682,7 +683,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     defaultValue={this.state.currentUser.Region}
                   />
                   <label htmlFor="Country" className="bc-label">
-                  {LocaleStrings.CountryGridHeader}
+                    {LocaleStrings.CountryGridHeader}
                   </label>
                   <Dropdown
                     onChange={(event: any) =>
@@ -695,7 +696,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     defaultValue={this.state.currentUser.Country}
                   />
                   <label htmlFor="Focus Area" className="bc-label">
-                  {LocaleStrings.FocusAreaGridHeader}
+                    {LocaleStrings.FocusAreaGridHeader}
                   </label>
                   <Dropdown
                     onChange={(event: any) =>
@@ -708,7 +709,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     defaultValue={this.state.currentUser.FocusArea}
                   />
                   <label htmlFor="Group" className="bc-label">
-                  {LocaleStrings.GroupGridHeader}
+                    {LocaleStrings.GroupGridHeader}
                   </label>
                   <Dropdown
                     onChange={(event: any) => this.filterUsers("group", event)}

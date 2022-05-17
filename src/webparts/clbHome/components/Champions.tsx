@@ -62,7 +62,7 @@ export default class Champions extends Component<
     return (
       <React.Fragment>
         {this.props.type && (
-          <Label className="gtcLabel">            
+          <Label className="gtcLabel">
             <span className="gtc">
               <b>{this.props.type}</b> {LocaleStrings.TopChampionsLabel}
             </span>
@@ -112,6 +112,7 @@ export default class Champions extends Component<
                             }
                             className="profile-img"
                             onError={this.addDefaultSrc}
+                            alt={member.FirstName}
                           />
                           <div className={ind === 0 ? "gtc-name2" : "gtc-name"}>
                             {member.FirstName}
@@ -124,7 +125,7 @@ export default class Champions extends Component<
                                   className="chat-icon"
                                   onClick={() => this.openTask(`https://teams.microsoft.com/l/chat/0/0?users=${member.Title}`)}
                                 />
-                                <Icon iconName="FavoriteStarFill"  style={starStyles} id="points" />
+                                <Icon iconName="FavoriteStarFill" style={starStyles} id="points" />
                                 <span className="totalPoints">{member.totalpoints}</span>
                                 <a href={`mailto:${member.Title}`}>
                                   <Icon
@@ -181,25 +182,29 @@ export default class Champions extends Component<
                                 >
                                   <div className="gttc-row-left">
                                     <span>
-                                      <img src={"/_layouts/15/userphoto.aspx?username=" + rankedMember.Title} className="gttc-img" onError={this.addDefaultSrc} />
+                                      <img src={"/_layouts/15/userphoto.aspx?username=" + rankedMember.Title}
+                                        className="gttc-img"
+                                        onError={this.addDefaultSrc}
+                                        alt={rankedMember.FirstName}
+                                      />
                                       <div className="gttc-img-name">
                                         {rankedMember.FirstName}
                                       </div>
                                     </span>
-                                  </div>                                  
-                                    <div className="gttc-row-right">
-                                      <div className="gttc-star">
-                                        <Icon
-                                          iconName="FavoriteStarFill"
-                                          id="points2"
-                                          style={starStyles}                                         
-                                        />
-                                        <span className="points">{rankedMember.totalpoints}</span>
-                                      </div>
-                                      <div className="vline"></div>
-                                      <div className="gttc-rank">
+                                  </div>
+                                  <div className="gttc-row-right">
+                                    <div className="gttc-star">
+                                      <Icon
+                                        iconName="FavoriteStarFill"
+                                        id="points2"
+                                        style={starStyles}
+                                      />
+                                      <span className="points">{rankedMember.totalpoints}</span>
+                                    </div>
+                                    <div className="vline"></div>
+                                    <div className="gttc-rank">
                                       {LocaleStrings.RankLabel} <b>{ind + 1}</b>
-                                      </div>
+                                    </div>
                                   </div>
                                 </Accordion.Toggle>
                                 <Accordion.Collapse eventKey={rankedMember.ID}>

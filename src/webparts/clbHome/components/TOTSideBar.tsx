@@ -108,7 +108,7 @@ export default class TOTSideBar extends React.Component<
         //Setting varaible based on the value received from Event Emitter
         if (data != undefined)
           tournamentName = data.tournamentName;
-        
+
         if (tournamentName != undefined && tournamentName != "") {
           //Getting user actions for the selected tournament to calculate points and rank
           await commonService.getUserActions(tournamentName).then((res) => {
@@ -198,6 +198,7 @@ export default class TOTSideBar extends React.Component<
                     }
                     className={sideBarStyles.profilePic}
                     onError={this.addDefaultSrc}
+                    title={this.state.userDisplayName}
                   />
                   {/* username */}
                   <div className={sideBarStyles.championName}>

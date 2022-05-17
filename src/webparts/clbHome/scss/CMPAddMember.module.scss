@@ -1,3 +1,9 @@
+:global {
+  .ms-Suggestions-none {
+    color: #757575;
+  }
+}
+
 .addMembersPath {
   display: inline-flex;
   margin-top: 36px;
@@ -34,10 +40,10 @@
 
 .updatedMessage {
   text-align: left;
-  font: normal normal 600 18px/24px Segoe UI;
+  font: normal normal normal 18px/24px Segoe UI !important;
   letter-spacing: 0px;
   opacity: 1;
-  color: #8bc832;
+  color: #000000;
 
   .tickImage {
     width: 28px;
@@ -48,9 +54,9 @@
 }
 
 .errorMessage {
-  color: #ED2939;
+  color: #e12636;
   text-align: left;
-  font: normal normal 600 18px/24px Segoe UI;
+  font: normal normal normal 18px/24px Segoe UI !important;
   letter-spacing: 0px;
   opacity: 1;
 }

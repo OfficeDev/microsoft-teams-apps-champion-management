@@ -351,6 +351,7 @@ export default class TOTLeaderBoard extends React.Component<
               <div className={styles.totLeaderboardPath}>
                 <img src={require("../assets/CMPImages/BackIcon.png")}
                   className={styles.backImg}
+                  alt={LocaleStrings.BackButton}
                 />
                 <span
                   className={styles.backLabel}
@@ -380,6 +381,7 @@ export default class TOTLeaderBoard extends React.Component<
                         selectedKey={this.state.myTournamentName}
                         options={this.state.myTournamentsList}
                         onChange={this.getMyTournamentActions.bind(this)}
+                        ariaLabel={LocaleStrings.MyTournamentsLabel + ' list'}
                       />
                     </Col>
                   )}
@@ -396,6 +398,7 @@ export default class TOTLeaderBoard extends React.Component<
                         selectedKey={this.state.activeTournamentName}
                         options={this.state.activeTournamentsList}
                         onChange={this.getActiveTournamentActions.bind(this)}
+                        ariaLabel={LocaleStrings.ActiveTournamentLabel + " list"}
                       />
                     </Col>
                   )}
@@ -424,7 +427,6 @@ export default class TOTLeaderBoard extends React.Component<
                         table-responsive
                         bordered
                         hover
-                        responsive
                         keyField="Rank"
                         data={this.state.allUserActions}
                         columns={columns}
