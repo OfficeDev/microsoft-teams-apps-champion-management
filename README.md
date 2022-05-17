@@ -8,32 +8,21 @@ The Champion Management Platform is a custom Teams app that enables organization
 
 The app provides an easy interface for designated users to add members to the champion program, preview, collaborate and communicate and build a community of Champions.  <br/>
 
-![CMP Screen](https://github.com/Porkai-Pandian/cmp-local-10132021/blob/main/Images/AddTab_Teams.png)                   
+![CMP Screen](Images/AddTab_Teams.png)                   
 
 
 ## Known issues
 
 1) If site is presenting with spinning blue circle check to ensure permissions are allowed to the ChampionManagementPlatform sharepoint site. If this is happening on the first load experience ensure that the user running first run experience has permissions to create a SharePoint site (first run creates the initial ChampionManagementPlatform site).If you continue to experience the blue circle, please remove the app from Teams and try again. Visit our issues list to log an issue if issue is still persistent. 
 
-<br/>
-
 2) If new users visit the Champion Management Platform app and receive a blue spinning circle, ensure that you have granted contribute/edit permissions to the SharePoint site created during first run to all users (or scoped users accessing the app). The default site created is ChampionManagementPlatform.
-
 
 
 ## Additional Customization Options
 
-The Champion Management Platform is built to provide a great starting point for managing your program. There are several ways you can modify the solution to fit your needs, with some of the major customizations in this current release coming from modifying list and column options once the solution has been deployed. Common actions include:
+The Champion Management Platform is built to provide a great starting point for managing your program. There are several ways you can modify the solution to fit your needs, refer to this [section](https://github.com/OfficeDev/microsoft-teams-apps-champion-management/wiki/Customizations) for more on customization.
 
-Expanding the list of regions / countries / Focus Area / Groups to fit your criteria. Lists provide a very flexible way to provide data points for collection. While we have provided some starter data you will want to modify these values as they are reflected in the Add Members section. This action is done from selecting the list you would like to edit (champion list for this example), selecting the drop down on the column, then navigating to Column settings -> Edit.
-<br/>
-
-![Quick Start Guide](https://github.com/Porkai-Pandian/cmp-local-10132021/blob/main/Images/customization.png) 
-
-You could take similar actions in other lists to modify or add in event types and manual counts for activity logging.
-<br/>
-
-![Quick Start Guide](https://github.com/Porkai-Pandian/cmp-local-10132021/blob/main/Images/WarningId.png) 
+![Quick Start Guide](Images/WarningId.png) 
  
 ## Legal
 

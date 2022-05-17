@@ -3,7 +3,7 @@ This page contains the different release details for Champion Management Platfor
 ## Version history
 | Version | Release Date |
 |----|----|
-| 2.2 | May 12, 2022 |
+| 2.2 | May 17, 2022 |
 | 2.1 | Apr 4, 2022 |
 | 2.0 | Dec 9, 2021 |
 | 1.3 | Sep 03, 2021 |
@@ -12,14 +12,14 @@ This page contains the different release details for Champion Management Platfor
 
 ## Release notes
 
-### 2.2 (May 12, 2022)
+### 2.2 (May 17, 2022)
 
 Below improvements released,
 
 - Upgraded SPFx version from 1.9.1 to 1.13.0 and its related NPM packages. 
-- Implemented new logo for the app.
+- New Feature: Implemented new logo for the app.
 - New Feature: Tournaments Report is available for admins to view visual metrics of completed tournaments along with list of participants for each tournament.
-- Other Changes: Few minor UI enhancements
+- Other Changes: Few minor UI enhancements, accessibility improvements.
 
 ### 2.1 (Apr 4, 2022)
 
