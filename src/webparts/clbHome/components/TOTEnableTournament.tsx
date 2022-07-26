@@ -9,48 +9,14 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 //Fluent UI controls
-import { IButtonStyles, IChoiceGroupStyles, PrimaryButton, Spinner, SpinnerSize } from "@fluentui/react";
+import { PrimaryButton, Spinner, SpinnerSize, TextField } from "@fluentui/react";
 import { Label } from "@fluentui/react/lib/Label";
-import { ChoiceGroup, IChoiceGroupOption } from "@fluentui/react";
+import { ChoiceGroup, IChoiceGroupOption, Checkbox } from "@fluentui/react";
 import { Dialog, DialogType, DialogFooter } from "@fluentui/react/lib/Dialog";
-import { IIconProps } from '@fluentui/react/lib/Icon';
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
 
 //Global Variables
 let commonServiceManager: commonServices;
-const backIcon: IIconProps = { iconName: 'NavigateBack' };
-
-const backBtnStyles: Partial<IButtonStyles> = {
-  root: {
-    borderColor: "#33344A",
-    backgroundColor: "white",
-    height: "auto"
-  },
-  rootHovered: {
-    borderColor: "#33344A",
-    backgroundColor: "white",
-    color: "#000003"
-  },
-  rootPressed: {
-    borderColor: "#33344A",
-    backgroundColor: "white",
-    color: "#000003"
-  },
-  icon: {
-    fontSize: "17px",
-    fontWeight: "bolder",
-    color: "#000003",
-    opacity: 1
-  },
-  label: {
-    font: "normal normal bold 14px/24px Segoe UI",
-    letterSpacing: "0px",
-    color: "#000003",
-    opacity: 1,
-    marginTop: "-3px"
-  }
-};
-
 export interface IEnableTournamentProps {
   context?: WebPartContext;
   siteUrl: string;
@@ -59,9 +25,10 @@ export interface IEnableTournamentProps {
 
 interface IEnableTournamentState {
   tournamentsList: any;
+  filteredPendingTournaments: any;
+  selectedPendingTournaments: any;
   activeTournamentsList: any;
-  selectedTournament: string;
-  selectedTournamentId: string;
+  filteredActiveTournaments: any;
   selectedActiveTournament: string;
   selectedActiveTournamentId: string;
   activeTournamentId: string;
@@ -75,54 +42,13 @@ interface IEnableTournamentState {
   hideDialog: boolean;
   noTournamentsFlag: boolean;
   tournamentAction: string;
-  showSpinner: boolean;
+  showActiveTournamentSpinner: boolean;
+  showPendingTournamentSpinner: boolean;
+  activeTournamentsSearchedText: string;
+  pendingTournamentsSearchedText: string;
+  showSelectAllLabel: boolean;
+  selectAllChecked: boolean;
 }
-
-const endButtonStyles: Partial<IButtonStyles> = {
-  root: {
-    marginTop: "32px",
-    marginBottom: "20px",
-    height: "38px"
-  },
-  textContainer: { fontSize: "16px" },
-  icon: {
-    fontSize: "26px",
-    fontWeight: "bolder",
-    color: "#FFFFFF",
-    opacity: 1
-  }
-};
-
-const startButtonStyles: Partial<IButtonStyles> = {
-  root: {
-    height: "38px"
-  },
-  textContainer: { fontSize: "16px" },
-  icon: {
-    fontSize: "18px",
-    fontWeight: "bolder",
-    color: "#FFFFFF",
-    opacity: 1
-  }
-};
-
-const choiceGroupStyles: Partial<IChoiceGroupStyles> = {
-  flexContainer: [
-    {
-      selectors: {
-        ".ms-ChoiceField": {
-          textAlign: "left",
-          font: "normal normal 600 18px/20px Segoe UI",
-          letterSpacing: "0px",
-          color: "#727170",
-          opacity: 1
-        }
-      }
-    }
-  ]
-};
-
-
 export default class TOTEnableTournament extends React.Component<
   IEnableTournamentProps,
   IEnableTournamentState
@@ -132,9 +58,14 @@ export default class TOTEnableTournament extends React.Component<
     //Set default values for state
     this.state = {
       tournamentsList: [],
+      filteredPendingTournaments: [],
+      selectedPendingTournaments: [],
+      showSelectAllLabel: true,
+      selectAllChecked: false,
+      pendingTournamentsSearchedText: "",
       activeTournamentsList: [],
-      selectedTournament: "",
-      selectedTournamentId: "",
+      filteredActiveTournaments: [],
+      activeTournamentsSearchedText: "",
       selectedActiveTournament: "",
       selectedActiveTournamentId: "",
       activeTournamentId: "",
@@ -148,7 +79,8 @@ export default class TOTEnableTournament extends React.Component<
       hideDialog: true,
       noTournamentsFlag: false,
       tournamentAction: "",
-      showSpinner: false,
+      showActiveTournamentSpinner: false,
+      showPendingTournamentSpinner: false
 
     };
     commonServiceManager = new commonServices(
@@ -157,7 +89,6 @@ export default class TOTEnableTournament extends React.Component<
     );
     //Bind Methods
     this.getPendingTournaments = this.getPendingTournaments.bind(this);
-    this.onTournamentSelect = this.onTournamentSelect.bind(this);
     this.onActiveTournamentSelect = this.onActiveTournamentSelect.bind(this);
     this.enableTournament = this.enableTournament.bind(this);
     this.getActiveTournaments = this.getActiveTournaments.bind(this);
@@ -178,6 +109,11 @@ export default class TOTEnableTournament extends React.Component<
       stringsConstants.TotLog + "Getting active tournament from Tournaments list."
     );
     try {
+      this.setState({
+        activeTournamentsList: [],
+        filteredActiveTournaments: [],
+        activeTournamentFlag: true
+      });
       let filterActive: string =
         "Status eq '" + stringsConstants.TournamentStatusActive + "'";
       const activeTournamentsArray: any[] =
@@ -195,8 +131,11 @@ export default class TOTEnableTournament extends React.Component<
             text: eachTournament["Title"],
           });
         });
-
-        this.setState({ activeTournamentsList: activeTournamentsChoices });
+        activeTournamentsChoices.sort((a: any, b: any) => (a.text > b.text) ? 1 : ((b.text > a.text) ? -1 : 0));
+        this.setState({
+          activeTournamentsList: activeTournamentsChoices,
+          filteredActiveTournaments: activeTournamentsChoices
+        });
       }
       //If no active tournaments are found in the Tournaments list, set the flag
       else
@@ -220,6 +159,7 @@ export default class TOTEnableTournament extends React.Component<
       stringsConstants.TotLog + "Getting tournaments with 'Not Started' status from Tournaments list."
     );
     try {
+      this.setState({ tournamentsList: [], filteredPendingTournaments: [] });
       let selectFilter: string =
         "Status eq '" + stringsConstants.TournamentStatusNotStarted + "'";
       const allTournamentsArray: any[] =
@@ -236,11 +176,13 @@ export default class TOTEnableTournament extends React.Component<
             text: eachTournament["Title"],
           });
         });
-
-        this.setState({ tournamentsList: tournamentsChoices });
+        tournamentsChoices.sort((a: any, b: any) => (a.text > b.text) ? 1 : ((b.text > a.text) ? -1 : 0));
+        this.setState({ tournamentsList: tournamentsChoices, filteredPendingTournaments: tournamentsChoices });
       }
       //If no pending tournaments are found in the Tournaments list, set the flag
-      else this.setState({ noTournamentsFlag: true });
+      else {
+        this.setState({ noTournamentsFlag: true });
+      }
     } catch (error) {
       console.error("TOT_TOTEnableTournament_getPendingTournaments \n", error);
       this.setState({
@@ -251,17 +193,6 @@ export default class TOTEnableTournament extends React.Component<
           JSON.stringify(error),
       });
     }
-  }
-
-  //on select of a tournament, set the state
-  private onTournamentSelect = async (
-    ev: React.FormEvent<HTMLInputElement>,
-    option: IChoiceGroupOption
-  ): Promise<void> => {
-    this.setState({
-      selectedTournament: option.text,
-      selectedTournamentId: option.key,
-    });
   }
 
   //on select of an active tournament, set the state
@@ -276,7 +207,6 @@ export default class TOTEnableTournament extends React.Component<
   }
 
   //Start Tournament
-
   //Show popup for starting a tournament
   private startTournament() {
     //clear previous error messages on the form
@@ -289,7 +219,7 @@ export default class TOTEnableTournament extends React.Component<
       showSuccess: false,
     });
 
-    if (this.state.selectedTournament == "")
+    if (this.state.selectedPendingTournaments.length === 0)
       this.setState({ startTournamentError: true });
     else
       this.setState({ hideDialog: false, tournamentAction: stringsConstants.StartTournamentAction });
@@ -303,72 +233,63 @@ export default class TOTEnableTournament extends React.Component<
         showError: false,
         startTournamentError: false,
         hideDialog: true,
+        showPendingTournamentSpinner: true
       });
-      console.log(stringsConstants.TotLog + "Enabling selected tournament.");
-      if (this.state.selectedTournament == "")
-        this.setState({ startTournamentError: true });
+      console.log(stringsConstants.TotLog + "Enabling selected tournament(s).");
+      if (this.state.selectedPendingTournaments.length === 0)
+        this.setState({ startTournamentError: true, showPendingTournamentSpinner: false });
       else {
         let submitTournamentObject: any = {
           Status: stringsConstants.TournamentStatusActive,
         };
-        commonServiceManager
-          .updateListItem(
-            stringsConstants.TournamentsMasterList,
-            submitTournamentObject,
-            this.state.selectedTournamentId
-          )
-          .then((result) => {
-            //Set selected tournament as Active tournament once enabled
+        let updateResponse = await commonServiceManager.updateMultipleItems(
+          stringsConstants.TournamentsMasterList,
+          submitTournamentObject,
+          this.state.selectedPendingTournaments
+        );
 
-            let addSelectedTournament: any[] = this.state.activeTournamentsList;
-            addSelectedTournament.push({
-              key: this.state.selectedTournamentId,
-              text: this.state.selectedTournament,
-            });
-            this.setState({ activeTournamentsList: addSelectedTournament, activeTournamentFlag: true, });
-
-            //Refresh the tournaments list after enabling a tournament by deleting it from the array
-            let newTournamentsRefresh: any[] = this.state.tournamentsList;
-
-            var removeIndex = newTournamentsRefresh.map((item) => {
-              return item.text;
-            }).indexOf(this.state.selectedTournament);
-
-            newTournamentsRefresh.splice(removeIndex, 1);
-            this.setState({ tournamentsList: newTournamentsRefresh });
-
-            if (newTournamentsRefresh.length == 0) {
-              this.setState({ noTournamentsFlag: true });
-            }
-
-            //Show success message and clear state variable
-            this.setState({
-              showSuccess: true,
-              successMessage: LocaleStrings.EnableTournamentSuccessMessage,
-              selectedTournament: "",
-              selectedTournamentId: ""
-            });
-          })
-          .catch((error) => {
-            console.error("TOT_TOTEnableTournament_enableTournament \n", error);
-            this.setState({
-              showError: true,
-              errorMessage:
-                stringsConstants.TOTErrorMessage +
-                "while enabling the tournament. Below are the details: \n" +
-                JSON.stringify(error),
-            });
+        if (updateResponse) {
+          this.setState({
+            showSuccess: true,
+            successMessage: this.state.selectedPendingTournaments.length + " " + LocaleStrings.EnableTournamentSuccessMessage
           });
+        }
+        else {
+          this.setState({
+            showError: true,
+            errorMessage: stringsConstants.TOTErrorMessage + "while enabling the tournament"
+          });
+        }
+        //Show success message and clear state variable
+        this.setState({
+          showPendingTournamentSpinner: false,
+          selectAllChecked: false,
+          showSelectAllLabel: true,
+          selectedPendingTournaments: [],
+          pendingTournamentsSearchedText: ""
+        });
+        await this.getActiveTournaments();
+        await this.getPendingTournaments();
       }
+
     } catch (error) {
-      console.error("TOT_TOTEnableTournament_enableTournament \n", error);
+
+      await this.getActiveTournaments();
+      await this.getPendingTournaments();
+
       this.setState({
         showError: true,
+        showPendingTournamentSpinner: false,
+        selectAllChecked: false,
+        showSelectAllLabel: true,
+        selectedPendingTournaments: [],
+        pendingTournamentsSearchedText: "",
         errorMessage:
           stringsConstants.TOTErrorMessage +
           "while enabling the tournament. Below are the details: \n" +
           JSON.stringify(error),
       });
+      console.error("TOT_TOTEnableTournament_enableTournament \n", JSON.stringify(error));
     }
   }
 
@@ -397,14 +318,14 @@ export default class TOTEnableTournament extends React.Component<
         showError: false,
         endTournamentError: false,
         hideDialog: true,
-        showSpinner: true,
+        showActiveTournamentSpinner: true,
       });
       console.log(stringsConstants.TotLog + "Completing active tournament.");
 
       if (this.state.selectedActiveTournament == "") {
         this.setState({
           endTournamentError: true,
-          showSpinner: false
+          showActiveTournamentSpinner: false
         });
       }
       else {
@@ -432,24 +353,27 @@ export default class TOTEnableTournament extends React.Component<
                 }).indexOf(this.state.selectedActiveTournament);
 
                 newActiveTournamentsRefresh.splice(removeIndex, 1);
-                this.setState({ activeTournamentsList: newActiveTournamentsRefresh });
+                newActiveTournamentsRefresh.sort((a: any, b: any) => (a.text > b.text) ? 1 : ((b.text > a.text) ? -1 : 0));
+                this.setState({ activeTournamentsList: newActiveTournamentsRefresh, filteredActiveTournaments: newActiveTournamentsRefresh });
 
                 if (newActiveTournamentsRefresh.length == 0)
-                  this.setState({ activeTournamentFlag: false, showSpinner: false });
+                  this.setState({ activeTournamentFlag: false, showActiveTournamentSpinner: false });
 
                 //Show success message and clear state for selected item
                 this.setState({
                   selectedActiveTournament: "",
                   selectedActiveTournamentId: "",
                   showSuccess: true,
+                  activeTournamentsSearchedText: "",
                   successMessage: LocaleStrings.EndTournamentSuccessMessage,
-                  showSpinner: false
+                  showActiveTournamentSpinner: false
                 });
               }).catch((error) => {
                 console.error("TOT_TOTEnableTournament_completeTournament \n", error);
                 this.setState({
                   showError: true,
-                  showSpinner: false,
+                  showActiveTournamentSpinner: false,
+                  activeTournamentsSearchedText: "",
                   errorMessage:
                     stringsConstants.TOTErrorMessage +
                     "while completing the tournament. Below are the details: \n" +
@@ -460,6 +384,8 @@ export default class TOTEnableTournament extends React.Component<
             console.error("TOT_TOTEnableTournament_completeTournament \n", error);
             this.setState({
               showError: true,
+              showActiveTournamentSpinner: false,
+              activeTournamentsSearchedText: "",
               errorMessage:
                 stringsConstants.TOTErrorMessage +
                 "while completing the tournament. Below are the details: \n" +
@@ -471,6 +397,7 @@ export default class TOTEnableTournament extends React.Component<
       console.error("TOT_TOTEnableTournament_completeTournament \n", error);
       this.setState({
         showError: true,
+        showActiveTournamentSpinner: false,
         errorMessage:
           stringsConstants.TOTErrorMessage +
           "while completing the tournament. Below are the details: \n" +
@@ -479,10 +406,81 @@ export default class TOTEnableTournament extends React.Component<
     }
   }
 
+  //Search Active Tournaments to complete
+  public searchActiveTournaments = (eve: any, value: string) => {
+    this.setState({ activeTournamentsSearchedText: value });
+    const trimmedValue = value.trim();
+    if (trimmedValue !== "") {
+      const searchedTournaments = this.state.activeTournamentsList.filter((tournamentData: any) => {
+        return tournamentData.text.trim().toLowerCase().indexOf(trimmedValue.toLowerCase()) !== -1;
+      });
+      searchedTournaments.sort((a: any, b: any) => (a.text > b.text) ? 1 : ((b.text > a.text) ? -1 : 0));
+      this.setState({ filteredActiveTournaments: searchedTournaments });
+    }
+    else {
+      this.setState({ filteredActiveTournaments: this.state.activeTournamentsList });
+    }
+  }
+
+  //Search Pending tournaments to start
+  public searchPendingTournaments = (eve: any, value: string) => {
+    this.setState({ pendingTournamentsSearchedText: value });
+    const trimmedValue = value.trim();
+    if (trimmedValue !== "") {
+      this.setState({ showSelectAllLabel: false });
+      const searchedTournaments = this.state.tournamentsList.filter((tournamentData: any) => {
+        return tournamentData.text.trim().toLowerCase().indexOf(trimmedValue.toLowerCase()) !== -1;
+      });
+      searchedTournaments.sort((a: any, b: any) => (a.text > b.text) ? 1 : ((b.text > a.text) ? -1 : 0));
+      this.setState({ filteredPendingTournaments: searchedTournaments });
+    }
+    else {
+      this.setState({ showSelectAllLabel: true, filteredPendingTournaments: this.state.tournamentsList });
+    }
+  }
+
+  //Update all selected pending tournaments to new array
+  public updateSelectedPendingTournaments = (isChecked: boolean, key: any, selectAll: boolean) => {
+    //When "Select All" is checked
+    if (selectAll && isChecked) {
+      this.setState({ selectAllChecked: true });
+      let selectedTournaments = [];
+      for (let tournamentCount = 0; tournamentCount < this.state.tournamentsList.length; tournamentCount++) {
+        selectedTournaments.push(this.state.tournamentsList[tournamentCount].key);
+      }
+      this.setState({ selectedPendingTournaments: selectedTournaments });
+    }
+    // When "Select All" is unchecked
+    else if (selectAll && !isChecked) {
+      this.setState({ selectAllChecked: false, selectedPendingTournaments: [] });
+    }
+    else {
+      //When checkbox is checked
+      if (isChecked) {
+        let selectedTournaments = this.state.selectedPendingTournaments;
+        selectedTournaments.push(key);
+        this.setState({ selectedPendingTournaments: selectedTournaments });
+      //Automatically check the "Select All" option when the last checkbox is checked
+      if (selectedTournaments.length === this.state.tournamentsList.length) {
+        this.setState({ selectAllChecked: true });
+      }
+
+      }
+      //When checkbox is unchecked
+      else {
+        const selectedTournaments = this.state.selectedPendingTournaments.filter((tKey: any) => {
+          return tKey !== key;
+        });
+        this.setState({ selectAllChecked: false,
+          selectedPendingTournaments: selectedTournaments });
+      }
+    }
+  }
+
   //Render Method
   public render(): React.ReactElement<IEnableTournamentProps> {
     return (
-      <div className={`container ${styles.mainContainer}`}>
+      <div className='container'>
         <div className={styles.manageTournamentPath}>
           <img src={require("../assets/CMPImages/BackIcon.png")}
             className={styles.backImg}
@@ -490,12 +488,12 @@ export default class TOTEnableTournament extends React.Component<
           />
           <span
             className={styles.backLabel}
-            onClick={() => this.props.onClickCancel()}
+            onClick={(!this.state.showActiveTournamentSpinner || !this.state.showPendingTournamentSpinner) && (() => this.props.onClickCancel())}
             title={LocaleStrings.TOTBreadcrumbLabel}
           >
             {LocaleStrings.TOTBreadcrumbLabel}
           </span>
-          <span className={styles.border}></span>
+          <span className={styles.border} />
           <span className={styles.manageTournamentLabel}>{LocaleStrings.ManageTournamentsPageTitle}</span>
         </div>
         <h5 className={styles.pageHeader}>{LocaleStrings.ManageTournamentsPageTitle}</h5>
@@ -556,108 +554,167 @@ export default class TOTEnableTournament extends React.Component<
             </Label>
           )}
         </div>
-        <div>
-          <div className={styles.tournamentStatus}>
-            <h4 className={styles.subHeaderUnderline}>{LocaleStrings.ActiveTournamentLabel}</h4>
-          </div>
-          <Row>
-            <Col md={6}>
-              {this.state.activeTournamentsList.length !== 0 &&
-                <ChoiceGroup
-                  onChange={this.onActiveTournamentSelect.bind(this)}
-                  options={this.state.activeTournamentsList}
-                  styles={choiceGroupStyles}
-                />
-              }
-              {!this.state.activeTournamentFlag && (
-                <Label className={styles.errorMessage}>
-                  {LocaleStrings.NoActiveTournamentMessage}
-                </Label>
-              )}
-              {this.state.endTournamentError && (
-                <Label className={styles.errorMessage}>
-                  {LocaleStrings.SelectEndTournamentMessage}
-                </Label>
-              )}
-              {this.state.showSpinner &&
-                <Spinner
-                  label={LocaleStrings.CompleteTournamentSpinnerMessage}
-                  size={SpinnerSize.large}
-                />
-              }
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
-              {this.state.activeTournamentFlag && (
-                <PrimaryButton
+        <Row xl={2} lg={2} md={2} sm={1} xs={1}>
+          <Col xl={5} lg={5} md={6} sm={12} xs={12}>
+            <div className={styles.tournamentStatus}>
+              <h4 className={styles.subHeaderUnderline}>{LocaleStrings.ActiveTournamentLabel}</h4>
+            </div>
+            {this.state.activeTournamentsList.length !== 0 &&
+              <div>
+                <TextField
+                  className={styles.manageTrmntSearchBox}
+                  placeholder={LocaleStrings.SearchActiveTournaments}
+                  onChange={this.searchActiveTournaments}
                   iconProps={{
-                    iconName: "StatusCircleErrorX"
+                    iconName: this.state.activeTournamentsSearchedText !== "" ? "ChromeClose" : "Search",
+                    className: `${styles.clearSearchIcon} ${this.state.activeTournamentsSearchedText !== "" ? styles.chromeCloseIcon : styles.searchIcon}`,
+                    onClick: this.state.activeTournamentsSearchedText !== "" ? () => {
+                      this.setState({
+                        activeTournamentsSearchedText: "",
+                        filteredActiveTournaments: this.state.activeTournamentsList
+                      });
+                    } : null
                   }}
-                  text={LocaleStrings.EndTournamentButton}
-                  title={LocaleStrings.EndTournamentButton}
-                  styles={endButtonStyles}
-                  onClick={this.endTournament}
-                  className={this.state.showSpinner ? styles.disabledBtn : styles.completeBtn}
-                  disabled={this.state.showSpinner}
+                  value={this.state.activeTournamentsSearchedText}
+                  disabled={this.state.showActiveTournamentSpinner}
                 />
-              )}
-            </Col>
-          </Row>
-        </div>
-        <br />
-        <div className={styles.startTournmentArea}>
-          <h4 className={styles.subHeaderUnderline}>{LocaleStrings.StartTournamentHeaderLabel}</h4>
-        </div>
-        <div>
-          <Row>
-            <Col md={6}>
-              {this.state.tournamentsList !== 0 &&
-                <ChoiceGroup
-                  onChange={this.onTournamentSelect.bind(this)}
-                  options={this.state.tournamentsList}
-                  styles={choiceGroupStyles}
-                />
-              }
-              {this.state.noTournamentsFlag && (
-                <Label className={styles.errorMessage}>
-                  {LocaleStrings.NoTournamentMessage}
-                </Label>
-              )}
-              {this.state.startTournamentError && (
-                <Label className={styles.errorMessage}>
-                  {LocaleStrings.SelectTournamentMessage}
-                </Label>
-              )}
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
-              <div className={styles.bottomBtnArea}>
-                {!this.state.noTournamentsFlag && (
-                  <PrimaryButton
-                    text={LocaleStrings.StartTournamentButton}
-                    title={LocaleStrings.StartTournamentButton}
-                    iconProps={{
-                      iconName: "Play"
-                    }}
-                    styles={startButtonStyles}
-                    onClick={this.startTournament}
-                    className={styles.enableBtn}
+                <div className={styles.manageActiveTrmntChoiceGrpArea}>
+                  <ChoiceGroup
+                    onChange={this.onActiveTournamentSelect.bind(this)}
+                    options={this.state.filteredActiveTournaments}
+                    className={styles.manageActiveTrmntChoiceGrp}
+                    id="activeTournamentsList"
+                    disabled={this.state.showActiveTournamentSpinner}
                   />
-                )}
-                &nbsp; &nbsp;
-                <PrimaryButton
-                  text={LocaleStrings.BackButton}
-                  title={LocaleStrings.BackButton}
-                  iconProps={backIcon}
-                  styles={backBtnStyles}
-                  onClick={() => this.props.onClickCancel()}
-                />
+                  {this.state.filteredActiveTournaments.length === 0 &&
+                    <div className={styles.noResultsFound}>{LocaleStrings.NoSearchResults}</div>
+                  }
+                </div>
               </div>
-            </Col>
-          </Row>
-        </div>
+            }
+            {!this.state.activeTournamentFlag && (
+              <Label className={styles.errorMessage}>
+                {LocaleStrings.NoActiveTournamentMessage}
+              </Label>
+            )}
+            {this.state.endTournamentError && (
+              <Label className={styles.errorMessage}>
+                {LocaleStrings.SelectEndTournamentMessage}
+              </Label>
+            )}
+            {this.state.showActiveTournamentSpinner &&
+              <Spinner
+                label={LocaleStrings.CompleteTournamentSpinnerMessage}
+                size={SpinnerSize.large}
+              />
+            }
+            {this.state.activeTournamentFlag && (
+              <PrimaryButton
+                iconProps={{
+                  iconName: "StatusCircleErrorX"
+                }}
+                text={LocaleStrings.EndTournamentButton}
+                title={LocaleStrings.EndTournamentButton}
+                onClick={this.endTournament}
+                className={this.state.showActiveTournamentSpinner ? styles.disabledBtn + " " + styles.endTrmntBtn : styles.completeBtn + " " + styles.endTrmntBtn}
+                disabled={this.state.showActiveTournamentSpinner}
+              />
+            )}
+          </Col>
+          <Col xl={5} lg={5} md={6} sm={12} xs={12}>
+            <div className={styles.tournamentStatus}>
+              <h4 className={styles.subHeaderUnderline}>{LocaleStrings.StartTournamentHeaderLabel}</h4>
+            </div>
+            <div>
+              {this.state.tournamentsList.length !== 0 &&
+                <div>
+                  <TextField
+                    className={styles.manageTrmntSearchBox}
+                    placeholder={LocaleStrings.SearchPendingTournaments}
+                    onChange={this.searchPendingTournaments}
+                    iconProps={{
+                      iconName: this.state.pendingTournamentsSearchedText !== "" ? "ChromeClose" : "Search",
+                      className: `${styles.clearSearchIcon} ${this.state.pendingTournamentsSearchedText !== "" ? styles.chromeCloseIcon : styles.searchIcon}`,
+                      onClick: this.state.pendingTournamentsSearchedText !== "" ? () => {
+                        this.setState({
+                          pendingTournamentsSearchedText: "",
+                          showSelectAllLabel: true,
+                          filteredPendingTournaments: this.state.tournamentsList
+                        });
+                      } : null
+                    }}
+                    value={this.state.pendingTournamentsSearchedText}
+                    disabled={this.state.showPendingTournamentSpinner}
+                  />
+                  <div className={styles.managePendingTrmntCheckboxGrp}>
+                    {this.state.showSelectAllLabel &&
+                      <Checkbox
+                        label={LocaleStrings.SelectAllLabel}
+                        onChange={(eve: React.FormEvent<HTMLElement | HTMLInputElement>, isChecked: boolean) => {
+                          this.updateSelectedPendingTournaments(isChecked, "", true);
+                        }}
+                        className={styles.pendingTrmntCheckBox}
+                        checked={this.state.selectAllChecked}
+                        disabled={this.state.showPendingTournamentSpinner}
+                      />
+                    }
+                    {this.state.filteredPendingTournaments.map((tournamentData: any) => {
+                      return (
+                        <Checkbox
+                          label={tournamentData.text}
+                          onChange={(eve: React.FormEvent<HTMLElement | HTMLInputElement>, isChecked: boolean) => {
+                            this.updateSelectedPendingTournaments(isChecked, tournamentData.key, false);
+                          }}
+                          checked={this.state.selectedPendingTournaments.includes(tournamentData.key)}
+                          className={styles.pendingTrmntCheckBox + " " + styles.filteredPendingTournaments}
+                          disabled={this.state.showPendingTournamentSpinner}
+                        />
+                      );
+                    })}
+                    {this.state.filteredPendingTournaments.length === 0 &&
+                      <div className={styles.noResultsFound}>{LocaleStrings.NoSearchResults}</div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+            {this.state.noTournamentsFlag && (
+              <Label className={styles.errorMessage}>
+                {LocaleStrings.NoTournamentMessage}
+              </Label>
+            )}
+            {this.state.startTournamentError && (
+              <Label className={styles.errorMessage}>
+                {LocaleStrings.SelectTournamentMessage}
+              </Label>
+            )}
+            {this.state.showPendingTournamentSpinner &&
+              <Spinner
+                label={LocaleStrings.EnableTournamentSpinnerMessage}
+                size={SpinnerSize.large}
+              />
+            }
+            {!this.state.noTournamentsFlag && (
+              <PrimaryButton
+                text={LocaleStrings.StartTournamentButton}
+                title={LocaleStrings.StartTournamentButton}
+                iconProps={{
+                  iconName: "Play"
+                }}
+                onClick={(!this.state.showActiveTournamentSpinner || !this.state.showPendingTournamentSpinner) && this.startTournament}
+                className={styles.enableBtn}
+                disabled={this.state.showPendingTournamentSpinner}
+              />
+            )}
+          </Col>
+        </Row>
+        <PrimaryButton
+          text={LocaleStrings.BackButton}
+          title={LocaleStrings.BackButton}
+          iconProps={{ iconName: 'NavigateBack' }}
+          onClick={() => this.props.onClickCancel()}
+          className={styles.manageTrmntBackBtn}
+        />
       </div> //Final DIV
     );
   }

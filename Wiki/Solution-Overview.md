@@ -35,6 +35,12 @@ An Admin / Champion can do the following:
     - To view their Global rank and how they rank against others globally.
     - Access their dashboard with list of events they have supported.
     - Add and submit upcoming events to earn points associated with it.  Example, hosting office hours can earn 10 points, whereas writing a blog can earn 5 points. 
+    - Search for a champion based on region and focus area.
+    - View the activities of a champion by clicking on "View Activities" on the champion card.
+    - Connect with a champion using the below icons on the champion card
+      - Chat
+      - Request to call
+      - Send an Email
 1.	Nominate and approve an employee to be a champion (Add members ) 
     - An Admin can add employee as a Champion.
     - Where as an existing Champion can nominate their peers. 

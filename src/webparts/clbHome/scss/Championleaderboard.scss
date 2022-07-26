@@ -1,3 +1,12 @@
+.nonMemberDdCallout {
+  .ms-FocusZone {
+    .ms-Dropdown-item:hover {
+      color: #000000;
+      background-color: #f6f5f4 !important;
+    }
+  }
+}
+
 .Championleaderboard {
   display: flex !important;
 
@@ -60,65 +69,24 @@
             height: 23px;
           }
         }
+
+        .line {
+          height: 1px;
+          width: auto;
+          background-color: #39f;
+          margin: 0.5rem;
+        }
+
+        .globalrank {
+          font: normal normal normal 14px/19px Segoe UI;
+
+          .bold {
+            font-size: 14px;
+            font-weight: 800;
+          }
+        }
       }
 
-      .score {
-        font-weight: 800;
-        font-size: 14px;
-        margin: auto;
-      }
-
-      .monthlypoints {
-        font-size: 14px;
-      }
-
-      .line {
-        height: 1px;
-        width: auto;
-        background-color: #39f;
-        margin: 0.5rem;
-      }
-
-      .globalrank {
-        font: normal normal normal 14px/19px Segoe UI;
-      }
-
-      .bold {
-        font-size: 14px;
-        font-weight: 800;
-      }
-    }
-
-    .myrank {
-      margin-top: 5%;
-      color: #fff;
-      width: 60px;
-      margin-left: auto;
-      margin-right: auto;
-      font-weight: 600;
-    }
-
-    .Countscale {
-      text-align: center;
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-
-      #star {
-        color: #f3ca3e;
-        vertical-align: bottom;
-        margin-right: 4px;
-      }
-
-      & {
-        color: white;
-      }
-    }
-
-    .Count {
-      text-align: center;
-      font-size: 12px;
-      color: white;
     }
 
     .bc-btn,
@@ -135,11 +103,26 @@
       background-color: #6264a7
     }
 
+    .bc-form-main-area {
+      display: unset;
+    }
+
+
     .bc-form {
       margin: 1rem;
       border: 1px solid white;
       border-radius: 6px;
       padding: 1rem;
+
+      .bc-form-close-icon-area {
+        text-align: end;
+        display: none;
+
+        .bc-form-close-icon {
+          color: #ffffff;
+          cursor: pointer;
+        }
+      }
 
       .bc-label {
         color: white;
@@ -157,14 +140,10 @@
     }
   }
 
-  .gtcLabel {
-    margin-top: 2%;
-  }
-
   .content-tab {
-    width: 100vw;
+    width: 100%;
     min-height: 100vh;
-    margin: 1% 4% 2%;
+    padding: 1% 4% 2%;
 
     .ClbPath {
       display: inline-flex;
@@ -200,122 +179,10 @@
       }
     }
 
-    .location-icon {
-      vertical-align: bottom;
-      height: 34px;
-      width: auto;
-      padding: 0rem 0.2rem;
-    }
-
     .paddingTop {
       padding-top: 4%;
     }
 
-    .gtc {
-      color: #000;
-      font: normal normal normal 18px/24px Segoe UI;
-    }
-
-    .gtc-cards {
-      margin: 0 2%;
-
-      .cards {
-        width: 160px;
-        height: 160px;
-        background: #F4F4F8 0% 0% no-repeat padding-box;
-        box-shadow: 3px 6px 12px #00000029;
-        margin: 2% 5% 0 0;
-        border-radius: 6px;
-
-        img {
-          display: block;
-          position: relative;
-          float: right;
-          height: 50px;
-        }
-
-        .rank {
-          position: relative;
-          top: 9%;
-          left: 85%;
-          transform: translate(0%, 0%);
-          font: normal normal bold 9px/12px Segoe UI;
-          color: #464775;
-        }
-
-        .profile-img {
-          margin: -2rem 2.5rem;
-          height: 85px;
-          width: 84px;
-          border-radius: 50%;
-          border: 4px solid #7d7ebc;
-        }
-
-        .gtc-name {
-          text-align: center;
-          color: #464775;
-          margin-top: 5.7rem;
-          font-weight: 600;
-          width: auto;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          padding: 0 0.5rem;
-        }
-
-        .gtc-name2 {
-          text-align: center;
-          color: #464775;
-          margin-top: 5.7rem;
-          font-weight: 600;
-          width: auto;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          padding: 0 0.5rem;
-        }
-
-        .gtc-star {
-          text-align: center;
-          color: white;
-          font-weight: 600;
-
-          #count {
-            margin-right: 2px;
-            color: #f3ca3e;
-          }
-
-          .chat-icon {
-            display: inline-flex;
-            position: relative;
-            float: left;
-            margin: 0 0.5rem;
-            cursor: pointer;
-            color: #464775;
-            font-size: 20px;
-          }
-
-          .mail-icon {
-            float: right;
-            color: #464775;
-            font-size: 20px;
-            margin: 0 0.5rem;
-            cursor: pointer;
-          }
-
-          .totalPoints {
-            color: #464775;
-            padding-left: 2px;
-          }
-        }
-      }
-
-      .top-card {
-        height: 175px;
-        bottom: 0.8rem;
-        position: relative;
-      }
-    }
 
     .table-content {
       margin: 1rem 0rem;
@@ -329,7 +196,7 @@
 
       .gttc-row-left {
         cursor: pointer;
-        width: 74%;
+        width: 100%;
         float: left;
         padding-top: 1px;
         background-color: #BDBDE6;
@@ -338,7 +205,7 @@
       .gttc-row-right {
         cursor: pointer;
         float: right;
-        width: 26%;
+        width: 250px;
         background-color: #6264A7;
         padding: 8px 8px 6.5px 8px;
         color: #fff;
@@ -366,7 +233,8 @@
         font-weight: 600;
         display: inline-block;
         vertical-align: middle;
-        width: 45%;
+        width: 75px;
+        text-overflow: ellipsis;
 
         #count2 {
           color: #f3ca3e;
@@ -400,6 +268,7 @@
         padding: 0 !important;
         margin-bottom: 5px;
         border: 0 !important;
+        display: flex !important;
       }
 
       .card-body {
@@ -408,8 +277,16 @@
 
       .table {
         margin-bottom: 0 !important;
+        table-layout: fixed;
 
-        // color: white;
+        th:nth-child(1) {
+          width: 60%;
+        }
+
+        th:nth-child(2) {
+          width: 40%;
+        }
+
         .td {
           border: none !important;
         }
@@ -425,12 +302,6 @@
 
       .gttc-tap-data {
         text-align: center;
-      }
-
-      .you {
-        display: inline-block;
-        padding: 0 0.2rem;
-        color: white;
       }
     }
 
@@ -513,6 +384,119 @@
 
     100% {
       transform: rotate(360deg);
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .Championleaderboard {
+    .content-tab {
+      .table-content {
+        .card-body {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+}
+
+@media screen and (max-width: 375pt) {
+  .Championleaderboard {
+    display: block !important;
+
+    .sidenav {
+      background: transparent url("../assets/TOTImages/SidebarMobile.svg") 0% 0% no-repeat padding-box;
+      height: 140px;
+      background-color: #464775;
+      min-width: 100%;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: 50%;
+      min-height: unset;
+
+      .imagePointsArea {
+        display: flex;
+        justify-content: space-around;
+      }
+
+      .profilepic {
+        height: 70px;
+        width: 70px;
+        margin-top: 2rem;
+      }
+
+      .championname {
+        font: normal normal 700 14px/24px Segoe UI;
+      }
+
+      .pointcircle {
+        width: 120px;
+        height: 120px;
+        margin-top: 0.5rem;
+
+        .insidecircle {
+          margin: 0.5rem;
+
+          .pointsscale {
+            .yellowStar {
+              font-size: 14px;
+            }
+
+            .pointsValueLabel {
+              font-size: 12px;
+            }
+          }
+
+          .line {
+            margin: 3px;
+          }
+
+          .globalrank {
+            font: normal normal normal 12px/17px Segoe UI;
+          }
+        }
+      }
+
+      .bc-form-main-area {
+        position: fixed;
+        width: 100%;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.7);
+        z-index: 9999;
+        overflow-y: scroll;
+      }
+
+
+      .bc-form {
+        position: absolute;
+        top: 0px;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        background-color: #6264a7;
+
+        .bc-form-close-icon-area {
+          display: block;
+        }
+      }
+    }
+
+    .content-tab {
+      .ClbPath {
+        .backLabel {
+          font: normal normal 700 12px/23px Segoe UI;
+          padding-right: 7px;
+        }
+
+        .ClbLabel {
+          font: normal normal 700 14px/23px Segoe UI;
+          padding-left: 7px;
+        }
+      }
     }
   }
 }

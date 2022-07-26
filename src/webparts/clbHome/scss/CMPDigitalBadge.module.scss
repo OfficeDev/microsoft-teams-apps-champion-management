@@ -1,3 +1,7 @@
+.panelArea {
+  background-color: #FFFFFF !important;
+}
+
 .digitalBadgePath {
   display: inline-flex;
   margin-bottom: 25px;
@@ -40,10 +44,11 @@
 
     .imgText {
       font: normal normal 600 21px/30px Segoe UI;
-      text-align: left;
+      text-align: center;
       letter-spacing: 0px;
       color: #000000;
       opacity: 1;
+      margin-bottom: 10px;
     }
   }
 
@@ -72,6 +77,92 @@
     margin-left: 2%;
     margin-bottom: 5%;
   }
+
+  .listGrid {
+    overflow: hidden;
+    font-size: 0;
+    position: relative;
+    width: 100%;
+
+    .listGridTile {
+      text-align: center;
+      outline: none;
+      position: relative;
+      float: left;
+      background: #FFFFFF;
+
+      .listGridSizer {
+        padding-bottom: 100%;
+
+        .listGridPadder {
+          position: absolute;
+          left: 2px;
+          top: 2px;
+          right: 2px;
+          bottom: 2px;
+
+          .listGridImage {
+            position: absolute;
+            top: 0px;
+            left: 25%;
+            width: 50%;
+            border-radius: 50%;
+          }
+
+          .listGridLabel {
+            background: #464775;
+            color: #FFFFFF;
+            position: absolute;
+            padding: 5px 10px;
+            bottom: 25%;
+            left: 0px;
+            width: 100%;
+            box-sizing: border-box;
+            font: normal normal bold 16px/21px Segoe UI;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+
+    .listGridTile:focus::after {
+      content: '';
+      position: absolute;
+      left: 2;
+      right: 2;
+      top: 2;
+      bottom: 2;
+      box-sizing: border-box;
+      border: 1px solid #FFFFFF;
+    }
+  }
+}
+
+.acceptBtn {
+  background-color: #6264A7 !important;
+  border-color: #6264A7 !important;
+  color: #FFFFFF !important;
+
+  .acceptIcon {
+    margin-right: 10px;
+    font-size: 16px;
+    font-weight: bolder;
+    color: #FFFFFF;
+    opacity: 1;
+  }
+}
+
+.acceptBtn:hover {
+  background-color: #6264A7 !important;
+  opacity: 0.9 !important;
+}
+
+.acceptBtn:focus:enabled {
+  outline: none !important;
+  outline-offset: none;
 }
 
 .badgeDetailsHeading {
@@ -101,8 +192,29 @@
       margin-top: 10%;
 
       .applyBtn {
+        background-color: #6264A7 !important;
+        border-color: #6264A7 !important;
+        color: #FFFFFF;
         border: none !important;
         padding: 0.4rem !important;
+
+        .acceptIcon {
+          margin-right: 10px;
+          font-size: 16px;
+          font-weight: bolder;
+          color: #FFFFFF;
+          opacity: 1;
+        }
+      }
+
+      .applyBtn:hover {
+        background-color: #6264A7 !important;
+        opacity: 0.9 !important;
+      }
+
+      .applyBtn:focus:enabled {
+        outline: none !important;
+        outline-offset: none;
       }
 
       .downloadArea {
@@ -110,8 +222,33 @@
         width: 50%;
 
         .downloadBtn {
+          background-color: #6264A7 !important;
+          border-color: #6264A7 !important;
+          color: #FFFFFF;
           border: none !important;
           padding: 0.4rem !important;
+
+          i {
+            color: #FFFFFF;
+            font-size: 16px;
+            font-weight: bolder;
+            opacity: 1
+          }
+        }
+
+        .downloadBtn:hover {
+          background-color: #6264A7 !important;
+          opacity: 0.9 !important;
+        }
+
+        .downloadBtn:focus:enabled {
+          outline: none !important;
+          outline-offset: none;
+        }
+
+        .downloadBtn:disabled {
+          background-color: #6264A7 !important;
+          opacity: 0.9 !important;
         }
       }
     }
@@ -134,6 +271,95 @@
       color: #000000;
       opacity: 1;
       font: normal normal normal 20px/27px Segoe UI;
+    }
+  }
+}
+
+@media screen and (max-width: 375pt) {
+  .dbPanelBody {
+    padding-left: 4% !important;
+    padding-right: 4% !important;
+  }
+
+  .digitalBadgePath {
+    .backLabel {
+      font: normal normal 700 12px/23px Segoe UI;
+    }
+
+    .digitalBadgeLabel {
+      font: normal normal 700 14px/23px Segoe UI;
+    }
+  }
+
+  .introPageBox {
+    display: block;
+
+    .divChild1 {
+      width: 100%;
+
+      .imgText {
+        font: normal normal 600 18px/23px Segoe UI;
+      }
+    }
+
+    .divChild2 {
+      width: 100%;
+      margin-top: 10px;
+
+      p {
+        font: normal normal normal 16px/23px Segoe UI;
+      }
+    }
+  }
+
+  .badgeList {
+    p {
+      font: normal normal 600 16px/26px Segoe UI;
+    }
+
+    .listGrid {
+      .listGridTile {
+        .listGridSizer {
+          .listGridPadder {
+            .listGridImage {
+              left: 17.5% !important;
+              width: 65% !important;
+            }
+
+            .listGridLabel {
+              font: normal normal 700 12px/21px Segoe UI !important;
+              bottom: 5% !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .badgeDetailsHeading {
+    font: normal normal 600 16px/21px Segoe UI;
+  }
+
+  .badgeDetailsContainer {
+    display: block;
+
+    .badgeBtnArea {
+      width: 100%;
+      margin-bottom: 20px;
+
+      .buttonArea {
+        margin-left: unset;
+        justify-content: center;
+        display: inline-flex;
+      }
+    }
+
+    .badgeDetailsText {
+      width: 100%;
+
+      p {
+        font: normal normal normal 16px/21px Segoe UI;
+      }
     }
   }
 }

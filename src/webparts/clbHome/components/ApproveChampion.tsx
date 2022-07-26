@@ -1,32 +1,14 @@
-import { Label } from '@fluentui/react';
+import { Checkbox, Label, Spinner, SpinnerSize } from '@fluentui/react';
 import { Icon } from '@fluentui/react/lib/Icon';
-import { mergeStyleSets } from '@fluentui/react/lib/Styling';
-import { ISPHttpClientOptions, SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { sp } from "@pnp/sp";
-import * as React from "react";
-import siteconfig from "../config/siteconfig.json";
-import styles from "../scss/CMPApproveChampion.module.scss";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import * as React from "react";
+import styles from "../scss/CMPApproveChampion.module.scss";
+import commonServices from '../Common/CommonServices';
+import * as stringsConstants from "../constants/strings";
 
-
-
-const classes = mergeStyleSets({
-  rejectIcon: {
-    marginRight: "10px",
-    fontSize: "17px",
-    fontWeight: "bolder",
-    color: "#000003",
-    opacity: 1
-  },
-  approveIcon: {
-    marginRight: "10px",
-    fontSize: "17px",
-    fontWeight: "bolder",
-    color: "#FFFFFF",
-    opacity: 1
-  }
-});
+let commonServiceManager: commonServices;
 
 export interface IClbChampionsListProps {
   context?: WebPartContext;
@@ -53,13 +35,11 @@ export interface ISPList {
 }
 interface IState {
   list: ISPLists;
-  isAddChampion: boolean;
   approveMessage: string;
   rejectMessage: string;
-  UserDetails: Array<any>;
-  selectedusers: Array<any>;
-  siteUrl: string;
-  memberrole: string;
+  selectedIds: any;
+  isAllSelected: boolean;
+  showSpinner: boolean;
 }
 class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
   constructor(props: IClbChampionsListProps) {
@@ -67,88 +47,149 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
     sp.setup({
       spfxContext: this.props.context,
     });
-
     this.state = {
       list: { value: [] },
-      isAddChampion: false,
       approveMessage: "",
       rejectMessage: "",
-      UserDetails: [],
-      selectedusers: [],
-      siteUrl: this.props.siteUrl,
-      memberrole: "",
+      selectedIds: [],
+      isAllSelected: false,
+      showSpinner: false
     };
+    //Create object for CommonServices class
+    commonServiceManager = new commonServices(
+      this.props.context,
+      this.props.siteUrl
+    );
+    this.setSelectedIds = this.setSelectedIds.bind(this);
+    this.handleSelectAll = this.handleSelectAll.bind(this);
   }
 
+  //Method will be called immediately after the component is mounted in DOM
   public componentDidMount(): void {
-    this.setState({
-      list: this.props.list
-    });
+    //Get all the pending items from Member list
+    this.getPendingItems();
   }
 
-  private updateItem = (statusText: string, ID: number) => {
-    let ButtonText = statusText;
-    let status = "";
-    let Id = ID;
-    if (ButtonText === "Approve") {
-      status = "Approved";
+  //Method to retrieve pending items from Member list
+  private async getPendingItems() {
+    try {
+      //Getting the pending items from Member List
+      let filterQuery = "Status eq '" + stringsConstants.pendingStatus + "'";
+      const pendingItems: any[] = await commonServiceManager.getItemsWithOnlyFilter(stringsConstants.MemberList, filterQuery);
+     
+      this.setState({
+        list: { value: pendingItems }
+      });
+    }
+    catch (error) {
+      console.error("CMP_ApproveChampion_getPendingItems \n", JSON.stringify(error));
+    }
+  }
+
+  //Method to update the status in the Member List
+  private updatePendingItems = async (statusText: string, selectedIDs: any) => {
+    try {
+      this.setState({
+        showSpinner: true,
+        rejectMessage: "",
+        approveMessage: ""
+      });
+
+      let updateMemberObject: any = {
+        Status: statusText
+      };
+
+      //Update status for pending items in Member List
+      let updateResponse = await commonServiceManager.updateMultipleItems(stringsConstants.MemberList, updateMemberObject, selectedIDs);
+
+      //Refresh the items shown in the grid
+      await this.getPendingItems();
+
+      if (updateResponse) {
+        //Updating state variables based on the approval action
+        if (statusText === stringsConstants.approvedStatus) {
+          this.setState({
+            approveMessage: LocaleStrings.ChampionApprovedMessage,
+            selectedIds: [],
+            rejectMessage: "",
+            isAllSelected: false,
+            showSpinner: false
+          });
+        } else if (statusText === stringsConstants.rejectedStatus) {
+          this.setState({
+            rejectMessage: LocaleStrings.ChampionRejectedMessage,
+            selectedIds: [],
+            approveMessage: "",
+            isAllSelected: false,
+            showSpinner: false
+          });
+        }
+      } else {
+        //If any error occurs during batch update
+        this.setState({
+          rejectMessage: stringsConstants.CMPErrorMessage + "while approving/rejecting champion request(s).",
+          selectedIds: [],
+          isAllSelected: false,
+          showSpinner: false
+        });
+      }
+    }
+    catch (error) {
+      //Refresh the items shown in the grid
+      await this.getPendingItems();
+
+      this.setState({
+        rejectMessage: stringsConstants.CMPErrorMessage + "while approving/rejecting champion request(s). Below are the details: \n" + JSON.stringify(error),
+        selectedIds: [],
+        isAllSelected: false,
+        showSpinner: false
+      });
+      console.error("CMP_ApproveChampion_updatePendingItems \n", JSON.stringify(error));
+    }
+  }
+
+  //Updating the state whenever the checkbox value is changed
+  public setSelectedIds = (key: any, isChecked: boolean) => {
+    if (isChecked) {
+      this.setState({ selectedIds: [...this.state.selectedIds, key] });
+      // Automatically check the "Select All" option when the last checkbox is checked
+      if (this.state.selectedIds.length === this.state.list.value.length - 1) {
+        this.setState({ isAllSelected: true });
+      }
     }
     else {
-      status = "Rejected";
-    }
-    const listDefinition: any = {
-      Status: status,
-    };
-    const spHttpClientOptions: ISPHttpClientOptions = {
-      body: JSON.stringify(listDefinition),
-      headers: {
-        'Accept': 'application/json;odata=nometadata',
-        'Content-type': 'application/json;odata=nometadata',
-        'odata-version': '',
-        'IF-MATCH': '*',
-        'X-HTTP-Method': 'MERGE'
-      },
-    };
-
-    const url: string =
-      "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + `/_api/web/lists/GetByTitle('Member List')/items(${Id})`;
-    this.props.context.spHttpClient
-      .post(
-        url,
-        SPHttpClient.configurations.v1,
-
-        spHttpClientOptions
-      )
-      .then((response: SPHttpClientResponse) => {
-        //filter updated item from state
-        let filteredItems = this.state.list.value.filter((i: ISPList) => i.ID !== ID);
-        if (response.status === 201) {
-          this.setState({
-            UserDetails: [],
-            isAddChampion: false,
-            list: { value: filteredItems }
-          });
-          alert("Champion" + status);
-        } else {
-          if (status === 'Approved') {
-            this.setState({
-              approveMessage: LocaleStrings.ChampionApprovedMessage,
-              list: { value: filteredItems }
-            });
-          }
-          if (status === 'Rejected') {
-            this.setState({
-              rejectMessage: LocaleStrings.ChampionRejectedMessage,
-              list: { value: filteredItems }
-            });
-          }
-        }
+      this.setState({
+        isAllSelected: false,
+        selectedIds: this.state.selectedIds.filter((tKey) => tKey !== key)
       });
+    }
   }
+
+  //Updating the state whenever the "Select All" checkbox value is changed
+  public handleSelectAll = (isChecked: boolean) => {
+    const tempArray: any = [];
+
+    if (isChecked) {
+      this.state.list.value.forEach((item: ISPList) => {
+        tempArray.push(item.ID);
+      });
+      this.setState({
+        isAllSelected: isChecked,
+        selectedIds: tempArray
+      });
+    }
+    else {
+      this.setState({
+        isAllSelected: isChecked,
+        selectedIds: []
+      });
+    }
+  }
+
 
   public render() {
     return (
-      <div className="container">
+      <div className={`container ${styles.approveChampionContainer}`}>
         <div className={styles.approveChampionPath}>
           <img src={require("../assets/CMPImages/BackIcon.png")}
             className={styles.backImg}
@@ -176,62 +217,90 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
           </Label>
         }
         <div className={styles.listHeading}>{LocaleStrings.ChampionsListPageTitle}</div>
-        <table className="table table-bodered">
-          <thead className={styles.listHeader}>
-            <th>{LocaleStrings.PeopleNameGridHeader}</th>
-            <th>{LocaleStrings.RegionGridHeader}</th>
-            <th>{LocaleStrings.CountryGridHeader}</th>
-            <th>{LocaleStrings.FocusAreaGridHeader}</th>
-            <th>{LocaleStrings.GroupGridHeader}</th>
-            {!this.props.isEmp && <th>{LocaleStrings.StatusGridHeader}</th>}
-            <th>{LocaleStrings.ActionGridHeader}</th>
-          </thead>
-          <tbody className={styles.listBody}>
-            {this.state.list &&
-              this.state.list.value &&
-              this.state.list.value.length > 0 &&
-              this.state.list.value.map((item: ISPList) => {
-                if (item.Status != "Approved" && item.Status != "Rejected") {//showing only approved list
+        <div className={styles.approveChampionTableArea}>
+          <table className="table table-bodered">
+            <thead className={styles.listHeader}>
+              <th title={LocaleStrings.SelectAll}>
+                <Checkbox
+                  onChange={(eve: React.FormEvent<HTMLElement | HTMLInputElement>, isChecked: boolean) => {
+                    this.handleSelectAll(isChecked);
+                  }}
+                  checked={this.state.isAllSelected}
+                  disabled={this.state.list.value.length == 0}
+                />
+              </th>
+              <th title={LocaleStrings.PeopleNameGridHeader}>{LocaleStrings.PeopleNameGridHeader}</th>
+              <th title={LocaleStrings.RegionGridHeader}>{LocaleStrings.RegionGridHeader}</th>
+              <th title={LocaleStrings.CountryGridHeader}>{LocaleStrings.CountryGridHeader}</th>
+              <th title={LocaleStrings.FocusAreaGridHeader}>{LocaleStrings.FocusAreaGridHeader}</th>
+              <th title={LocaleStrings.GroupGridHeader}>{LocaleStrings.GroupGridHeader}</th>
+              {!this.props.isEmp && <th>{LocaleStrings.StatusGridHeader}</th>}
+            </thead>
+            <tbody className={styles.listBody}>
+              {this.state.list &&
+                this.state.list.value &&
+                this.state.list.value.length > 0 &&
+                this.state.list.value.map((item: ISPList) => {
                   return (
                     <tr>
                       <td>
+                        <Checkbox
+                          value={item.ID}
+                          onChange={(eve: React.FormEvent<HTMLElement | HTMLInputElement>, isChecked: boolean) => {
+                            this.setSelectedIds(item.ID, isChecked);
+                          }}
+                          checked={this.state.selectedIds.length > 0 ? this.state.selectedIds.includes(item.ID) : false}
+                        />
+                      </td>
+                      <td title={`${item.FirstName ? item.FirstName + " " : ""}${item.LastName ? item.LastName : ""}`}>
                         {item.FirstName}
                         <span className="mr-1"></span>
                         {item.LastName}
                       </td>
-                      <td>{item.Region}</td>
-                      <td>{item.Country}</td>
-                      <td>{item.FocusArea}</td>
-                      <td>{item.Group}</td>
+                      <td title={item.Region ? item.Region : ""}>{item.Region}</td>
+                      <td title={`${item.Country ? item.Country : ""}`}>{item.Country}</td>
+                      <td title={`${item.FocusArea ? item.FocusArea : ""}`}>{`${item.FocusArea ? item.FocusArea : ""}`}</td>
+                      <td title={`${item.Group ? item.Group : ""}`}>{item.Group}</td>
                       {!this.props.isEmp && <td>{item.Status}</td>}
-                      <td>
-                        <button
-                          className={`btn ${styles.rejectBtn}`}
-                          onClick={e => this.updateItem("Reject", item.ID)}
-                          title={LocaleStrings.RejectButton}
-                        >
-                          <Icon iconName="ErrorBadge" className={`${classes.rejectIcon}`} />
-                          <span className={styles.rejectBtnLabel}>{LocaleStrings.RejectButton}</span>
-                        </button>
-                        <button
-                          className={`btn ${styles.approveBtn}`}
-                          onClick={e => this.updateItem("Approve", item.ID)}
-                          title={LocaleStrings.ApproveButton}
-                        >
-                          <Icon iconName="Completed" className={`${classes.approveIcon}`} />
-                          <span className={styles.approveBtnLabel}>{LocaleStrings.ApproveButton}</span>
-                        </button>
-                      </td>
                     </tr>
                   );
-                }
-              })}
-          </tbody>
-        </table>
+                })}
+            </tbody>
+          </table>
+        </div>
+        <div>
+          {this.state.showSpinner &&
+            <Spinner
+              label={LocaleStrings.ProcessingSpinnerLabel}
+              size={SpinnerSize.large}
+            />
+          }
+        </div>
+        {this.state.list.value.length > 0 &&
+          <div className={styles.manageChampionBtnArea}>
+            <button
+              className={`btn ${styles.approveBtn}`}
+              onClick={e => this.updatePendingItems(stringsConstants.approvedStatus, this.state.selectedIds)}
+              title={LocaleStrings.ApproveButton}
+              disabled={this.state.selectedIds.length === 0}
+            >
+              <Icon iconName="Completed" className={styles.approveBtnIcon} />
+              <span className={styles.approveBtnLabel}>{LocaleStrings.ApproveButton}</span>
+            </button>
+            <button
+              className={"btn " + styles.rejectBtn}
+              onClick={e => this.updatePendingItems(stringsConstants.rejectedStatus, this.state.selectedIds)}
+              title={LocaleStrings.RejectButton}
+              disabled={this.state.selectedIds.length === 0}
+            >
+              <Icon iconName="ErrorBadge" className={styles.rejectBtnIcon} />
+              <span className={styles.rejectBtnLabel}>{LocaleStrings.RejectButton}</span>
+            </button>
+          </div>
+        }
         {this.state.list &&
           this.state.list.value &&
-          this.state.list.value.length > 0 &&
-          this.state.list.value.filter(i => i.Status == "Pending").length == 0 &&
+          this.state.list.value.length == 0 &&
           (
             <div className={styles.noRecordsArea}>
               <img
@@ -243,7 +312,6 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
             </div>
           )
         }
-
       </div>
     );
   }

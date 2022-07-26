@@ -5,7 +5,7 @@ import {
 } from "@fluentui/react/node_modules/office-ui-fabric-react/lib/DatePicker";
 import { DataGrid } from "@material-ui/data-grid";
 import {
-  ISPHttpClientOptions, SPHttpClient,
+  SPHttpClient,
   SPHttpClientResponse
 } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
@@ -16,17 +16,16 @@ import _ from "lodash";
 import * as moment from "moment";
 import { DefaultButton } from "office-ui-fabric-react";
 import { Dropdown } from "office-ui-fabric-react/lib/Dropdown";
-import { mergeStyleSets } from "office-ui-fabric-react/lib/Styling";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
 import React, { Component } from "react";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import commonServices from '../Common/CommonServices';
 import Sidebar from "../components/Sidebar";
 import siteconfig from "../config/siteconfig.json";
 import "../scss/Championview.scss";
-
 
 const columns = [
   {
@@ -87,25 +86,6 @@ const DayPickerStrings: IDatePickerStrings = {
   closeButtonAriaLabel: "Close date picker",
 };
 
-const controlClass = mergeStyleSets({
-  control: {
-    margin: "0 0 15px 0",
-    maxWidth: "300px",
-  },
-  marginAuto: {
-    margin: "auto",
-  },
-  marginTopAuto: {
-    marginTop: "auto",
-  },
-  paddingRight: {
-    paddingLeft: "0 !important",
-    paddingRight: "10px !important",
-    paddingTop: "0px !important",
-    paddingBottom: "0px !important"
-  }
-});
-
 const firstDayOfWeek = DayOfWeek.Sunday;
 export interface ChampionViewProps {
   context: WebPartContext;
@@ -144,6 +124,7 @@ export interface ChampionViewState {
   loading: boolean;
   membersInfo: Array<any>;
   showValidationError: boolean;
+  eventUniqueID: number;
 }
 export interface ChampList {
   id: number;
@@ -202,7 +183,8 @@ export default class ChampionvView extends Component<
       inclusionpath: siteconfig.inclusionPath,
       loading: true,
       membersInfo: [],
-      showValidationError: false
+      showValidationError: false,
+      eventUniqueID: 0
     };
   }
 
@@ -210,6 +192,7 @@ export default class ChampionvView extends Component<
     this.setState({ DateOfEvent: d });
   }
 
+  //When a new event is added modify the collection to show in the grid
   public addDevice(data: ChampList, saved: any) {
     if (saved === "false") {
       if ((data.type == "" || data.type == "Select Event Type")) {
@@ -219,11 +202,11 @@ export default class ChampionvView extends Component<
         this.setState({ showValidationError: true, validationError: LocaleStrings.CountValidationMessage });
       }
       else {
-        this.setState({ collectionNew: [], showValidationError: false });
+        this.setState({ collectionNew: [], showValidationError: false, eventUniqueID: data.id });
         const newBag = this.state.collectionNew.concat(data);
+
         this.setState({
           collectionNew: newBag,
-          eventid: 0,
           points: data.Count,
         });
         this.setState({ selectedkey: 0 });
@@ -288,10 +271,11 @@ export default class ChampionvView extends Component<
     return myOptions;
   }
 
-  public removeDevice(type: string, points: number) {
+  //Remove the record from the grid when clicked on delete icon
+  public removeDevice(points: number, recordID: number) {
     this.setState((prevState) => ({
       collectionNew: prevState.collectionNew.filter(
-        (data) => data.type !== type,
+        (data) => data.id !== recordID,
         points
       ),
     }));
@@ -299,12 +283,15 @@ export default class ChampionvView extends Component<
 
   public createorupdateItem() {
     this.setState({ isShow: true });
+    let commonServiceManager: commonServices = new commonServices(this.props.context, this.props.siteUrl);
+    let promiseArr = [];
+    let memberId = String(this.state.collectionNew[0].memberid);
     for (let link of this.state.collectionNew) {
       let tmp: Array<EventList> = null;
       let selectedVal: any = null;
       tmp = this.state.edetailsIds;
       let scount = link.Count * 10;
-      let item1 = tmp.filter((i) => i.Id === link.eventid);
+      let filteredItem = tmp.filter((i) => i.Id === link.eventid);
       let seventid = String(link.eventid);
       let smemberid = String(link.memberid);
       let sdoe = link.DateOfEvent;
@@ -314,8 +301,8 @@ export default class ChampionvView extends Component<
       let sMemberName = oMember.FirstName + ' ' + oMember.LastName;
       let seventName = this.state.edetailsIds.filter(x => x.Id.toString() == seventid)[0].Title;
 
-      if (item1.length != 0) {
-        scount = link.Count * item1[0].Ecount;
+      if (filteredItem.length != 0) {
+        scount = link.Count * filteredItem[0].Ecount;
       }
       if (true) {
         const listDefinition: any = {
@@ -328,46 +315,8 @@ export default class ChampionvView extends Component<
           EventName: seventName
         };
 
-        const spHttpClientOptions: ISPHttpClientOptions = {
-          body: JSON.stringify(listDefinition),
-        };
-
-        if (true) {
-          setTimeout(() => {
-            this.setState({ isShow: false });
-          }, 2000);
-
-          this.props.callBack();
-
-          const url: string =
-            "/" +
-            this.state.inclusionpath +
-            "/" +
-            this.state.sitename +
-            "/_api/web/lists/GetByTitle('Event Track Details')/items";
-          if (this.props.context)
-            this.props.context.spHttpClient
-              .post(
-                url,
-                SPHttpClient.configurations.v1,
-                spHttpClientOptions
-              )
-              .then((responseData: SPHttpClientResponse) => {
-                this.addDevice(link, "true");
-                if (responseData.status === 201) {
-                  this.getListData(smemberid, seventid);
-                } else {
-                  alert(
-                    "Response status " +
-                    responseData.status +
-                    " - " +
-                    responseData.statusText
-                  );
-                }
-              })
-              .catch((error) => alert(error.message));
-        } else {
-        }
+        //create promise array
+        promiseArr.push(commonServiceManager.createListItem("Event Track Details", listDefinition));
         this.setState((prevState) => ({
           collectionNew: prevState.collectionNew.filter(
             (d) => d.type === "xxx"
@@ -375,6 +324,21 @@ export default class ChampionvView extends Component<
         }));
       }
     }
+    //Wait for all promise statements to execute and return true
+    Promise.all(promiseArr).then(
+      res => {
+        this.getListData(memberId);
+        this.props.callBack();
+        this.setState({ isShow: false });
+      }
+    ).catch(err => {
+      alert(
+        "Response status " +
+        err.status +
+        " - " +
+        err.statusText
+      );
+    });
     this.setState((prevState) => ({
       collectionNew: prevState.collectionNew.filter((d) => d.eventid != 99191),
     }));
@@ -411,10 +375,9 @@ export default class ChampionvView extends Component<
     return flag;
   }
 
-  private async getListData(memberid: any, _eventid: any): Promise<any> {
+  private async getListData(memberId: any): Promise<any> {
     this.setState({ collection: [] });
     const response = await this.props.context.spHttpClient.get(
-
       "/" +
       this.state.inclusionpath +
       "/" +
@@ -424,20 +387,20 @@ export default class ChampionvView extends Component<
     );
     if (response.status === 200) {
       await response.json().then((responseJSON: any) => {
-        let i = 1;
+        let i = 0;
         while (i < responseJSON.value.length) {
-          if (responseJSON.value[i].MemberId == memberid) {
-            if (responseJSON.value[i].MemberId == memberid)
+          if (responseJSON.value[i].MemberId == memberId) {
+            if (responseJSON.value[i].MemberId == memberId)
               this.setState((prevState) => ({
                 collection: prevState.collection.filter(
-                  (d) => d.memberid == memberid
+                  (d) => d.memberid == memberId
                 ),
               }));
             let c = {
               id: i,
               type: responseJSON.value[i].Title,
               eventid: responseJSON.value[i].EventId,
-              memberid: memberid,
+              memberid: memberId,
               Count: responseJSON.value[i].Count,
               DateOfEvent: responseJSON.value[i].DateofEvent,
               MemberName: responseJSON.value[i].MemberName,
@@ -566,12 +529,12 @@ export default class ChampionvView extends Component<
     let tmp: Array<EventList> = null;
     let selectedVal: any = null;
     tmp = this.state.edetailsIds;
-    let item1 = tmp.filter((i) => i.Title === ca);
-    if (item1.length != 0) {
+    let filteredItem = tmp.filter((i) => i.Title.trim() === ca.trim());
+    if (filteredItem.length != 0) {
       this.setState({
         selectedkey: 1,
-        type: item1[0].Title,
-        eventid: item1[0].Id,
+        type: filteredItem[0].Title,
+        eventid: filteredItem[0].Id,
         memberid: localStorage["memberid"],
       });
     } else {
@@ -596,7 +559,6 @@ export default class ChampionvView extends Component<
     const onRenderCaretDown = (): JSX.Element => {
       return <span></span>;
     };
-
     return (
       <form>
         <div className="Championview d-flex ">
@@ -626,10 +588,6 @@ export default class ChampionvView extends Component<
                     <Card.Body className="cb">
                       <div
                         className="ag-theme-alpine"
-                        style={{
-                          height: 400,
-                          width: "auto",
-                        }}
                       >
                         <DataGrid
                           rows={this.renderFormateDate(
@@ -658,13 +616,7 @@ export default class ChampionvView extends Component<
                           <div className="form-group row">
                             <DatePicker
                               label={LocaleStrings.MonthAndDateLabel}
-                              className={cx(
-                                controlClass.control,
-                                "col-md-4",
-                                "date",
-                                controlClass.marginAuto,
-                                controlClass.paddingRight,
-                              )}
+                              className={`${cx("col-md-4", "col-12", "date")} cv-date-control cv-margin-auto cv-padding-right`}
                               firstDayOfWeek={firstDayOfWeek}
                               strings={DayPickerStrings}
                               showWeekNumbers={true}
@@ -674,29 +626,23 @@ export default class ChampionvView extends Component<
                               ariaLabel="Select a date"
                               onSelectDate={this.onChange}
                               value={this.state.DateOfEvent}
+                              calloutProps={{ className: "cvDatePickerCallout" }}
+                              calendarProps={{ className: "calendarProps", strings: null }}
                               styles={{ callout: { selectors: { '& .ms-DatePicker-day--outfocus': { color: "#757575" } } } }}
                             />
                             <div
-                              className={cx(
-                                "col-md-5",
-                                controlClass.marginAuto,
-                                controlClass.paddingRight
-                              )}>
+                              className={`${cx("col-md-5")} cv-margin-auto cv-padding-right`}>
                               <Dropdown
                                 label={LocaleStrings.EventTypeGridLabel}
                                 placeholder={LocaleStrings.EventTypeGridLabelPlaceHolder}
                                 onChange={(evt) => this.handleSelect(evt)}
-                                id="drp"
                                 options={this.options()}
                                 onRenderCaretDown={onRenderCaretDown}
                                 styles={{ title: { color: "#757575" } }}
+                                calloutProps={{ className: "cvEventTypeDropdown" }}
                               />
                             </div>
-                            <div className={cx(
-                              "col-md-2",
-                              controlClass.marginAuto,
-                              controlClass.paddingRight
-                            )}>
+                            <div className={`${cx("col-md-2")} cv-margin-auto cv-padding-right`}>
                               <TextField
                                 label={LocaleStrings.CountLabel}
                                 value={this.state.points.toString()}
@@ -707,15 +653,12 @@ export default class ChampionvView extends Component<
                                 max="5"
                               />
                             </div>
-                            <div className={cx(
-                              "col-md-1",
-                              controlClass.marginTopAuto,
-                            )}>
+                            <div className={`${cx("col-md-1")} cv-margin-top-auto`}>
                               <Icon iconName="CircleAdditionSolid" className="AddEventIcon"
                                 onClick={(_e) =>
                                   this.addDevice(
                                     {
-                                      id: 0,
+                                      id: this.state.eventUniqueID + 1,
                                       type: this.state.type,
                                       eventid: this.state.eventid,
                                       memberid: this.state.memberid,
@@ -739,18 +682,18 @@ export default class ChampionvView extends Component<
                           <div className="row">
                             <div>
                               {this.state.collectionNew.map((item) => (
-                                <Row className="mt-5 row-margin" key={item.eventid}>
-                                  <Col className="tick" sm={1}>
+                                <Row className="mt-5 row-margin record-events-grid" key={item.id}>
+                                  <Col className="tick" sm={1} xs={1}>
                                     <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className="tickImage" />
                                   </Col>
-                                  <Col sm={4}>{item.DateOfEvent.toDateString()}</Col>
-                                  <Col sm={4}>{item.type}</Col>
-                                  <Col sm={2}>{item.Count}</Col>
-                                  <Col sm={1}>
+                                  <Col sm={4} xs={4}>{item.DateOfEvent.toDateString()}</Col>
+                                  <Col sm={4} xs={4}>{item.type}</Col>
+                                  <Col sm={2} xs={2}>{item.Count}</Col>
+                                  <Col sm={1} xs={1}>
                                     <div className="deleteEvent">
                                       <Icon iconName="Delete"
                                         onClick={() => {
-                                          this.removeDevice(item.type, item.Count);
+                                          this.removeDevice(item.Count, item.id);
                                         }}
                                       />
                                     </div>

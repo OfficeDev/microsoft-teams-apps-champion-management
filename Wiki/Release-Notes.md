@@ -3,6 +3,7 @@ This page contains the different release details for Champion Management Platfor
 ## Version history
 | Version | Release Date |
 |----|----|
+| 2.3 | Jul 28, 2022 |
 | 2.2 | May 17, 2022 |
 | 2.1 | Apr 4, 2022 |
 | 2.0 | Dec 9, 2021 |
@@ -11,6 +12,19 @@ This page contains the different release details for Champion Management Platfor
 | 1.1 | Apr 1, 2021 |
 
 ## Release notes
+
+### 2.3 (Jul 28, 2022)
+
+Below improvements released,
+
+- New Feature: Ability to create multiple tournaments using excel template.
+- New Feature: Ability to start multiple tournaments at the same time.
+- New Feature: Local language support (translations) available for 12 languages.
+- Ability to approve/reject multiple requests at a time in manage approval screen.
+- New card layout for both Member and Non Member Leaderboards along with improved Search and option to connect with the champions.
+- Mobile responsive UI implemented.
+- Bug Fix: Incorrect ranking in leaderboard when applying search filters.
+- Bug Fix: Inaccurate behavior when adding multiple events of same type in "Record Event" section of Leaderboard.
 
 ### 2.2 (May 17, 2022)
 

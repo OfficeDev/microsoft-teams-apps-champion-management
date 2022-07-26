@@ -4,18 +4,249 @@
   padding: 2% 5%;
 }
 
+.toggleTournamentType {
+  display: flex;
+  width: 100%;
+  justify-content: start;
+  border-bottom: 1px solid grey;
+  margin-bottom: 20px;
+
+  .singleTrmntType {
+    color: #1d0f62;
+    cursor: pointer;
+    height: fit-content;
+    position: relative;
+    top: 1px;
+    padding-bottom: 7px;
+    padding-left: 3px;
+    padding-right: 3px;
+    text-align: left;
+    font: normal normal 600 16px/24px Segoe UI;
+    letter-spacing: 0px;
+    color: #636363;
+    opacity: 1;
+  }
+
+  .singleTrmntType:hover {
+    border-bottom: 3px solid #989ad7;
+  }
+
+  .multipleTrmntType {
+    color: #1d0f62;
+    cursor: pointer;
+    height: fit-content;
+    position: relative;
+    top: 1px;
+    padding-bottom: 7px;
+    padding-left: 3px;
+    padding-right: 3px;
+    text-align: left;
+    font: normal normal 600 16px/24px Segoe UI;
+    letter-spacing: 0px;
+    color: #636363;
+    opacity: 1;
+    margin-left: 30px;
+  }
+
+  .multipleTrmntType:hover {
+    border-bottom: 3px solid #989ad7;
+  }
+
+  .selectedTrmnt,
+  .selectedTrmnt:hover {
+    color: #5B5FC7;
+    border-bottom: 3px solid #5B5FC7;
+  }
+}
+
+.selectFileArea {
+  margin-left: 50px;
+}
+
+.spinnerArea {
+  width: 250px;
+}
+
+.multipleTrmntArea {
+  padding-bottom: 2vh;
+
+  .multiTrmntStep {
+    text-align: left;
+    font: normal normal normal 14px/24px Segoe UI;
+    letter-spacing: 0px;
+    color: #000000;
+    margin-bottom: 15px;
+
+    a,
+    a:hover,
+    a:active,
+    a:any-link {
+      color: #5b5fc7;
+    }
+
+    .multiTrmntInfoIcon {
+      top: 4px;
+      position: relative;
+      margin-left: 5px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+  }
+}
+
+.multipleTrmntsFileInput {
+  .multipleTrmntsFile {
+    opacity: 0;
+    width: 0.1px;
+    height: 0.1px;
+    position: absolute;
+  }
+
+  label {
+    position: relative;
+    width: 142px;
+    height: 32px;
+    border-radius: 0px;
+    background: #6264A7;
+    box-shadow: 0 4px 7px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 1;
+  }
+
+  label:hover {
+    opacity: 0.9;
+  }
+}
+
+.multipleTrmntProgressBarContainer {
+  margin-top: 20px;
+
+  .fileNameAndCancelIconArea {
+    display: inline-flex;
+    width: 250px;
+
+    .multipleTrmntsFileName {
+      font-size: 0.85rem;
+      color: #000000;
+      width: 85%;
+      overflow-wrap: break-word;
+    }
+
+    .cancelIconArea {
+      margin-top: auto;
+      margin-bottom: auto;
+      width: 15%;
+      text-align: center;
+
+      i {
+        color: #6264A7;
+        font-weight: 700;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .progressBar {
+    width: 250px;
+    height: 8px;
+    margin-top: 10px;
+    border: 1px solid #565656;
+    border-radius: 5px;
+
+    .percentage {
+      display: block;
+      height: 100%;
+      background-color: #6264A7;
+      border-radius: 5px;
+      animation: progress 1500ms ease-in 1;
+      width: 100%;
+    }
+
+    @keyframes progress {
+      from {
+        width: 0;
+      }
+    }
+  }
+
+  .uList {
+    padding-left: 18px;
+
+    .errorRed {
+      color: #e12636;
+    }
+
+    .successGreen {
+      color: green;
+    }
+  }
+
+  .importLogs {
+    margin-top: 10px;
+  }
+}
+
 .errorMessage {
   color: #e12636;
-  font: normal normal normal 18px/24px Segoe UI;
+  font: normal normal normal 18px/24px Segoe UI !important;
   letter-spacing: 0px;
   opacity: 1;
 }
 
 .successMessage {
-  font: normal normal normal 18px/24px Segoe UI;
+  font: normal normal normal 18px/24px Segoe UI !important;
   letter-spacing: 0px;
   opacity: 1;
   color: #000000;
+}
+
+.createTrmntTooltipHostStyles {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.createTrmntTextField {
+  label {
+    text-align: left;
+    font: normal normal 600 18px/24px Segoe UI;
+    letter-spacing: 0px;
+    color: #000000;
+    opacity: 1;
+  }
+}
+
+.createTrnmtBackBtn {
+  border-color: #33344A;
+  background-color: white;
+
+  i {
+    font-size: 17px;
+    font-weight: bolder;
+    color: #000003;
+    opacity: 1;
+  }
+
+  i+span>span {
+    font: normal normal bold 14px/24px Segoe UI;
+    letter-spacing: 0px;
+    color: #000003;
+    opacity: 1;
+    margin-top: -3px;
+  }
+}
+
+.createTrnmtBackBtn:hover {
+  border-color: #33344A;
+  background-color: white;
+  color: #000003;
 }
 
 .asteriskStyle {
@@ -25,6 +256,22 @@
 .createBtn {
   background-color: #6264A7;
   border-color: #6264A7;
+  color: #ffffff !important;
+
+  i {
+    color: #ffffff !important;
+  }
+}
+
+.createBtn:hover {
+  background-color: #6264A7 !important;
+  border-color: #6264A7 !important;
+  opacity: 0.9;
+}
+
+.disabledBtn {
+  background-color: #A2A3BA;
+  border-color: #A2A3BA;
 }
 
 .selectTeamActionArea {
@@ -36,6 +283,14 @@
     letter-spacing: 0px;
     color: #000000;
     opacity: 1;
+  }
+
+  .createTrmntSelectTeamsActionInfoIcon {
+    font-size: 16px;
+    padding-left: 10px;
+    padding-top: 6px;
+    font-weight: bolder;
+    color: #1d0f62;
   }
 }
 
@@ -84,11 +339,16 @@
   .ms-Label {
     font: normal normal 600 18px/24px Segoe UI;
   }
+
+  .createTrmntTooltipInsideContent {
+    margin: 10px;
+    padding-left: 10px;
+  }
 }
 
 .treeViewContent {
   div[class^='treeView_'] {
-    width: 70%;
+    width: 100%;
   }
 
   div[class^='treeView_']>div>div:first-child {
@@ -99,6 +359,14 @@
   div[class^='treeView_']>div>div:nth-child(2) {
     div[class^='itemSubLabel_'] {
       color: #757575;
+    }
+  }
+}
+
+@media screen and (max-width: 375pt) {
+  .toggleTournamentType {
+    .tournamentType {
+      font: normal normal 600 16px/20px Segoe UI;
     }
   }
 }

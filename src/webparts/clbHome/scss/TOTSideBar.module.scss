@@ -5,7 +5,8 @@
     background: transparent url("../assets/TOTImages/Sidebar.svg") 0% 0% no-repeat padding-box;
     width: 212px;
     min-height: 100vh;
-    height: 1018px;
+    height: 100%;
+    background-color: #6264a7;
 
     .profilePic {
       height: 100px;
@@ -58,6 +59,10 @@
         font-weight: 800;
         font-size: 14px;
         margin: auto;
+      }
+
+      .pointsValueLabel {
+        font-size: 1rem;
       }
 
       .yellowStar {
@@ -171,6 +176,68 @@
 
     100% {
       transform: rotate(360deg);
+    }
+  }
+}
+
+@media screen and (max-width: 375pt) {
+  .totSideBar {
+    .sideNav {
+      background: transparent url("../assets/TOTImages/SidebarMobile.svg") 0% 0% no-repeat padding-box;
+      height: 140px;
+      background-color: #464775;
+      min-width: 100%;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: 50%;
+      min-height: unset;
+
+      .imagePointsArea {
+        display: flex;
+        justify-content: space-around;
+      }
+
+      .profilePic {
+        height: 70px;
+        width: 70px;
+        margin-top: 2rem;
+      }
+
+      .championName {
+        font: normal normal 700 14px/24px Segoe UI;
+      }
+
+      .pointCircle {
+        width: 120px;
+        height: 120px;
+        margin-top: 0.5rem;
+
+        .insideCircle {
+          margin: unset;
+        }
+
+        .pointsValueLabel {
+          font-size: 14px;
+        }
+
+        .yellowStar {
+          width: unset;
+          height: unset;
+          font-size: 14px;
+        }
+
+        .line {
+          margin: 5px;
+        }
+
+        .globalRank {
+          font: normal normal normal 11px/17px Segoe UI;
+        }
+
+        .bold {
+          font-weight: 600;
+        }
+      }
     }
   }
 }

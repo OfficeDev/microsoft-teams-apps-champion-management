@@ -1,9 +1,92 @@
+.cvDatePickerCallout {
+  .ms-Callout-main {
+    .calendarProps {
+      .ms-DatePicker-picker {
+        .ms-DatePicker-holder {
+          .ms-DatePicker-frame {
+            .ms-DatePicker-wrap {
+              .ms-DatePicker-dayPicker {
+                .ms-DatePicker-header {
+                  .ms-DatePicker-monthComponents {
+                    .ms-DatePicker-navContainer {
+                      button:hover {
+                        background-color: #D0D0D0 !important;
+                        color: #000 !important;
+                        font-weight: 600;
+                      }
+                    }
+                  }
+                }
+
+                .ms-FocusZone {
+                  table {
+                    tr {
+                      th {
+                        background-color: #f6f5f4 !important;
+                        color: #616161 !important;
+                      }
+
+                      td:hover {
+                        background-color: #D0D0D0 !important;
+                        color: #000 !important;
+                        font-weight: 600;
+                      }
+                    }
+                  }
+                }
+              }
+
+              .ms-DatePicker-monthPicker {
+                .ms-DatePicker-header {
+                  .ms-DatePicker-yearComponents {
+                    .ms-DatePicker-navContainer {
+                      button:hover {
+                        background-color: #D0D0D0 !important;
+                        color: #000 !important;
+                        font-weight: 600;
+                      }
+                    }
+                  }
+                }
+
+                .ms-FocusZone {
+                  .ms-DatePicker-monthOption:hover {
+                    background-color: #D0D0D0 !important;
+                    color: #000 !important;
+                    font-weight: 600;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.cvEventTypeDropdown {
+  .ms-Callout-main {
+    .ms-FocusZone {
+      button:hover {
+        background-color: #E8E8E8 !important;
+        color: #000;
+      }
+    }
+  }
+}
+
+
 .Championview {
   .main {
     width: 100%;
     height: 100%;
 
-    // background-color: rgba(158, 187, 208, 0.5);
+    .ag-theme-alpine {
+      height: 400px;
+      width: auto;
+    }
+
     .ag-theme-alpine>div>div {
       background-color: #fff;
     }
@@ -74,6 +157,27 @@
       .form-group {
         background-color: #F6F5F4;
         padding: 10px;
+
+        .cv-date-control {
+          margin: 0 0 15px 0;
+          max-width: 300px;
+        }
+
+        .cv-margin-auto {
+          margin: auto;
+
+          label {
+            color: #000;
+          }
+        }
+
+        .cv-margin-top-auto {
+          margin-top: auto;
+        }
+
+        .cv-padding-right {
+          padding: 0 10px 0 0 !important;
+        }
       }
     }
   }
@@ -177,5 +281,72 @@
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
     background: #555;
+  }
+
+  @media screen and (max-width: 767px) {
+    .form-fields {
+      .form-data {
+        .form-group {
+          .cv-date-control {
+            max-width: unset !important;
+          }
+
+          .cv-margin-top-auto {
+            margin-top: 20px;
+            margin-left: -10px;
+          }
+        }
+      }
+    }
+
+    .cb {
+      .record-events-grid {
+        font-size: 14px;
+      }
+
+      .tick {
+        left: 0 !important;
+      }
+
+      .deleteEvent {
+        font-size: 20px !important;
+      }
+    }
+  }
+
+  @media screen and (max-width: 375pt) {
+    .form-fields {
+      .form-data {
+        .form-group {
+          .cv-date-control {
+            max-width: unset !important;
+          }
+
+          .cv-padding-right {
+            padding: 15px 10px 0 0 !important;
+          }
+
+          .cv-margin-top-auto {
+            margin-top: 20px;
+            margin-left: -10px;
+          }
+        }
+      }
+    }
+
+    .cb {
+      .record-events-grid {
+        font-size: 14px;
+      }
+
+      .tick {
+        left: 0 !important;
+      }
+
+      .deleteEvent {
+        font-size: 20px !important;
+      }
+    }
+
   }
 }

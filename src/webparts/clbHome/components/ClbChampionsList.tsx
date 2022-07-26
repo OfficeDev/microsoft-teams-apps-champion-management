@@ -72,10 +72,11 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
       )
       .then((response: SPHttpClientResponse) => {
         if (response.status === 200) {
-          response.json().then((responseJSON: any) => {
+          let res = response.json();
+          res.then((responseJSON: any) => {
             this._renderList(responseJSON.value);
           });
-          return response.json();
+          return res;
         }
       });
   }
@@ -86,7 +87,7 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
 
   public render() {
     return (
-      <div className="container">
+      <div className={`container ${styles.championListContainer}`}>
         <div className={styles.championListPath}>
           <img src={require("../assets/CMPImages/BackIcon.png")}
             className={styles.backImg}
@@ -108,39 +109,41 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
             {this.props.userStatus === "Pending" ? LocaleStrings.UserNominatedMessage : LocaleStrings.UserAddedMessage}
           </Label> : null}
         <div className={`${styles.listHeading}`}>{LocaleStrings.ChampionsListPageTitle}</div>
-        <table className="table table-bodered">
-          <thead className={styles.listHeader}>
-            <th>{LocaleStrings.PeopleNameGridHeader}</th>
-            <th>{LocaleStrings.RegionGridHeader}</th>
-            <th>{LocaleStrings.CountryGridHeader}</th>
-            <th>{LocaleStrings.FocusAreaGridHeader}</th>
-            <th>{LocaleStrings.GroupGridHeader}</th>
-            {!this.props.isEmp && <th>Status</th>}
-          </thead>
-          <tbody className={styles.listBody}>
-            {this.state.list &&
-              this.state.list.value &&
-              this.state.list.value.length > 0 &&
-              this.state.list.value.map((item: ISPList) => {
-                if (item.Status === "Approved") {//showing only approved list
-                  return (
-                    <tr>
-                      <td>
-                        {item.FirstName}
-                        <span className="mr-1"></span>
-                        {item.LastName}
-                      </td>
-                      <td>{item.Region}</td>
-                      <td>{item.Country}</td>
-                      <td>{item.FocusArea}</td>
-                      <td>{item.Group}</td>
-                      {!this.props.isEmp && <td>{item.Status}</td>}
-                    </tr>
-                  );
-                }
-              })}
-          </tbody>
-        </table>
+        <div className={styles.championListTableArea}>
+          <table className="table table-bodered">
+            <thead className={styles.listHeader}>
+              <th title={LocaleStrings.PeopleNameGridHeader}>{LocaleStrings.PeopleNameGridHeader}</th>
+              <th title={LocaleStrings.RegionGridHeader}>{LocaleStrings.RegionGridHeader}</th>
+              <th title={LocaleStrings.CountryGridHeader}>{LocaleStrings.CountryGridHeader}</th>
+              <th title={LocaleStrings.FocusAreaGridHeader}>{LocaleStrings.FocusAreaGridHeader}</th>
+              <th title={LocaleStrings.GroupGridHeader}>{LocaleStrings.GroupGridHeader}</th>
+              {!this.props.isEmp && <th title={"Status"}>Status</th>}
+            </thead>
+            <tbody className={styles.listBody}>
+              {this.state.list &&
+                this.state.list.value &&
+                this.state.list.value.length > 0 &&
+                this.state.list.value.map((item: ISPList) => {
+                  if (item.Status === "Approved") {//showing only approved list
+                    return (
+                      <tr>
+                        <td title={`${item.FirstName ? item.FirstName + " " : ""}${item.LastName ? item.LastName : ""}`}>
+                          {item.FirstName}
+                          <span className="mr-1"></span>
+                          {item.LastName}
+                        </td>
+                        <td title={item.Region ? item.Region : ""}>{item.Region}</td>
+                        <td title={`${item.Country ? item.Country : ""}`}>{item.Country}</td>
+                        <td title={`${item.FocusArea ? item.FocusArea : ""}`}>{`${item.FocusArea ? item.FocusArea : ""}`}</td>
+                        <td title={`${item.Group ? item.Group : ""}`}>{item.Group}</td>
+                        {!this.props.isEmp && <td title={`${item.Status ? item.Status : ""}`}>{item.Status}</td>}
+                      </tr>
+                    );
+                  }
+                })}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }
