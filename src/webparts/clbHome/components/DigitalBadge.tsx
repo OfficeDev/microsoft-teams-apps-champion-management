@@ -938,7 +938,6 @@ export default class DigitalBadge extends TeamsBaseComponent<
               .api("me/photo/$value")
               .version("v1.0")
               .header("Content-Type", "image/jpeg")
-              .responseType("json")
               .put(blob, (errDb, _res, rawresponse) => {
                 if (!errDb) {
                   resolve(rawresponse);
