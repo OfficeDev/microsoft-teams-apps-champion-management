@@ -6,12 +6,11 @@ import paginationFactory from "react-bootstrap-table2-paginator";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 //FluentUI controls
-import { IButtonStyles, DefaultButton } from "@fluentui/react";
-import { Icon, IIconProps } from '@fluentui/react/lib/Icon';
+import { DefaultButton } from "@fluentui/react";
+import { Icon } from '@fluentui/react/lib/Icon';
 import { Label } from "@fluentui/react/lib/Label";
 import { ComboBox, IComboBox, IComboBoxOption } from '@fluentui/react/lib/ComboBox';
-import { TooltipHost, ITooltipHostStyles } from '@fluentui/react/lib/Tooltip';
-import { mergeStyleSets } from '@fluentui/react/lib/Styling';
+import { TooltipHost } from '@fluentui/react/lib/Tooltip';
 import commonServices from "../Common/CommonServices";
 import * as stringsConstants from "../constants/strings";
 import styles from "../scss/TOTLeaderBoard.module.scss";
@@ -19,6 +18,7 @@ import TOTSidebar from "./TOTSideBar";
 import { RxJsEventEmitter } from "../events/RxJsEventEmitter";
 import { EventData } from "../events/EventData";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import * as constants from "../constants/strings";
 
 //Global variables
 let commonService: commonServices;
@@ -38,53 +38,6 @@ const columns = [
     text: LocaleStrings.PointsLabel,
   },
 ];
-
-const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block', cursor: 'pointer' } };
-
-const calloutProps = { gapSpace: 0 };
-
-const classes = mergeStyleSets({
-  icon: {
-    fontSize: '16px',
-    paddingLeft: '10px',
-    fontWeight: 'bolder',
-    color: '#1d0f62',
-    position: 'relative',
-    top: '3px'
-  }
-});
-const backIcon: IIconProps = { iconName: 'NavigateBack' };
-
-const backBtnStyles: Partial<IButtonStyles> = {
-  root: {
-    borderColor: "#33344A",
-    backgroundColor: "white",
-    marginLeft: "1.5%"
-  },
-  rootHovered: {
-    borderColor: "#33344A",
-    backgroundColor: "white",
-    color: "#000003"
-  },
-  rootPressed: {
-    borderColor: "#33344A",
-    backgroundColor: "white",
-    color: "#000003"
-  },
-  icon: {
-    fontSize: "17px",
-    fontWeight: "bolder",
-    color: "#000003",
-    opacity: 1
-  },
-  label: {
-    font: "normal normal bold 14px/24px Segoe UI",
-    letterSpacing: "0px",
-    color: "#000003",
-    opacity: 1,
-    marginTop: "-3px"
-  }
-};
 
 export interface ITOTLeaderBoardProps {
   context?: WebPartContext;
@@ -338,7 +291,7 @@ export default class TOTLeaderBoard extends React.Component<
       <div>
         {this.state.isShowLoader && <div className={styles.load}></div>}
         <div className={styles.container}>
-          <div className={styles.totSideBar}>
+          <div className={styles.totLeaderboardContent}>
             {this.state.userLoaded != "" && (
               <TOTSidebar
                 siteUrl={this.props.siteUrl}
@@ -364,16 +317,21 @@ export default class TOTLeaderBoard extends React.Component<
                 <span className={styles.totLeaderboardLabel}>{LocaleStrings.TOTLeaderBoardPageTitle}</span>
               </div>
               <div className={styles.dropdownArea}>
-                <Row>
+                <Row xl={3} lg={3} md={3} sm={1} xs={1}>
                   {this.state.myTournamentsList.length > 0 && (
-                    <Col md={5}>
+                    <Col xl={5} lg={5} md={5} sm={12} xs={12}>
                       <span className={styles.labelHeading}>{LocaleStrings.MyTournamentsLabel} :
                         <TooltipHost
                           content={LocaleStrings.MyTournamentsTooltip}
-                          calloutProps={calloutProps}
-                          styles={hostStyles}
+                          calloutProps={{ gapSpace: 0 }}
+                          hostClassName={styles.tooltipHostStyles}
+                          delay={window.innerWidth < constants.MobileWidth ? 0 : 2}
                         >
-                          <Icon aria-label="Info" iconName="Info" className={classes.icon} />
+                          <Icon
+                            aria-label="Info"
+                            iconName="Info"
+                            className={styles.myTournamentInfoIcon}
+                          />
                         </TooltipHost>
                       </span>
                       <ComboBox className={styles.dropdownCol}
@@ -382,16 +340,18 @@ export default class TOTLeaderBoard extends React.Component<
                         options={this.state.myTournamentsList}
                         onChange={this.getMyTournamentActions.bind(this)}
                         ariaLabel={LocaleStrings.MyTournamentsLabel + ' list'}
+                        useComboBoxAsMenuWidth={true}
+                        calloutProps={{ className: styles.totLbComboCallout }}
                       />
                     </Col>
                   )}
                   {this.state.myTournamentsList.length > 0 && this.state.activeTournamentsList.length > 0 && (
-                    <Col md={1} className={styles.labelCol} >
+                    <Col xl={2} lg={2} md={2} sm={12} xs={12} className={styles.labelCol} >
                       <span className={styles.labelHeading}>{LocaleStrings.OrLabel}</span>
                     </Col>
                   )}
                   {this.state.activeTournamentsList.length > 0 && (
-                    <Col md={5}>
+                    <Col xl={5} lg={5} md={5} sm={12} xs={12}>
                       <span className={styles.labelHeading}>{LocaleStrings.ActiveTournamentLabel} : </span>
                       <ComboBox className={styles.dropdownCol}
                         placeholder={LocaleStrings.SelectTournamentPlaceHolder}
@@ -399,56 +359,62 @@ export default class TOTLeaderBoard extends React.Component<
                         options={this.state.activeTournamentsList}
                         onChange={this.getActiveTournamentActions.bind(this)}
                         ariaLabel={LocaleStrings.ActiveTournamentLabel + " list"}
+                        useComboBoxAsMenuWidth={true}
+                        calloutProps={{ className: styles.totLbComboCallout }}
                       />
                     </Col>
                   )}
                 </Row>
               </div>
               {this.state.tournamentName != "" && (
-                <div>
-                  {this.state.tournamentName != "" && (
-                    <ul className={styles.listArea}>
-                      {this.state.tournamentDescription && (
-                        <li className={styles.listVal}>
-                          <span className={styles.labelHeading}>
-                            {LocaleStrings.DescriptionLabel}
-                          </span>
-                          :
-                          <span className={styles.labelNormal}>
-                            {this.state.tournamentDescription}
-                          </span>
-                        </li>
+                <Row xl={1} lg={1} md={1} sm={1} xs={1}>
+                  <Col xl={12} lg={12} md={12} sm={12} xs={12}>
+                    <div>
+                      {this.state.tournamentName != "" && (
+                        <ul className={styles.listArea}>
+                          {this.state.tournamentDescription && (
+                            <li className={styles.listVal}>
+                              <span className={styles.labelHeading + " " + styles.descriptionHeading}>
+                                {LocaleStrings.DescriptionLabel}
+                              </span>
+                              <span className={styles.descriptionColon}>:</span>
+                              <span className={styles.labelNormal}>
+                                {this.state.tournamentDescription}
+                              </span>
+                            </li>
+                          )}
+                        </ul>
                       )}
-                    </ul>
-                  )}
-                  <div className={styles.table}>
-                    {this.state.allUserActions.length > 0 ? (
-                      <BootstrapTable
-                        table-responsive
-                        bordered
-                        hover
-                        keyField="Rank"
-                        data={this.state.allUserActions}
-                        columns={columns}
-                        pagination={paginationFactory()}
-                        headerClasses="header-class"
-                      />
-                    )
-                      :
-                      <div>
-                        {this.state.showError && this.state.noActiveParticipants && (
-                          <Label className={styles.noActvPartErr}>
-                            {LocaleStrings.NoActiveParticipantsErrorMessage}
-                            <span className={styles.myDashboardLink}
-                              onClick={() => this.props.onClickMyDashboardLink()}>
-                              {LocaleStrings.TOTMyDashboardPageTitle}
-                            </span>!
-                          </Label>
-                        )}
+                      <div className={styles.table}>
+                        {this.state.allUserActions.length > 0 ? (
+                          <BootstrapTable
+                            table-responsive
+                            bordered
+                            hover
+                            keyField="Rank"
+                            data={this.state.allUserActions}
+                            columns={columns}
+                            pagination={paginationFactory()}
+                            headerClasses="header-class"
+                          />
+                        )
+                          :
+                          <div>
+                            {this.state.showError && this.state.noActiveParticipants && (
+                              <Label className={styles.noActvPartErr}>
+                                {LocaleStrings.NoActiveParticipantsErrorMessage}
+                                <span className={styles.myDashboardLink}
+                                  onClick={() => this.props.onClickMyDashboardLink()}>
+                                  {LocaleStrings.TOTMyDashboardPageTitle}
+                                </span>!
+                              </Label>
+                            )}
+                          </div>
+                        }
                       </div>
-                    }
-                  </div>
-                </div>
+                    </div>
+                  </Col>
+                </Row>
               )}
               <div className={styles.contentArea}>
                 {this.state.showError && !this.state.noActiveParticipants && (
@@ -461,10 +427,10 @@ export default class TOTLeaderBoard extends React.Component<
                 <DefaultButton
                   text={LocaleStrings.BackButton}
                   title={LocaleStrings.BackButton}
-                  iconProps={backIcon}
+                  iconProps={{ iconName: 'NavigateBack' }}
                   onClick={() => this.props.onClickCancel()}
-                  styles={backBtnStyles}>
-                </DefaultButton>
+                  className={styles.totLeaderboardBackBtn}
+                />
               </div>
             </div>
           </div>

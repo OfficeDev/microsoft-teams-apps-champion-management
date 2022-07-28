@@ -1,0 +1,494 @@
+.championRegionCallout {
+    width: 200px;
+
+    div[class^="ms-Callout-main"] {
+        div[class^="ms-ComboBox-optionsContainerWrapper"] {
+            div[class^="ms-ComboBox-optionsContainer"] {
+
+                button:focus,
+                button:hover {
+                    background-color: transparent !important;
+                }
+            }
+        }
+    }
+}
+
+.championFocusAreaCallout {
+    width: 200px;
+
+    div[class^="ms-Callout-main"] {
+        div[class^="ms-ComboBox-optionsContainerWrapper"] {
+            div[class^="ms-ComboBox-optionsContainer"] {
+
+                button:focus,
+                button:hover {
+                    background-color: transparent !important;
+                }
+            }
+        }
+    }
+}
+
+.championsFilterArea {
+    margin: 1% 0% 1% 0%;
+
+    .topChampionsLabel {
+        text-align: left;
+        font: normal normal bold 24px/32px Segoe UI;
+        letter-spacing: 0px;
+        color: #242424;
+        margin-bottom: 30px;
+    }
+
+    .championRegionComboboxCol {
+        z-index: 1;
+
+        .championRegionComboboxArea {
+            margin-bottom: 15px;
+            text-align: left;
+
+            .championRegionCombobox {
+                display: inline-flex;
+                margin-right: 40px;
+
+                label {
+                    margin-right: 10px;
+                    width: 60px;
+                    color: rgb(97, 97, 97);
+                }
+
+                .ms-ComboBox {
+                    width: 200px !important;
+
+                    .ms-ComboBox-CaretDown-button:hover {
+                        background-color: transparent;
+                    }
+                }
+            }
+        }
+    }
+
+
+    .championFocusAreaComboboxArea {
+        margin-bottom: 15px;
+        text-align: left;
+
+        .championFocusAreaCombobox {
+            display: inline-flex;
+            margin-left: 65px;
+
+            label {
+                margin-right: 10px;
+                width: 90px;
+                color: rgb(97, 97, 97);
+            }
+
+            .ms-ComboBox {
+                width: 200px;
+
+                .ms-ComboBox-CaretDown-button:hover {
+                    background-color: transparent;
+                }
+            }
+        }
+    }
+
+    .championSearchboxArea {
+        margin-bottom: 15px;
+
+        .championSearchbox {
+            width: 300px;
+
+            .ms-SearchBox-clearButton {
+                button:hover {
+                    background-color: transparent;
+                }
+            }
+        }
+    }
+
+    @media screen and (max-width: 1059px) {
+        .championFocusAreaComboboxArea {
+            .championFocusAreaCombobox {
+                margin-left: 0px;
+
+            }
+        }
+
+        .championRegionComboboxCol {
+            .championRegionComboboxArea {
+                .championRegionCombobox {
+                    .ms-ComboBox {
+                        margin-left: 30px;
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+.gtc-cards {
+    margin: 0 0%;
+
+    .cards {
+        width: 300px;
+        height: 150px;
+        background: #FFFFFF 0% 0% no-repeat padding-box;
+        box-shadow: 0px 5px 12px #0000003D;
+        margin: 2% 0 2% 0;
+        border-radius: 5px;
+        opacity: 1;
+
+        .card-img-text-block {
+            display: inline-flex;
+            width: 100%;
+            justify-content: space-around;
+
+            .rank-points-block {
+                width: 196px;
+                height: 32px;
+                background: transparent url('../assets/CMPImages/RankPointsBG.png') 0% 0% no-repeat padding-box;
+                padding: 6px 12px;
+                margin-top: 8px;
+
+                .card-rank {
+                    text-align: left;
+                    letter-spacing: 0px;
+                    color: #464775;
+                    float: left;
+                    font: normal normal normal 14px/19px Segoe UI;
+
+                    .card-rank-value {
+                        font-weight: 600;
+                    }
+                }
+
+                .card-points {
+                    text-align: left;
+                    font: normal normal 600 14px/19px Segoe UI;
+                    letter-spacing: 0px;
+                    color: #464775;
+                    opacity: 1;
+                    float: right;
+
+                    .card-points-star {
+                        color: #464775;
+                        font-size: 14px;
+                        margin-left: 4px;
+                        position: relative;
+                        top: 1px;
+                    }
+                }
+            }
+
+            .gtc-name2 {
+                text-align: left;
+                color: #242424;
+                margin-top: 24px;
+                font-weight: 600;
+                width: auto;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                font-size: 14px;
+                font-family: Segoe UI;
+            }
+
+            .profile-img {
+                margin: 24px 0 0 0;
+                height: 72px;
+                width: 72px;
+                border-radius: 50%;
+            }
+        }
+
+        .card-icon-link-area {
+            margin: 15px 0px 12px;
+            display: inline-flex;
+            width: 100%;
+            justify-content: space-between;
+
+            .card-icon-area {
+                display: inline-flex;
+                justify-content: space-around;
+                width: 150px;
+
+                .card-icon {
+                    width: 27px;
+                    height: 27px;
+                    cursor: pointer;
+                }
+            }
+
+            .card-link-area {
+                margin-right: 20px;
+                text-align: left;
+                font: normal normal normal 14px/26px Segoe UI;
+                letter-spacing: 0px;
+                color: #5B5FC7;
+                opacity: 1;
+                cursor: pointer;
+            }
+
+        }
+
+    }
+
+    .cards-show-label {
+        text-align: center;
+        margin-top: 70px;
+        margin-bottom: 70px;
+        color: #000000;
+        cursor: pointer;
+
+        .showMoreIcon {
+            width: 15px;
+            height: 15px;
+            margin-left: 5px;
+            margin-bottom: 3px;
+        }
+    }
+}
+
+.showActivitiesPopup {
+    .ms-Dialog-main {
+        width: 65%;
+        max-width: none;
+        min-width: unset;
+        height: 420px;
+        background-color: #FFFFFF;
+
+        .ms-Dialog-inner {
+            padding: 0px 24px 5px !important;
+        }
+
+        .ms-Dialog-title {
+            min-height: 0px;
+            padding: 0;
+        }
+
+        .chrome-close-icon-area {
+            float: right;
+            margin: 15px 10px 10px;
+
+            .chrome-close-icon {
+                font-size: 12px;
+                cursor: pointer;
+                padding: 7px 10px;
+                border-radius: 2px;
+                color: #000000;
+            }
+
+            .chrome-close-icon:hover {
+                background-color: #f0f0f0;
+            }
+        }
+
+        .showActivitiesPopupBody {
+            display: inline-flex;
+
+            .showActivitiesImage-IconArea {
+                display: grid;
+                justify-content: center;
+
+                .showActivities-profile-img {
+                    width: 200px;
+                    height: 200px;
+                    border-radius: 50%;
+                    margin-bottom: 20px;
+                }
+
+                .showActivities-profile-name {
+                    text-align: center;
+                    font: normal normal 600 14px/19px Segoe UI;
+                    letter-spacing: 0px;
+                    color: #242424;
+                    opacity: 1;
+                    margin-bottom: 20px;
+                }
+
+                .showActivities-rank-points-block {
+                    width: 200px;
+                    height: 32px;
+                    background: transparent url('../assets/CMPImages/RankPointsBG.png') 0% 0% no-repeat padding-box;
+                    padding: 6px 12px;
+                    margin-bottom: 20px;
+
+                    .showActivities-rank {
+                        text-align: left;
+                        letter-spacing: 0px;
+                        color: #464775;
+                        float: left;
+                        font: normal normal normal 14px/19px Segoe UI;
+
+                        .showActivities-rank-value {
+                            font-weight: 600;
+                        }
+                    }
+
+                    .showActivities-points {
+                        text-align: left;
+                        font: normal normal 600 14px/19px Segoe UI;
+                        letter-spacing: 0px;
+                        color: #464775;
+                        opacity: 1;
+                        float: right;
+
+                        .showActivities-points-star {
+                            color: #464775;
+                            font-size: 14px;
+                            margin-left: 4px;
+                            position: relative;
+                            top: 1px;
+                        }
+                    }
+                }
+
+                .showActivities-icon-area {
+                    display: inline-flex;
+                    justify-content: space-evenly;
+                    width: 200px;
+
+                    .showActivities-icon {
+                        width: 27px;
+                        height: 27px;
+                        cursor: pointer;
+                    }
+                }
+            }
+
+            .showActivities-grid-area {
+                .activities-grid-heading {
+                    text-align: left;
+                    font: normal normal 600 14px/19px Segoe UI;
+                    letter-spacing: 0px;
+                    color: #242424;
+                    opacity: 1;
+                    margin-bottom: 10px;
+                }
+
+                table {
+                    thead {
+                        tr {
+                            th {
+                                text-align: left;
+                                font: normal normal 600 14px/19px Segoe UI;
+                                letter-spacing: 0px;
+                                color: #242424;
+                                opacity: 1;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                            }
+
+                            th:nth-child(1) {
+                                width: 35%;
+                            }
+
+                            th:nth-child(2) {
+                                width: 45%;
+                            }
+                        }
+                    }
+
+                    tbody {
+                        tr {
+                            td {
+                                text-align: left;
+                                font: normal normal normal 14px/19px Segoe UI;
+                                letter-spacing: 0px;
+                                color: #212121;
+                                opacity: 1;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+
+                                .activities-noRecordsFound {
+                                    text-align: center;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .pagination-area {
+                    text-align: center;
+                    font: normal normal normal 12px/16px Segoe UI;
+                    letter-spacing: 0px;
+                    color: #212121;
+                    opacity: 1;
+
+                    .Chevron-Icon {
+                        cursor: pointer;
+                        font-size: 12px;
+                        margin-left: 20px;
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 375pt) {
+    .championsFilterArea {
+        .championRegionComboboxCol {
+            .championRegionComboboxArea {
+                .championRegionCombobox {
+                    label {
+                        font: normal normal 600 16px/22px Segoe UI;
+                    }
+                }
+            }
+        }
+
+        .championFocusAreaComboboxArea {
+            .championFocusAreaCombobox {
+                label {
+                    font: normal normal 600 16px/22px Segoe UI;
+                }
+            }
+        }
+    }
+
+    .showActivitiesPopup {
+        .ms-Dialog-main {
+            height: 90%;
+            width: 90%;
+
+            .showActivitiesPopupBody {
+                .showActivities-grid-area {
+                    table {
+                        thead {
+                            tr {
+                                th {
+                                    overflow: visible;
+                                    text-overflow: unset;
+                                    white-space: unset;
+                                    font: normal normal 600 12px/19px Segoe UI;
+                                }
+                            }
+                        }
+
+                        tbody {
+                            tr {
+                                td {
+                                    overflow: visible;
+                                    text-overflow: unset;
+                                    white-space: unset;
+                                    font: normal normal normal 12px/19px Segoe UI;
+                                }
+                            }
+                        }
+                    }
+
+                    .pagination-area {
+                        padding-bottom: 20px;
+                    }
+                }
+            }
+        }
+    }
+}

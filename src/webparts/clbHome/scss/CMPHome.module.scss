@@ -1,3 +1,33 @@
+.cmpHeaderInfoCallout {
+  width: 620px;
+  padding: 10px 24px 20px 24px;
+  max-width: 90%;
+  margin-top: 30px;
+
+  .infoCalloutTitle {
+    margin-bottom: 12px;
+    font-weight: bold;
+  }
+
+  .infoCalloutTitleBody {
+    margin-bottom: 12px;
+  }
+
+  .infoCalloutLink {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  a:hover,
+  .infoCalloutLink:hover {
+    color: rgb(98, 100, 167);
+  }
+
+  .infoCalloutLinkFont {
+    font-size: 16px;
+  }
+}
+
 .clbHome {
   .container {
     height: 100%;
@@ -11,6 +41,7 @@
       margin-bottom: 0% !important;
 
       .white {
+        display: flex;
 
         .clbHeaderLogo {
           margin-left: 41px;
@@ -30,14 +61,32 @@
 
       }
 
-      .icon {
-        padding-right: 20px;
+      .navIconArea {
+        display: flex;
+        margin-left: auto;
+        margin-right: 0;
+        margin-top: 6px;
+        justify-content: space-around;
+        width: 130px;
+
+        .infoIcon,
+        .supportIcon,
+        .feedbackIcon {
+          font-size: 20px;
+          color: #FFFFFF;
+          opacity: 1;
+          cursor: pointer;
+        }
+
+        .feedbackIcon {
+          position: relative;
+          bottom: 2px;
+        }
       }
 
-      .fbIcon {
-        padding-right: 32px;
-        padding-left: 8px;
-        padding-bottom: 6px;
+      .cmpHeaderTooltipHostStyle {
+        display: inline-block;
+        cursor: pointer;
       }
     }
 
@@ -179,6 +228,54 @@
           }
         }
 
+      }
+    }
+
+    //For Mobile View
+    @media screen and (max-width:375pt) {
+
+      .navbg {
+        padding: .5rem .5rem;
+
+        .white {
+
+          .clbHeaderLogo {
+            margin-left: 10px;
+            width: 28px;
+            height: 28px;
+          }
+
+          .clbHeading {
+            margin-left: 11px;
+            font: normal normal 700 15px/27px Segoe UI;
+            margin-top: 2px;
+          }
+        }
+
+        .navIconArea {
+          margin-top: 6px;
+
+          .infoIcon,
+          .supportIcon,
+          .feedbackIcon {
+            font-size: 16px;
+          }
+
+          .feedbackIcon {
+            position: relative;
+            bottom: 2px;
+          }
+        }
+      }
+
+      .imgheader {
+        padding-left: 20px;
+        height: 45px;
+        padding-top: 7px;
+
+        .cmpPageHeading {
+          font: normal normal 400 21px/28px Segoe UI;
+        }
       }
     }
   }

@@ -2,81 +2,61 @@
     .main {
         width: 100vw;
         min-height: 100vh;
-        background-color: rgba(158, 187, 208, 0.5);
-        .search {
-            margin: 4%
+        padding: 0% 4% 0% 4%;
+        background-color: #ffffff;
+
+        .ClbPath {
+            display: inline-flex;
+            margin: 2% 0% 1%;
+            text-align: center;
+            letter-spacing: 0px;
+            color: #33344A;
+            opacity: 1;
+
+            .backImg {
+                width: 7px;
+                height: 12px;
+                margin-right: 10px;
+                margin-top: 6px;
+            }
+
+            .backLabel {
+                padding-right: 10px;
+                cursor: pointer;
+                font: normal normal bold 14px/24px Segoe UI;
+            }
+
+            .ClbBorder {
+                width: 0px;
+                height: 14px;
+                border: 1px solid #33344A;
+                margin-top: 5px;
+            }
+
+            .ClbLabel {
+                padding-left: 10px;
+                font: normal normal bold 18px/23px Segoe UI;
+            }
         }
-        .gtc-cards {
-            margin: 0 6%;
-            .cards {
-                width: 160px;
-                height: 160px;
-                background: #F4F4F8 0% 0% no-repeat padding-box;
-                box-shadow: 3px 6px 12px #00000029;
-                margin: 2% 5% 2% 0;
-                border-radius: 6px;
-                img {
-                    display: block;
-                    position: relative;
-                    float: right;
-                    height: 50px;
-                }
-                .profile-img {
-                    margin: -2rem 2.5rem;
-                    height: 85px;
-                    width: 84px;
-                    border-radius: 50%;
-                    border: 4px solid #7d7ebc;
-                }
-                .rank {
-                    position: relative;
-                    top: 9%;
-                    left: 85%;
-                    transform: translate(0%, 0%);
-                    font: normal normal bold 9px/12px Segoe UI;
-                    color: #464775;
-                }
-                .gtc-name2 {
-                    text-align: center;
-                    color: #464775;
-                    margin-top: 7rem;
-                    font-weight: 600;
-                    width: auto;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    padding: 0 0.5rem;
-                }
-                .gtc-name {
-                    text-align: center;
-                    color: #464775;
-                    margin-top: 7rem;
-                    font-weight: 600;
-                    width: auto;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    padding: 0 0.5rem;
+
+    }
+}
+
+@media screen and (max-width: 375pt) {
+    .Employeeview {
+        display: block !important;
+
+        .main {
+            .ClbPath {
+                .backLabel {
+                    font: normal normal 700 12px/24px Segoe UI;
                 }
 
-                .chat-icon,
-                .mail-icon {
-                    display: inline-flex;
-                        position: relative;
-                        float: left;
-                        margin: 0 0.5rem;
-                        cursor: pointer;
-                        color: #464775;
-                        font-size: 20px;
-                }
-                .mail-icon {
-                    float: right;
-                    color: #464775;
-                    font-size: 20px;
-                    margin: 0 0.5rem;
-                    cursor: pointer;
+                .ClbLabel {
+                    font: normal normal 700 14px/23px Segoe UI;
                 }
             }
         }
     }
+
 }

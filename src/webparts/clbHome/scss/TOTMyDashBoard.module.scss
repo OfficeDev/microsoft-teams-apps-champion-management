@@ -1,7 +1,21 @@
+:global {
+  label {
+
+    .ms-Checkbox-checkbox,
+    .ms-Checkbox-checkbox:hover {
+      border-color: rgb(97, 97, 97) !important;
+    }
+  }
+}
+
 .container {
   height: 100%;
   width: 100%;
   padding: 0;
+}
+
+.totDashboardContent {
+  display: flex !important;
 }
 
 .errorMessage {
@@ -38,6 +52,20 @@
   font: normal normal 600 18px/24px Segoe UI;
   -webkit-font-smoothing: antialiased;
   padding: 0.5em;
+
+  .tooltipHostStyles {
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .myTournamentInfoIcon {
+    font-size: 16px;
+    padding-left: 10px;
+    font-weight: bolder;
+    color: #1d0f62;
+    position: relative;
+    top: 3px;
+  }
 }
 
 .labelNormal {
@@ -96,14 +124,30 @@
 .saveBtn {
   background-color: #464775;
   border-color: #464775;
+  color: #ffffff;
+
+  i {
+    color: #ffffff;
+  }
 }
 
 .saveBtn:hover {
   background-color: #464775 !important;
+  border-color: #464775 !important;
+  color: #ffffff !important;
+  opacity: 0.9 !important;
 }
 
 .btnArea {
   margin-bottom: 2%;
+
+  .backBtnToggle1 {
+    display: unset;
+  }
+}
+
+.backBtnToggle2 {
+  display: none;
 }
 
 .listArea {
@@ -122,6 +166,14 @@
 
   .listVal {
     display: table-row;
+
+    .descriptionHeading::after {
+      content: "";
+    }
+
+    .descriptionColon {
+      display: unset;
+    }
   }
 }
 
@@ -136,6 +188,27 @@
 
 .dropdownCol {
   padding: 0.5em;
+
+  div[class^="ms-ComboBox"] {
+
+    button:hover {
+      background-color: transparent;
+    }
+  }
+}
+
+.totMdbComboCallout {
+  div[class^="ms-Callout-main"] {
+    div[class^="ms-ComboBox-optionsContainerWrapper"] {
+      div[class^="ms-ComboBox-optionsContainer"] {
+
+        button:focus,
+        button:hover {
+          background-color: transparent !important;
+        }
+      }
+    }
+  }
 }
 
 .labelCol {
@@ -148,6 +221,34 @@
   width: 100vw;
   min-height: 100vh;
   margin: 1em;
+
+  .totMyDashboardBackBtn {
+    margin-left: 1.5%;
+    margin-top: 1.5%;
+    border-color: #33344A;
+    background-color: white;
+
+    i {
+      font-size: 17px;
+      font-weight: bolder;
+      color: #000003;
+      opacity: 1;
+    }
+
+    i+span>span {
+      font: normal normal bold 14px/24px Segoe UI;
+      letter-spacing: 0px;
+      color: #000003;
+      opacity: 1;
+      margin-top: -3px;
+    }
+  }
+
+  .totMyDashboardBackBtn:hover {
+    border-color: #33344A;
+    background-color: white;
+    color: #000003;
+  }
 
   /* width */
   ::-webkit-scrollbar {
@@ -177,6 +278,47 @@
   }
 }
 
-.totSideBar {
-  display: flex !important;
+@media screen and (max-width: 375pt) {
+  .totDashboardContent {
+    display: block !important;
+  }
+
+  .contentTab {
+    width: unset;
+  }
+
+  .listArea {
+    display: flex;
+
+    .listVal {
+      display: grid;
+
+      .descriptionHeading::after {
+        content: " :";
+      }
+
+      .descriptionColon {
+        display: none;
+      }
+    }
+  }
+
+  .saveBtn {
+    margin-bottom: 10px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .btnArea {
+    .backBtnToggle1 {
+      display: none;
+    }
+  }
+
+  .backBtnToggle2 {
+    display: block;
+    margin-left: 0 !important;
+    margin-bottom: 30px !important;
+    margin-top: 30px !important;
+  }
 }

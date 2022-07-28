@@ -280,12 +280,10 @@ export default class ClbHome extends React.Component<
                                             LastName: adminUser.DisplayName.split(
                                               " "
                                             )[1],
-                                            // "Region": '',
-                                            // "Country": '',
                                             Role: "Manager",
                                             Status: "Approved",
                                             Group: "IT Pro",
-                                            FocusArea: "All",
+                                            FocusArea: ['All'],
                                           };
                                           const spHttpClientOptions: ISPHttpClientOptions = {
                                             body: JSON.stringify(
@@ -516,7 +514,7 @@ export default class ClbHome extends React.Component<
                                             "Business Apps",
                                             "Virtual Events",
                                           ],
-                                          displayAs: "dropDownMenu",
+                                          displayAs: "checkBoxes",
                                         },
                                       };
                                       listColumns.push(column);
@@ -628,7 +626,7 @@ export default class ClbHome extends React.Component<
             //Check if Lists exists already
             this.props.context.spHttpClient
               .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Member List')/Items", SPHttpClient.configurations.v1)
-              .then((responseMemberList: SPHttpClientResponse) => {
+              .then(async (responseMemberList: SPHttpClientResponse) => {
                 if (responseMemberList.status === 404) {
                   //If lists do not exist create lists. Else no action is required
                   console.log(stringsConstants.CMPLog + "Site already existing but lists not found");
@@ -726,7 +724,7 @@ export default class ClbHome extends React.Component<
                                               "Business Apps",
                                               "Virtual Events",
                                             ],
-                                            displayAs: "dropDownMenu",
+                                            displayAs: "checkBoxes",
                                           },
                                         };
                                         listColumns.push(column);
@@ -815,6 +813,14 @@ export default class ClbHome extends React.Component<
                       console.error("CMP_CLBHome_createSiteAndLists_FailedToGetSiteID \n", JSON.stringify(error));
                     });
 
+                }
+                else if (responseMemberList.status === 200) {
+                  //If Member list exists, modify the Focus Area Choice column from Dropdown to Checkboxes during app upgrade 
+                  const focusAreaColumn = await spweb.lists.getByTitle(stringsConstants.MemberList).fields.getByInternalNameOrTitle(stringsConstants.FocusAreaColumn)();
+                  if (focusAreaColumn.TypeAsString == "Choice") {
+                    await spweb.lists.getByTitle(stringsConstants.MemberList).fields.getByInternalNameOrTitle(stringsConstants.FocusAreaColumn).update({ TypeAsString: "MultiChoice" });
+                    console.log("CMP_CLBHome_FocusArea column type is updated successsfully");
+                  }
                 }
               }).catch((error) => {
                 alert(stringsConstants.CMPErrorMessage + "while checking if MemberList exists. Below are the details: \n" + JSON.stringify(error));
@@ -1049,8 +1055,8 @@ export default class ClbHome extends React.Component<
                 </div>
                 <div className={styles.grid}>
                   <div className={styles.quickguide}>{LocaleStrings.GetStartedLabel}</div>
-                  <Row className="mt-4">
-                    <Col sm={3} className={styles.imageLayout}>
+                  <Row xl={4} lg={4} md={4} sm={3} xs={2} className="mt-4">
+                    <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                       <Media
                         className={styles.cursor}
                         onClick={() => this.setState({ cB: !this.state.cB })}
@@ -1069,7 +1075,7 @@ export default class ClbHome extends React.Component<
                       </Media>
                     </Col>
                     {(this.state.cV || this.state.clB) && (
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media
                           className={styles.cursor}
                           onClick={() =>
@@ -1093,7 +1099,7 @@ export default class ClbHome extends React.Component<
                       </Col>
                     )}
                     {(this.state.cV || this.state.clB) && (
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media
                           className={styles.cursor}
                           onClick={() => this.setState({ dB: !this.state.dB })}
@@ -1111,7 +1117,7 @@ export default class ClbHome extends React.Component<
                       </Col>
                     )}
                     {this.state.isTOTEnabled && (
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <div>
                           <Media
                             className={styles.cursor}
@@ -1136,8 +1142,8 @@ export default class ClbHome extends React.Component<
                     <div className={styles.admintools}>{LocaleStrings.AdminToolsLabel}</div>)}
 
                   {this.state.clB && !this.state.cV && (
-                    <Row className="mt-4">
-                      <Col sm={3} className={styles.imageLayout}>
+                    <Row xl={4} lg={4} md={4} sm={3} xs={2} className="mt-4">
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
@@ -1155,7 +1161,7 @@ export default class ClbHome extends React.Component<
                           </div>
                         </Media>
                       </Col>
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
@@ -1173,7 +1179,7 @@ export default class ClbHome extends React.Component<
                           </div>
                         </Media>
                       </Col>
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
@@ -1194,7 +1200,7 @@ export default class ClbHome extends React.Component<
                         </Media>
                       </Col>
 
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media className={styles.cursor}
                           onClick={() =>
                             this.setState({
@@ -1216,7 +1222,7 @@ export default class ClbHome extends React.Component<
                         </Media>
                       </Col>
                       {!this.state.isTOTEnabled && (
-                        <Col sm={3} className={styles.imageLayout}>
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                           <Media
                             className={styles.cursor}
                             onClick={() => this.setState({ enableTOT: !this.state.enableTOT })}
@@ -1233,7 +1239,7 @@ export default class ClbHome extends React.Component<
                             </div>
                           </Media>
                         </Col>)}
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
@@ -1253,7 +1259,7 @@ export default class ClbHome extends React.Component<
                           </div>
                         </Media>
                       </Col>
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a

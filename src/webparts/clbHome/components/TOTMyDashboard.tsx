@@ -4,20 +4,18 @@ import { WebPartContext } from "@microsoft/sp-webpart-base";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 //FluentUI controls
-import { IButtonStyles, PrimaryButton, DefaultButton } from "@fluentui/react/lib/Button";
+import { PrimaryButton, DefaultButton } from "@fluentui/react/lib/Button";
 import { Label } from "@fluentui/react/lib/Label";
 import { Spinner, SpinnerSize } from "@fluentui/react/lib/Spinner";
-import { Icon, IIconProps } from '@fluentui/react/lib/Icon';
+import { Icon } from '@fluentui/react/lib/Icon';
 import { ComboBox, IComboBox, IComboBoxOption } from '@fluentui/react/lib/ComboBox';
-import { TooltipHost, ITooltipHostStyles } from '@fluentui/react/lib/Tooltip';
-import { mergeStyleSets } from '@fluentui/react/lib/Styling';
+import { TooltipHost } from '@fluentui/react/lib/Tooltip';
 //PNP
 import {
   TreeView,
   ITreeItem,
   TreeViewSelectionMode,
-  SelectChildrenMode,
-  TreeItemActionsDisplayMode,
+  SelectChildrenMode
 } from "@pnp/spfx-controls-react/lib/TreeView";
 import commonServices from "../Common/CommonServices";
 import * as stringsConstants from "../constants/strings";
@@ -26,6 +24,7 @@ import TOTSidebar from "./TOTSideBar";
 import { RxJsEventEmitter } from "../events/RxJsEventEmitter";
 import { EventData } from "../events/EventData";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import * as constants from "../constants/strings";
 
 //Global Variables
 let commonServiceManager: commonServices;
@@ -35,56 +34,6 @@ export interface ITOTMyDashboardProps {
   siteUrl: string;
   onClickCancel: Function;
 }
-
-const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block', cursor: 'pointer' } };
-
-const calloutProps = { gapSpace: 0 };
-const classes = mergeStyleSets({
-  icon: {
-    fontSize: '16px',
-    paddingLeft: '10px',
-    fontWeight: 'bolder',
-    color: '#1d0f62',
-    position: 'relative',
-    top: '3px'
-  }
-});
-const backBtnStyles: Partial<IButtonStyles> = {
-  root: {
-    marginLeft: "1.5%",
-    marginTop: "1.5%",
-    borderColor: "#33344A",
-    backgroundColor: "white",
-  },
-  rootHovered: {
-    borderColor: "#33344A",
-    backgroundColor: "white",
-    color: "#000003"
-  },
-  rootPressed: {
-    borderColor: "#33344A",
-    backgroundColor: "white",
-    color: "#000003"
-  },
-  icon: {
-    fontSize: "17px",
-    fontWeight: "bolder",
-    color: "#000003",
-    opacity: 1
-  },
-  label: {
-    font: "normal normal bold 14px/24px Segoe UI",
-    letterSpacing: "0px",
-    color: "#000003",
-    opacity: 1,
-    marginTop: "-3px"
-  }
-};
-
-const saveIcon: IIconProps = { iconName: 'Save' };
-const backIcon: IIconProps = { iconName: 'NavigateBack' };
-
-
 interface ITOTMyDashboardState {
   actionsList: ITreeItem[];
   selectedActionsList: ITreeItem[];
@@ -641,7 +590,7 @@ export default class TOTMyDashboard extends React.Component<
   public render(): React.ReactElement<ITOTMyDashboardProps> {
     return (
       <div className={styles.container}>
-        <div className={styles.totSideBar}>
+        <div className={styles.totDashboardContent}>
           <TOTSidebar
             siteUrl={this.props.siteUrl}
             context={this.props.context}
@@ -674,10 +623,10 @@ export default class TOTMyDashboard extends React.Component<
                       <DefaultButton
                         text={LocaleStrings.BackButton}
                         title={LocaleStrings.BackButton}
-                        iconProps={backIcon}
+                        iconProps={{ iconName: 'NavigateBack' }}
                         onClick={() => this.props.onClickCancel()}
-                        styles={backBtnStyles}>
-                      </DefaultButton>
+                        className={styles.totMyDashboardBackBtn}
+                      />
                     </div>
                   )
                     :
@@ -689,16 +638,21 @@ export default class TOTMyDashboard extends React.Component<
               )}
             </div>
             <div className={styles.dropdownArea}>
-              <Row>
+              <Row xl={3} lg={3} md={3} sm={1} xs={1}>
                 {this.state.myTournamentsList.length > 0 && (
-                  <Col md={5}>
+                  <Col xl={5} lg={5} md={5} sm={12} xs={12}>
                     <span className={styles.labelHeading}>{LocaleStrings.MyTournamentsLabel} :
                       <TooltipHost
                         content={LocaleStrings.MyTournamentsTooltip}
-                        calloutProps={calloutProps}
-                        styles={hostStyles}
+                        calloutProps={{ gapSpace: 0 }}
+                        hostClassName={styles.tooltipHostStyles}
+                        delay={window.innerWidth < constants.MobileWidth ? 0 : 2}
                       >
-                        <Icon aria-label="Info" iconName="Info" className={classes.icon} />
+                        <Icon
+                          aria-label="Info"
+                          iconName="Info"
+                          className={styles.myTournamentInfoIcon}
+                        />
                       </TooltipHost>
                     </span>
                     <ComboBox className={styles.dropdownCol}
@@ -707,16 +661,18 @@ export default class TOTMyDashboard extends React.Component<
                       options={this.state.myTournamentsList}
                       onChange={this.getMyTournamentActions.bind(this)}
                       ariaLabel={LocaleStrings.MyTournamentsLabel + ' list'}
+                      useComboBoxAsMenuWidth={true}
+                      calloutProps={{ className: styles.totMdbComboCallout }}
                     />
                   </Col>
                 )}
                 {this.state.myTournamentsList.length > 0 && this.state.activeTournamentsList.length > 0 && (
-                  <Col md={1} className={styles.labelCol} >
+                  <Col xl={2} lg={2} md={2} sm={12} xs={12} className={styles.labelCol} >
                     <span className={styles.labelHeading}>{LocaleStrings.OrLabel}</span>
                   </Col>
                 )}
                 {this.state.activeTournamentsList.length > 0 && (
-                  <Col md={5}>
+                  <Col xl={5} lg={5} md={5} sm={12} xs={12}>
                     <span className={styles.labelHeading}>{LocaleStrings.ActiveTournamentLabel} : </span>
                     <ComboBox className={styles.dropdownCol}
                       placeholder={LocaleStrings.SelectTournamentPlaceHolder}
@@ -724,6 +680,8 @@ export default class TOTMyDashboard extends React.Component<
                       options={this.state.activeTournamentsList}
                       onChange={this.getActiveTournamentActions.bind(this)}
                       ariaLabel={LocaleStrings.ActiveTournamentLabel + ' list'}
+                      useComboBoxAsMenuWidth={true}
+                      calloutProps={{ className: styles.totMdbComboCallout }}
                     />
                   </Col>
                 )}
@@ -731,25 +689,30 @@ export default class TOTMyDashboard extends React.Component<
             </div>
 
             {this.state.tournamentName != "" && (
-              <div>
-                {this.state.tournamentName != "" && (
-                  <ul className={styles.listArea}>
-                    {this.state.tournamentDescription && (
-                      <li className={styles.listVal}>
-                        <span className={styles.labelHeading}>{LocaleStrings.DescriptionLabel}</span>:
-                        <span className={styles.labelNormal}>
-                          {this.state.tournamentDescription}
-                        </span>
-                      </li>
+              <Row xl={1} lg={1} md={1} sm={1} xs={1}>
+                <Col xl={12} lg={12} md={12} sm={12} xs={12}>
+                  <div>
+                    {this.state.tournamentName != "" && (
+                      <ul className={styles.listArea}>
+                        {this.state.tournamentDescription && (
+                          <li className={styles.listVal}>
+                            <span className={styles.labelHeading + " " + styles.descriptionHeading}>{LocaleStrings.DescriptionLabel}</span>
+                            <span className={styles.descriptionColon}>:</span>
+                            <span className={styles.labelNormal}>
+                              {this.state.tournamentDescription}
+                            </span>
+                          </li>
+                        )}
+                      </ul>
                     )}
-                  </ul>
-                )}
-              </div>
+                  </div>
+                </Col>
+              </Row>
             )}
             {this.state.tournamentName != "" && (
               <div className={styles.contentArea}>
-                <Row>
-                  <Col>
+                <Row xl={2} lg={2} md={2} sm={1} xs={1}>
+                  <Col xl={6} lg={6} md={6} sm={12} xs={12}>
                     <Label className={styles.subHeaderUnderline}>
                       {LocaleStrings.PendingActionsLabel}
                     </Label>
@@ -786,22 +749,22 @@ export default class TOTMyDashboard extends React.Component<
                         <PrimaryButton
                           text={LocaleStrings.SaveButton}
                           title={LocaleStrings.SaveButton}
-                          iconProps={saveIcon}
+                          iconProps={{ iconName: 'Save' }}
                           onClick={this.saveActions}
                           className={styles.saveBtn}
-                        ></PrimaryButton>
+                        />
                       )}
                       &nbsp; &nbsp;
                       <PrimaryButton
                         text={LocaleStrings.BackButton}
                         title={LocaleStrings.BackButton}
-                        iconProps={backIcon}
+                        iconProps={{ iconName: 'NavigateBack' }}
                         onClick={() => this.props.onClickCancel()}
-                        styles={backBtnStyles}
-                      ></PrimaryButton>
+                        className={styles.backBtnToggle1 + " " + styles.totMyDashboardBackBtn}
+                      />
                     </div>
                   </Col>
-                  <Col>
+                  <Col xl={6} lg={6} md={6} sm={12} xs={12}>
                     <Label className={styles.subHeaderUnderline}>
                       {LocaleStrings.CompletedActionsLabel}
                     </Label>
@@ -811,6 +774,15 @@ export default class TOTMyDashboard extends React.Component<
                         defaultExpanded={true}
                       />
                     </div>
+                  </Col>
+                  <Col xl={12} lg={12} md={12} sm={12} xs={12}>
+                    <PrimaryButton
+                      text={LocaleStrings.BackButton}
+                      title={LocaleStrings.BackButton}
+                      iconProps={{ iconName: 'NavigateBack' }}
+                      onClick={() => this.props.onClickCancel()}
+                      className={styles.backBtnToggle2 + " " + styles.totMyDashboardBackBtn}
+                    />
                   </Col>
                 </Row>
               </div>

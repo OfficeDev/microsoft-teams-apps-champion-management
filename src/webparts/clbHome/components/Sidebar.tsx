@@ -1,7 +1,7 @@
 import * as React from "react";
 import Button from "react-bootstrap/esm/Button";
 import "../scss/Championleaderboard.scss";
-import { Dropdown, IDropdownStyles } from "office-ui-fabric-react/lib/Dropdown";
+import { Dropdown, IDropdownOption, IDropdownStyles } from "office-ui-fabric-react/lib/Dropdown";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
 import * as _ from "lodash";
 import { sp } from "@pnp/sp";
@@ -16,6 +16,8 @@ import "@pnp/sp/items";
 import { Icon, initializeIcons } from "office-ui-fabric-react";
 import siteconfig from "../config/siteconfig.json";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import * as stringsConstants from "../constants/strings";
+
 
 initializeIcons();
 export interface ISidebarStateProps {
@@ -69,6 +71,8 @@ interface IState {
   roles: Array<any>;
   status: Array<any>;
   memberData: any;
+  selectedFocusAreas: any;
+  multiSelectChoices: any;
   buttonText: any;
   bFlag: boolean;
   isMember: boolean;
@@ -114,6 +118,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       roles: [],
       status: [],
       memberData: { region: "", role: "", status: "", country: "" },
+      selectedFocusAreas: [],
+      multiSelectChoices: [],
       buttonText: LocaleStrings.BecomeChampionLabel,
       bFlag: true,
       isMember: false,
@@ -128,6 +134,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     this._getPeoplePickerItems = this._getPeoplePickerItems.bind(this);
     this._getListData = this._getListData.bind(this);
     this.optionsEventsList = this.optionsEventsList.bind(this);
+    this.onFocusAreaChange = this.onFocusAreaChange.bind(this);
+
   }
 
   //getting members details from membelist with all columns
@@ -266,9 +274,20 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       });
   }
 
-  public componentDidUpdate(prevPro: ISidebarStateProps) {
-    if (prevPro != this.props) {
+  public componentDidUpdate(prevProps: Readonly<ISidebarStateProps>, prevState: Readonly<IState>, snapshot?: any): void {
+    if (prevProps != this.props) {
       this.componentWillMount();
+    }
+    if (prevState.multiSelectChoices !== this.state.multiSelectChoices) {
+      this.setState({
+        selectedFocusAreas: this.state.multiSelectChoices
+      });
+    }
+    //Remove "All" from the array to store it in Members List.
+    if (prevState.selectedFocusAreas !== this.state.selectedFocusAreas) {
+      let idx = this.state.selectedFocusAreas.indexOf(stringsConstants.AllLabel);
+      if (idx != -1)
+        this.state.selectedFocusAreas.splice(idx, 1);
     }
   }
 
@@ -405,6 +424,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                       SPHttpClient.configurations.v1,
                                       spHttpClientOptions
                                     );
+                                    this.props.callBack();
                                     memcount.push({
                                       id: memberData,
                                       points: 10,
@@ -448,9 +468,6 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                   totalUsers: totalchamps,
                                   userRank: rank,
                                 });
-                                if (presentuser.length === 0) {
-                                  this.props.callBack();
-                                }
                               }
                             });
                         });
@@ -473,7 +490,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     let usersave = this.state.currentUser;
     usersave.Country = this.state.memberData.country;
     usersave.Region = this.state.memberData.region;
-    usersave.FocusArea = this.state.memberData.focusarea;
+    usersave.FocusArea = this.state.selectedFocusAreas.length > 0 ? this.state.selectedFocusAreas : [stringsConstants.TeamWorkLabel];
     usersave.Group = this.state.memberData.group;
     usersave.Role = "Champion";
     usersave.Status = "Pending";
@@ -576,68 +593,118 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     }
   }
 
+  //Set state variable whenever the Focus Area dropdown is changed
+  public onFocusAreaChange = async (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): Promise<void> => {
+    if (item === undefined) {
+      return;
+    }
+    //Select all the dropdown options when "All" is selected.
+    if (item.key === stringsConstants.AllLabel && item.selected) {
+      this.setState({
+        multiSelectChoices: this.options(this.state.status).map((option) => option.key as string)
+      });
+    } //Clear all the dropdown options when "All" is unselected
+    else if (item.key === stringsConstants.AllLabel) {
+      this.setState({ multiSelectChoices: [] });
+    } //When an option selected from the dropdown other than "All"
+    else if (item.selected) {
+      const newKeys = [item.key as string];
+      if (this.state.multiSelectChoices.length === this.state.status.length - 1) {
+        newKeys.push(stringsConstants.AllLabel);
+      }
+      this.setState({ multiSelectChoices: [...this.state.multiSelectChoices, ...newKeys] });
+    } //When an option unselected from the dropdown other than "All"
+    else {
+      this.setState({
+        multiSelectChoices: this.state.multiSelectChoices.filter((key) => key !== item.key && key !== stringsConstants.AllLabel)
+      });
+    }
+  }
+
+
   public render() {
     return (
       <div className="Championleaderboard">
         {this.state.isLoaded && (
           <div className="sidenav">
-            <div>
-              {/* user profile image*/}
-              <img
-                src={
-                  "/_layouts/15/userphoto.aspx?username=" +
-                  this.state.emailValue
-                }
-                className="profilepic"
-                onError={this.addDefaultSrc}
-                alt={displayName}
-              />
-              {/* username */}
-              <div className="championname">
-                {displayName}
-              </div>
-            </div>
-            {!this.state.bc && !this.state.form && (
+            <div className="imagePointsArea">
               <div>
-                {/* here we are showing rank and points  */}
-                <div className="pointcircle">
-                  <div className="insidecircle">
-                    <div className="pointsscale">
-                      <div><Icon iconName="FavoriteStarFill" id="star" className="yellowStar" /></div>
-                      <div>{this.state.totalUserPointsfromList} {LocaleStrings.CMPSideBarPointsLabel}</div>
-                    </div>
-                    <div className="line"></div>
-                    <div className="globalrank">
-                      <span className="bold">{this.state.userRank}</span> {LocaleStrings.CMPSideBarGlobalRankLabel} <br />
-                      of {this.state.totalUsers} {LocaleStrings.CMPSideBarChampionsLabel}
+                {/* user profile image*/}
+                <img
+                  src={
+                    "/_layouts/15/userphoto.aspx?size=L&username=" +
+                    this.state.emailValue
+                  }
+                  className="profilepic"
+                  onError={this.addDefaultSrc}
+                  alt={displayName}
+                />
+                {/* username */}
+                <div className="championname">
+                  {displayName}
+                </div>
+              </div>
+              {!this.state.bc && !this.state.form && (
+                <div>
+                  {/* here we are showing rank and points  */}
+                  <div className="pointcircle">
+                    <div className="insidecircle">
+                      <div className="pointsscale">
+                        <div><Icon iconName="FavoriteStarFill" id="star" className="yellowStar" /></div>
+                        <div className="pointsValueLabel">{this.state.totalUserPointsfromList} {LocaleStrings.CMPSideBarPointsLabel}</div>
+                      </div>
+                      <div className="line" />
+                      <div className="globalrank">
+                        <div>
+                          <span className="bold">{this.state.userRank} </span>
+                          {LocaleStrings.CMPSideBarGlobalRankLabel}
+                        </div>
+                        <div>
+                          of{" "}
+                          {this.state.totalUsers + " "}
+                          {LocaleStrings.CMPSideBarChampionsLabel}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-            {this.state.bc && (
-              <div>
-                {
-                  <Button
-                    variant="primary"
-                    className="bc-btn"
-                    disabled={this.state.isMember ? true : false}
-                    onClick={() =>
-                      this.setState({
-                        form: !this.state.form,
-                        isActive: !this.state.isActive,
-                      })
-                    }
-                  >
-                    <span> {this.state.buttonText}</span>
-                  </Button>
-                }
-              </div>
-            )}
+              )}
+              {this.state.bc && (
+                <div>
+                  {
+                    <Button
+                      variant="primary"
+                      className="bc-btn"
+                      disabled={this.state.isMember ? true : false}
+                      onClick={() =>
+                        this.setState({
+                          form: !this.state.form,
+                          isActive: !this.state.isActive,
+                        })
+                      }
+                    >
+                      <span> {this.state.buttonText}</span>
+                    </Button>
+                  }
+                </div>
+              )}
+            </div>
             {this.state.form && this.state.isActive && (
               // become a champion form
-              <div>
+              <div className="bc-form-main-area">
                 <div className="bc-form">
+                  <div className="bc-form-close-icon-area">
+                    <Icon
+                      iconName="ChromeClose"
+                      className="bc-form-close-icon"
+                      onClick={() => {
+                        this.setState({
+                          form: !this.state.form,
+                          isActive: !this.state.isActive
+                        });
+                      }}
+                    />
+                  </div>
                   <label htmlFor="fname" className="bc-label">
                     {LocaleStrings.FirstNameLabel}
                   </label>
@@ -681,6 +748,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     styles={this.dropdownStyles}
                     onRenderCaretDown={this.onRenderCaretDown}
                     defaultValue={this.state.currentUser.Region}
+                    calloutProps={{ className: "nonMemberDdCallout" }}
                   />
                   <label htmlFor="Country" className="bc-label">
                     {LocaleStrings.CountryGridHeader}
@@ -694,19 +762,21 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     styles={this.dropdownStyles}
                     onRenderCaretDown={this.onRenderCaretDown}
                     defaultValue={this.state.currentUser.Country}
+                    calloutProps={{ className: "nonMemberDdCallout" }}
                   />
                   <label htmlFor="Focus Area" className="bc-label">
                     {LocaleStrings.FocusAreaGridHeader}
                   </label>
                   <Dropdown
-                    onChange={(event: any) =>
-                      this.filterUsers("focusarea", event)
-                    }
+                    onChange={this.onFocusAreaChange.bind(this)}
                     placeholder={LocaleStrings.FocusAreaPlaceholder}
                     options={this.options(this.state.status)}
                     styles={this.dropdownStyles}
                     onRenderCaretDown={this.onRenderCaretDown}
                     defaultValue={this.state.currentUser.FocusArea}
+                    multiSelect
+                    selectedKeys={this.state.multiSelectChoices}
+                    calloutProps={{ className: "nonMemberDdCallout" }}
                   />
                   <label htmlFor="Group" className="bc-label">
                     {LocaleStrings.GroupGridHeader}
@@ -718,6 +788,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     styles={this.dropdownStyles}
                     onRenderCaretDown={this.onRenderCaretDown}
                     defaultValue={this.state.currentUser.Group}
+                    calloutProps={{ className: "nonMemberDdCallout" }}
                   />
                   <Button
                     className="sub-btn"

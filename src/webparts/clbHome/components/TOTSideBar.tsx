@@ -188,7 +188,7 @@ export default class TOTSideBar extends React.Component<
             this.state.userDisplayName != undefined &&
             this.state.userEmail != undefined &&
             this.state.userEmail != "" && (
-              <div>
+              <div className={sideBarStyles.imagePointsArea}>
                 <div>
                   {/* user profile image*/}
                   <img
@@ -211,13 +211,13 @@ export default class TOTSideBar extends React.Component<
                     <div className={sideBarStyles.insideCircle}>
                       <div className={sideBarStyles.pointsScale}>
                         <div><Icon iconName="FavoriteStarFill" id="star" className={sideBarStyles.yellowStar} /></div>
-                        <div>{this.state.userPoints} {LocaleStrings.PointsLabel}</div>
+                        <div className={sideBarStyles.pointsValueLabel}>{this.state.userPoints} {LocaleStrings.PointsLabel}</div>
                       </div>
                       <div className={sideBarStyles.line}></div>
                       <div className={sideBarStyles.globalRank}>
-                        {LocaleStrings.TournamentRankLabel} <br />
-                        <span className={sideBarStyles.bold}>{this.state.userRank}</span>
-                        &nbsp;of {this.state.totalParticipants} <br />{LocaleStrings.ParticipantsLabel}
+                        <div>{LocaleStrings.TournamentRankLabel}</div>
+                        <div><span className={sideBarStyles.bold}>{this.state.userRank}</span> of {this.state.totalParticipants}</div>
+                        <div>{LocaleStrings.ParticipantsLabel}</div>
                       </div>
                     </div>
                   </div>

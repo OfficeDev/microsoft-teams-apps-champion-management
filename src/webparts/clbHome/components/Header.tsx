@@ -1,63 +1,16 @@
-import React, { Component } from "react";
+import { DirectionalHint, TooltipHost } from '@fluentui/react/lib/Tooltip';
 import "bootstrap/dist/css/bootstrap.min.css";
-import styles from "../scss/CMPHome.module.scss";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import { Icon } from 'office-ui-fabric-react/lib/Icon';
-import { mergeStyleSets } from '@fluentui/react/lib/Styling';
-import { TooltipHost, ITooltipHostStyles } from '@fluentui/react/lib/Tooltip';
-import { Callout, Link, Text, FontWeights } from 'office-ui-fabric-react';
-import * as Strings from '../constants/strings';
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import { Callout, Link, Text } from 'office-ui-fabric-react';
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
+import React, { Component } from "react";
+import Navbar from "react-bootstrap/Navbar";
+import * as Strings from '../constants/strings';
+import styles from "../scss/CMPHome.module.scss";
 
 // Import package version
 const packageSolution: any = require("../../../../config/package-solution.json");
 const calloutProps = { gapSpace: 0 };
-
-const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block', cursor: 'pointer' } };
-
-const classes = mergeStyleSets({
-  Icon: {
-    fontSize: '20px',
-    color: '#FFFFFF',
-    opacity: 1,
-    cursor: 'pointer'
-  },
-  feedbackIcon: {
-    fontSize: '20px',
-    color: '#FFFFFF',
-    opacity: 1,
-    cursor: 'pointer'
-  }
-});
-const style = mergeStyleSets({
-  button: {
-    width: 130,
-  },
-  callout: {
-    width: 620,
-    padding: '10px 24px 20px 24px'
-  },
-  title: {
-    marginBottom: 12,
-    fontWeight: FontWeights.bold,
-  },
-  titlebody: {
-    marginBottom: 12,
-  },
-  titlelink: {
-    fontWeight: FontWeights.bold,
-    color: "#6264A7"
-  },
-  link: {
-    display: 'block',
-    marginBottom: 12,
-  },
-  linkFont: {
-    fontSize: "16px"
-  }
-});
-
 interface IHeaderProps {
   showSearch: boolean;
   clickcallback: () => void; //will redirects to home
@@ -95,101 +48,98 @@ export default class Header extends Component<IHeaderProps, HeaderState> {
             onClick={this.homeRedirect}
             title={LocaleStrings.AppLogoToolTip}
           />
-          <span onClick={this.homeRedirect} className={styles.clbHeading} title={LocaleStrings.AppLogoToolTip}>{LocaleStrings.AppHeaderTitleLabel}</span>
+          <div onClick={this.homeRedirect} className={styles.clbHeading} title={LocaleStrings.AppLogoToolTip}>
+            {LocaleStrings.AppHeaderTitleLabel}
+          </div>
         </Navbar.Brand>
-        <Nav.Item className="ml-auto" style={{ marginRight: "1%" }}>
-          <div className={styles.icon}>
+        <div className={styles.navIconArea}>
+          <div>
             <TooltipHost
               content={LocaleStrings.MoreInfoToolTip}
               delay={2}
               calloutProps={calloutProps}
-              styles={hostStyles}
+              hostClassName={styles.cmpHeaderTooltipHostStyle}
             >
-              <Icon className={classes.Icon} id={buttonId} iconName="Info" onClick={this.toggleIsCalloutVisible} />
+              <Icon className={styles.infoIcon} id={buttonId} iconName="Info" onClick={this.toggleIsCalloutVisible} />
             </TooltipHost>
             {this.state.isCalloutVisible && (
               <Callout
-                className={style.callout}
+                className={styles.cmpHeaderInfoCallout}
                 ariaLabelledBy={labelId}
                 ariaDescribedBy={descriptionId}
                 gapSpace={20}
                 target={`#${buttonId}`}
                 onDismiss={this.toggleIsCalloutVisible}
                 setInitialFocus
-                directionalHint={3}
+                directionalHint={DirectionalHint.bottomCenter}
               >
-                <Text block variant="xLarge" className={style.title}>
-                {LocaleStrings.AboutHeaderLabel}
+                <Text block variant="xLarge" className={styles.infoCalloutTitle}>
+                  {LocaleStrings.AboutHeaderLabel}
                 </Text>
-                <Text block variant="small" className={style.titlebody}>
-                {LocaleStrings.AboutContentLabel}
+                <Text block variant="small" className={styles.infoCalloutTitleBody}>
+                  {LocaleStrings.AboutContentLabel}
                 </Text>
-                <Text block variant="xLarge" className={style.title}>
-                {LocaleStrings.AdditionalResourcesHeaderLabel}
+                <Text block variant="xLarge" className={styles.infoCalloutTitle}>
+                  {LocaleStrings.AdditionalResourcesHeaderLabel}
                 </Text>
-                <Text block variant="small" className={style.titlebody}>
-                {LocaleStrings.AdditionalResourcesContentLabel}
+                <Text block variant="small" className={styles.infoCalloutTitleBody}>
+                  {LocaleStrings.AdditionalResourcesContentLabel}
                 </Text>
-                <Link href={Strings.M365Champions} target="_blank" className={`${style.link} ${style.linkFont}`}>
-                {LocaleStrings.M365ChampionCommunityLinkLabel}
+                <Link href={Strings.M365Champions} target="_blank" className={`${styles.infoCalloutLink} ${styles.infoCalloutLinkFont}`}>
+                  {LocaleStrings.M365ChampionCommunityLinkLabel}
                 </Link>
-                <Link href={Strings.DrivingAdoption} target="_blank" className={`${style.link} ${style.linkFont}`}>
-                {LocaleStrings.DrivingAdoptionLinkLabel}
+                <Link href={Strings.DrivingAdoption} target="_blank" className={`${styles.infoCalloutLink} ${styles.infoCalloutLinkFont}`}>
+                  {LocaleStrings.DrivingAdoptionLinkLabel}
                 </Link>
-                <Text block variant="xLarge" className={style.title}>
+                <Text block variant="xLarge" className={styles.infoCalloutTitle}>
                   ----
                 </Text>
                 <Text block variant="small">
-                {LocaleStrings.CurrentVersionLabel} {packageSolution.solution.version}
+                  {LocaleStrings.CurrentVersionLabel} {packageSolution.solution.version}
                 </Text>
                 <Text block variant="small">
-                {LocaleStrings.LatestVersionLabel} <Link href={Strings.LatestVersion} target="_blank">{LocaleStrings.CMPGitHubLinkLabel}</Link>
+                  {LocaleStrings.LatestVersionLabel} <Link href={Strings.LatestVersion} target="_blank">{LocaleStrings.CMPGitHubLinkLabel}</Link>
                 </Text>
-                <Text block variant="xLarge" className={style.title}>
+                <Text block variant="xLarge" className={styles.infoCalloutTitle}>
                   ----
                 </Text>
                 <Text block variant="small">
-                {LocaleStrings.VisitLabel}
+                  {LocaleStrings.VisitLabel}
                 </Text>
                 <Text block variant="small">
-                {LocaleStrings.OverviewLabel} <Link href={Strings.M365CMP} target="_blank">{LocaleStrings.MSAdoptionHubLinkLabel}</Link>
+                  {LocaleStrings.OverviewLabel} <Link href={Strings.M365CMP} target="_blank">{LocaleStrings.MSAdoptionHubLinkLabel}</Link>
                 </Text>
                 <Text block variant="small">
-                {LocaleStrings.DocumentationLabel} <Link href={Strings.M365CmpApp} target="_blank">{LocaleStrings.CMPGitHubLinkLabel}</Link>
+                  {LocaleStrings.DocumentationLabel} <Link href={Strings.M365CmpApp} target="_blank">{LocaleStrings.CMPGitHubLinkLabel}</Link>
                 </Text>
               </Callout>
             )}
           </div>
-
-        </Nav.Item>
-        <Nav.Item>
-          <div className={styles.icon}>
+          <div>
             <a href={Strings.HelpUrl} target="_blank">
               <TooltipHost
                 content={LocaleStrings.SupportToolTip}
                 delay={2}
                 calloutProps={calloutProps}
-                styles={hostStyles}
+                hostClassName={styles.cmpHeaderTooltipHostStyle}
               >
-                <Icon aria-label="Unknown" iconName="Unknown" className={classes.Icon} />
+                <Icon aria-label="Unknown" iconName="Unknown" className={styles.supportIcon} />
               </TooltipHost>
             </a>
           </div>
-        </Nav.Item>
-        <Nav.Item>
-          <div className={styles.fbIcon}>
+          <div>
             <a href={Strings.FeedbackUrl} target="_blank">
               <TooltipHost
                 content={LocaleStrings.FeedbackToolTip}
                 delay={2}
                 calloutProps={calloutProps}
-                styles={hostStyles}
+                hostClassName={styles.cmpHeaderTooltipHostStyle}
               >
-                <Icon aria-label="Feedback" iconName="Feedback" className={classes.feedbackIcon} />
+                <Icon aria-label="Feedback" iconName="Feedback" className={styles.feedbackIcon} />
               </TooltipHost>
             </a>
           </div>
-        </Nav.Item>
+        </div>
       </Navbar>
     );
   }

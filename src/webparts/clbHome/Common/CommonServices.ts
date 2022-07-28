@@ -4,6 +4,7 @@ import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import siteconfig from "../config/siteconfig.json";
 import * as stringsConstants from "../constants/strings";
+import { IRectangle } from '@fluentui/react/lib/Utilities';
 
 interface ICommonServicesState {
 
@@ -30,6 +31,22 @@ export default class CommonServices {
     });
   }
 
+  //Method to get the pixel height for a given page
+  public getPageHeight = (rowHeight: number, ROWS_PER_PAGE: number): number => {
+    return rowHeight * ROWS_PER_PAGE;
+  }
+
+  //Method to get how many items to render per page from specified index
+  public getItemCountForPage = (itemIndex: number, surfaceRect: IRectangle, MAX_ROW_HEIGHT: number, ROWS_PER_PAGE: number) => {
+    let columnCount: number;
+    let rowHeight: number;
+    if (itemIndex === 0) {
+      columnCount = Math.ceil(surfaceRect.width / MAX_ROW_HEIGHT);
+      rowHeight = Math.floor(surfaceRect.width / columnCount);
+    }
+    return { itemCountForPage: columnCount * ROWS_PER_PAGE, columnCount: columnCount, rowHeight: rowHeight };
+  }
+
   //Get list items based on only a filter
   public async getItemsWithOnlyFilter(listname: string, filterparametres: any): Promise<any> {
     var items: any[] = [];
@@ -37,8 +54,8 @@ export default class CommonServices {
     return items;
   }
 
-   //Get list items based on only a filter and sorted
-   public async getItemsSortedWithFilter(listname: string, filterparametres: any, descColumn: any): Promise<any> {
+  //Get list items based on only a filter and sorted
+  public async getItemsSortedWithFilter(listname: string, filterparametres: any, descColumn: any): Promise<any> {
     var items: any[] = [];
     items = await sp.web.lists.getByTitle(listname).items.filter(filterparametres).orderBy(descColumn, false)();
     return items;
@@ -69,7 +86,7 @@ export default class CommonServices {
     items = await sp.web.lists.getByTitle(listname).items.select(columns).filter(filter).getAll();
     return items;
   }
-  
+
   //Get Top list items with specific columns and sort by order
   public async getTopSortedItemsWithSpecificColumns(listname: string, columns: string, topVal: number, descColumn: string, ascColumn: string): Promise<any> {
     var items: any[] = [];
@@ -83,7 +100,15 @@ export default class CommonServices {
     items = await sp.web.lists.getByTitle(listname).items.select(columns).filter(filter).top(topVal).orderBy(descColumn, false).orderBy(ascColumn, true)();
     return items;
   }
-  
+
+  //Get choices from Choice column in a SharePoint list
+  public async getChoicesFromListColumn(listname: string, columnname: string): Promise<any> {
+    var choices: any = [];
+    choices = await sp.web.lists.getByTitle(listname).fields.getByInternalNameOrTitle(columnname).select('Choices').get();
+    return choices.Choices;
+  }
+
+
   //Delete all items in a SP list
   public async deleteListItems(listname: string): Promise<any> {
     var list = sp.web.lists.getByTitle(listname);
@@ -106,6 +131,36 @@ export default class CommonServices {
       return true;
     });
   }
+
+  //Update multiple items
+  public async updateMultipleItems(listname: string, data: any, arrayOfIds: any): Promise<any> {
+    return new Promise<any>(async (resolve, reject) => {
+
+      try {
+        //Create object for batch
+        const batch = sp.web.createBatch();
+        //Get list context
+        const list = await sp.web.lists.getByTitle(listname);
+        const items = list.items.inBatch(batch);
+
+        for (let itemCount = 0; itemCount < arrayOfIds.length; itemCount++) {
+          items.getById(parseInt(arrayOfIds[itemCount])).inBatch(batch).update(data);
+        }
+        await batch.execute().then(() => {
+          resolve(true);
+        }).catch((error) => {
+          console.error("CommonServices_updateMultipleItems \n", error);
+          reject(false);
+        });
+      }
+      catch (error) {
+        console.error("CommonServices_updateMultipleItems \n", error);
+        reject(false);
+      }
+
+    });
+  }
+
   //create fields in SP lists
   public async createListFields(listname: string, fieldsToCreate: any): Promise<any> {
     return new Promise<any>(async (resolve, reject) => {
@@ -149,58 +204,62 @@ export default class CommonServices {
 
   //Filter and get all badge imagesfrom 'Digital Badges' library for the current user
   public async getAllBadgeImages(listName: string, userEmail: string): Promise<any> {
-    var badgeImagesArray: any[] = [];
-    var finalImagesArray: any[] = [];
-    //If TOT is not enabled 'Tournament' column will be missing
-    const filterFields = await sp.web.lists.getByTitle(stringsConstants.DigitalBadgeLibrary).fields
-      .filter("Title eq 'Tournament'")
-      .get();
+    try {
+      var badgeImagesArray: any[] = [];
+      var finalImagesArray: any[] = [];
+      //If TOT is not enabled 'Tournament' column will be missing
+      const filterFields = await sp.web.lists.getByTitle(stringsConstants.DigitalBadgeLibrary).fields
+        .filter("Title eq 'Tournament'")
+        .get();
 
-    //if TOT is not enabled get all the badges
-    if (filterFields.length == 0) {
-      badgeImagesArray = await sp.web.lists.getByTitle(stringsConstants.DigitalBadgeLibrary).items.select("Title", "File/Name").expand("File").get();
-      for (let i = 0; i < badgeImagesArray.length; i++) {
-        //For global badges do not check for Tournaments completion status
-        finalImagesArray.push({
-          title: badgeImagesArray[i].Title,
-          url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name
-        });
+      //if TOT is not enabled get all the badges
+      if (filterFields.length == 0) {
+        badgeImagesArray = await sp.web.lists.getByTitle(stringsConstants.DigitalBadgeLibrary).items.select("Title", "File/Name").expand("File").get();
+        for (let i = 0; i < badgeImagesArray.length; i++) {
+          //For global badges do not check for Tournaments completion status
+          finalImagesArray.push({
+            title: badgeImagesArray[i].Title,
+            url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name
+          });
+        }
       }
-    }
-    //if TOT is enabled get all the badges and filter for completed tournaments
-    else {
-      badgeImagesArray = await sp.web.lists.getByTitle(stringsConstants.DigitalBadgeLibrary).items.select("Title", "Tournament/Title", "File/Name").expand("Tournament", "File").get();
-      //Checking if the user is in member list
-      let filterQuery = "Title eq '" + userEmail.toLowerCase() + "'" + " and Status eq 'Approved'";
-      let isApprovedChampion = await this.getItemsWithOnlyFilter(stringsConstants.MemberList, filterQuery);
+      //if TOT is enabled get all the badges and filter for completed tournaments
+      else {
+        badgeImagesArray = await sp.web.lists.getByTitle(stringsConstants.DigitalBadgeLibrary).items.select("Title", "Tournament/Title", "File/Name").expand("Tournament", "File").get();
+        //Checking if the user is in member list
+        let filterQuery = "Title eq '" + userEmail.toLowerCase() + "'" + " and Status eq 'Approved'";
+        let isApprovedChampion = await this.getItemsWithOnlyFilter(stringsConstants.MemberList, filterQuery);
 
-      //Loop through badges and filter based on user's tournaments completion status
-      for (let i = 0; i < badgeImagesArray.length; i++) {
-        //For global badges do not check for Tournaments completion status
-
-        if (badgeImagesArray[i].Tournament == undefined) {
-          // Show the global badges only for champion
-          if (isApprovedChampion.length > 0) {
-            finalImagesArray.push({
-              title: badgeImagesArray[i].Title,
-              url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name
-            });
+        //Loop through badges and filter based on user's tournaments completion status
+        for (let i = 0; i < badgeImagesArray.length; i++) {
+          //For global badges do not check for Tournaments completion status
+  
+          if (badgeImagesArray[i].Tournament == undefined) {
+            // Show the global badges only for champion
+            if (isApprovedChampion.length > 0) {
+              finalImagesArray.push({
+                title: badgeImagesArray[i].Title,
+                url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name
+              });
+            }
+          }
+          else if (badgeImagesArray[i].Tournament.Title !== null) {
+            var tournamentCompleted = await this.getTournamentCompletedFlag(badgeImagesArray[i].Tournament.Title, userEmail);
+            if (tournamentCompleted)
+              finalImagesArray.push({
+                title: badgeImagesArray[i].Title,
+                url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name
+              });
           }
         }
-        else {
-          var tournamentCompleted = await this.getTournamentCompletedFlag(badgeImagesArray[i].Tournament.Title, userEmail);
-          if (tournamentCompleted)
-            finalImagesArray.push({
-              title: badgeImagesArray[i].Title,
-              url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name
-            });
-        }
       }
+
+      return finalImagesArray;
     }
-
-    return finalImagesArray;
+    catch (error) {
+      console.error("CommonServices_getAllBadgeImages\n", error);
+    }
   }
-
   //Check if the user has completed the tournament
   public async getTournamentCompletedFlag(tournamentName: string, currentUserEmail: string): Promise<any> {
     let tournamentCompletedFlag: boolean = false;

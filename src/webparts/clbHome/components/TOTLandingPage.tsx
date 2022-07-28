@@ -602,8 +602,8 @@ class TOTLandingPage extends React.Component<
                     <h5 className={styles.pageSubHeader}>{LocaleStrings.QuickLinksLabel}</h5>
                   )}
                   {!this.state.isShowLoader && (
-                    <Row className="mt-4">
-                      <Col sm={3} className={styles.imageLayout}>
+                    <Row xl={4} lg={4} md={4} sm={3} xs={2} className="mt-4">
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media
                           className={styles.cursor}
                           onClick={() =>
@@ -624,7 +624,7 @@ class TOTLandingPage extends React.Component<
                           </div>
                         </Media>
                       </Col>
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media
                           className={styles.cursor}
                           onClick={() =>
@@ -645,7 +645,7 @@ class TOTLandingPage extends React.Component<
                           </div>
                         </Media>
                       </Col>
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media
                           className={styles.cursor}
                           onClick={() => this.setState({ digitalBadge: !this.state.digitalBadge })}
@@ -671,8 +671,8 @@ class TOTLandingPage extends React.Component<
                   )}
 
                   {this.state.isAdmin && (
-                    <Row className="mt-4">
-                      <Col sm={3} className={styles.imageLayout}>
+                    <Row xl={4} lg={4} md={4} sm={3} xs={2} className="mt-4">
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
@@ -692,7 +692,7 @@ class TOTLandingPage extends React.Component<
                           </div>
                         </Media>
                       </Col>
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media
                           className={styles.cursor}
                           onClick={() =>
@@ -715,7 +715,7 @@ class TOTLandingPage extends React.Component<
                           </div>
                         </Media>
                       </Col>
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media
                           className={styles.cursor}
                           onClick={() =>
@@ -737,7 +737,7 @@ class TOTLandingPage extends React.Component<
                         </Media>
                       </Col>
 
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
@@ -755,7 +755,7 @@ class TOTLandingPage extends React.Component<
                           </div>
                         </Media>
                       </Col>
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
@@ -775,7 +775,7 @@ class TOTLandingPage extends React.Component<
                           </div>
                         </Media>
                       </Col>
-                      <Col sm={3} className={styles.imageLayout}>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media
                           className={styles.cursor}
                           onClick={() =>

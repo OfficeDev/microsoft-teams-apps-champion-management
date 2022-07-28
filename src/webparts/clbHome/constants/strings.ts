@@ -1,5 +1,6 @@
 export const ToTLabel = "Tournament of Teams";
 export const CMPLabel = "Champion Management Platform";
+export const MobileWidth = 568;
 export const PropertyPaneDescription = "Description";
 export const BasicGroupName = "Group Name";
 export const DescriptionFieldLabel = "Description Field";
@@ -57,6 +58,8 @@ export const CMPLog = "CMP Logs: ";
 export const CMPErrorMessage = "An unexpected error occurred ";
 
 export const ANCHOR_ID = "constAnchor";
+export const TeamWorkLabel = "Teamwork";
+
 //Lists
 export const ActionsMasterList = "Actions List";
 export const TournamentActionsMasterList = "Tournament Actions";
@@ -64,6 +67,9 @@ export const TournamentsMasterList = "Tournaments";
 export const ParticipantsReportList = "Participants Report";
 export const TournamentsReportList = "Tournaments Report";
 export const TopParticipantsList = "Top Participants";
+export const EventTrackDetailsList = "Event Track Details";
+export const MemberList = "Member List";
+export const EventsList = "Events List";
 
 //Tournaments Status
 export const TournamentStatusNotStarted = "Not Started";
@@ -78,6 +84,10 @@ export const TotLog = "TOT Logs: ";
 export const TOTErrorMessage = "An unexpected error occurred ";
 export const AdminList = "ToT Admins";
 export const UserActionsList = "User Actions";
+export const employeeCardLoadCount = 30;
+export const approvedStatus = "Approved";
+export const rejectedStatus = "Rejected";
+export const pendingStatus = "Pending";
 
 //Label Messages
 export const NoActiveTournamentMessage = "There is no active tournament at the moment. Please check back later.";
@@ -86,11 +96,11 @@ export const DigitalBadgeLibrary = "Digital Badge Assets";
 export const CMPLogoLibrary = "CMP Logo";
 export const AppLogo = "AppLogo.jpg";
 export const AppLogoLowerCase = "applogo.jpg";
-export const MemberList = "Member List";
 export const NoActiveParticipantsMessage = "There are no active participants at the moment. Be the first to participate and log an activity from My Dashboard!";
 
 
 //URLS
+export const MultiTournamentTemplateURL = "https://raw.githubusercontent.com/OfficeDev/microsoft-teams-apps-champion-management/main/src/webparts/clbHome/assets/TournamentsTemplate/CreateMultipleTournaments-Template.xlsx";
 
 //Header
 export const M365Champions = "https://aka.ms/m365champions";
@@ -127,3 +137,16 @@ export const TotalParticipantsColumn = "Total_x0020_Participants";
 export const CompletedParticipantsColumn = "Completed_x0020_Participants";
 export const TotalPointsColumn = "Total_x0020_Points";
 export const TotalActivitiesColumn = "Total_x0020_Activities";
+export const RegionColumn = "Region";
+export const FocusAreaColumn = "FocusArea";
+
+//Import Tournaments Excel header names
+export const TournamentNameHeader = "TournamentName";
+export const DescriptionHeader = "Description";
+export const CategoryHeader = "Category";
+export const ActionHeader = "Action";
+export const ActionDescriptionHeader = "ActionDescription";
+export const PointsHeader = "Points";
+export const HelpURLHeader = "HelpURL";
+
+export const ImportTournamentLimit = 10; 

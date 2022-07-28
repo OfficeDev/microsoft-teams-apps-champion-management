@@ -39,15 +39,31 @@ Below are the master lists in Share Point that need to be managed by the TOT Adm
 
 - Admins can create new tournaments by picking the Teams Actions from the list. New Teams Actions need to be added to the list “Actions List” in share point. 
 
-- Created Tournaments are not started by default. “Start Tournament” screen should be used to start the tournament. 
+![Quick Start Guide](../Images/CreateTournament.png) 
 
-    ![Quick Start Guide](../Images/CreateTournament.png) 
+- Multiple tournaments can also be created by uploading a spreadsheet with tournament details. The sample spread sheet can be downloaded by the users.
+
+![Quick Start Guide](../Images/MultipleTournaments.png) 
+
+- Below are the guidelines that need to be followed while creating multiple tournaments using excel template:
+
+    - Do not modify the column headers in the template
+    - Do not delete the columns in the template
+    - Enter data in all the required(*) columns mentioned in the template
+    - Follow the character limit and type mentioned in the template for each column
+    - Enter data for only 1 tournament in each sheet as per the sample data provided
+    - Only 10 tournaments can be created at a time
+    - Ensure the Tournament Name is unique
+
+- Created Tournaments are not started by default. “Manage Tournaments” screen should be used to start the tournament. 
 
 ### Manage Tournaments 
 
  - A tournament can be started or completed by an admin using “Manage Tournaments” screen. 
 
  - Multiple tournaments can be active at a time. 
+
+ - Multiple tournaments can be started at a time
 
     ![Quick Start Guide](../Images/ManageTournament.png) 
 

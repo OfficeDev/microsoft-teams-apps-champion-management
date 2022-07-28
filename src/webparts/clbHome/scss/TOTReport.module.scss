@@ -3,6 +3,19 @@
     .totReportComboBoxCallout {
         width: 350px;
         border-radius: 3px;
+
+        .ms-Callout-main {
+            background-color: #ffffff !important;
+
+            .ms-ComboBox-option {
+                color: #000000 !important;
+                background-color: #ffffff;
+            }
+
+            .ms-ComboBox-option:hover {
+                background-color: #E8E8E8;
+            }
+        }
     }
 
     .react-bootstrap-table-pagination {
@@ -19,6 +32,10 @@
     height: 100%;
     width: 100%;
     padding: 2% 5% 150px 5%;
+}
+
+.totReportChart>canvas {
+    background-color: #ffffff;
 }
 
 .totReportPath {
@@ -67,6 +84,7 @@
         color: #020000;
         opacity: 1;
     }
+
     label::after {
         content: ' :';
     }
@@ -85,6 +103,15 @@
     height: 40px;
     border-radius: 3px;
 
+    input {
+        background-color: #ffffff;
+        color: #757575;
+    }
+
+    input:hover {
+        color: #757575;
+    }
+
     button,
     button:hover {
         background-color: #FFFFFF;
@@ -96,7 +123,9 @@
     border-radius: 3px;
 }
 
-
+.totReportDropdown>div:hover::after {
+    border-color: #888686;
+}
 
 .dDInfoIconArea {
     margin-left: 15px;
@@ -328,4 +357,63 @@
             }
         }
     }
+}
+
+@media screen and (max-width: 375pt) {
+    .totReportDropdown {
+        display: block;
+        margin-bottom: 0px;
+        margin-left: 2px;
+
+        label {
+            margin-bottom: 10px;
+        }
+    }
+
+    .dDInfoIconArea {
+        margin-left: 130px;
+        top: -81px;
+
+        .dDInfoIcon {
+            font-size: 18px;
+        }
+    }
+
+    .tableHeadingAndCSVBtn {
+        .csvLink {
+            margin-right: 0%;
+        }
+    }
+
+    .participantsGrid>div:nth-child(1) {
+        overflow-x: scroll;
+    }
+
+    .participantsGrid>div:nth-child(1)::-webkit-scrollbar {
+        height: 8px;
+        background: rgb(206, 199, 199);
+        width: 100%;
+        border-radius: 8px;
+    }
+
+    .participantsGrid>div:nth-child(1)::-webkit-scrollbar-thumb {
+        box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
+        border-radius: 8px;
+        background: #696969;
+        height: 8px;
+    }
+
+    .participantsGrid {
+
+        table {
+            width: 100%;
+            table-layout: auto !important;
+        }
+    }
+
+    .participantsGrid>div:nth-child(2) {
+        width: 100% !important;
+        margin-top: 20px !important;
+    }
+
 }

@@ -1,20 +1,20 @@
-### Upgrade to version 2.2 from 2.1, 2.0, 1.3 and 1.2
+### Upgrade to version 2.3 from 2.2, 2.1, 2.0, 1.3 and 1.2
 
-If you are already having version 2.1, 2.0, 1.3 or 1.2 installed on your tenant follow the below steps to upgrade to version 2.1 with an admin account:
+If you are already having version 2.2, 2.1, 2.0, 1.3 or 1.2 installed on your tenant follow the below steps to upgrade to version 2.3 with an admin account:
 
  NOTE: If you are using/seeing modern app catalog refer to the go to the [Modern App Catalog](#modern-app-catalog) section.
 
 1.  Navigate to App Catalog with a tenant Admin account. Do not delete the existing package. Upload the new package that is downloaded from "sharepoint/solution" folder which will replace the existing package.  
 
-    ![Upgrade 2.2](../Images/Upgrade-1.png) 
+    ![Upgrade](../Images/Upgrade-1.png) 
 
 2. Click on "Deploy".
 
-    ![Upgrade 2.2](../Images/Upgrade-2.png) 
+    ![Upgrade](../Images/Upgrade-2.png) 
 
 3. "Check In" the package.
 
-    ![Upgrade 2.2](../Images/Upgrade2.0-3.png) 
+    ![Upgrade](../Images/Upgrade2.0-3.png) 
 
 4. Select the package and click "Sync to Teams" from the ribbon and wait for the "Successfully synced to teams solution" message to appear.
 
@@ -22,19 +22,20 @@ If you are already having version 2.1, 2.0, 1.3 or 1.2 installed on your tenant 
 
 5. The Champion Management Platform will be updated to the latest version and you will see changes reflected in Teams. Please note that if you do not see changes reflected in Teams after 30 minutes you can log out and back in and clear the Teams cache to see changes immediately. 
 
-6. If you already had "Tournament of Teams" enabled before the upgrade, click on "Enable Tournament of Teams" under "Admin Tools" section again. That will provision new lists for Tournament Reporting feature. "Tournament of Teams" icon will not be visible in the "Get Started" section without this step.
+6. This steps applies only if you are upgrading from versions 2.1 or older. This step is not required if you are upgrading from version 2.2. <br>
+If you already had "Tournament of Teams" enabled before the upgrade, click on "Enable Tournament of Teams" under "Admin Tools" section again. That will provision new lists for Tournament Reporting feature. "Tournament of Teams" icon will not be visible in the "Get Started" section without this step.
 
-    ![Upgrade-2.2](../Images/Upgrade-3.png) 
+    ![Upgrade](../Images/Upgrade-3.png) 
 
     **NOTE:** If there is any completed tournament before the upgrade, enabling Tournament of Teams will take couple of minutes (depends on number of completed tournaments) to load the data about completed tournaments into the Tournaments Report and Participants Report lists. Do not navigate away from the screen until it is completed with success message.
 
-    ![Upgrade-2.2](../Images/EnableTOT.png) 
+    ![Upgrade](../Images/EnableTOT.png) 
 
-    ![Upgrade-2.2](../Images/TOTScreen.png) 
+    ![Upgrade](../Images/TOTScreen.png) 
 
 7. The below graph permissions can be removed from "API Permissions" in sharePoint admin portal only if the permission is not used in any other apps in your tenant. The upgraded package for CMP is not using these permissions anymore.
 
-    ![Upgrade-2.2](../Images/Upgrade-4.png) 
+    ![Upgrade](../Images/Upgrade-4.png) 
 
 8. A new CMP logo has been added in this package. If you have not customized the app logo for the CMP application, you can delete the "CMP Logo" library from SharePoint site so that it will be automatically re-created when the app is launched and the MS logo will be replaced with new CMP logo image in the library.
 
@@ -44,21 +45,23 @@ If you are already having version 2.1, 2.0, 1.3 or 1.2 installed on your tenant 
 
 1. Navigate to App Catalog. Do not delete the existing package. Upload the new package that is downloaded from "sharepoint/solution" folder which will replace the existing package.
 
-    ![Upgrade-2.2](../Images/Upgrade_Modern_AppCatalog1.png) 
+    ![Upgrade](../Images/Upgrade_Modern_AppCatalog1.png) 
 
 1. After uploading the package, select "Enable this app and add it to all sites" and click on "Enable App"
 
-    ![Upgrade-2.2](../Images/Modern_AppCatalog2.png)
+    ![Upgrade](../Images/Modern_AppCatalog2.png)
 
 1. Skip this step.
 
-    ![Upgrade-2.2](../Images/Modern_AppCatalog3.png)
+    ![Upgrade](../Images/Modern_AppCatalog3.png)
 
 1. Once done, click on "Add to Teams" to make this app available in Teams
 
-    ![Upgrade-2.2](../Images/Modern_AppCatalog4.png)
+    ![Upgrade](../Images/Modern_AppCatalog4.png)
 
-### Upgrade to version 2.2 from 1.1
+``` Continue with steps 5 to 8 from the previous section.```
+
+### Upgrade to version 2.3 from 1.1
 
 If you are already having 1.1 installed on your tenant and want to upgrade to 2.2 the existing app and SharePoint site 'ChampionManagementSite' have to be deleted. 
 

@@ -1,5 +1,4 @@
 import { Icon } from '@fluentui/react/lib/Icon';
-import { mergeStyleSets } from '@fluentui/react/lib/Styling';
 import {
   ISPHttpClientOptions, SPHttpClient,
   SPHttpClientResponse
@@ -13,12 +12,13 @@ import {
   PrincipalType
 } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
-import { Dropdown, IDropdownStyles } from "office-ui-fabric-react/lib/Dropdown";
+import { Dropdown, IDropdownOption } from "office-ui-fabric-react/lib/Dropdown";
 import { Label } from 'office-ui-fabric-react/lib/Label';
 import * as React from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import siteconfig from "../config/siteconfig.json";
+import * as stringsConstants from "../constants/strings";
 import styles from "../scss/CMPAddMember.module.scss";
 
 
@@ -66,73 +66,14 @@ interface IState {
   status: Array<any>;
   groups: Array<any>;
   focusAreas: Array<any>;
+  selectedFocusAreas: any;
+  multiSelectChoices: any;
   memberData: any;
   memberrole: string;
   sitename: string;
   inclusionpath: string;
   load: boolean;
 }
-
-const classes = mergeStyleSets({
-  cancelIcon: {
-    marginRight: "10px",
-    fontSize: "17px",
-    fontWeight: "bolder",
-    color: "#000003",
-    opacity: 1
-  },
-  saveIcon: {
-    marginRight: "10px",
-    fontSize: "17px",
-    fontWeight: "bolder",
-    color: "#FFFFFF",
-    opacity: 1
-  }
-});
-
-const dropdownStyles: Partial<IDropdownStyles> = {
-  dropdown: {
-    width: "auto",
-    margin: "1rem 0rem 1rem 0rem"
-  },
-  dropdownItem: {
-    backgroundColor: "#F6F5F4",
-    border: "0.25px solid #979593",
-    padding: "0%",
-    selectors: {
-      ":hover": {
-        border: "1px solid #1e90ff",
-      }
-    },
-    textAlign: "left",
-    font: "normal normal normal 16px/21px",
-    fontFamily: "Segoe UI",
-    letterSpacing: "0px",
-    color: "#000000",
-    opacity: 1
-  },
-  dropdownOptionText: {
-    paddingLeft: "26px",
-    paddingTop: "5px"
-  },
-  dropdownItemSelected: {
-    border: "0.25px solid #979593",
-    paddingLeft: "0px",
-    paddingTop: "5px",
-  },
-  title: {
-    paddingLeft: "26px",
-    paddingTop: "3px",
-    font: "normal normal 400 18px/24px Segoe UI",
-    textAlign: "left",
-    letterSpacing: "0px",
-    color: "#000000",
-    opacity: 1,
-    borderColor: "#DEDEF3",
-    backgroundColor: "#DEDEF3"
-  },
-};
-
 class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
   public addMemberPeoplePickerParentRef: React.RefObject<HTMLDivElement>;
   public addMemberPeoplePickerRef: React.RefObject<PeoplePicker>;
@@ -159,7 +100,9 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
       status: [],
       groups: [],
       focusAreas: [],
-      memberData: { region: "", group: "", focusArea: "", country: "" },
+      selectedFocusAreas: [],
+      multiSelectChoices: [],
+      memberData: { region: "", group: "", country: "" },
       siteUrl: this.props.siteUrl,
       memberrole: "",
       sitename: siteconfig.sitename,
@@ -169,6 +112,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
 
     this.updatePeoplePickerMenuAttributes = this.updatePeoplePickerMenuAttributes.bind(this);
     this.removeButtonEvent = this.removeButtonEvent.bind(this);
+    this.onFocusAreaChange = this.onFocusAreaChange.bind(this);
   }
 
   public componentDidMount() {
@@ -294,9 +238,20 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
     if (prevState.UserDetails.length !== this.state.UserDetails.length) {
       this.removeButtonEvent();
     }
+    if (prevState.multiSelectChoices !== this.state.multiSelectChoices) {
+      this.setState({
+        selectedFocusAreas: this.state.multiSelectChoices
+      });
+    }
+    //Remove "All" from the array to store it in Members List.
+    if (prevState.selectedFocusAreas !== this.state.selectedFocusAreas) {
+      let idx = this.state.selectedFocusAreas.indexOf(stringsConstants.AllLabel);
+      if (idx != -1)
+        this.state.selectedFocusAreas.splice(idx, 1);
+    }
   }
 
-  
+
   private _getPeoplePickerItems(items: any[]) {
     let userarr: IUserDetail[] = [];
     items.forEach((user) => {
@@ -400,7 +355,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                                   : "Pending",
                               Group: this.state.memberData.group,
                               FocusArea:
-                                this.state.memberData.focusArea || "Teamwork",
+                                this.state.selectedFocusAreas.length > 0 ? this.state.selectedFocusAreas : [stringsConstants.TeamWorkLabel],
                             };
                             const spHttpClientOptions: ISPHttpClientOptions = {
                               body: JSON.stringify(listDefinition),
@@ -463,6 +418,34 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
     }
   }
 
+  //Set state variable whenever the Focus Area dropdown is changed
+  public onFocusAreaChange = async (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): Promise<void> => {
+    if (item === undefined) {
+      return;
+    }
+    //Select all the dropdown options when "All" is selected.
+    if (item.key === stringsConstants.AllLabel && item.selected) {
+      this.setState({
+        multiSelectChoices: this.options(this.state.focusAreas).map((option) => option.key as string)
+      });
+    } //Clear all the dropdown options when "All" is unselected. 
+    else if (item.key === stringsConstants.AllLabel) {
+      this.setState({ multiSelectChoices: [] });
+    } //When an option selected from the dropdown other than "All"
+    else if (item.selected) {
+      const newKeys = [item.key as string];
+      if (this.state.multiSelectChoices.length === this.state.focusAreas.length - 1) {
+        newKeys.push(stringsConstants.AllLabel);
+      }
+      this.setState({ multiSelectChoices: [...this.state.multiSelectChoices, ...newKeys] });
+    } //When an option unselected from the dropdown other than "All"
+    else {
+      this.setState({
+        multiSelectChoices: this.state.multiSelectChoices.filter((key) => key !== item.key && key !== stringsConstants.AllLabel)
+      });
+    }
+  }
+
   public options = (optionArray: any) => {
     let myoptions = [];
     myoptions.push({ key: "All", text: "All" });
@@ -511,6 +494,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
               resolveDelay={1000}
               placeholder={LocaleStrings.PeoplePickerPlaceholder}
               ref={this.addMemberPeoplePickerRef}
+              peoplePickerCntrlclassName={styles.addMemberPeoplePickerClass}
             />
           </div>
           <br></br>
@@ -520,8 +504,9 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                 onChange={(event: any, selectedOption: any) => this.filterUsers("region", selectedOption)}
                 placeholder={LocaleStrings.RegionPlaceholder}
                 options={this.options(this.state.regions)}
-                styles={dropdownStyles}
                 ariaLabel={LocaleStrings.RegionPlaceholder}
+                className={styles.addMemberDropdown}
+                calloutProps={{ className: "addMemberDropdownCallout" }}
               />
             </Col>
             <Col md={3}>
@@ -529,8 +514,9 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                 onChange={(event: any, selectedOption: any) => this.filterUsers("country", selectedOption)}
                 placeholder={LocaleStrings.CountryPlaceholder}
                 options={this.options(this.state.coutries)}
-                styles={dropdownStyles}
                 ariaLabel={LocaleStrings.CountryPlaceholder}
+                className={styles.addMemberDropdown}
+                calloutProps={{ className: "addMemberDropdownCallout" }}
               />
             </Col>
             <Col md={3}>
@@ -538,17 +524,21 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                 onChange={(event: any, selectedOption: any) => this.filterUsers("group", selectedOption)}
                 placeholder={LocaleStrings.GroupPlaceholder}
                 options={this.options(this.state.groups)}
-                styles={dropdownStyles}
                 ariaLabel={LocaleStrings.GroupPlaceholder}
+                className={styles.addMemberDropdown}
+                calloutProps={{ className: "addMemberDropdownCallout" }}
               />
             </Col>
             <Col md={3}>
               <Dropdown
-                onChange={(event: any, selectedOption: any) => this.filterUsers("focusArea", selectedOption)}
+                onChange={this.onFocusAreaChange.bind(this)}
                 placeholder={LocaleStrings.FocusAreaPlaceholder}
                 options={this.options(this.state.focusAreas)}
-                styles={dropdownStyles}
                 ariaLabel={LocaleStrings.FocusAreaPlaceholder}
+                multiSelect
+                selectedKeys={this.state.multiSelectChoices}
+                className={styles.addMemberDropdown}
+                calloutProps={{ className: "addMemberDropdownCallout" }}
               />
             </Col>
           </Row>
@@ -558,7 +548,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
               onClick={() => this.props.onClickBack()}
               title={LocaleStrings.BackButton}
             >
-              <Icon iconName="NavigateBack" className={`${classes.cancelIcon}`} />
+              <Icon iconName="NavigateBack" className={`${styles.cancelBtnIcon}`} />
               <span className={styles.cancelBtnLabel}>{LocaleStrings.BackButton}</span>
             </button>
             <button
@@ -569,7 +559,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
               }}
               title={LocaleStrings.SaveButton}
             >
-              <Icon iconName="Save" className={`${classes.saveIcon}`} />
+              <Icon iconName="Save" className={`${styles.saveBtnIcon}`} />
               <span className={styles.saveBtnLabel}>{LocaleStrings.SaveButton}</span>
             </button>
           </div>

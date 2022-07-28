@@ -23,6 +23,7 @@ import {
 } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import * as constants from "../constants/strings";
 
 
 //Global Variables
@@ -187,7 +188,7 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
                         totalActivities: totalTournamentActivities,
                         totalPoints: totalTournamentPoints,
                         totalParticipants: totalTournamentParticipants,
-                        totalCompletionPercentage: totalPercentage
+                        totalCompletionPercentage: isNaN(totalPercentage) ? 0 : totalPercentage
                     });
                 }
             }
@@ -237,7 +238,7 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
         }
     }
 
-    
+
     //Load Top Participants based on points
     private async loadTopParticipants(): Promise<Chart.ChartData> {
         try {
@@ -602,7 +603,7 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
                                     <span className={styles.dDInfoIconArea}>
                                         <TooltipHost
                                             content={LocaleStrings.ReportsDropdownInfoIconText}
-                                            delay={2}
+                                            delay={window.innerWidth < constants.MobileWidth ? 0 : 2}
                                             directionalHint={DirectionalHint.topCenter}
                                         >
                                             <Icon iconName='Info' className={styles.dDInfoIcon} aria-label={LocaleStrings.ReportsDropdownInfoIconText} />
@@ -672,13 +673,14 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
                                                     />
                                                 )}
                                             </span>
-                                                <ChartControl
-                                                    type={ChartType.HorizontalBar}
-                                                    data={this.state.topParticipantsChartdata}
-                                                    options={this.horizontalChartOptions}
-                                                    accessibility={{ enable: true, alternateText: `${LocaleStrings.Top5ParticipantswithPointsLabel} chart` }}
-                                                />
-                                            
+                                            <ChartControl
+                                                type={ChartType.HorizontalBar}
+                                                data={this.state.topParticipantsChartdata}
+                                                options={this.horizontalChartOptions}
+                                                accessibility={{ enable: true, alternateText: `${LocaleStrings.Top5ParticipantswithPointsLabel} chart` }}
+                                                className={styles.totReportChart}
+                                            />
+
                                         </div>
                                     </Col>
                                     <Col xl={4} lg={6} md={6} sm={12} xs={12}>
@@ -689,6 +691,7 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
                                                 data={this.state.topTournamentsChartdata}
                                                 options={this.horizontalChartOptions}
                                                 accessibility={{ enable: true, alternateText: `${LocaleStrings.Top5TournamentswithParticipantsLabel} chart` }}
+                                                className={styles.totReportChart}
                                             />
                                         </div>
                                     </Col>
@@ -700,6 +703,7 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
                                                 data={this.state.participantsStatusChartdata}
                                                 options={this.doughNutChartOptions}
                                                 accessibility={{ enable: true, alternateText: `${LocaleStrings.ParticipantsStatusLabel} chart` }}
+                                                className={styles.totReportChart}
                                             />
                                         </div>
                                     </Col>
