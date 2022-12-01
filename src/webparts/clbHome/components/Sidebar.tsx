@@ -17,9 +17,14 @@ import { Icon, initializeIcons } from "office-ui-fabric-react";
 import siteconfig from "../config/siteconfig.json";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
 import * as stringsConstants from "../constants/strings";
+import { IConfigList } from './ManageConfigSettings';
+import commonServices from "../Common/CommonServices";
 
 
 initializeIcons();
+
+//global variables
+let commonServiceManager: commonServices;
 export interface ISidebarStateProps {
   becomec: boolean;
   context?: any;
@@ -51,36 +56,33 @@ export class ISPList {
 
 interface IState {
   currentUser: ISPList;
-  list: ISPLists;
-  isAddChampion: boolean;
-  SuccessMessage: string;
   UserDetails: Array<any>;
-  selectedUsers: Array<any>;
   bc: boolean;
-  siteUrl: string;
-  user: any;
   isLoaded: boolean;
   form: boolean;
   totalUserPointsfromList: number;
   totalUsers: number;
   userRank: number;
   isActive: boolean;
-  coutries: Array<any>;
+  countries: Array<any>;
   regions: Array<any>;
-  users: Array<any>;
   roles: Array<any>;
   status: Array<any>;
   memberData: any;
   selectedFocusAreas: any;
   multiSelectChoices: any;
   buttonText: any;
-  bFlag: boolean;
   isMember: boolean;
   emailValue: string;
   sitename: string;
   inclusionpath: string;
   edetails: Array<string>;
   edetailsIds: Array<EventList>;
+  configListSettings: Array<IConfigList>;
+  memberListColumnNames: Array<any>;
+  regionColumnName: string;
+  countryColumnName: string;
+  groupColumnName: string;
 }
 export interface EventList {
   Title: string;
@@ -97,37 +99,34 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     });
 
     this.state = {
-      user: {},
       bc: this.props.becomec,
       form: false,
-      siteUrl: this.props.siteUrl,
       isLoaded: false,
-      list: null,
-      isAddChampion: false,
-      SuccessMessage: "",
       UserDetails: [],
       currentUser: new ISPList(),
-      selectedUsers: [],
       totalUserPointsfromList: 0,
       isActive: false,
       totalUsers: 0,
       userRank: 0,
-      coutries: [],
+      countries: [],
       regions: [],
-      users: [],
       roles: [],
       status: [],
       memberData: { region: "", role: "", status: "", country: "" },
       selectedFocusAreas: [],
       multiSelectChoices: [],
       buttonText: LocaleStrings.BecomeChampionLabel,
-      bFlag: true,
       isMember: false,
       emailValue: "",
       sitename: siteconfig.sitename, //getting from siteconfig
       inclusionpath: siteconfig.inclusionPath, //getting from siteconfig
       edetails: [],
       edetailsIds: [],
+      configListSettings: [],
+      memberListColumnNames: [],
+      regionColumnName: "",
+      countryColumnName: "",
+      groupColumnName: ""
     };
     this.handleInput = this.handleInput.bind(this);
     this._createorupdateItem = this._createorupdateItem.bind(this);
@@ -135,16 +134,25 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     this._getListData = this._getListData.bind(this);
     this.optionsEventsList = this.optionsEventsList.bind(this);
     this.onFocusAreaChange = this.onFocusAreaChange.bind(this);
+    this.populateColumnNames = this.populateColumnNames.bind(this);
+
+    //Create object for CommonServices class
+    commonServiceManager = new commonServices(
+      this.props.context,
+      this.props.siteUrl
+    );
 
   }
 
   //getting members details from membelist with all columns
   public options = (optionArray: any) => {
     let myoptions = [];
-    myoptions.push({ key: "All", text: "All" });
-    optionArray.forEach((element: any) => {
-      myoptions.push({ key: element, text: element });
-    });
+    if (optionArray !== undefined) {
+      myoptions.push({ key: "All", text: "All" });
+      optionArray.forEach((element: any) => {
+        myoptions.push({ key: element, text: element });
+      });
+    }
     return myoptions;
   }
 
@@ -224,11 +232,11 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
               )
               // tslint:disable-next-line:no-shadowed-variable
               .then((response: SPHttpClientResponse) => {
-                response.json().then((coutries) => {
-                  if (!coutries.error) {
+                response.json().then((countries) => {
+                  if (!countries.error) {
                     this.setState({
                       regions: regions.Choices,
-                      coutries: coutries.Choices,
+                      countries: countries.Choices,
                     });
                   }
                 });
@@ -274,7 +282,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       });
   }
 
-  public componentDidUpdate(prevProps: Readonly<ISidebarStateProps>, prevState: Readonly<IState>, snapshot?: any): void {
+  public async componentDidUpdate(prevProps: Readonly<ISidebarStateProps>, prevState: Readonly<IState>, snapshot?: any) {
     if (prevProps != this.props) {
       this.componentWillMount();
     }
@@ -288,6 +296,27 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       let idx = this.state.selectedFocusAreas.indexOf(stringsConstants.AllLabel);
       if (idx != -1)
         this.state.selectedFocusAreas.splice(idx, 1);
+    }
+
+    if (prevState.form !== this.state.form || prevState.isActive !== this.state.isActive) {
+      if (this.state.form && this.state.isActive) {
+        this.setState({
+          configListSettings: [],
+          memberListColumnNames: [],
+          regionColumnName: "",
+          countryColumnName: "",
+          groupColumnName: ""
+        });
+        await this.getConfigListSettings();
+        await this.getMemberListColumnNames();
+      }
+    }
+
+    //update column states with member list column display names 
+    if (prevState.configListSettings !== this.state.configListSettings ||
+      prevState.memberListColumnNames !== this.state.memberListColumnNames) {
+      if (this.state.configListSettings.length > 0 && this.state.memberListColumnNames.length > 0)
+        this.populateColumnNames();
     }
   }
 
@@ -334,16 +363,33 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                       isLoaded: true,
                     });
                   localStorage.setItem("memberid", memberData); // storing memberid in local storage
+
+                  //get first name and last name from the user profile properties
+                  let firstName = "";
+                  let lastName = "";
+                  for (let i = 0; i < datauser.UserProfileProperties.length; i++) {
+                    if (firstName === "" || lastName === "") {
+                      if (datauser.UserProfileProperties[i].Key === "FirstName") {
+                        firstName = datauser.UserProfileProperties[i].Value;
+                      }
+                      if (datauser.UserProfileProperties[i].Key === "LastName") {
+                        lastName = datauser.UserProfileProperties[i].Value;
+                      }
+                    }
+                    else {
+                      break;
+                    }
+                  }
                   //based on user role (champion or manager) then we are showing champion details
                   let user = this.state.currentUser;
-                  user["FirstName"] = datauser.DisplayName.split(" ")[0].replace(",", "");
-                  user["LastName"] = datauser.DisplayName.split(" ")[1];
+                  user["FirstName"] = firstName;
+                  user["LastName"] = lastName;
                   user["Title"] = datauser.Email;
                   user["Country"] = datauser.Country;
                   user["Region"] = datauser.Region;
                   user["Group"] = datauser.Group;
                   user["FocusArea"] = datauser.FocusArea;
-                  displayName = datauser.DisplayName.replace(",", "");
+                  displayName = firstName + " " + lastName;
 
                   this.setState({ currentUser: user });
                   if (!datada.error) {
@@ -368,7 +414,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                           this.state.inclusionpath +
                           "/" +
                           this.state.sitename +
-                          "/_api/web/lists/GetByTitle('Event Track Details')/Items?$top=5000",
+                          "/_api/web/lists/GetByTitle('Event Track Details')/Items?$filter= Status eq 'Approved' or Status eq null or Status eq ''&$top=5000",
                           SPHttpClient.configurations.v1
                         )
                         .then((responseeventsdetails: SPHttpClientResponse) => {
@@ -376,61 +422,11 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                             .json()
                             .then((eventsdatauser) => {
                               if (!eventsdatauser.error) {
-                                let presentuser = eventsdatauser.value.filter(
-                                  (x: { MemberId: any }) =>
-                                    x.MemberId ===
-                                    datada.value.find(
-                                      (d: { Title: string }) =>
-                                        d.Title.toLowerCase() ===
-                                        datauser.Email.toLowerCase()
-                                    ).ID
-                                );
                                 let memberids: any = _.uniqBy(
                                   eventsdatauser.value,
                                   "MemberId"
                                 );
-                                let counts = _.countBy(
-                                  eventsdatauser.value,
-                                  "MemberId"
-                                );
                                 let memcount: Array<any> = [];
-                                if (
-                                  presentuser.length === 0 &&
-                                  memberData !== 0
-                                ) {
-                                  let eventItem: EventList = null;
-                                  eventItem = this.state.edetailsIds[0];
-                                  const listDefinition: any = {
-                                    Title: eventItem.Title,
-                                    EventId: eventItem.Id,
-                                    MemberId: memberData,
-                                    DateofEvent: new Date(),
-                                    Count: 10,
-                                    MemberName: datauser.DisplayName,
-                                    EventName: eventItem.Title
-                                  };
-                                  const spHttpClientOptions: ISPHttpClientOptions = {
-                                    body: JSON.stringify(listDefinition),
-                                  };
-                                  if (true) {
-                                    const url: string =
-                                      "/" +
-                                      this.state.inclusionpath +
-                                      "/" +
-                                      this.state.sitename +
-                                      "/_api/web/lists/GetByTitle('Event Track Details')/items";
-                                    this.props.context.spHttpClient.post(
-                                      url,
-                                      SPHttpClient.configurations.v1,
-                                      spHttpClientOptions
-                                    );
-                                    this.props.callBack();
-                                    memcount.push({
-                                      id: memberData,
-                                      points: 10,
-                                    });
-                                  }
-                                }
                                 for (let i = 0; i < memberids.length; i++) {
                                   if (datada.value.findIndex((v: { ID: any }) => v.ID === memberids[i].MemberId) !== -1) {
                                     let totalUserPoints = 0;
@@ -444,10 +440,37 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                   }
                                 }
 
+                                //Assign zero points and get data of the approved members who hasn't participated in any event
+                                let tempArray: any = [];
+                                for (let i = 0; i < datada.value.length; i++) {
+                                  if (memcount.findIndex((member: { id: any }) => member.id === datada.value[i].ID) === -1 &&
+                                    datada.value[i].Status === stringsConstants.approvedStatus
+                                  ) {
+                                    tempArray.push({
+                                      id: datada.value[i].ID,
+                                      points: 0,
+                                    });
+                                  }
+                                }
+                                memcount = [...memcount, ...tempArray];
                                 let pointsTotal = 0;
                                 let rank: number;
+
+                                //Sorting
+                                //Intially sort approved champions in the descending order of points count 
+                                //if champion doesn't have any points sort them in ascending order of their ids
                                 memcount
-                                  .sort((x, y) => y.points - x.points)
+                                  .sort((a, b) => {
+
+                                    if (a.points < b.points) return 1;
+
+                                    if (a.points > b.points) return -1;
+
+                                    if (a.id > b.id) return 1;
+
+                                    if (a.id < b.id) return -1;
+
+                                  })
                                   .map((x: any, ind: number) => {
                                     if (
                                       x.id ===
@@ -462,7 +485,6 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                     }
                                   });
                                 this.setState({
-                                  user: datauser,
                                   isLoaded: true,
                                   totalUserPointsfromList: pointsTotal,
                                   totalUsers: totalchamps,
@@ -479,8 +501,68 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       });
   }
 
-  //getting extra symbol, so using default menthod
+  //Get settings from config list
+  private async getConfigListSettings() {
+    try {
+      const configListData: IConfigList[] = await commonServiceManager.getMemberListColumnConfigSettings();
+      if (configListData.length === 3) {
+        this.setState({ configListSettings: configListData });
+      }
+      else {
+        console.log(
+          stringsConstants.CMPErrorMessage +
+          ` while loading the page. There could be a problem with the ${stringsConstants.ConfigList} data.`
+        );
+      }
+    }
+    catch (error) {
+      console.error("CMP_Sidebar_getConfigListSettings \n", error);
+      console.log(
+        stringsConstants.CMPErrorMessage +
+        `while retrieving the ${stringsConstants.ConfigList} settings. Below are the details: \n` +
+        JSON.stringify(error),
+      );
+    }
+  }
 
+  //Get memberlist column names from member list
+  private async getMemberListColumnNames() {
+    try {
+      const columnsDisplayNames: any[] = await commonServiceManager.getMemberListColumnDisplayNames();
+      if (columnsDisplayNames.length > 0) {
+        this.setState({ memberListColumnNames: columnsDisplayNames });
+      }
+    }
+    catch (error) {
+      console.error("CMP_Sidebar_getMemberListColumnNames \n", error);
+      console.log(
+        stringsConstants.CMPErrorMessage +
+        ` while retrieving the ${stringsConstants.MemberList} column data. Below are the details: \n` +
+        JSON.stringify(error),
+      );
+    }
+  }
+
+  //populate member list column display names into the states
+  private populateColumnNames() {
+    const enabledSettingsArray = this.state.configListSettings.filter((setting) => setting.Value === stringsConstants.EnabledStatus);
+    for (let setting of enabledSettingsArray) {
+      const columnObject = this.state.memberListColumnNames.find((column) => column.InternalName === setting.Title);
+      if (columnObject.InternalName === stringsConstants.RegionColumn) {
+        this.setState({ regionColumnName: columnObject.Title });
+        continue;
+      }
+      if (columnObject.InternalName === stringsConstants.CountryColumn) {
+        this.setState({ countryColumnName: columnObject.Title });
+        continue;
+      }
+      if (columnObject.InternalName === stringsConstants.GroupColumn) {
+        this.setState({ groupColumnName: columnObject.Title });
+      }
+    }
+  }
+
+  //getting extra symbol, so using default menthod
   public onRenderCaretDown = (): JSX.Element => {
     return <span></span>;
   }
@@ -738,33 +820,57 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     }
                     onChange={(evt) => this.handleInput(evt, "Title")}
                   />
-                  <label htmlFor="Region" className="bc-label">
-                    {LocaleStrings.RegionGridHeader}
-                  </label>
-                  <Dropdown
-                    onChange={(event: any) => this.filterUsers("region", event)}
-                    placeholder={LocaleStrings.RegionPlaceholder}
-                    options={this.options(this.state.regions)}
-                    styles={this.dropdownStyles}
-                    onRenderCaretDown={this.onRenderCaretDown}
-                    defaultValue={this.state.currentUser.Region}
-                    calloutProps={{ className: "nonMemberDdCallout" }}
-                  />
-                  <label htmlFor="Country" className="bc-label">
-                    {LocaleStrings.CountryGridHeader}
-                  </label>
-                  <Dropdown
-                    onChange={(event: any) =>
-                      this.filterUsers("country", event)
-                    }
-                    placeholder={LocaleStrings.CountryPlaceholder}
-                    options={this.options(this.state.coutries)}
-                    styles={this.dropdownStyles}
-                    onRenderCaretDown={this.onRenderCaretDown}
-                    defaultValue={this.state.currentUser.Country}
-                    calloutProps={{ className: "nonMemberDdCallout" }}
-                  />
-                  <label htmlFor="Focus Area" className="bc-label">
+                  {this.state.regionColumnName !== "" &&
+                    <>
+                      <label htmlFor="Region" className="bc-label" title={this.state.regionColumnName}>
+                        {this.state.regionColumnName}
+                      </label>
+                      <Dropdown
+                        onChange={(event: any) => this.filterUsers("region", event)}
+                        placeholder={"Select " + this.state.regionColumnName}
+                        options={this.options(this.state.regions)}
+                        styles={this.dropdownStyles}
+                        onRenderCaretDown={this.onRenderCaretDown}
+                        defaultValue={this.state.currentUser.Region}
+                        calloutProps={{ className: "nonMemberDdCallout" }}
+                      />
+                    </>
+                  }
+                  {this.state.countryColumnName !== "" &&
+                    <>
+                      <label htmlFor="Country" className="bc-label" title={this.state.countryColumnName}>
+                        {this.state.countryColumnName}
+                      </label>
+                      <Dropdown
+                        onChange={(event: any) =>
+                          this.filterUsers("country", event)
+                        }
+                        placeholder={"Select " + this.state.countryColumnName}
+                        options={this.options(this.state.countries)}
+                        styles={this.dropdownStyles}
+                        onRenderCaretDown={this.onRenderCaretDown}
+                        defaultValue={this.state.currentUser.Country}
+                        calloutProps={{ className: "nonMemberDdCallout" }}
+                      />
+                    </>
+                  }
+                  {this.state.groupColumnName !== "" &&
+                    <>
+                      <label htmlFor="Group" className="bc-label" title={this.state.groupColumnName}>
+                        {this.state.groupColumnName}
+                      </label>
+                      <Dropdown
+                        onChange={(event: any) => this.filterUsers("group", event)}
+                        placeholder={"Select " + this.state.groupColumnName}
+                        options={this.options(this.state.roles)}
+                        styles={this.dropdownStyles}
+                        onRenderCaretDown={this.onRenderCaretDown}
+                        defaultValue={this.state.currentUser.Group}
+                        calloutProps={{ className: "nonMemberDdCallout" }}
+                      />
+                    </>
+                  }
+                  <label htmlFor="Focus Area" className="bc-label" title={LocaleStrings.FocusAreaGridHeader}>
                     {LocaleStrings.FocusAreaGridHeader}
                   </label>
                   <Dropdown
@@ -776,18 +882,6 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     defaultValue={this.state.currentUser.FocusArea}
                     multiSelect
                     selectedKeys={this.state.multiSelectChoices}
-                    calloutProps={{ className: "nonMemberDdCallout" }}
-                  />
-                  <label htmlFor="Group" className="bc-label">
-                    {LocaleStrings.GroupGridHeader}
-                  </label>
-                  <Dropdown
-                    onChange={(event: any) => this.filterUsers("group", event)}
-                    placeholder={LocaleStrings.GroupPlaceholder}
-                    options={this.options(this.state.roles)}
-                    styles={this.dropdownStyles}
-                    onRenderCaretDown={this.onRenderCaretDown}
-                    defaultValue={this.state.currentUser.Group}
                     calloutProps={{ className: "nonMemberDdCallout" }}
                   />
                   <Button

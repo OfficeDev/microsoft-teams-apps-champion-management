@@ -1,7 +1,7 @@
 import { Icon } from '@fluentui/react/lib/Icon';
 import { List } from '@fluentui/react/lib/List';
 import { IRectangle } from '@fluentui/react/lib/Utilities';
-import { MSGraphClient, SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
+import { MSGraphClientV3, SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import * as microsoftTeams from "@microsoft/teams-js";
 import { initializeIcons } from "@uifabric/icons";
@@ -162,44 +162,36 @@ export default class DigitalBadge extends TeamsBaseComponent<
           }}
         >
           <div className={dbStyles.listGridSizer}>
-            <div className={dbStyles.listGridPadder}>
-              <a href="#" onClick={() => { this.onBadgeSelected(item.url); }}>
-                {this.state.profileImage.url &&
-                  this.state.profileImage.url !==
-                  "../assets/images/noimage.png" && (
-                    <>
-                      <img
-                        src={this.state.profileImage.url}
-                        alt={LocaleStrings.ProfileImageAlt}
-                        className={dbStyles.listGridImage}
-                      />
-                      <img
-                        alt={LocaleStrings.BadgeImageAlt}
-                        src={item.url}
-                        className={dbStyles.listGridImage}
-                      />
-                      <span className={dbStyles.listGridLabel} title={this.state.userletters}>{this.state.userletters}</span>
-                      <span onClick={() => { this.onBadgeSelected(item.url); }} className={dbStyles.listGridLabel} title={item.title}>{item.title}</span>
-                    </>
-                  )}
-                {this.state.profileImage.url &&
-                  this.state.profileImage.url ===
-                  "../assets/images/noimage.png" && (
-                    <>
-                      <img
-                        src={require("../assets/images/noimage.png")}
-                        className={dbStyles.listGridImage}
-                        alt={LocaleStrings.ProfileImageAlt}
-                      />
-                      <img
-                        className={dbStyles.listGridImage}
-                        alt={LocaleStrings.BadgeImageAlt}
-                        src={item.url}
-                      />
-                      <span className={dbStyles.listGridLabel} title={this.state.userletters}>{this.state.userletters}</span>
-                      <span onClick={() => { this.onBadgeSelected(item.url); }} className={dbStyles.listGridLabel} title={item.title}>{item.title}</span>
-                    </>
-                  )}
+            <div className={`${dbStyles.listGridPadder}${!item.enabled ? " " + dbStyles.disabledBadge : ""}`}>
+              <a onClick={item.enabled && (() => { this.onBadgeSelected(item.url); })}>
+                {this.state.profileImage.url && (
+                  <>
+                    {this.state.profileImage.url !==
+                      "../assets/images/noimage.png" && (
+                        <img
+                          src={this.state.profileImage.url}
+                          className={dbStyles.listGridImage}
+                          alt={LocaleStrings.ProfileImageAlt}
+                        />
+                      )}
+                    {this.state.profileImage.url ===
+                      "../assets/images/noimage.png" && (
+                        <img
+                          src={require("../assets/images/noimage.png")}
+                          className={dbStyles.listGridImage}
+                          alt={LocaleStrings.ProfileImageAlt}
+                        />
+                      )}
+                    <img
+                      className={dbStyles.listGridImage}
+                      alt={LocaleStrings.BadgeImageAlt}
+                      src={item.url}
+                      title={item.enabled ? "" : LocaleStrings.BadgePointsTooltip + " " + item.points}
+                    />
+                    <span className={dbStyles.listGridLabel} title={this.state.userletters}>{this.state.userletters}</span>
+                    <span className={dbStyles.listGridLabel} title={item.title}>{item.title}</span>
+                  </>
+                )}
               </a>
             </div>
           </div>
@@ -238,12 +230,46 @@ export default class DigitalBadge extends TeamsBaseComponent<
   private async getAllBadgeImages() {
     try {
       this.setState({ isLoading: true });
+
       let commonServiceManager: commonServices = new commonServices(this.props.context, this.props.siteUrl);
+      //Get member's total points from Event track details list 
+      const totalPointsScored = await commonServiceManager.getTotalPointsForMember(upn);
+
+      //Get all badges from the library
       const resultImages: any[] = await commonServiceManager.getAllBadgeImages(strings.DigitalBadgeLibrary, this.props.context.pageContext.user.email.toLowerCase());
+      let finalImagesArray: any[] = [];
+
       if (resultImages.length == 0)
         this.setState({ noBadgesFlag: true, isLoading: false });
-      else
-        this.setState({ allBadgeImages: resultImages, isLoading: false });
+      else {
+        for (const element of resultImages) {
+          if (element.minimumPoints === null ||
+            element.minimumPoints === undefined ||
+            totalPointsScored >= element.minimumPoints) {
+            finalImagesArray.push({
+              title: element.title,
+              url: element.url,
+              enabled: true,
+              points: element.minimumPoints
+            });
+          }
+          else {
+            finalImagesArray.push({
+              title: element.title,
+              url: element.url,
+              enabled: false,
+              points: element.minimumPoints
+            });
+          }
+        }
+        //Sorting the badges with enabled first followed by locked badges.
+        finalImagesArray.sort((a, b) => {
+          if (a.enabled < b.enabled) return 1;
+          if (a.enabled > b.enabled) return -1;
+        });
+
+        this.setState({ allBadgeImages: finalImagesArray, isLoading: false });
+      }
     }
     catch (error) {
       console.error("CMP_DigitalBadge_getAllBadgeImages \n", JSON.stringify(error));
@@ -773,7 +799,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
         const contextDownload = canvasDownload.getContext("2d");
         const profileImageObj: HTMLImageElement = new Image();
         const badgeImageObj: HTMLImageElement = new Image();
-        profileImageObj.src = profileImage.url;
+        profileImageObj.src = profileImage.url;        
         badgeImageObj.src = this.state.imageURL;
         profileImageObj.onload = () => {
           context.drawImage(
@@ -816,11 +842,13 @@ export default class DigitalBadge extends TeamsBaseComponent<
         const profileImageObj: HTMLImageElement = new Image();
         const badgeImageObj: HTMLImageElement = new Image();
         profileImage.width = 100;
-        profileImage.url = "../assets/images/noimage.png";
+        profileImage.url = "../assets/images/noimage.png";        
         this.setState({
           profileImage: profileImage,
         });
         profileImageObj.src = require("../assets/images/noimage.png");
+        //To avoid CORS issue in CDN enabled tenants
+        profileImageObj.crossOrigin= "Anonymous";
         badgeImageObj.src = this.state.imageURL;
         profileImageObj.onload = () => {
           context.font = "32px Arial";
@@ -854,9 +882,9 @@ export default class DigitalBadge extends TeamsBaseComponent<
     this.getPhotoBits()
       .then((res: any) => {
         this.updateUserPhoto(res)
-          .then((response: { status: number }) => {
+          .then((response) => {
             console.log(response);
-            if (response.status === 200) {
+            if (response) {
               this.setState({
                 isApplying: false,
                 isApplied: true,
@@ -932,15 +960,15 @@ export default class DigitalBadge extends TeamsBaseComponent<
         blob.lastModifiedDate = new Date();
         blob.name = "profile.jpeg";
         this.props.context.msGraphClientFactory
-          .getClient()
-          .then((client: MSGraphClient) => {
+          .getClient('3')
+          .then((client: MSGraphClientV3) => {
             client
               .api("me/photo/$value")
               .version("v1.0")
               .header("Content-Type", "image/jpeg")
               .put(blob, (errDb, _res, rawresponse) => {
                 if (!errDb) {
-                  resolve(rawresponse);
+                  resolve(_res);
                 }
               });
           });
@@ -962,13 +990,12 @@ export default class DigitalBadge extends TeamsBaseComponent<
     let photoPromise: Promise<any> = new Promise(
       (resolve: (arg0: Response) => void, reject: any) => {
         this.props.context.msGraphClientFactory
-          .getClient()
-          .then((garphClient: MSGraphClient) => {
-            garphClient
+          .getClient('3')
+          .then((graphClient: MSGraphClientV3) => {
+            graphClient
               .api(graphMyPhotoBitsUrl)
               .version("v1.0")
               .headers({ "Content-Type": "blob", responseType: "blob" })
-              .responseType("blob")
               .get()
               .then((data) => {
                 resolve(data);
@@ -986,13 +1013,12 @@ export default class DigitalBadge extends TeamsBaseComponent<
     let photoPromise: Promise<any> = new Promise(
       (resolve: (arg0: Response) => void, _reject: any) => {
         this.props.context.msGraphClientFactory
-          .getClient()
-          .then((garphClient: MSGraphClient) => {
-            garphClient
+          .getClient('3')
+          .then((graphClient: MSGraphClientV3) => {
+            graphClient
               .api(graphMyPhotoApiUrl)
               .version("v1.0")
               .headers({ "Content-Type": "blob", responseType: "blob" })
-              .responseType("json")
               .get()
               .then((data) => {
                 resolve(data);

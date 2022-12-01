@@ -82,13 +82,28 @@
     width: 100%;
     height: 100%;
 
-    .ag-theme-alpine {
-      height: 400px;
+    .events-table {
+      max-height: 400px;
       width: auto;
-    }
 
-    .ag-theme-alpine>div>div {
-      background-color: #fff;
+      .react-bootstrap-table {
+        max-height: 360px;
+        overflow-y: overlay;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+
+        table {
+          margin-bottom: 0px;
+          border-collapse: separate;
+          border-spacing: 0;
+          border: none;
+
+          .event-table-header {
+            position: sticky;
+            top: 0px;
+          }
+        }
+      }
     }
 
     .loader {
@@ -104,6 +119,7 @@
       top: 25%;
       transform: translate(-50%, -50%);
       position: relative;
+      z-index: 1;
     }
 
     /* Safari */
@@ -161,6 +177,10 @@
         .cv-date-control {
           margin: 0 0 15px 0;
           max-width: 300px;
+
+          label {
+            white-space: nowrap;
+          }
         }
 
         .cv-margin-auto {
@@ -171,8 +191,23 @@
           }
         }
 
+        .cv-notes-margin-top {
+          margin-top: 30px;
+        }
+
+        .cv-add-event-margin-top {
+          margin-top: 70px;
+        }
+
         .cv-margin-top-auto {
           margin-top: auto;
+        }
+
+        @media screen and (max-width: 908px) {
+          .cv-margin-top-auto {
+            margin-top: 20px;
+            margin-left: -10px;
+          }
         }
 
         .cv-padding-right {
@@ -202,6 +237,11 @@
 
     .row-margin {
       margin-top: 1.5rem !important;
+    }
+
+    .cv-events-text-align {
+      overflow-wrap: anywhere;
+      width: 180px;
     }
 
     .tick {
@@ -243,6 +283,21 @@
       font: normal normal normal 18px/24px Segoe UI !important;
       letter-spacing: 0px;
       opacity: 1;
+    }
+
+    .pendingEventsMessage {
+      text-align: left;
+      font: normal normal normal 18px/24px Segoe UI !important;
+      letter-spacing: 0px;
+      opacity: 1;
+      color: #000000;
+
+      .tickImage {
+        width: 28px;
+        height: 28px;
+        margin-right: 10px;
+        margin-bottom: 7px;
+      }
     }
 
     .MuiDataGrid-root {
@@ -315,6 +370,18 @@
   }
 
   @media screen and (max-width: 375pt) {
+    .main {
+      .events-table {
+        max-height: 450px;
+
+        .react-bootstrap-table {
+          table {
+            table-layout: auto;
+          }
+        }
+      }
+    }
+
     .form-fields {
       .form-data {
         .form-group {

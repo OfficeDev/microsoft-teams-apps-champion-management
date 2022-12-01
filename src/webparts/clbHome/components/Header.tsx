@@ -1,4 +1,4 @@
-import { DirectionalHint, TooltipHost } from '@fluentui/react/lib/Tooltip';
+import { DirectionalHint, TooltipHost } from '@fluentui/react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
 import { Callout, Link, Text } from 'office-ui-fabric-react';

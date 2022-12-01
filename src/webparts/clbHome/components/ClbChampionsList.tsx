@@ -6,15 +6,18 @@ import * as React from "react";
 import siteconfig from "../config/siteconfig.json";
 import styles from "../scss/CMPChampionsList.module.scss";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import { IConfigList } from "./ManageConfigSettings";
+import * as stringConstants from "../constants/strings";
 
 
 export interface IClbChampionsListProps {
   context?: WebPartContext;
-  onClickAddmember: Function;
-  isEmp: boolean;
+  onHomeCallBack: Function;
   siteUrl: string;
   userAdded: boolean;
   userStatus: string;
+  configListData: Array<IConfigList>;
+  memberListColumnsNames: Array<any>;
 }
 export interface ISPLists {
   value: ISPList[];
@@ -31,37 +34,42 @@ export interface ISPList {
   Region: string;
   Points: number;
 }
-interface IState {
+export interface IState {
   list: ISPLists;
-  isAddChampion: boolean;
   successMessage: string;
-  userDetails: Array<any>;
-  selectedUsers: Array<any>;
   siteUrl: string;
   inclusionPath: string;
   siteName: string;
-
+  regionColumnName: string;
+  countryColumnName: string;
+  groupColumnName: string;
 }
 class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
   constructor(props: IClbChampionsListProps) {
     super(props);
     sp.setup({
-      spfxContext: this.props.context,
+      spfxContext: this.props.context as any,
     });
 
     this.state = {
       list: { value: [] },
-      isAddChampion: false,
       successMessage: "",
-      userDetails: [],
-      selectedUsers: [],
       siteUrl: this.props.siteUrl,
       siteName: siteconfig.sitename,
       inclusionPath: siteconfig.inclusionPath,
+      regionColumnName: "",
+      countryColumnName: "",
+      groupColumnName: ""
     };
+    //Bind methods
+    this.populateColumnNames = this.populateColumnNames.bind(this);
     this._getListData();
   }
 
+  //Populate member list column display names 
+  public componentDidMount(): void {
+    this.populateColumnNames();
+  }
   //Get Details of all members from Member List 
   private _getListData(): Promise<ISPLists> {
     return this.props.context.spHttpClient
@@ -81,11 +89,32 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
       });
   }
 
+  //update component state with list data
   private _renderList(items: ISPList[]): void {
     this.setState({ list: { value: items } });
   }
 
+  //Assign states with member list column names
+  private populateColumnNames() {
+    const enabledSettingsArray = this.props.configListData.filter((setting) => setting.Value === stringConstants.EnabledStatus);
+    for (let setting of enabledSettingsArray) {
+      const columnObject = this.props.memberListColumnsNames.find((column) => column.InternalName === setting.Title);
+      if (columnObject.InternalName === stringConstants.RegionColumn) {
+        this.setState({ regionColumnName: columnObject.Title });
+        continue;
+      }
+      if (columnObject.InternalName === stringConstants.CountryColumn) {
+        this.setState({ countryColumnName: columnObject.Title });
+        continue;
+      }
+      if (columnObject.InternalName === stringConstants.GroupColumn) {
+        this.setState({ groupColumnName: columnObject.Title });
+      }
+    }
+  }
+
   public render() {
+
     return (
       <div className={`container ${styles.championListContainer}`}>
         <div className={styles.championListPath}>
@@ -95,7 +124,7 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
           />
           <span
             className={styles.backLabel}
-            onClick={() => { this.props.onClickAddmember(); }}
+            onClick={() => { this.props.onHomeCallBack(); }}
             title={LocaleStrings.CMPBreadcrumbLabel}
           >
             {LocaleStrings.CMPBreadcrumbLabel}
@@ -113,11 +142,10 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
           <table className="table table-bodered">
             <thead className={styles.listHeader}>
               <th title={LocaleStrings.PeopleNameGridHeader}>{LocaleStrings.PeopleNameGridHeader}</th>
-              <th title={LocaleStrings.RegionGridHeader}>{LocaleStrings.RegionGridHeader}</th>
-              <th title={LocaleStrings.CountryGridHeader}>{LocaleStrings.CountryGridHeader}</th>
+              {this.state.regionColumnName !== "" && <th title={this.state.regionColumnName}>{this.state.regionColumnName}</th>}
+              {this.state.countryColumnName !== "" && <th title={this.state.countryColumnName}>{this.state.countryColumnName}</th>}
+              {this.state.groupColumnName !== "" && <th title={this.state.groupColumnName}>{this.state.groupColumnName}</th>}
               <th title={LocaleStrings.FocusAreaGridHeader}>{LocaleStrings.FocusAreaGridHeader}</th>
-              <th title={LocaleStrings.GroupGridHeader}>{LocaleStrings.GroupGridHeader}</th>
-              {!this.props.isEmp && <th title={"Status"}>Status</th>}
             </thead>
             <tbody className={styles.listBody}>
               {this.state.list &&
@@ -132,11 +160,10 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
                           <span className="mr-1"></span>
                           {item.LastName}
                         </td>
-                        <td title={item.Region ? item.Region : ""}>{item.Region}</td>
-                        <td title={`${item.Country ? item.Country : ""}`}>{item.Country}</td>
+                        {this.state.regionColumnName !== "" && <td title={item.Region ? item.Region : ""}>{item.Region}</td>}
+                        {this.state.countryColumnName !== "" && <td title={`${item.Country ? item.Country : ""}`}>{item.Country}</td>}
+                        {this.state.groupColumnName !== "" && <td title={`${item.Group ? item.Group : ""}`}>{item.Group}</td>}
                         <td title={`${item.FocusArea ? item.FocusArea : ""}`}>{`${item.FocusArea ? item.FocusArea : ""}`}</td>
-                        <td title={`${item.Group ? item.Group : ""}`}>{item.Group}</td>
-                        {!this.props.isEmp && <td title={`${item.Status ? item.Status : ""}`}>{item.Status}</td>}
                       </tr>
                     );
                   }
@@ -144,7 +171,7 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
             </tbody>
           </table>
         </div>
-      </div>
+      </div >
     );
   }
 }

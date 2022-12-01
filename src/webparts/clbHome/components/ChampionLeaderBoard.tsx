@@ -70,7 +70,6 @@ export default function ChampionLeaderBoard(props: ChampionLeaderBoardProps) {
               siteUrl={props.siteUrl}
               context={props.context}
               callBack={_renderListAsync}
-              onClickCancel={() => this.setState({ cB: false, cV: true })}
             />
           </div>
         </div>

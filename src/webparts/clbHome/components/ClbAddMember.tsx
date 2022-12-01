@@ -20,14 +20,17 @@ import Row from "react-bootstrap/Row";
 import siteconfig from "../config/siteconfig.json";
 import * as stringsConstants from "../constants/strings";
 import styles from "../scss/CMPAddMember.module.scss";
+import commonServices from "../Common/CommonServices";
+import ClbChampionsList from './ClbChampionsList';
+import { IConfigList } from './ManageConfigSettings';
 
 
-
+//global variables
+let commonServiceManager: commonServices;
 export interface IClbAddMemberProps {
   context?: any;
-  onClickCancel: () => void;
   onClickBack: () => void;
-  onClickSave: (userStatus: string) => void;
+  onHomeCallBack: () => void;
   siteUrl: string;
   isAdmin: boolean;
 }
@@ -45,25 +48,19 @@ export interface ISPList {
   Points: number;
 }
 interface IUserDetail {
-  ID: number;
+  ID: any;
   LoginName: string;
-  Name: string;
 }
 interface IState {
   list: ISPLists;
   isAddChampion: boolean;
   errorMessage: string;
   updatedMessage: string;
-  UserDetails: Array<any>;
+  UserDetails: Array<IUserDetail>;
   selectedusers: Array<any>;
   siteUrl: string;
-  regionDropdown: Array<any>;
-  allUser: Array<any>;
-  coutries: Array<any>;
+  countries: Array<any>;
   regions: Array<any>;
-  users: Array<any>;
-  roles: Array<any>;
-  status: Array<any>;
   groups: Array<any>;
   focusAreas: Array<any>;
   selectedFocusAreas: any;
@@ -73,6 +70,14 @@ interface IState {
   sitename: string;
   inclusionpath: string;
   load: boolean;
+  memberListColumnNames: Array<any>;
+  configListSettings: Array<IConfigList>;
+  championsList: boolean;
+  isUserAdded: boolean;
+  userStatus: string;
+  regionColumnName: string;
+  countryColumnName: string;
+  groupColumnName: string;
 }
 class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
   public addMemberPeoplePickerParentRef: React.RefObject<HTMLDivElement>;
@@ -91,13 +96,8 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
       updatedMessage: "",
       UserDetails: [],
       selectedusers: [],
-      regionDropdown: [],
-      allUser: [],
-      coutries: [],
+      countries: [],
       regions: [],
-      users: [],
-      roles: [],
-      status: [],
       groups: [],
       focusAreas: [],
       selectedFocusAreas: [],
@@ -107,15 +107,33 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
       memberrole: "",
       sitename: siteconfig.sitename,
       inclusionpath: siteconfig.inclusionPath,
-      load: false
+      load: false,
+      memberListColumnNames: [],
+      configListSettings: [],
+      championsList: false,
+      isUserAdded: false,
+      userStatus: "",
+      regionColumnName: "",
+      countryColumnName: "",
+      groupColumnName: ""
     };
 
     this.updatePeoplePickerMenuAttributes = this.updatePeoplePickerMenuAttributes.bind(this);
     this.removeButtonEvent = this.removeButtonEvent.bind(this);
     this.onFocusAreaChange = this.onFocusAreaChange.bind(this);
+    this.getMemberListColumnNames = this.getMemberListColumnNames.bind(this);
+    this.getConfigListSettings = this.getConfigListSettings.bind(this);
+    this.populateColumnNames = this.populateColumnNames.bind(this);
+
+    //Create object for CommonServices class
+    commonServiceManager = new commonServices(
+      this.props.context,
+      this.props.siteUrl
+    );
   }
 
-  public componentDidMount() {
+  //Get Member list data and config list data into the component
+  public async componentDidMount() {
     this.props.context.spHttpClient
       .get(
 
@@ -133,11 +151,11 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
               )
               // tslint:disable-next-line: no-shadowed-variable
               .then((response: SPHttpClientResponse) => {
-                response.json().then((coutries) => {
-                  if (!coutries.error) {
+                response.json().then((countries) => {
+                  if (!countries.error) {
                     this.setState({
                       regions: regions.Choices,
-                      coutries: coutries.Choices,
+                      countries: countries.Choices,
                     });
                   }
                 });
@@ -182,6 +200,53 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
     peoplePickerElement[0].setAttribute('aria-label', peoplePickerAriaLabel);
 
     this.updatePeoplePickerMenuAttributes();
+    await this.getConfigListSettings();
+    await this.getMemberListColumnNames();
+  }
+
+  //Get settings from config list
+  private async getConfigListSettings() {
+    try {
+      const configListData: IConfigList[] = await commonServiceManager.getMemberListColumnConfigSettings();
+      if (configListData.length === 3) {
+        this.setState({ configListSettings: configListData });
+      }
+      else {
+        this.setState({
+          errorMessage:
+            stringsConstants.CMPErrorMessage +
+            ` while loading the page. There could be a problem with the ${stringsConstants.ConfigList} data.`
+        });
+      }
+    }
+    catch (error) {
+      console.error("CMP_ClbAddMember_getConfigListSettings \n", error);
+      this.setState({
+        errorMessage:
+          stringsConstants.CMPErrorMessage +
+          `while retrieving the ${stringsConstants.ConfigList} settings. Below are the details: \n` +
+          JSON.stringify(error),
+      });
+    }
+  }
+
+  //Get memberlist column names from member list
+  private async getMemberListColumnNames() {
+    try {
+      const columnsDisplayNames: any[] = await commonServiceManager.getMemberListColumnDisplayNames();
+      if (columnsDisplayNames.length > 0) {
+        this.setState({ memberListColumnNames: columnsDisplayNames });
+      }
+    }
+    catch (error) {
+      console.error("CMP_AddMember_getMemberListColumnNames \n", error);
+      this.setState({
+        errorMessage:
+          stringsConstants.CMPErrorMessage +
+          ` while retrieving the ${stringsConstants.MemberList} column data. Below are the details: \n` +
+          JSON.stringify(error),
+      });
+    }
   }
 
   //Update Aria Label attribute to people picker control's suggestions Menu
@@ -249,15 +314,41 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
       if (idx != -1)
         this.state.selectedFocusAreas.splice(idx, 1);
     }
+
+    //update dropdown states with member list column display names 
+    if (prevState.configListSettings !== this.state.configListSettings ||
+      prevState.memberListColumnNames !== this.state.memberListColumnNames) {
+      if (this.state.configListSettings.length > 0 && this.state.memberListColumnNames.length > 0)
+        this.populateColumnNames();
+    }
   }
 
+  //populate member list column display names into the states
+  private populateColumnNames() {
+    const enabledSettingsArray = this.state.configListSettings.filter((setting) => setting.Value === stringsConstants.EnabledStatus);
+    for (let setting of enabledSettingsArray) {
+      const columnObject = this.state.memberListColumnNames.find((column) => column.InternalName === setting.Title);
+      if (columnObject.InternalName === stringsConstants.RegionColumn) {
+        this.setState({ regionColumnName: columnObject.Title });
+        continue;
+      }
+      if (columnObject.InternalName === stringsConstants.CountryColumn) {
+        this.setState({ countryColumnName: columnObject.Title });
+        continue;
+      }
+      if (columnObject.InternalName === stringsConstants.GroupColumn) {
+        this.setState({ groupColumnName: columnObject.Title });
+      }
+    }
+  }
 
   private _getPeoplePickerItems(items: any[]) {
     let userarr: IUserDetail[] = [];
     items.forEach((user) => {
-      userarr.push({ ID: user.id, LoginName: user.loginName, Name: user.text });
+      userarr.push({ ID: user.id, LoginName: user.loginName });
     });
     this.setState({ UserDetails: userarr });
+    if (items.length === 0) this.setState({ updatedMessage: "" });
   }
 
   private async _getListData(email: any): Promise<any> {
@@ -338,11 +429,28 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                               if (element.Email.toLowerCase() === email.toLowerCase())
                                 member.push(element);
                             });
+                            const profile = await sp.profiles.getPropertiesFor(this.state.UserDetails[0].LoginName);
 
+                            //get first name and last name from the user profile properties
+                            let firstName = "";
+                            let lastName = "";
+                            for (let i = 0; i < profile.UserProfileProperties.length; i++) {
+                              if (firstName === "" || lastName === "") {
+                                if (profile.UserProfileProperties[i].Key === "FirstName") {
+                                  firstName = profile.UserProfileProperties[i].Value;
+                                }
+                                if (profile.UserProfileProperties[i].Key === "LastName") {
+                                  lastName = profile.UserProfileProperties[i].Value;
+                                }
+                              }
+                              else {
+                                break;
+                              }
+                            }
                             const listDefinition: any = {
                               Title: email,
-                              FirstName: this.state.UserDetails[0].Name.split(" ")[0].replace(",", ""),
-                              LastName: this.state.UserDetails[0].Name.split(" ")[1],
+                              FirstName: firstName,
+                              LastName: lastName,
                               Region: this.state.memberData.region,
                               Country: this.state.memberData.country,
                               Role: "Champion",
@@ -377,7 +485,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                                       isAddChampion: false,
                                       load: false
                                     });
-                                    this.props.onClickSave(listDefinition.Status);
+                                    this.setState({ isUserAdded: true, userStatus: listDefinition.Status, championsList: true });
                                   } else {
                                     this.setState({
                                       errorMessage: `Response status ${response.status} - ${response.statusText}`,
@@ -447,125 +555,168 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
   }
 
   public options = (optionArray: any) => {
-    let myoptions = [];
-    myoptions.push({ key: "All", text: "All" });
-    optionArray.forEach((element: any) => {
-      myoptions.push({ key: element, text: element });
-    });
+    let myoptions = [];    
+    if (optionArray !== undefined) {
+      myoptions.push({ key: "All", text: "All" });
+      optionArray.forEach((element: any) => {
+        myoptions.push({ key: element, text: element });
+      });
+    }
     return myoptions;
   }
 
   public render() {
+    //storing number of dropdowns got enabled
+    const enabledDropdownCount = (this.state.countryColumnName !== "" ? 1 : 0) +
+      (this.state.regionColumnName !== "" ? 1 : 0) + (this.state.groupColumnName !== "" ? 1 : 0);
     return (
-      <div>
-        <div className={`container`}>
-          <div className={styles.addMembersPath}>
-            <img src={require("../assets/CMPImages/BackIcon.png")}
-              className={styles.backImg}
-              alt={LocaleStrings.BackButton}
-            />
-            <span
-              className={styles.backLabel}
-              onClick={() => { this.props.onClickBack(); }}
-              title={LocaleStrings.CMPBreadcrumbLabel}
-            >
-              {LocaleStrings.CMPBreadcrumbLabel}
-            </span>
-            <span className={styles.border}></span>
-            <span className={styles.addMemberLabel}>{this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle}</span>
-          </div>
-          {this.state.updatedMessage !== "" ?
-            <Label className={styles.updatedMessage}>
-              <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
-              {this.state.updatedMessage}
-            </Label> : null}
-          {this.state.errorMessage !== "" ?
-            <Label className={styles.errorMessage}>{this.state.errorMessage} </Label> : null}
-          <Label className={styles.pickerLabel}>{this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle} <span className={styles.asterisk}>*</span></Label>
-          <div ref={this.addMemberPeoplePickerParentRef}>
-            <PeoplePicker
+      <>
+        {
+          this.state.championsList ? (
+            <ClbChampionsList
+              siteUrl={this.props.siteUrl}
               context={this.props.context}
-              personSelectionLimit={1}
-              required={true}
-              onChange={this._getPeoplePickerItems.bind(this)}
-              showHiddenInUI={false}
-              principalTypes={[PrincipalType.User]}
-              defaultSelectedUsers={this.state.selectedusers}
-              resolveDelay={1000}
-              placeholder={LocaleStrings.PeoplePickerPlaceholder}
-              ref={this.addMemberPeoplePickerRef}
-              peoplePickerCntrlclassName={styles.addMemberPeoplePickerClass}
+              userAdded={this.state.isUserAdded}
+              userStatus={this.state.userStatus}
+              onHomeCallBack={this.props.onHomeCallBack}
+              configListData={this.state.configListSettings}
+              memberListColumnsNames={this.state.memberListColumnNames}
             />
-          </div>
-          <br></br>
-          <Row>
-            <Col md={3}>
-              <Dropdown
-                onChange={(event: any, selectedOption: any) => this.filterUsers("region", selectedOption)}
-                placeholder={LocaleStrings.RegionPlaceholder}
-                options={this.options(this.state.regions)}
-                ariaLabel={LocaleStrings.RegionPlaceholder}
-                className={styles.addMemberDropdown}
-                calloutProps={{ className: "addMemberDropdownCallout" }}
-              />
-            </Col>
-            <Col md={3}>
-              <Dropdown
-                onChange={(event: any, selectedOption: any) => this.filterUsers("country", selectedOption)}
-                placeholder={LocaleStrings.CountryPlaceholder}
-                options={this.options(this.state.coutries)}
-                ariaLabel={LocaleStrings.CountryPlaceholder}
-                className={styles.addMemberDropdown}
-                calloutProps={{ className: "addMemberDropdownCallout" }}
-              />
-            </Col>
-            <Col md={3}>
-              <Dropdown
-                onChange={(event: any, selectedOption: any) => this.filterUsers("group", selectedOption)}
-                placeholder={LocaleStrings.GroupPlaceholder}
-                options={this.options(this.state.groups)}
-                ariaLabel={LocaleStrings.GroupPlaceholder}
-                className={styles.addMemberDropdown}
-                calloutProps={{ className: "addMemberDropdownCallout" }}
-              />
-            </Col>
-            <Col md={3}>
-              <Dropdown
-                onChange={this.onFocusAreaChange.bind(this)}
-                placeholder={LocaleStrings.FocusAreaPlaceholder}
-                options={this.options(this.state.focusAreas)}
-                ariaLabel={LocaleStrings.FocusAreaPlaceholder}
-                multiSelect
-                selectedKeys={this.state.multiSelectChoices}
-                className={styles.addMemberDropdown}
-                calloutProps={{ className: "addMemberDropdownCallout" }}
-              />
-            </Col>
-          </Row>
-          <div className={styles.btnArea}>
-            <button
-              className={`btn ${styles.cancelBtn}`}
-              onClick={() => this.props.onClickBack()}
-              title={LocaleStrings.BackButton}
-            >
-              <Icon iconName="NavigateBack" className={`${styles.cancelBtnIcon}`} />
-              <span className={styles.cancelBtnLabel}>{LocaleStrings.BackButton}</span>
-            </button>
-            <button
-              className={`btn ${styles.saveBtn}`}
-              onClick={() => {
-                this._createorupdateItem();
-                this.state.UserDetails.length > 0 ? this.setState({ load: true }) : this.setState({ load: false });
-              }}
-              title={LocaleStrings.SaveButton}
-            >
-              <Icon iconName="Save" className={`${styles.saveBtnIcon}`} />
-              <span className={styles.saveBtnLabel}>{LocaleStrings.SaveButton}</span>
-            </button>
-          </div>
-          {this.state.load && <div className={styles.load}></div>}
-        </div>
-      </div>
+          ) :
+            <div className={`container`}>
+              <div className={styles.addMembersPath}>
+                <img src={require("../assets/CMPImages/BackIcon.png")}
+                  className={styles.backImg}
+                  alt={LocaleStrings.BackButton}
+                />
+                <span
+                  className={styles.backLabel}
+                  onClick={() => { this.props.onClickBack(); }}
+                  title={LocaleStrings.CMPBreadcrumbLabel}
+                >
+                  {LocaleStrings.CMPBreadcrumbLabel}
+                </span>
+                <span className={styles.border}></span>
+                <span className={styles.addMemberLabel}>{this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle}</span>
+              </div>
+              {this.state.updatedMessage !== "" ?
+                <Label className={styles.updatedMessage}>
+                  <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
+                  {this.state.updatedMessage}
+                </Label> : null}
+              {this.state.errorMessage !== "" ?
+                <Label className={styles.errorMessage}>{this.state.errorMessage} </Label> : null}
+              <Label className={styles.pickerLabel}>{this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle} <span className={styles.asterisk}>*</span></Label>
+              <div ref={this.addMemberPeoplePickerParentRef}>
+                <PeoplePicker
+                  context={this.props.context}
+                  personSelectionLimit={1}
+                  required={true}
+                  onChange={this._getPeoplePickerItems.bind(this)}
+                  showHiddenInUI={false}
+                  principalTypes={[PrincipalType.User]}
+                  defaultSelectedUsers={this.state.selectedusers}
+                  resolveDelay={1000}
+                  placeholder={LocaleStrings.PeoplePickerPlaceholder}
+                  ref={this.addMemberPeoplePickerRef}
+                  peoplePickerCntrlclassName={styles.addMemberPeoplePickerClass}
+                />
+              </div>
+              <br></br>
+              <Row>
+                {this.state.memberListColumnNames.length > 0 ?
+                  <>
+                    {this.state.configListSettings.length === 3 &&
+                      <>
+                        {this.state.regionColumnName !== "" &&
+                          <Col md={enabledDropdownCount < 3 ? 4 : 3} sm={8}>
+                            <Dropdown
+                              onChange={(_event: any, selectedOption: any) => this.filterUsers("region", selectedOption)}
+                              options={this.options(this.state.regions)}
+                              ariaLabel={LocaleStrings.RegionPlaceholder}
+                              className={styles.addMemberDropdown}
+                              calloutProps={{ className: "addMemberDropdownCallout" }}
+                              onRenderPlaceholder={() => <span title={`Select ${this.state.regionColumnName}`}>
+                                Select {this.state.regionColumnName}
+                              </span>}
+                            />
+                          </Col>
+                        }
+                        {this.state.countryColumnName !== "" &&
+                          <Col md={enabledDropdownCount < 3 ? 4 : 3} sm={8}>
+                            <Dropdown
+                              onChange={(event: any, selectedOption: any) => this.filterUsers("country", selectedOption)}
+                              options={this.options(this.state.countries)}
+                              ariaLabel={LocaleStrings.CountryPlaceholder}
+                              className={styles.addMemberDropdown}
+                              calloutProps={{ className: "addMemberDropdownCallout" }}
+                              onRenderPlaceholder={() => <span title={`Select ${this.state.countryColumnName}`}>
+                                Select {this.state.countryColumnName}
+                              </span>}
+                            />
+                          </Col>
+                        }
+                        {this.state.groupColumnName !== "" &&
+                          <Col md={enabledDropdownCount < 3 ? 4 : 3} sm={8}>
+                            <Dropdown
+                              onChange={(event: any, selectedOption: any) => this.filterUsers("group", selectedOption)}
+                              options={this.options(this.state.groups)}
+                              ariaLabel={LocaleStrings.GroupPlaceholder}
+                              className={styles.addMemberDropdown}
+                              calloutProps={{ className: "addMemberDropdownCallout" }}
+                              onRenderPlaceholder={() => <span title={`Select ${this.state.groupColumnName}`}>
+                                Select {this.state.groupColumnName}
+                              </span>}
+                            />
+                          </Col>
+                        }
+                      </>
+                    }
+                    <Col md={enabledDropdownCount < 3 ? 4 : 3} sm={8}>
+                      <Dropdown
+                        onChange={this.onFocusAreaChange.bind(this)}
+                        placeholder={LocaleStrings.FocusAreaPlaceholder}
+                        options={this.options(this.state.focusAreas)}
+                        ariaLabel={LocaleStrings.FocusAreaPlaceholder}
+                        multiSelect
+                        selectedKeys={this.state.multiSelectChoices}
+                        className={styles.addMemberDropdown}
+                        calloutProps={{ className: "addMemberDropdownCallout" }}
+                        onRenderPlaceholder={() =>
+                          <span title={LocaleStrings.FocusAreaPlaceholder}>
+                            {LocaleStrings.FocusAreaPlaceholder}
+                          </span>
+                        }
+                      />
+                    </Col>
+                  </> : null
+                }
+              </Row>
+              <div className={styles.btnArea}>
+                <button
+                  className={`btn ${styles.cancelBtn}`}
+                  onClick={() => this.props.onClickBack()}
+                  title={LocaleStrings.BackButton}
+                >
+                  <Icon iconName="NavigateBack" className={`${styles.cancelBtnIcon}`} />
+                  <span className={styles.cancelBtnLabel}>{LocaleStrings.BackButton}</span>
+                </button>
+                <button
+                  className={`btn ${styles.saveBtn}`}
+                  onClick={() => {
+                    this._createorupdateItem();
+                    this.state.UserDetails.length > 0 ? this.setState({ load: true }) : this.setState({ load: false });
+                  }}
+                  title={LocaleStrings.SaveButton}
+                >
+                  <Icon iconName="Save" className={`${styles.saveBtnIcon}`} />
+                  <span className={styles.saveBtnLabel}>{LocaleStrings.SaveButton}</span>
+                </button>
+              </div>
+              {this.state.load && <div className={styles.load}></div>}
+            </div>
+        }
+      </>
     );
   }
 }

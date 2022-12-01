@@ -1,218 +1,126 @@
 declare interface IClbHomeWebPartStrings {
-  PropertyPaneDescription: string;
-  BasicGroupName: string;
-  DescriptionFieldLabel: string;
 
-  //-------------------------------------CMP----------------------------------------------
-
-  //CMP Common
-  CMPBreadcrumbLabel: string;
-  SaveButton: string;
-  BackButton: string;
-
-  //CMP Home
-  GetStartedLabel: string;
-  AdminToolsLabel: string;
-  ChampionLeaderBoardLabel: string;
+  AboutContentLabel: string;
+  AboutHeaderLabel: string;
+  AcceptButtonAriaDescription: string;
+  AcceptButtonText: string;
+  ActionErrorLabel: string;
+  ActionGridHeader: string;
+  ActiveTournamentLabel: string;
+  ActivitiesCompletedLabel: string;
+  ActivitiesLabel: string;
+  AdditionalResourcesContentLabel: string;
+  AdditionalResourcesHeaderLabel: string;
   AddMemberLabel: string;
-  NominateMemberLabel: string;
-  DigitalBadgeLabel: string;
-  TOTLabel: string;
-  ChampionListLabel: string;
-  EventsListLabel: string;
-  EventsTrackListLabel: string;
-  ManageApprovalsLabel: string;
-  ManageDigitalBadgesLabel: string;
-  EnableTOTLabel: string;
+  AddMemberPageTitle: string;
   AddMembersToolTip: string;
-  DigitalMembersToolTip: string;
-  ChampionsListToolTip: string;
-  EventsListToolTip: string;
-  EventTrackListToolTip: string;
-  ManageApprovalToolTip: string;
-  EnableTOTToolTip: string;
-  ManageDigitalBadgesToolTip: string;
-  ManageAppLogoLabel: string;
-  ManageAppLogoToolTip: string;
-  WelcomeLabel: string;
-
-  //Header
+  AdminTasksLabel: string;
+  AdminToolsLabel: string;
   AppHeaderTitleLabel: string;
   AppLogoToolTip: string;
-  MoreInfoToolTip: string;
-  SupportToolTip: string;
-  FeedbackToolTip: string;
-
-  //More Info Icon Content
-  AboutHeaderLabel: string;
-  AboutContentLabel: string;
-  AdditionalResourcesHeaderLabel: string;
-  AdditionalResourcesContentLabel: string;
-  M365ChampionCommunityLinkLabel: string;
-  DrivingAdoptionLinkLabel: string;
-  CurrentVersionLabel: string;
-  LatestVersionLabel: string;
-  CMPGitHubLinkLabel: string;
-  VisitLabel: string;
-  OverviewLabel: string;
-  MSAdoptionHubLinkLabel: string;
-  DocumentationLabel: string;
-
-  //Add Member  
-  AddMemberPageTitle: string;
-  NominateMemberPageTitle: string;
-  PeoplePickerPlaceholder: string;
-  RegionPlaceholder: string;
-  CountryPlaceholder: string;
-  GroupPlaceholder: string;
-  FocusAreaPlaceholder: string;
-  UserExistingMessage: string;
-
-  //CLBChampionsList and Manage Approvals
-  ChampionsListPageTitle: string;
-  UserNominatedMessage: string;
-  UserAddedMessage: string;
-  PeopleNameGridHeader: string;
-  Select: string;
-  SelectAll: string;
-  RegionGridHeader: string;
-  CountryGridHeader: string;
-  GroupGridHeader: string;
-  FocusAreaGridHeader: string;
-  StatusGridHeader: string;
-  ManageApprovalsPageTitle: string;
-  ActionGridHeader: string;
-  ApproveButton: string;
-  RejectButton: string;
-  NoChampionsMessage: string;
-  ChampionApprovedMessage: string;
-  ChampionRejectedMessage: string;
-  ProcessingSpinnerLabel: string;
-
-  //DigitalBadge
-  DigitalBadgePageTitle: string;
-  LoadingSpinnerLabel: string;
-  DigitalBadgeAppBannerAltText: string;
-  PreAcceptPageTitle: string;
-  PreAcceptDisclaimer: string;
-  PreAcceptDisclaimer2: string;
-  NotQualifiedPreAcceptDisclaimer: string;
-  HowtoGetDigitalBadgeText: string;
-  MultipleBadgeMessage: string;
-  NoBadgeMessage: string;
-  DigitalBadgeSubPageTitle: string;
-  ProfileImageAlt: string;
-  BadgeImageAlt: string;
-  NoProfileImageAlt: string;
-  ApplyButtonText: string;
-  ApplyButtonAriaDescription: string;
   ApplyButton: string;
-  DownloadButtonText: string;
-  DownloadButtonAriaDescription: string;
-  DownloadingButtonText: string;
-  DownloadedButtonText: string;
-  DownloadedButtonSecondaryText: string;
-  DownloadButtonSecondaryText: string;
-  PreApplyDisclaimer: string;
-  PreApplyDisclaimer1: string;
-  NoProfileImageDescription: string;
-  AcceptButtonText: string;
-  AcceptButtonAriaDescription: string;
-  UnauthorizedText: string;
+  ApplyButtonAriaDescription: string;
+  ApplyButtonText: string;
   ApplySpinnerLabel: string;
-  DigitalBadgeSuccessMessage: string;
-
-  //CMP Sidebar
-  CMPSideBarPointsLabel: string;
-  CMPSideBarGlobalRankLabel: string;
-  CMPSideBarChampionsLabel: string;
-  FirstNameLabel: string;
-  LastNameLabel: string;
-  EmailIDLabel: string;
+  ApproveButton: string;
+  ApproveChampionSearchboxPlaceholder: string;
+  BackButton: string;
+  BadgeImageAlt: string;
+  BadgePointsTooltip: string;
+  BasicGroupName: string;
   BecomeChampionLabel: string;
-  ChampionSubmissionPendingLabel: string;
-  ChampionRequestSubmitSuccessMessage: string;
-
-  //ChampionLeaderBoard
-  PivotHeaderGlobal: string;
-  PivotHeaderNearMe: string;
-  PivotHeaderBySpeciality: string;
-  NearMePlaceHolder: string;
   BySpecialityPlaceHolder: string;
-
-  //Champions
-  TopChampionsLabel: string;
-  RecordsNotFound: string;
-  EventTypeLabel: string;
-  CountLabel: string;
-  MyRankLabel: string;
-
-  //ChampionView
-  ViewDashBoardLabel: string;
-  DateofEventGridLabel: string;
-  EventTypeGridLabel: string;
-  RecordEventLabel: string;
-  MonthAndDateLabel: string;
-  EventTypeGridLabelPlaceHolder: string;
-  EventTypeValidationMessage: string;
-  CountValidationMessage: string;
-  EventsSubmitMessage: string;
-  SubmitButton: string;
-
-  //Employee View
-  SearchLabel: string;
-  ActivitiesLabel: string;
-  RegionLabel: string;
-  FocusAreaLabel: string;
-  ShowMoreLabel: string;
-  ViewActivitiesLabel: string;
+  ChampionActivitiesLabel: string;
+  ChampionApprovedMessage: string;
+  ChampionLabel: string;
+  ChampionLeaderBoardLabel: string;
+  ChampionListLabel: string;
+  ChampionRejectedMessage: string;
+  ChampionRequestSubmitSuccessMessage: string;
+  ChampionsListPageTitle: string;
+  ChampionsListToolTip: string;
+  ChampionsSelectedLabel: string;
+  ChampionSubmissionPendingLabel: string;
   ChatIconLabel: string;
-  RequestToCallLabel: string;
-  EmailIconLabel: string;
-  MeetupSubject: string;
-  MeetupBody: string;
-  NoActivitiesinGridLabel: string;
-
-  //----------------------------------------------------------------------------------------
-
-
-  //-------------------------------------TOT-------------------------------------------------
-  // Create Tournament
-  CreateTournamentPageTitle: string;
-  CreateTournamentSuccessLabel: string;
-  TournamentNameLabel: string;
-  TournamentNamePlaceHolderLabel: string;
-  TournamentNameErrorLabel: string;
-  TournamentDescriptionLabel: string;
-  TournamentDescPlaceHolderLabel: string;
-  SelectTeamsActionsLabel: string;
-  TeamsActionInfoToolTip: string;
-  ActionErrorLabel: string;
+  CMPBreadcrumbLabel: string;
+  CMPGitHubLinkLabel: string;
+  CMPSideBarChampionsLabel: string;
+  CMPSideBarGlobalRankLabel: string;
+  CMPSideBarPointsLabel: string;
+  CompletedActionsLabel: string;
+  CompleteTournamentSpinnerMessage: string;
+  ConfigSettingsSaved: string;
+  ConfirmLabel: string;
+  CountLabel: string;
+  CountryGridHeader: string;
+  CountryPlaceholder: string;
+  CountValidationMessage: string;
   CreateTournamentButton: string;
-  DuplicateTournamentNameError: string;  
+  CreateTournamentPageTitle: string;
   CreateTournamentsButton: string;
-  SingleTournamentLabel: string;
-  MultipleTournamentLabel: string;
-  MultiTournamentStep: string;
-  MultiTournamentStep1LinkLabel: string;
-  MultiTournamentStep1Text: string;
-  MultiTournamentStep2: string;
-  MultiTournamentStep3: string;
-  UploadFileButton: string;
-  RemoveFileLabel: string;
-  ImportSpinnerMessage: string;
-  ErrorMsgTournamentList: string;
+  CreateTournamentSuccessLabel: string;
+  CurrentVersionLabel: string;
+  DateLabel: string;
+  DateofEventGridLabel: string;
+  DescriptionFieldLabel: string;
+  DescriptionLabel: string;
+  DigitalBadgeAppBannerAltText: string;
+  DigitalBadgeLabel: string;
+  DigitalBadgePageTitle: string;
+  DigitalBadgeSubPageTitle: string;
+  DigitalBadgeSuccessMessage: string;
+  DigitalMembersToolTip: string;
+  DocumentationLabel: string;
+  DownloadButtonAriaDescription: string;
+  DownloadButtonSecondaryText: string;
+  DownloadButtonText: string;
+  DownloadedButtonSecondaryText: string;
+  DownloadedButtonText: string;
+  DownloadingButtonText: string;
+  DrivingAdoptionLinkLabel: string;
+  DuplicateTournamentNameError: string;
+  EmailIconLabel: string;
+  EmailIDLabel: string;
+  EmailLabel: string;
+  EnableTOTLabel: string;
+  EnableTOTSpinnerMessage: string;
+  EnableTOTSuccessMessage: string;
+  EnableTOTToolTip: string;
+  EnableTournamentSpinnerMessage: string;
+  EnableTournamentSuccessMessage: string;
+  EndTournamentButton: string;
+  EndTournamentDialogMessage: string;
+  EndTournamentSuccessMessage: string;
   ErrorMsgActionsList: string;
   ErrorMsgTournamentActionsList: string;
-  LogMsgTournamentExists: string;
-  LogMsgTournamentExists1: string;
-  LogMsgDone: string;
-  LogMsgDone1: string;
-  LogMsgInvalidTournamentName: string;
-  LogMsgInvalidTemplate: string;
-  LogMsgMultipleTournaments: string;
-  LogMsgBlankSheet: string;
-  LogProgress: string;
+  ErrorMsgTournamentList: string;
+  EventApprovalsEnableLabel: string;
+  EventApprovedMessage: string;
+  EventLabel: string;
+  EventRejectedMessage: string;
+  EventsApprovalInfoIconTooltipContent: string;
+  EventsListLabel: string;
+  EventsListToolTip: string;
+  EventsSelectedLabel: string;
+  EventsSubmissionSuccessMessage: string;
+  EventsSubmitMessage: string;
+  EventsTrackListLabel: string;
+  EventSubmissionPendingMessage: string;
+  EventTrackListToolTip: string;
+  EventTypeGridLabel: string;
+  EventTypeGridLabelPlaceHolder: string;
+  EventTypeLabel: string;
+  EventTypeValidationMessage: string;
+  FeedbackToolTip: string;
+  FirstNameLabel: string;
+  FocusAreaGridHeader: string;
+  FocusAreaLabel: string;
+  FocusAreaPlaceholder: string;
+  FormSavingMessage: string;
+  GetStartedLabel: string;
+  GroupGridHeader: string;
+  GroupPlaceholder: string;
+  HowtoGetDigitalBadgeText: string;
   ImportRule1: string;
   ImportRule2: string;
   ImportRule3: string;
@@ -220,96 +128,165 @@ declare interface IClbHomeWebPartStrings {
   ImportRule5: string;
   ImportRule6: string;
   ImportRule7: string;
-
-  //TOT Common
-  TOTBreadcrumbLabel: string;
-
-  //TOT Landing
-  EnableTOTSuccessMessage: string;
-  EnableTOTSpinnerMessage: string;
-  TOTLeaderBoardPageTitle: string;
-  TOTMyDashboardPageTitle: string;
-  ManageTournamentActionsToolTip: string;
-  ManageTournamentActionsLabel: string;
-  EndCurrentTournamentLabel: string;
-  ManageTournamentsLabel: string;
-  ManageAdminsToolTip: string;
+  ImportSpinnerMessage: string;
+  LastNameLabel: string;
+  LatestVersionLabel: string;
+  LoadingSpinnerLabel: string;
+  LogMsgBlankSheet: string;
+  LogMsgDone: string;
+  LogMsgDone1: string;
+  LogMsgInvalidTemplate: string;
+  LogMsgInvalidTournamentName: string;
+  LogMsgMultipleTournaments: string;
+  LogMsgTournamentExists: string;
+  LogMsgTournamentExists1: string;
+  LogProgress: string;
+  M365ChampionCommunityLinkLabel: string;
   ManageAdminsLabel: string;
+  ManageAdminsToolTip: string;
+  ManageAppLogoLabel: string;
+  ManageAppLogoToolTip: string;
+  ManageConfigSettingsLabel: string;
   ManageDigitalBadgesLabel: string;
-  QuickLinksLabel: string;
-  SpinnerListCreationMessage: string;
-
-  //Enable Tournament
-  ManageTournamentsPageTitle: string;
+  ManageDigitalBadgesToolTip: string;
   ManageToTLabel1: string;
   ManageToTLabel2: string;
-  EndTournamentDialogMessage: string;
-  StartTournamentDialogMessage: string;
-  ConfirmLabel: string;
-  YesButton: string;
-  NoButton: string;
-  ActiveTournamentLabel: string;
-  EndTournamentButton: string;
-  StartTournamentHeaderLabel: string;
-  NoTournamentMessage: string;
-  SelectTournamentMessage: string;
-  SelectEndTournamentMessage: string;
-  StartTournamentButton: string;
-  EndTournamentSuccessMessage: string;
-  EnableTournamentSuccessMessage: string;
-  CompleteTournamentSpinnerMessage: string;
-  EnableTournamentSpinnerMessage: string;
-  SearchActiveTournaments: string;
-  SearchPendingTournaments: string;
-  SelectAllLabel: string;
-  NoSearchResults: string;
-
-  // TOT LeaderBoard & TOT My Dashboard
+  ManageTournamentActionsLabel: string;
+  ManageTournamentActionsToolTip: string;
+  ManageTournamentsLabel: string;
+  ManageTournamentsPageTitle: string;
+  MeetupBody: string;
+  MeetupSubject: string;
+  MonthAndDateLabel: string;
+  MoreInfoToolTip: string;
+  MSAdoptionHubLinkLabel: string;
+  MultipleBadgeMessage: string;
+  MultipleTournamentLabel: string;
+  MultiTournamentStep: string;
+  MultiTournamentStep1LinkLabel: string;
+  MultiTournamentStep1Text: string;
+  MultiTournamentStep2: string;
+  MultiTournamentStep3: string;
+  MyDashboardInfoIconMessage: string;
+  MyRankLabel: string;
+  MyTournamentsLabel: string;
+  MyTournamentsTooltip: string;
+  NameLabel: string;
+  NearMePlaceHolder: string;
+  NoActiveParticipantsErrorMessage: string;
   NoActiveParticipantsMessage; string;
   NoActiveTournamentMessage: string;
-  TournamentLabel: string;
-  DescriptionLabel: string;
-  NoActiveParticipantsErrorMessage: string;
+  NoActivitiesinGridLabel: string;
+  NoBadgeMessage: string;
+  NoButton: string;
+  NoChampionsMessage: string;
+  NoCompletedTournamentsMessage: string,
+  NominateMemberLabel: string;
+  NominateMemberPageTitle: string;
+  NoPendingEventsLabel: string;
+  NoProfileImageAlt: string;
+  NoProfileImageDescription: string;
+  NoRecordsIcon: string;
+  NoRecordsinGridLabel: string,
+  NoSearchResults: string;
+  NotesLabel: string;
+  NotesPlaceholder: string;
+  NoTournamentMessage: string;
+  NotQualifiedPreAcceptDisclaimer: string;
+  OrLabel: string;
+  OverviewLabel: string;
+  ParticipantsDetailsLabel: string;
+  ParticipantsLabel: string;
+  ParticipantsStatusLabel: string;
   PendingActionsLabel: string;
   PendingActionsSuccessMessage: string;
-  SelectActionsErrorMessage: string;
-  FormSavingMessage: string;
-  CompletedActionsLabel: string;
-  RankLabel: string;
-  UserLabel: string;
-  MyDashboardInfoIconMessage: string;
-  SelectTournamentPlaceHolder: string;
-  MyTournamentsLabel: string;
-  OrLabel: string;
-  MyTournamentsTooltip: string;
-
-  //TOT SideBar
+  PendingEventsSearchboxPlaceholder: string;
+  PeopleNameGridHeader: string;
+  PeoplePickerPlaceholder: string;
+  PercentageTournamentCompletedLabel: string;
+  PivotHeaderBySpeciality: string;
+  PivotHeaderGlobal: string;
+  PivotHeaderNearMe: string;
   PointsLabel: string;
-  TournamentRankLabel: string;
-  ParticipantsLabel: string;
-
-
-  //TOT Report
-  TournamentReportsPageTitle: string;
-  TotalActivitiesLabel: string;
-  TotalPointsLabel: string;
-  TotalParticipantsLabel: string;
-  TotalPercentageCompletionLabel: string;
+  PreAcceptDisclaimer: string;
+  PreAcceptDisclaimer2: string;
+  PreAcceptPageTitle: string;
+  PreApplyDisclaimer: string;
+  PreApplyDisclaimer1: string;
+  ProcessingSpinnerLabel: string;
+  ProfileImageAlt: string;
+  PropertyPaneDescription: string;
+  QuickLinksLabel: string;
+  RankLabel: string;
+  RecordEventLabel: string;
+  RecordsNotFound: string;
+  RefreshIconInfoText: string
+  RegionGridHeader: string;
+  RegionLabel: string;
+  RegionPlaceholder: string;
+  RejectButton: string;
+  RemoveFileLabel: string;
+  ReportsDropdownInfoIconText: string,
+  RequestToCallLabel: string;
+  SaveButton: string;
+  SearchActiveTournaments: string;
+  SearchLabel: string;
+  SearchPendingTournaments: string;
+  SearchPlaceholder: string,
+  SelectActionsErrorMessage: string;
+  SelectAllChampions: string;
+  SelectAllEvents: string;
+  SelectAllLabel: string;
+  SelectChampion: string;
+  SelectDate: string;
+  SelectEndTournamentMessage: string;
+  SelectEvent: string;
+  SelectTeamsActionsLabel: string;
+  SelectTournamentMessage: string;
+  SelectTournamentPlaceHolder: string;
+  ShowMoreLabel: string;
+  SingleTournamentLabel: string;
+  SpinnerListCreationMessage: string;
+  StartTournamentButton: string;
+  StartTournamentDialogMessage: string;
+  StartTournamentHeaderLabel: string;
+  StatusGridHeader: string;
+  SubmitButton: string;
+  SuccessIcon: string;
+  SupportToolTip: string;
+  TeamsActionInfoToolTip: string;
+  ToggleLabelForMemberListColumns: string;
+  TooltipContentForMemberListFieldsHeading: string;
   Top5ParticipantswithPointsLabel: string;
   Top5TournamentswithParticipantsLabel: string;
-  ParticipantsStatusLabel: string;
-  ParticipantsDetailsLabel: string;
-  NameLabel: string;
-  PercentageTournamentCompletedLabel: string;
-  ActivitiesCompletedLabel: string;
-  NoRecordsinGridLabel: string,
-  SearchPlaceholder: string,
-  NoCompletedTournamentsMessage: string,
-  ReportsDropdownInfoIconText: string,
-  RefreshIconInfoText: string
-
-
-  //-----------------------------------------------------------------------------------------
+  TopChampionsLabel: string;
+  TotalActivitiesLabel: string;
+  TotalParticipantsLabel: string;
+  TotalPercentageCompletionLabel: string;
+  TotalPointsLabel: string;
+  TOTBreadcrumbLabel: string;
+  TOTLabel: string;
+  TOTLeaderBoardPageTitle: string;
+  TOTMyDashboardPageTitle: string;
+  TournamentDescPlaceHolderLabel: string;
+  TournamentDescriptionLabel: string;
+  TournamentLabel: string;
+  TournamentNameErrorLabel: string;
+  TournamentNameLabel: string;
+  TournamentNamePlaceHolderLabel: string;
+  TournamentRankLabel: string;
+  TournamentReportsPageTitle: string;
+  UnauthorizedText: string;
+  UploadFileButton: string;
+  UserAddedMessage: string;
+  UserExistingMessage: string;
+  UserLabel: string;
+  UserNominatedMessage: string;
+  ViewActivitiesLabel: string;
+  ViewDashBoardLabel: string;
+  VisitLabel: string;
+  WelcomeLabel: string;
+  YesButton: string;
 }
 
 declare module 'ClbHomeWebPartStrings' {
