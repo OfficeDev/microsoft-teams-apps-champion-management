@@ -1,6 +1,6 @@
-### Upgrade to version 2.3 from 2.2, 2.1, 2.0, 1.3 and 1.2
+### Upgrade to version 2.4 from 2.3, 2.2, 2.1, 2.0, 1.3 and 1.2
 
-If you are already having version 2.2, 2.1, 2.0, 1.3 or 1.2 installed on your tenant follow the below steps to upgrade to version 2.3 with an admin account:
+If you are already having version 2.3, 2.2, 2.1, 2.0, 1.3 or 1.2 installed on your tenant follow the below steps to upgrade to version 2.4 with an admin account:
 
  NOTE: If you are using/seeing modern app catalog refer to the go to the [Modern App Catalog](#modern-app-catalog) section.
 
@@ -33,11 +33,11 @@ If you already had "Tournament of Teams" enabled before the upgrade, click on "E
 
     ![Upgrade](../Images/TOTScreen.png) 
 
-7. The below graph permissions can be removed from "API Permissions" in sharePoint admin portal only if the permission is not used in any other apps in your tenant. The upgraded package for CMP is not using these permissions anymore.
+7. The below graph permissions can be removed from "API Permissions" in SharePoint admin portal only if the permission is not used in any other apps in your tenant. The upgraded package for CMP is not using these permissions anymore.
 
     ![Upgrade](../Images/Upgrade-4.png) 
 
-8. A new CMP logo has been added in this package. If you have not customized the app logo for the CMP application, you can delete the "CMP Logo" library from SharePoint site so that it will be automatically re-created when the app is launched and the MS logo will be replaced with new CMP logo image in the library.
+8. This steps applies only if you are upgrading from version 2.1. A new CMP logo has been added in this package. If you have not customized the app logo for the CMP application, you can delete the "CMP Logo" library from SharePoint site so that it will be automatically re-created when the app is launched and the MS logo will be replaced with new CMP logo image in the library.
 
 ### Modern App Catalog 
 
@@ -61,9 +61,9 @@ If you already had "Tournament of Teams" enabled before the upgrade, click on "E
 
 ``` Continue with steps 5 to 8 from the previous section.```
 
-### Upgrade to version 2.3 from 1.1
+### Upgrade to version 2.4 from 1.1
 
-If you are already having 1.1 installed on your tenant and want to upgrade to 2.2 the existing app and SharePoint site 'ChampionManagementSite' have to be deleted. 
+If you are already having 1.1 installed on your tenant and want to upgrade to 2.4 the existing app and SharePoint site 'ChampionManagementSite' have to be deleted. 
 
 If you have current members and events you will want to export those list items and import re-import them into the respective list areas. We have expanded our lists to have some additional data as well so you may need to populate additional fields. 
 

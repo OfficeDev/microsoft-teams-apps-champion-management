@@ -1,4 +1,4 @@
-### Overview
+## Overview
 
 1.  Champion Management Platform operates as an app in Microsoft Teams that is installed locally in your tenant by your tenant administrator or any user who has the capability to side load the application.
 2.  Once installed, it can be accessed via “+Add a tab”  option at the top of the channel within a team. ***Channel > Add a tab > Champion Management Platform*** or from accessing the platform as a personal app on the left rail by ***Selecting "..." for more apps in left rail of Teams > searching for Champion Management Platform***
@@ -14,7 +14,7 @@
 
  ![Quick Start Guide](../Images/QuickGuide.png)
 
-### Champion Leaderboard
+## Champion Leaderboard
 
 Leaderboard solution is intended to add a gaming aspect to the Teams Champions program by allowing champions to earn points for the various ways they are promoting and supporting the internal adoption of their areas of interest. This also gives an opportunity to reflect their activity in comparison to other champs. Leaderboard has mainly 2 different views based on the role of that employee.
 Roles can be categorized as: 
@@ -33,39 +33,46 @@ An Admin / Champion can do the following:
 1.	Access Champion Leaderboard
     - To view their current points total.
     - To view their Global rank and how they rank against others globally.
-    - Access their dashboard with list of events they have supported.
-    - Add and submit upcoming events to earn points associated with it.  Example, hosting office hours can earn 10 points, whereas writing a blog can earn 5 points. 
-    - Search for a champion based on region and focus area.
+    - Search for a champion based on focus area or a search keyword.
     - View the activities of a champion by clicking on "View Activities" on the champion card.
     - Connect with a champion using the below icons on the champion card
       - Chat
       - Request to call
       - Send an Email
-1.	Nominate and approve an employee to be a champion (Add members ) 
-    - An Admin can add employee as a Champion.
-    - Where as an existing Champion can nominate their peers. 
-    - Admin will review and approve the nomination.
-1.	Earn a digital badge that can be displayed as an overlay on their profile image. *Refer to Digital Badge section. 
+    - Access their dashboard with list of events they have supported.
+    - Add and submit events to earn points associated with it.  Example, hosting office hours can earn 10 points, whereas writing a blog can earn 5 points. 
+        - By default, the points will be awarded to the Champion immediately upon submission of Events
+        - If the "Champion Event Approvals" is enabled by the admin, then the events submitted will be sent for Admin's approval and the points will be awarded to the Champion upon approval.
 
+    ![Quick Start Guide](../Images/RecordEvents.png)  
+    
 ### Employee view
 
 Leader board encourages the employees to get connected to the Champions in their organization.
 
 - Every employee can access the Champion Leader board.
-- Through Champion Leaderboard, an Employee can identify all the Champions globally or can filter by a particular Focus area or by region option.
+- Search for a champion based on focus area or a search keyword.
+    - View the activities of a champion by clicking on "View Activities" on the champion card.
+    - Connect with a champion using the below icons on the champion card
+      - Chat
+      - Request to call
+      - Send an Email
 - Employee can also “Become a Champion” by submitting their information.
 
     ![Quick Start Guide](../Images/EmpView.png)     
      
-### Add Members 
+## Add Members 
 
-1. Admin and current Champions of the program can nominate(***Add Members***) peers as Champions. Additional responsibility falls on the admin to maintain the Champions SharePoint list. *The approval process stays with the Admin only.*
+1. Admin and current Champions of the program can add/nominate an employee to be a champion (Add members / Nominate Members) 
+    - An Admin can add employee as a Champion.
+    - Where as an existing Champion can nominate their peers, admin will review and approve the nomination.
+Additional responsibility falls on the admin to maintain the Member list in SharePoint. *The approval process stays with the Admin only.*
 
-1. Manage Approvals icon will show a notification indicator when there are any pending champion approvals. The Admin can Approve/Reject the nominated champions using Manage Approvals screen.
+1. Admin Tasks icon will show a notification indicator when there are any pending champion approvals. The Admin can Approve/Reject the nominated champions using Admin Tasks screen.
 
     ![Quick Start Guide](../Images/ManageApproval.png) 
 
-### Manage App Logo
+## Manage App Logo
 
 "Manage App Logo" option can be found under "Admin Tools" section on home page. Clicking on this icon opens the "CMP Logo" SharePoint library. New image can be uploaded to the library to replace the App logo. The new image needs to have below specifications:
 
@@ -75,23 +82,44 @@ Leader board encourages the employees to get connected to the Champions in their
 
 ![ManageAppLogo](../Images/ManageAppLogo.png)    
 
-### Digital Badge
+## Digital Badge
 
 1. Digital Badge is intended to allow Microsoft 365 Champions to apply a ‘Champion’ badge on their profile image. It provides an easy and seamless process to share the recognition as a champion with the team.
 
     ![Quick Start Guide](../Images/Digitalbadge.png) 
 
-1. CMP administrators can upload multiple badges in the “Digital Badge Assets” library in the share point site. Champions can select from multiple badges, preview the profile picture and apply on their profile picture. 
+1. CMP administrators can upload multiple badges in the “Digital Badge Assets” library in the SharePoint site. 
 
-    ![Quick Start Guide](../Images/MultipleBadges.png) 
+   - To make a digital badge open to all champions do not tag any tournament for that badge in the "Digital Badge Assets" library. The "Tournament" field in the list should be left empty. Additionally, the admin can set Minimum Points for the badge so that it will be only unlocked for the Champions who at least scored that minimum points from the events.
 
-1. Additionally, administrators can also tag a digital badge with a specific tournament in the "Digital Badge Assets" list in share point when Tournament of Teams is enabled. Champions would have to complete a tournament to earn tournament specific badges. 
-
-1. To make a digital badge open to all champions do not tag any tournament for that badge in the "Digital Badge Assets" list. The "Tournament" field in the list should be left empty.
+   - Admin can tag a digital badge with a specific tournament in the "Digital Badge Assets" library when the Tournament of Teams is enabled. Champions would have to complete a tournament to earn tournament specific badges. 
 
     ![Quick Start Guide](../Images/DigitalBadgeList.png) 
 
-### Tournament of Teams
+1. Champions can select from multiple badges, preview the profile picture and apply on their profile picture. 
+
+    ![Quick Start Guide](../Images/MultipleBadges.png) 
+
+## Admin Tasks
+
+There are three tabs in the Admin Tasks Screen,
+
+1. Champions List - All the pending champion requests submitted by employees will be listed in this grid. Admin can either Approve/Reject the requests. A bell icon will be shown in the header if there are any pending requests.
+
+![Quick Start Guide](../Images/ChampionsListTab.png) 
+
+2. Manage Config Settings - Admin can enable Champion Event Approvals, show/hide Region, Country and Group columns.
+
+    If the "Champion Event Approvals" is enabled, the events submitted by the champions thereafter will go through the admin approval process and the points will be awarded only after the approval. Admin can also configure the Power Automate Flow template in the tenant to send notifications to the CMP Manager at regular intervals if there are any pending event requests available.
+
+![Quick Start Guide](../Images/ConfigSettings.png) 
+
+3. Champion Activities - If the "Champion Event Approvals" is enabled, then all the pending event requests submitted by champions will be listed in this grid. Admin can either Approve/Reject the requests. A bell icon will be shown in the header if there are any pending requests.
+
+![Quick Start Guide](../Images/ChampionActivitiesTab.png) 
+
+
+## Tournament of Teams
 
 1. Tournament of Teams enables the organization to create and conduct tournaments for anyone in the organization to use to drive healthy usage habits and skilling on the areas of focus. The App also includes a gamification element where users gain points by completing activities assigned as part of the tournament. Users also gain access to tournament specific badges once they complete the tournaments. They can apply the badges using Digital Badge feature of Champion Management Platform. (note that at this time the digital badge component is only enabled for Champions and will be enabled in a future release for all users) 
 

@@ -91,20 +91,28 @@ Continuing below steps you can take the cmp.sppkg file from the ***cmp.sppkg*** 
 The customized installation makes the assumption you wish to change the default variables (site location, text or visual aspects, etc) with the Champion Management Platform. Customizing the installation takes it outside of 
 configurations we have tested against but allows you to modify any aspect of the platform. Below are high level steps to get you started on a customized installation.
 
+### Prerequisites 
+
+1. [Set up your development environment](https://learn.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-development-environment)
+1. Clone the app [repository](https://github.com/OfficeDev/microsoft-teams-apps-champion-management.git) locally.
+
+Below are the high level steps to get you started on a customizing the template.
+
 ### Install NodeJs
 
 1.  Download nodejs from this link 
-    https://nodejs.org/ 
+    https://nodejs.org/en/download/releases/ 
 
-2.   Previous Releases | Node.js (nodejs.org) 
-    Download node 14.18.2
+2.  Previous Releases | Node.js (nodejs.org) 
+    Download node 16.18.0
 
-3.  After downloading the nodejs and installing follow steps as follows
+3.  After downloading and installing the nodejs and installing follow steps as follows
 
-4.  Please open the CMP download folder
-    Run Npm install
-    And 
-    Run npm install -g gulp
+4.  Open the CMP solution in VS Code.
+
+    run npm install
+
+    run npm install -g gulp
     
   *	Global or SharePoint Administrator role in the target tenant
   *	***ChampionManagementPlatform*** project in GitHub
@@ -145,7 +153,7 @@ If desired the administrator can configure the installation location including t
 
 3.	Navigate to the solution folder where you cloned and locate the newly created ***cmp.sppkg*** package in ***"sharepoint/solution"***.
 
-### First Run Experience: Add **Champion Management Platform** Tab in Teams
+## First Run Experience: Add **Champion Management Platform** Tab in Teams
 
 **NOTE:** Please wait for around 20 minutes for API access approvals done in the previous section to take effect before proceeding with the below steps.
 
@@ -175,9 +183,9 @@ If desired the administrator can configure the installation location including t
 
     ![App Set Up](../Images/Apprefresh.png)
 
-    If you still do not see the landing page after refresh please create an issue in the Github.
+    If you still do not see the landing page after refresh please create an issue in the GitHub.
 
-7. The landing page for an Admin will have access to the *Champion Leaderboard, Digital Badge, Enable Tournament of Teams* and the SharePoint lists (*Champions, Events,Event track Details, Digital Badges*), as well as Manage Approvals.
+7. The landing page for an Admin will have access to the *Champion Leaderboard, Digital Badge, Enable Tournament of Teams* and the SharePoint lists (*Champions, Events,Event track Details, Digital Badges*), as well as Admin Tasks.
 
     ![Quick Start Guide](../Images/AddTab_Teams.png) 
 
@@ -207,19 +215,51 @@ If desired the administrator can configure the installation location including t
 
     ![Quick Start Guide](../Images/sitePerms.png) 
 
-### Teams Personal App:
-
-CLbHomeWebPart.manifest.json is updated with a new entry, TeamsPersonalApp  
-
-![Quick Start Guide](../Images/teamspersonalapp.png) 
 
 ### Completed Install
 
 Once you have performed the above steps, the deployment of the Champion Management Platform is now complete. If an admin was deploying this on behalf of the manager of the Champion Management Platform please have the admin add the
-Champion Management Platform manager as a champion and change their role in the Memberlist from ***Champion*** to ***Manager*** so they will have access to the other parts of the platform.
+Champion Management Platform manager as a champion and change their role in the Member List from ***Champion*** to ***Manager*** so they will have access to the other parts of the platform.
 
 ### Enable Tournament of Teams
 
 Click on "Enable Tournament of Teams" on CMP home page to enable the Tournament of Teams. Refer to "Tournament of Teams" section for additional details.
 
 ![Quick Start Guide](../Images/EnableTournaments.png) 
+
+### Import flow template in Power Automate (Optional Enhancement)
+
+If you enable the Champion Event Approvals in the CMP App, then do configure the Power Automate Flow template in the tenant to send notifications to the CMP Manager at regular intervals if there are any pending event requests available.
+
+1. To import the Power Automate flow template in your tenant, make sure you have cloned the app [repository](https://github.com/OfficeDev/microsoft-teams-apps-champion-management.git) locally.  
+2. Get the .zip package file `CMP-ManagerNotifications-FlowTemplate` under **ManagerNotifications** folder.  
+3. Navigate to the Power Automate site in your tenant.
+4. From the left navigation, Select "My Flows" --> "Import" --> "Import Package (Legacy)"
+5. Choose and upload the `CMP-ManagerNotifications-FlowTemplate.zip` package.
+6. Select the connection for the Resource Types. Click on "Select during Import" under Import Setup for each resource type and choose the connection. If the connection is not already available, create one for that resource type and then choose it.
+7. After selecting the connections for all the 3 resources, click on Import.
+
+    ![Quick Start Guide](../Images/ImportFlow.png)
+
+8. Once the package is successfully imported, navigate to the edit flow screen by clicking on "Open flow" link as shown in the below image or you can navigate through "My Flows" --> Select the imported flow --> Choose "Edit".
+
+    ![Quick Start Guide](../Images/ImportSuccess.png)
+
+9. Update your tenant name for the placeholder in the SharePoint site URL that is highlighted in below image. Additionally, you can update the interval for the flow trigger as per the need (by default it is set to 24 hours)
+
+    ![Quick Start Guide](../Images/FlowTemplate.png)
+
+10. Save the flow then navigate to "My Flows", select the flow and turn on it.
+
+    ![Quick Start Guide](../Images/EnableFlow.png)
+
+### Approval Notifications for the Manager
+
+After the flow is configured in the tenant, it will send a adaptive card notification to all the CMP Managers at regular configured interval, if there are any pending event requests available.
+
+![Quick Start Guide](../Images/ManagerNotification.png)
+
+
+
+
+
