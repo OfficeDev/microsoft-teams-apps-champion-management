@@ -10,7 +10,7 @@ import Row from 'react-bootstrap/Row';
 import Table from 'react-bootstrap/Table';
 import { ComboBox, IComboBox, IComboBoxOption } from '@fluentui/react/lib/ComboBox';
 import { Dialog } from '@fluentui/react/lib/Dialog';
-import { Icon, initializeIcons, Label } from 'office-ui-fabric-react';
+import { Icon, initializeIcons } from 'office-ui-fabric-react';
 import { SearchBox } from 'office-ui-fabric-react/lib/SearchBox';
 import moment from 'moment';
 import * as constants from '../constants/strings';
@@ -20,7 +20,6 @@ import '../scss/Championview.scss';
 import '../scss/Champions.scss';
 import * as _ from "lodash";
 import commonServices from '../Common/CommonServices';
-import * as stringsConstants from "../constants/strings";
 
 initializeIcons();
 
@@ -37,11 +36,7 @@ interface ChampionsCardsProps {
 interface ChampionsCardsState {
   isLoaded: boolean;
   loadCards: number;
-  allUserData: Array<any>;
-  userData: Array<any>;
   focusAreas: Array<any>;
-  regions: Array<any>;
-  selectedRegion: string | number;
   selectedFocusArea: string | number;
   search: string;
   filteredUsers: any;
@@ -67,11 +62,7 @@ export default class ChampionsCards extends Component<
     this.state = {
       isLoaded: false,
       loadCards: 0,
-      allUserData: [],
-      userData: [],
       focusAreas: [],
-      regions: [],
-      selectedRegion: "",
       selectedFocusArea: "",
       search: "",
       users: [],
@@ -114,61 +105,19 @@ export default class ChampionsCards extends Component<
     }
 
     //Set the filteredUsers array based on the filter or search applied
-    if ((prevState.selectedRegion != this.state.selectedRegion) ||
-      (prevState.selectedFocusArea != this.state.selectedFocusArea) ||
+    if ((prevState.selectedFocusArea != this.state.selectedFocusArea) ||
       (prevState.search != this.state.search) ||
       (prevState.users != this.state.users)) {
 
-      if (this.state.selectedRegion != constants.AllLabel && this.state.selectedFocusArea != constants.AllLabel && this.state.search == "") {
-        this.setState({
-          filteredUsers: this.state.users.filter((user) => user.Region === this.state.selectedRegion &&
-            user.FocusArea?.toString().includes(this.state.selectedFocusArea))
-        });
-      } else if (this.state.selectedRegion != constants.AllLabel && this.state.selectedFocusArea == constants.AllLabel && this.state.search == "") {
-        this.setState({
-          filteredUsers: this.state.users.filter((user) => user.Region === this.state.selectedRegion)
-        });
-      } else if (this.state.selectedRegion == constants.AllLabel && this.state.selectedFocusArea != constants.AllLabel && this.state.search == "") {
+      if (this.state.selectedFocusArea != constants.AllLabel && this.state.search == "") {
         this.setState({
           filteredUsers: this.state.users.filter((user) => user.FocusArea?.toString().includes(this.state.selectedFocusArea))
         });
-      } else if (this.state.selectedRegion == constants.AllLabel && this.state.selectedFocusArea == constants.AllLabel && this.state.search == "") {
+      } else if (this.state.selectedFocusArea == constants.AllLabel && this.state.search == "") {
         this.setState({
           filteredUsers: this.state.users
         });
-      } else if (this.state.selectedRegion != constants.AllLabel && this.state.selectedFocusArea != constants.AllLabel && this.state.search != "") {
-        this.setState({
-          filteredUsers: this.state.users.filter((user) =>
-            user.Region === this.state.selectedRegion &&
-            user.FocusArea?.toString().includes(this.state.selectedFocusArea) &&
-            ((user.FirstName &&
-              user.FirstName.toLowerCase().includes(this.state.search.toLowerCase())) ||
-              (user.LastName &&
-                user.LastName.toLowerCase().includes(this.state.search.toLowerCase())) ||
-              (user.Country &&
-                user.Country.toLowerCase().includes(this.state.search.toLowerCase())) ||
-              (user.FocusArea &&
-                user.FocusArea?.toString().toLowerCase().includes(this.state.search.toLowerCase())) ||
-              (user.Region &&
-                user.Region.toLowerCase().includes(this.state.search.toLowerCase())) ||
-              (user.Group && user.Group.toLowerCase().includes(this.state.search.toLowerCase()))))
-        });
-      } else if (this.state.selectedRegion != constants.AllLabel && this.state.selectedFocusArea == constants.AllLabel && this.state.search != "") {
-        this.setState({
-          filteredUsers: this.state.users.filter((user) =>
-            user.Region === this.state.selectedRegion && ((user.FirstName &&
-              user.FirstName.toLowerCase().includes(this.state.search.toLowerCase())) ||
-              (user.LastName &&
-                user.LastName.toLowerCase().includes(this.state.search.toLowerCase())) ||
-              (user.Country &&
-                user.Country.toLowerCase().includes(this.state.search.toLowerCase())) ||
-              (user.FocusArea &&
-                user.FocusArea?.toString().toLowerCase().includes(this.state.search.toLowerCase())) ||
-              (user.Region &&
-                user.Region.toLowerCase().includes(this.state.search.toLowerCase())) ||
-              (user.Group && user.Group.toLowerCase().includes(this.state.search.toLowerCase()))))
-        });
-      } else if (this.state.selectedRegion == constants.AllLabel && this.state.selectedFocusArea != constants.AllLabel && this.state.search != "") {
+      } else if (this.state.selectedFocusArea != constants.AllLabel && this.state.search != "") {
         this.setState({
           filteredUsers: this.state.users.filter((user) =>
             user.FocusArea?.toString().includes(this.state.selectedFocusArea) &&
@@ -184,11 +133,11 @@ export default class ChampionsCards extends Component<
                 user.Region.toLowerCase().includes(this.state.search.toLowerCase())) ||
               (user.Group && user.Group.toLowerCase().includes(this.state.search.toLowerCase()))))
         });
-      } else if (this.state.selectedRegion == constants.AllLabel && this.state.selectedFocusArea == constants.AllLabel && this.state.search != "") {
+      } else if (this.state.selectedFocusArea == constants.AllLabel && this.state.search != "") {
         this.setState({
           filteredUsers: this.state.users.filter((user) =>
-            (user.FirstName &&
-              user.FirstName.toLowerCase().includes(this.state.search.toLowerCase())) ||
+          ((user.FirstName &&
+            user.FirstName.toLowerCase().includes(this.state.search.toLowerCase())) ||
             (user.LastName &&
               user.LastName.toLowerCase().includes(this.state.search.toLowerCase())) ||
             (user.Country &&
@@ -197,7 +146,7 @@ export default class ChampionsCards extends Component<
               user.FocusArea?.toString().toLowerCase().includes(this.state.search.toLowerCase())) ||
             (user.Region &&
               user.Region.toLowerCase().includes(this.state.search.toLowerCase())) ||
-            (user.Group && user.Group.toLowerCase().includes(this.state.search.toLowerCase())))
+            (user.Group && user.Group.toLowerCase().includes(this.state.search.toLowerCase()))))
         });
       }
     }
@@ -216,7 +165,8 @@ export default class ChampionsCards extends Component<
     let allMemberEventsArray: any = [];
 
     //Get first batch of items from Event Track Details list
-    let memberEventsArray = await commonServiceManager.getAllListItemsPaged(stringsConstants.EventTrackDetailsList);
+    let filterApprovedEvents = "Status eq 'Approved' or Status eq null or Status eq ''";
+    let memberEventsArray = await commonServiceManager.getAllListItemsPagedWithFilter(constants.EventTrackDetailsList, filterApprovedEvents);
     if (memberEventsArray.results.length > 0) {
       allMemberEventsArray.push(...memberEventsArray.results);
       //Get next batch, if more items found in Event Track Details list
@@ -232,15 +182,15 @@ export default class ChampionsCards extends Component<
 
     let filterQuery = "Status eq 'Approved'";
     let filter = "IsActive eq 1";
-    await commonServiceManager.getItemsWithOnlyFilter(stringsConstants.MemberList, filterQuery)
+    await commonServiceManager.getItemsWithOnlyFilter(constants.MemberList, filterQuery)
       .then(async (approvedMembers) => {
         if (approvedMembers.length > 0) {
-          await commonServiceManager.getItemsWithOnlyFilter(stringsConstants.EventsList, filter)
+          await commonServiceManager.getItemsWithOnlyFilter(constants.EventsList, filter)
             .then(async (activeEvents) => {
               if (activeEvents.length > 0) {
                 this.setState({
                   events: activeEvents
-                });               
+                });
                 for (let i = 0; i < approvedMembers.length; i++) {
                   filteredMember = eventTrackArray.filter(user => user.MemberId === approvedMembers[i].ID);
                   let eventpoints = _.groupBy(_.orderBy(filteredMember, ['Id'], ['asc']), "EventId");
@@ -258,7 +208,7 @@ export default class ChampionsCards extends Component<
                     Role: approvedMembers[i].Role,
                     Status: approvedMembers[i].Status,
                     FocusArea: approvedMembers[i].FocusArea,
-                    Group: approvedMembers[i].Group                   
+                    Group: approvedMembers[i].Group
                   });
                 }
                 //Sort by points                
@@ -269,15 +219,14 @@ export default class ChampionsCards extends Component<
 
                 //Update ranks for the members
                 championsListArray = championsListArray.map((currentValue, index) => {
-                  currentValue.Rank = index+1;
+                  currentValue.Rank = index + 1;
                   return currentValue;
-               });
+                });
 
                 this.setState({
                   users: championsListArray,
                   isLoaded: true,
                   selectedFocusArea: constants.AllLabel,
-                  selectedRegion: constants.AllLabel,
                   loadCards: constants.employeeCardLoadCount,
                 });
               }
@@ -288,15 +237,8 @@ export default class ChampionsCards extends Component<
 
   //Get dropdown choices for Region and Focus Area from Member List
   private async getChoicesFromList() {
-
-    //Get choices for Region dropdown from SharePoint list
-    let regions = await commonServiceManager.getChoicesFromListColumn(stringsConstants.MemberList, stringsConstants.RegionColumn);
-    this.setState({
-      regions: regions
-    });
-
     //Get choices for FocusArea dropdown from SharePoint list
-    let focusAreas = await commonServiceManager.getChoicesFromListColumn(stringsConstants.MemberList, stringsConstants.FocusAreaColumn);
+    let focusAreas = await commonServiceManager.getChoicesFromListColumn(constants.MemberList, constants.FocusAreaColumn);
     this.setState({
       focusAreas: focusAreas
     });
@@ -364,13 +306,6 @@ export default class ChampionsCards extends Component<
     }
   }
 
-  //Setting state variable with the selected Region
-  private filterUsersByRegion = (ev: React.FormEvent<IComboBox>, option?: IComboBoxOption): void => {
-    this.setState({
-      selectedRegion: option.key
-    });
-  }
-
   //Setting state variable with the selected Focus Area
   private filterUsersByFocusArea = (ev: React.FormEvent<IComboBox>, option?: IComboBoxOption): void => {
     this.setState({
@@ -424,22 +359,10 @@ export default class ChampionsCards extends Component<
         {this.state.users.length > 0 && (
           <>
             <div className="championsFilterArea">
-              <Row xl={3} lg={2} md={1} sm={1} xs={1}>
+              <Row xl={2} lg={2} md={2} sm={1} xs={1}>
                 <Col xl={12} lg={12} md={12} sm={12} xs={12}>
                   <div className="topChampionsLabel">
                     {LocaleStrings.TopChampionsLabel}
-                  </div>
-                </Col>
-                <Col className="championRegionComboboxCol" xl={3} lg={6} md={12} sm={12} xs={12}>
-                  <div className="championRegionComboboxArea">
-                    <ComboBox
-                      label={LocaleStrings.RegionLabel}
-                      selectedKey={this.state.selectedRegion}
-                      options={this.options(this.state.regions)}
-                      onChange={this.filterUsersByRegion.bind(this)}
-                      className="championRegionCombobox"
-                      calloutProps={{ className: "championRegionCallout" }}
-                    />
                   </div>
                 </Col>
                 <Col xl={5} lg={6} md={12} sm={12} xs={12}>
@@ -454,7 +377,7 @@ export default class ChampionsCards extends Component<
                     />
                   </div>
                 </Col>
-                <Col xl={4} lg={6} md={12} sm={12} xs={12}>
+                <Col xl={5} lg={6} md={12} sm={12} xs={12}>
                   <div className="championSearchboxArea">
                     <SearchBox
                       className="championSearchbox"

@@ -115,6 +115,23 @@
         {
           "name": "EventName",
           "type": "text"
+        },
+        {
+          "name": "Status",
+          "type": "text"
+        },
+        {
+          "name": "Notes",
+          "type": "multilineText"
+        }
+      ]
+    },
+    {
+      "listName": "Config List",
+      "columns": [
+        {
+          "name": "Value",
+          "type": "text"
         }
       ]
     }
@@ -139,6 +156,24 @@
       "Title": "Training",
       "Points": 10,
       "Description": "Training"
+    }
+  ],
+  "configMasterData": [
+    {
+      "Title": "ChampionEventApprovals",
+      "Value": "Disabled"     
+    },
+    {
+      "Title": "Region",
+      "Value": "Enabled"     
+    },
+    {
+      "Title": "Country",
+      "Value": "Enabled"     
+    },
+    {
+      "Title": "Group",
+      "Value": "Enabled"     
     }
   ],
   "totLists": [

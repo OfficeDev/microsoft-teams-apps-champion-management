@@ -60,20 +60,38 @@ Below are the high level steps to get you started on customizing the template.
 1. Delete the "TeamsSPFxApp.zip" folder and create a new zip folder with the images and the manifest file in the same location with the same name.
 1. Generate a new package file and follow the deployment instructions in the deployment guide.
 
-## Customize Member List attributes
+## Customize Member List
 
-1. The values for the dropdown lists in the "Add Member" component can be customized.
+Below customizations can be done in the Member list with no code changes required in the solution.
 
-    ![Customization](../Images/Customization5.png)  
+1. Modify the display name for the below columns
+    - Region
+    - Country
+    - Group
+    
+![Customization](../Images/RenameColumns.png) 
 
-1. To add/modify values for these dropdowns navigate to "ChampionManagementPlatform" SharePoint site.
-1. Go to Settings page of SharePoint list "Member List".
-1. Find the column that you want to add/modify values of. For ex: To add a new region click on "Region" column
+>**Note:** Change column names only when your SharePoint site is displayed in English (i.e. The language setting for the user in office 365 profile (Delve) should be English). This is a limitation based on how the column renaming works in non-English languages.
 
-    ![Customization](../Images/Customization6.png)  
+2. Admin can Show/Hide the below columns from "Manage Config Settings" under Admin Tasks.
+    - Region
+    - Country
+    - Group
 
-1. Add/Modify the values as shown below and click "Save"
+![Customization](../Images/ColConfigSettings.png) 
 
-    ![Customization](../Images/Customization7.png)  
+For eg: If any of these column is no longer needed for the app, it can configured in the above screen and it will be hidden throughout the app screens where it was used.
 
-1. Repeat the steps for other columns that needs to be modified.
+![Customization](../Images/AddMemberHiddenCols.png) 
+
+3. Add/Modify the choices for the below columns
+    - Region
+    - Country
+    - Group
+    - Focus Area
+
+ ![Customization](../Images/Customization7.png)   
+
+>**Important Note:**
+1. Do not delete or change the type of any column in the "Member List".
+1. Do not make any customization other than the above listed items, unless you are customizing the code. Otherwise it will break the functionality of the app.

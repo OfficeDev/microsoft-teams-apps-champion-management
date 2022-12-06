@@ -14,7 +14,7 @@ import { TextField } from "@fluentui/react/lib/TextField";
 import { PrimaryButton } from "@fluentui/react/lib/Button";
 import { Label } from "@fluentui/react/lib/Label";
 import { Icon } from '@fluentui/react/lib/Icon';
-import { DirectionalHint, ITooltipProps, TooltipHost } from '@fluentui/react/lib/Tooltip';
+import { DirectionalHint, ITooltipProps, TooltipHost } from '@fluentui/react';
 
 //PNP
 import {
@@ -583,7 +583,7 @@ export default class TOTCreateTournament extends React.Component<
                       }
                     });
                   if (responseStatus)
-                    this.setState({ importLogs: this.state.importLogs.concat(sheetName + ": " + LocaleStrings.LogMsgDone + " '" + tournamentName + "' " + LocaleStrings.LogMsgDone1)});
+                    this.setState({ importLogs: this.state.importLogs.concat(sheetName + ": " + LocaleStrings.LogMsgDone + " '" + tournamentName + "' " + LocaleStrings.LogMsgDone1) });
                 }
               } else {
                 //If 'Tournament Name' is empty

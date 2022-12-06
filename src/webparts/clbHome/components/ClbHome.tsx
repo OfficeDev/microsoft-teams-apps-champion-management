@@ -1,38 +1,39 @@
 import {
-  ISPHttpClientOptions, MSGraphClient, SPHttpClient,
+  ISPHttpClientOptions, MSGraphClientV3, SPHttpClient,
   SPHttpClientResponse
 } from "@microsoft/sp-http";
 import "@pnp/sp/lists";
 import { sp } from "@pnp/sp/presets/all";
 import "@pnp/sp/views";
+import "@pnp/sp/fields";
 import { Web } from "@pnp/sp/webs";
 import { initializeIcons } from "@uifabric/icons";
 import "bootstrap/dist/css/bootstrap.min.css";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 import { ThemeStyle } from "msteams-ui-styles-core";
 import * as React from "react";
 import Col from "react-bootstrap/Col";
 import Media from "react-bootstrap/Media";
 import Row from "react-bootstrap/Row";
 import siteconfig from "../config/siteconfig.json";
+import * as stringsConstants from "../constants/strings";
 import styles from "../scss/CMPHome.module.scss";
-import ApproveChampion from "./ApproveChampion";
 import ChampionLeaderBoard from "./ChampionLeaderBoard";
 import ClbAddMember from "./ClbAddMember";
-import ClbChampionsList from "./ClbChampionsList";
 import DigitalBadge from "./DigitalBadge";
 import EmployeeView from "./EmployeeView";
 import Header from "./Header";
 import { IClbHomeProps } from "./IClbHomeProps";
+import ManageApprovals from "./ManageApprovals";
 import TOTLandingPage from "./TOTLandingPage";
-import * as LocaleStrings from 'ClbHomeWebPartStrings';
-import * as stringsConstants from "../constants/strings";
+
 initializeIcons();
 
 export interface IClbHomeState {
   cB: boolean;
   clB: boolean;
   addMember: boolean;
-  approveMember: boolean;
+  manageApprovals: boolean;
   ChampionsList: boolean;
   cV: boolean;
   siteUrl: string;
@@ -46,28 +47,10 @@ export interface IClbHomeState {
   loggedinUserEmail: string;
   enableTOT: boolean;
   isTOTEnabled: boolean;
-  isUserAdded: boolean;
-  userStatus: string;
   firstName: string;
   appLogoURL: string;
-  list: ISPLists;
-  isApprovalPending: boolean;
-}
-export interface ISPLists {
-  value: ISPList[];
-}
-export interface ISPList {
-  Title: string;
-  FirstName: string;
-  LastName: string;
-  Country: String;
-  Status: String;
-  FocusArea: String;
-  Group: String;
-  Role: String;
-  Region: string;
-  Points: number;
-  ID: number;
+  isChampionApprovalPending: boolean;
+  isEventApprovalPending: boolean;
 }
 
 //Global Variables
@@ -85,7 +68,7 @@ export default class ClbHome extends React.Component<
       siteUrl: this.props.siteUrl,
       cB: false,
       addMember: false,
-      approveMember: false,
+      manageApprovals: false,
       ChampionsList: false,
       clB: false,
       cV: false,
@@ -99,18 +82,17 @@ export default class ClbHome extends React.Component<
       loggedinUserEmail: "",
       enableTOT: false,
       isTOTEnabled: false,
-      isUserAdded: false,
-      userStatus: "",
       firstName: "",
       appLogoURL: "",
-      list: { value: [] },
-      isApprovalPending: false
+      isChampionApprovalPending: false,
+      isEventApprovalPending: false
     };
     this.checkUserRole = this.checkUserRole.bind(this);
+    this.callBackFunction = this.callBackFunction.bind(this);
 
     //Set the context for PNP
     sp.setup({
-      spfxContext: this.props.context
+      spfxContext: this.props.context as any
     });
 
     //set context
@@ -147,6 +129,8 @@ export default class ClbHome extends React.Component<
             this.checkUserRole(datauser.Email);
             //Get list of Members from member List
             this.getMembersListData();
+            //Get pending events from event track details list
+            this.getPendingEventsData();
           });
           var props = {};
           datauser.UserProfileProperties.forEach((prop) => {
@@ -230,16 +214,15 @@ export default class ClbHome extends React.Component<
   //create lists 
   private createNewList(siteId: any, item: any) {
     this.props.context.msGraphClientFactory
-      .getClient()
-      .then(async (client: MSGraphClient) => {
+      .getClient('3')
+      .then(async (client: MSGraphClientV3) => {
         client
           .api("sites/" + siteId + "/lists")
           .version("v1.0")
           .header("Content-Type", "application/json")
-          .responseType("json")
           .post(item, (errClbHome, _res, rawresponse) => {
             if (!errClbHome) {
-              if (rawresponse.status === 201) {
+              if (_res) {
                 console.log(stringsConstants.CMPLog + "List created: " + "'" + item.displayName + "'");
                 setTimeout(() => {
                   this.props.context.spHttpClient
@@ -371,6 +354,40 @@ export default class ClbHome extends React.Component<
                       }
                     );
                   }
+                  //Creating items in Config List
+                  if (item.displayName === stringsConstants.ConfigList) {
+                    siteconfig.configMasterData.forEach(
+                      (configData) => {
+                        let configList: any = {
+                          Title: configData.Title,
+                          Value: configData.Value
+                        };
+                        const spHttpClientOptions: ISPHttpClientOptions = {
+                          body: JSON.stringify(configList),
+                        };
+
+                        const url: string =
+                          "/" +
+                          this.state.inclusionpath +
+                          "/" +
+                          this.state.sitename +
+                          "/_api/web/lists/GetByTitle('" + stringsConstants.ConfigList + "')/items";
+                        this.props.context.spHttpClient
+                          .post(
+                            url,
+                            SPHttpClient.configurations.v1,
+                            spHttpClientOptions
+                          )
+                          .then(
+                            (
+                              newUserResponse: SPHttpClientResponse
+                            ) => {
+
+                            }
+                          );
+                      }
+                    );
+                  }
                 }, 5000);
               }
             }
@@ -388,7 +405,7 @@ export default class ClbHome extends React.Component<
     var exSiteId;
     try {
       //Check if CMP site exists        
-      await sp.site.exists(rootSiteURL + "/" + this.state.inclusionpath + "/" + this.state.sitename).then((response) => {
+      await sp.site.exists(rootSiteURL + "/" + this.state.inclusionpath + "/" + this.state.sitename).then(async (response) => {
         if (response != undefined) {
           //If CMP site does not exist, create the site and lists
           if (!response) {
@@ -424,10 +441,14 @@ export default class ClbHome extends React.Component<
                 SPHttpClient.configurations.v1,
                 spHttpsiteClientOptions
               )
-              .then((siteResponse: SPHttpClientResponse) => {
+              .then(async (siteResponse: SPHttpClientResponse) => {
                 //If site is succesfully created
                 if (siteResponse.status === 200) {
                   console.log(stringsConstants.CMPLog + "Created new site collection: '" + this.state.sitename + "'");
+                  //site is newly created and got 200 response, now create Digital Lib
+                  await this.createDigitalBadgeLib();
+                  //create CMP Logo Library to store the organization logo that allows users to customize it.
+                  await this.getAppLogoImage();
                   siteResponse.json().then((siteData: any) => {
                     if (siteData.SiteId) {
                       exSiteId = siteData.SiteId;
@@ -446,6 +467,18 @@ export default class ClbHome extends React.Component<
                                   column = {
                                     name: element.name,
                                     text: {},
+                                  };
+                                  listColumns.push(column);
+                                  break;
+                                case "multilineText":
+                                  column = {
+                                    name: element.name,
+                                    text: {
+                                      allowMultipleLines: true,
+                                      appendChangesToExistingText: false,
+                                      linesForEditing: 6,
+                                      textType: "plain"
+                                    },
                                   };
                                   listColumns.push(column);
                                   break;
@@ -497,7 +530,7 @@ export default class ClbHome extends React.Component<
                                         name: element.name,
                                         choice: {
                                           allowTextEntry: false,
-                                          choices: ["Approved", "Pending"],
+                                          choices: ["Approved", "Pending", "Rejected"],
                                           displayAs: "dropDownMenu",
                                         },
                                       };
@@ -609,10 +642,6 @@ export default class ClbHome extends React.Component<
                       });
                     }
                   });
-                  //site is newly created and got 200 response, now create Digital Lib
-                  this.createDigitalBadgeLib();
-                  //create CMP Logo Library to store the organization logo that allows users to customize it.
-                  this.getAppLogoImage();
                 }
 
               }).catch((error) => {
@@ -623,6 +652,10 @@ export default class ClbHome extends React.Component<
           }//IF END
           //If CMP site already exists create only lists.  
           else {
+            //site exists, check if Digital Badge lib exists, create if not present
+            await this.createDigitalBadgeLib();
+            //check if CMP Logo lib exists, create if not present
+            await this.getAppLogoImage();
             //Check if Lists exists already
             this.props.context.spHttpClient
               .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Member List')/Items", SPHttpClient.configurations.v1)
@@ -656,6 +689,18 @@ export default class ClbHome extends React.Component<
                                     column = {
                                       name: element.name,
                                       text: {},
+                                    };
+                                    listColumns.push(column);
+                                    break;
+                                  case "multilineText":
+                                    column = {
+                                      name: element.name,
+                                      text: {
+                                        allowMultipleLines: true,
+                                        appendChangesToExistingText: false,
+                                        linesForEditing: 6,
+                                        textType: "plain"
+                                      },
                                     };
                                     listColumns.push(column);
                                     break;
@@ -707,7 +752,7 @@ export default class ClbHome extends React.Component<
                                           name: element.name,
                                           choice: {
                                             allowTextEntry: false,
-                                            choices: ["Approved", "Pending"],
+                                            choices: ["Approved", "Pending", "Rejected"],
                                             displayAs: "dropDownMenu",
                                           },
                                         };
@@ -821,15 +866,74 @@ export default class ClbHome extends React.Component<
                     await spweb.lists.getByTitle(stringsConstants.MemberList).fields.getByInternalNameOrTitle(stringsConstants.FocusAreaColumn).update({ TypeAsString: "MultiChoice" });
                     console.log("CMP_CLBHome_FocusArea column type is updated successsfully");
                   }
+                  //Add Status and Notes field to Event Track Details List, if not present. 
+                  const eventTrackDetailsColumns = await spweb.lists.getByTitle(stringsConstants.EventTrackDetailsList).fields.filter("Hidden eq false and ReadOnlyField eq false").select("Title").get();
+
+                  //Check if Notes column exists, if not create it.
+                  let notesFieldExists = eventTrackDetailsColumns.filter(e => e.Title == stringsConstants.NotesColumn);
+                  if (notesFieldExists.length == 0) {
+                    await spweb.lists.getByTitle(stringsConstants.EventTrackDetailsList).fields.addMultilineText(stringsConstants.NotesColumn, 6, false, false, false, false).then(async () => {
+                      await spweb.lists.getByTitle(stringsConstants.EventTrackDetailsList).defaultView.fields.add(stringsConstants.NotesColumn).then(() => {
+                        console.log("CMP_CLBHome_Added Notes column to Event Track Details List");
+                      });
+                    }).catch((error) => {
+                      console.error("CMP_CLBHome_Failed to add Notes Column to Event Track Details List \n", JSON.stringify(error));
+                    });
+                  }
+
+                  //Check if Status column exists, if not create it.
+                  let statusFieldExists = eventTrackDetailsColumns.filter(e => e.Title == stringsConstants.StatusColumn);
+                  if (statusFieldExists.length == 0) {
+                    await spweb.lists.getByTitle(stringsConstants.EventTrackDetailsList).fields.addText(stringsConstants.StatusColumn, 255).then(async () => {
+                      await spweb.lists.getByTitle(stringsConstants.EventTrackDetailsList).defaultView.fields.add(stringsConstants.StatusColumn).then(() => {
+                        console.log("CMP_CLBHome_Added Status column to Event Track Details List");
+                      });
+                    }).catch((error) => {
+                      console.error("CMP_CLBHome_Failed to add Status Column to Event Track Details List \n", JSON.stringify(error));
+                    });
+                  }
+
+                  //Add Config List to the CMP site
+                  let configList = {
+                    displayName: stringsConstants.ConfigList,
+                    columns: [{
+                      name: stringsConstants.ValueColumn,
+                      text: {}
+                    }],
+                    list: {
+                      template: "genericList",
+                    },
+                  };
+
+                  //Get Sitecollection ID for creating Config list   
+                  this.props.context.spHttpClient
+                    .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/site/id", SPHttpClient.configurations.v1)
+                    .then((responseSiteId: SPHttpClientResponse) => {
+                      if (responseSiteId.status === 404) {
+                        alert(stringsConstants.CMPErrorMessage + "while setting up the App. Please try refreshing or loading after some time.");
+                        console.error("CMP_CLBHome_createSiteAndLists_FailedToGetSiteID \n");
+                      }
+                      else {
+                        responseSiteId.json().then((datauser: any) => {
+                          exSiteId = datauser.value;
+                          this.props.context.spHttpClient
+                            .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Config List')/Items", SPHttpClient.configurations.v1)
+                            .then(async (responseConfigList: SPHttpClientResponse) => {
+                              if (responseConfigList.status === 404) {
+                                this.createNewList(exSiteId, configList);
+                                console.log("CMP_CLBHome_Config List was created");
+                              }
+                            });
+                        });
+                      }
+                    });
+
                 }
               }).catch((error) => {
                 alert(stringsConstants.CMPErrorMessage + "while checking if MemberList exists. Below are the details: \n" + JSON.stringify(error));
                 console.error("CMP_CLBHome_createSiteAndLists_FailedToCheckMemberListExists \n", JSON.stringify(error));
               });
-            //site exists, check if Digital Badge lib exists, create if not present
-            this.createDigitalBadgeLib();
-            //check if CMP Logo lib exists, create if not present
-            this.getAppLogoImage();
+
           }//End of else part - CMP site already exists create only lists. 
 
         }//First IF END
@@ -846,7 +950,7 @@ export default class ClbHome extends React.Component<
   }
 
   //Create CMP Logo library to store organization logo
-  public async getAppLogoImage(): Promise<any> {
+  private async getAppLogoImage(): Promise<any> {
     try {
       let logoImageURL: string;
       const spListTitle: string = stringsConstants.CMPLogoLibrary;
@@ -890,7 +994,7 @@ export default class ClbHome extends React.Component<
     }
   }
   //create digital lib to store the badges
-  private async createDigitalBadgeLib() {
+  private async createDigitalBadgeLib(): Promise<any> {
     try {
       const listStructure: any = siteconfig.libraries;
       for (let i = 0; i < listStructure.length; i++) {
@@ -898,11 +1002,34 @@ export default class ClbHome extends React.Component<
         const spListTemplate = listStructure[i]["listTemplate"];
         //check if digital assests lib exists, create if doesn't exists and upload default badge 
         await spweb.lists.getByTitle(spListTitle).get().then(async () => {
+          //Check if "MinimumPoints" field exists, if not create it
+          spweb.lists.getByTitle(spListTitle).fields.getByInternalNameOrTitle(stringsConstants.MinimumPointsColumn).get()
+            .then(() => {
 
+            }).catch(async () => {
+              //field doesn't exists, hence create it
+              await spweb.lists.getByTitle(spListTitle).fields.addNumber(stringsConstants.MinimumPointsColumn, 0).then(async () => {
+                await spweb.lists.getByTitle(spListTitle).defaultView.fields.add(stringsConstants.MinimumPointsColumn).then(() => {
+                  console.log("CMP_CLBHome_Added Minimum Points column to Digital Badge Library");
+                });
+              });
+            });
+          //Add "Title" to default view
+          const defaultXML = await spweb.lists.getByTitle(spListTitle).defaultView.fields.getSchemaXml();
+          let titleFieldIndex = defaultXML.indexOf("Title");
+          if (titleFieldIndex == -1) {
+            await spweb.lists.getByTitle(spListTitle).defaultView.fields.add("Title");
+          }
         }).
           catch(async () => {
             //create lib
             await spweb.lists.add(spListTitle, "", spListTemplate, true).then(async () => {
+              //Create "MinimumPoints" field
+              await spweb.lists.getByTitle(spListTitle).fields.addNumber(stringsConstants.MinimumPointsColumn, 0).then(async () => {
+                await spweb.lists.getByTitle(spListTitle).defaultView.fields.add(stringsConstants.MinimumPointsColumn).then(() => {
+                  console.log("CMP_CLBHome_Added Minimum Points column to Digital Badge Library");
+                });
+              });
               fetch(require('../assets/images/CMPBadge.png')).then(res => res.blob()).then((blob) => {
                 spweb.getFolderByServerRelativeUrl("/" + this.state.inclusionpath + "/" + this.state.sitename + "/" + spListTitle).files.add("digitalbadge.png", blob, true)
                   .then((res) => {
@@ -913,8 +1040,8 @@ export default class ClbHome extends React.Component<
                     });
                   });
               });
-              const deafultXML = await spweb.lists.getByTitle(spListTitle).defaultView.fields.getSchemaXml();
-              let titleFieldIndex = deafultXML.indexOf("Title");
+              const defaultXML = await spweb.lists.getByTitle(spListTitle).defaultView.fields.getSchemaXml();
+              let titleFieldIndex = defaultXML.indexOf("Title");
               if (titleFieldIndex == -1) {
                 await spweb.lists.getByTitle(spListTitle).defaultView.fields.add("Title");
               }
@@ -986,38 +1113,57 @@ export default class ClbHome extends React.Component<
   }
 
   //Get the list of Members from member List
-  private getMembersListData(): Promise<ISPLists> {
-    return this.props.context.spHttpClient
+  private getMembersListData(): void {
+    this.props.context.spHttpClient
       .get(
-        "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/_api/web/lists/GetByTitle('" + stringsConstants.MemberList + "')/Items?$top=1000",
+        "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/_api/web/lists/GetByTitle('" + stringsConstants.MemberList + "')/Items?$top=1&$filter= Status eq 'Pending'",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
         let res = response.json();
         if (response.status === 200) {
           res.then((responseJSON: any) => {
-            let pendingApprovals = responseJSON.value.filter(i => i.Status === 'Pending');
             this.setState({
-              list: { value: responseJSON.value },
-              isApprovalPending: pendingApprovals.length === 0 ? false : true
+              isChampionApprovalPending: responseJSON.value.length > 0
             });
           });
-          return res;
+        }
+      });
+  }
+
+  //Check for any pending approvals in the event track details list
+  private getPendingEventsData(): void {
+    this.props.context.spHttpClient
+      .get(
+        "/" + siteconfig.inclusionPath + "/" + siteconfig.sitename + "/_api/web/lists/GetByTitle('" + stringsConstants.EventTrackDetailsList + "')/Items?$top=1&$filter= Status eq 'Pending'",
+        SPHttpClient.configurations.v1
+      )
+      .then((response: SPHttpClientResponse) => {
+        let res = response.json();
+        if (response.status === 200) {
+          res.then((responseJSON: any) => {
+            this.setState({
+              isEventApprovalPending: responseJSON.value.length > 0
+            });
+          });
         }
       });
   }
 
   //callback function
-  private callBackFunction = (updatedListData: ISPLists) => {
+  private callBackFunction(): void {
     try {
       //Get the list of Members from member List
       this.getMembersListData();
+
+      //Get pending events from event track details list
+      this.getPendingEventsData();
 
       this.setState({
         cB: false,
         ChampionsList: false,
         addMember: false,
-        approveMember: false
+        manageApprovals: false
       });
     } catch (error) {
       console.log(error);
@@ -1039,7 +1185,7 @@ export default class ClbHome extends React.Component<
                   ChampionsList: false,
                   addMember: false,
                   dB: false,
-                  approveMember: false,
+                  manageApprovals: false,
                   enableTOT: false
                 })
               }
@@ -1047,7 +1193,7 @@ export default class ClbHome extends React.Component<
           </div>
           {!this.state.cB &&
             !this.state.ChampionsList &&
-            !this.state.addMember && !this.state.approveMember &&
+            !this.state.addMember && !this.state.manageApprovals &&
             !this.state.dB && !this.state.enableTOT && (
               <div>
                 <div className={styles.imgheader}>
@@ -1144,6 +1290,29 @@ export default class ClbHome extends React.Component<
                   {this.state.clB && !this.state.cV && (
                     <Row xl={4} lg={4} md={4} sm={3} xs={2} className="mt-4">
                       <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                        <Media className={styles.cursor}
+                          onClick={() =>
+                            this.setState({
+                              manageApprovals: !this.state.manageApprovals,
+                            })
+                          }
+                        >
+                          <div className={styles.mb}>
+                            <img
+                              src={(this.state.isChampionApprovalPending || this.state.isEventApprovalPending) ?
+                                require("../assets/CMPImages/ManagePendingApprovals.svg") :
+                                require("../assets/CMPImages/ManageApprovals.svg")}
+                              alt={LocaleStrings.AdminTasksLabel}
+                              title={LocaleStrings.AdminTasksLabel}
+                              className={styles.dashboardimgs}
+                            />
+                            <div className={styles.center} title={LocaleStrings.AdminTasksLabel}>
+                              {LocaleStrings.AdminTasksLabel}
+                            </div>
+                          </div>
+                        </Media>
+                      </Col>
+                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media className={styles.cursor}>
                           <div className={styles.mb}>
                             <a
@@ -1195,28 +1364,6 @@ export default class ClbHome extends React.Component<
                             </a>
                             <div className={styles.center} title={LocaleStrings.EventsTrackListLabel}>
                               {LocaleStrings.EventsTrackListLabel}
-                            </div>
-                          </div>
-                        </Media>
-                      </Col>
-
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media className={styles.cursor}
-                          onClick={() =>
-                            this.setState({
-                              approveMember: !this.state.approveMember,
-                            })
-                          }
-                        >
-                          <div className={styles.mb}>
-                            <img
-                              src={this.state.isApprovalPending ? require("../assets/CMPImages/ManagePendingApprovals.svg") : require("../assets/CMPImages/ManageApprovals.svg")}
-                              alt={LocaleStrings.ManageApprovalToolTip}
-                              title={LocaleStrings.ManageApprovalToolTip}
-                              className={styles.dashboardimgs}
-                            />
-                            <div className={styles.center} title={LocaleStrings.ManageApprovalsLabel}>
-                              {LocaleStrings.ManageApprovalsLabel}
                             </div>
                           </div>
                         </Media>
@@ -1279,12 +1426,6 @@ export default class ClbHome extends React.Component<
                           </div>
                         </Media>
                       </Col>
-
-                    </Row>
-                  )}
-                  {this.state.clB && !this.state.cV && (
-                    <Row>
-
                     </Row>
                   )}
                 </div>
@@ -1324,36 +1465,19 @@ export default class ClbHome extends React.Component<
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
                 isAdmin={this.state.clB && !this.state.cV}
-                onClickCancel={() =>
-                  this.setState({ addMember: false, ChampionsList: true, isUserAdded: false })
-                }
-                onClickSave={(userStatus: string) =>
-                  this.setState({ addMember: false, ChampionsList: true, isUserAdded: true, userStatus: userStatus })
-                }
                 onClickBack={() => { this.setState({ addMember: false }); }}
+                onHomeCallBack={this.callBackFunction}
               />
             )
           }
           {
-            this.state.approveMember && (
-              <ApproveChampion
+            this.state.manageApprovals && (
+              <ManageApprovals
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
-                isEmp={this.state.cV === true || this.state.clB === true}
-                list={this.state.list}
-                onClickAddmember={this.callBackFunction}
-              />
-            )
-          }
-          {
-            this.state.ChampionsList && (
-              <ClbChampionsList
-                siteUrl={this.props.siteUrl}
-                context={this.props.context}
-                isEmp={this.state.cV === true || this.state.clB === true}
-                userAdded={this.state.isUserAdded}
-                userStatus={this.state.userStatus}
-                onClickAddmember={this.callBackFunction}
+                onClickBack={this.callBackFunction}
+                isPendingChampionApproval={this.state.isChampionApprovalPending}
+                isPendingEventApproval={this.state.isEventApprovalPending}
               />
             )
           }

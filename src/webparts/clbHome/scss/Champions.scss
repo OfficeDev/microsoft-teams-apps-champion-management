@@ -1,21 +1,5 @@
-.championRegionCallout {
-    width: 200px;
-
-    div[class^="ms-Callout-main"] {
-        div[class^="ms-ComboBox-optionsContainerWrapper"] {
-            div[class^="ms-ComboBox-optionsContainer"] {
-
-                button:focus,
-                button:hover {
-                    background-color: transparent !important;
-                }
-            }
-        }
-    }
-}
-
 .championFocusAreaCallout {
-    width: 200px;
+    width: 250px;
 
     div[class^="ms-Callout-main"] {
         div[class^="ms-ComboBox-optionsContainerWrapper"] {
@@ -41,42 +25,12 @@
         margin-bottom: 30px;
     }
 
-    .championRegionComboboxCol {
-        z-index: 1;
-
-        .championRegionComboboxArea {
-            margin-bottom: 15px;
-            text-align: left;
-
-            .championRegionCombobox {
-                display: inline-flex;
-                margin-right: 40px;
-
-                label {
-                    margin-right: 10px;
-                    width: 60px;
-                    color: rgb(97, 97, 97);
-                }
-
-                .ms-ComboBox {
-                    width: 200px !important;
-
-                    .ms-ComboBox-CaretDown-button:hover {
-                        background-color: transparent;
-                    }
-                }
-            }
-        }
-    }
-
-
     .championFocusAreaComboboxArea {
         margin-bottom: 15px;
         text-align: left;
 
         .championFocusAreaCombobox {
             display: inline-flex;
-            margin-left: 65px;
 
             label {
                 margin-right: 10px;
@@ -85,7 +39,7 @@
             }
 
             .ms-ComboBox {
-                width: 200px;
+                width: 250px;
 
                 .ms-ComboBox-CaretDown-button:hover {
                     background-color: transparent;
@@ -98,30 +52,11 @@
         margin-bottom: 15px;
 
         .championSearchbox {
-            width: 300px;
+            width: 350px;
 
             .ms-SearchBox-clearButton {
                 button:hover {
                     background-color: transparent;
-                }
-            }
-        }
-    }
-
-    @media screen and (max-width: 1059px) {
-        .championFocusAreaComboboxArea {
-            .championFocusAreaCombobox {
-                margin-left: 0px;
-
-            }
-        }
-
-        .championRegionComboboxCol {
-            .championRegionComboboxArea {
-                .championRegionCombobox {
-                    .ms-ComboBox {
-                        margin-left: 30px;
-                    }
                 }
             }
         }
@@ -434,16 +369,6 @@
 
 @media screen and (max-width: 375pt) {
     .championsFilterArea {
-        .championRegionComboboxCol {
-            .championRegionComboboxArea {
-                .championRegionCombobox {
-                    label {
-                        font: normal normal 600 16px/22px Segoe UI;
-                    }
-                }
-            }
-        }
-
         .championFocusAreaComboboxArea {
             .championFocusAreaCombobox {
                 label {

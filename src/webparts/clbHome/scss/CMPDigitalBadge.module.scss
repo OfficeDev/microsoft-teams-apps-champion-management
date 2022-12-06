@@ -100,6 +100,7 @@
           top: 2px;
           right: 2px;
           bottom: 2px;
+          cursor: pointer;
 
           .listGridImage {
             position: absolute;
@@ -121,9 +122,13 @@
             font: normal normal bold 16px/21px Segoe UI;
             overflow: hidden;
             text-overflow: ellipsis;
-            cursor: pointer;
             white-space: nowrap;
           }
+        }
+
+        .disabledBadge {
+          opacity: 0.3;
+          cursor: default;
         }
       }
     }

@@ -5,10 +5,8 @@ import "@pnp/sp/lists";
 import siteconfig from "../config/siteconfig.json";
 import * as stringsConstants from "../constants/strings";
 import { IRectangle } from '@fluentui/react/lib/Utilities';
+import { IConfigList } from "../components/ManageConfigSettings";
 
-interface ICommonServicesState {
-
-}
 let rootSiteURL: string;
 export default class CommonServices {
 
@@ -47,6 +45,26 @@ export default class CommonServices {
     return { itemCountForPage: columnCount * ROWS_PER_PAGE, columnCount: columnCount, rowHeight: rowHeight };
   }
 
+  //Get Member list column Config settings
+  public async getMemberListColumnConfigSettings() {
+    const filterQuery = "Title eq '" + stringsConstants.RegionColumn + "' or Title eq '"
+      + stringsConstants.CountryColumn + "' or Title eq '" + stringsConstants.GroupColumn + "'";
+    const configListData: IConfigList[] = await this.getFilteredListItemsWithSpecificColumns(
+      stringsConstants.ConfigList,
+      `${stringsConstants.TitleColumn},${stringsConstants.ValueColumn},${stringsConstants.IDColumn}`,
+      filterQuery
+    );
+    return configListData;
+  }
+
+  //Get Member List Column Display Names
+  public async getMemberListColumnDisplayNames() {
+    const columnsFilter = "InternalName eq '" + stringsConstants.RegionColumn + "' or InternalName eq '"
+      + stringsConstants.CountryColumn + "' or InternalName eq '" + stringsConstants.GroupColumn + "'";
+    const columnsDisplayNames: any[] = await this.getColumnsDisplayNames(stringsConstants.MemberList, columnsFilter);
+    return columnsDisplayNames;
+  }
+
   //Get list items based on only a filter
   public async getItemsWithOnlyFilter(listname: string, filterparametres: any): Promise<any> {
     var items: any[] = [];
@@ -77,6 +95,13 @@ export default class CommonServices {
   public async getAllListItemsPaged(listname: string): Promise<any> {
     var items: any = [];
     items = await sp.web.lists.getByTitle(listname).items.top(5000).getPaged();
+    return items;
+  }
+
+  //Get all items with paged from a list with a filter
+  public async getAllListItemsPagedWithFilter(listname: string, filter: string): Promise<any> {
+    var items: any = [];
+    items = await sp.web.lists.getByTitle(listname).items.top(5000).filter(filter).getPaged();
     return items;
   }
 
@@ -132,7 +157,36 @@ export default class CommonServices {
     });
   }
 
-  //Update multiple items
+  //Update multiple items with different values
+  public async updateMultipleItemsWithDifferentValues(listname: string, data: any): Promise<any> {
+    return new Promise<any>(async (resolve, reject) => {
+
+      try {
+        //Create object for batch
+        const batch = sp.web.createBatch();
+        //Get list context
+        const list = await sp.web.lists.getByTitle(listname);
+        const items = list.items.inBatch(batch);
+
+        for (let itemCount = 0; itemCount < data.length; itemCount++) {
+          items.getById(parseInt(data[itemCount].id)).inBatch(batch).update(data[itemCount].value);
+        }
+        await batch.execute().then(() => {
+          resolve(true);
+        }).catch((error) => {
+          console.error("CommonServices_updateMultipleItems \n", error);
+          reject(false);
+        });
+      }
+      catch (error) {
+        console.error("CommonServices_updateMultipleItems \n", error);
+        reject(false);
+      }
+
+    });
+  }
+
+  //Update multiple items with same value
   public async updateMultipleItems(listname: string, data: any, arrayOfIds: any): Promise<any> {
     return new Promise<any>(async (resolve, reject) => {
 
@@ -201,12 +255,17 @@ export default class CommonServices {
     return activeTournamentsArray;
   }
 
+  //get display names of list columns based on thier internal names
+  public async getColumnsDisplayNames(listName: string, filter: string): Promise<any> {
+    const columnsDisplayNames = await sp.web.lists.getByTitle(listName).fields.filter(filter).select("InternalName", "Title").get();
+    return columnsDisplayNames;
+  }
 
   //Filter and get all badge imagesfrom 'Digital Badges' library for the current user
   public async getAllBadgeImages(listName: string, userEmail: string): Promise<any> {
     try {
-      var badgeImagesArray: any[] = [];
-      var finalImagesArray: any[] = [];
+      let badgeImagesArray: any[] = [];
+      let finalImagesArray: any[] = [];
       //If TOT is not enabled 'Tournament' column will be missing
       const filterFields = await sp.web.lists.getByTitle(stringsConstants.DigitalBadgeLibrary).fields
         .filter("Title eq 'Tournament'")
@@ -214,18 +273,19 @@ export default class CommonServices {
 
       //if TOT is not enabled get all the badges
       if (filterFields.length == 0) {
-        badgeImagesArray = await sp.web.lists.getByTitle(stringsConstants.DigitalBadgeLibrary).items.select("Title", "File/Name").expand("File").get();
+        badgeImagesArray = await sp.web.lists.getByTitle(stringsConstants.DigitalBadgeLibrary).items.select("Title", "MinimumPoints", "File/Name").expand("File").get();
         for (let i = 0; i < badgeImagesArray.length; i++) {
           //For global badges do not check for Tournaments completion status
           finalImagesArray.push({
             title: badgeImagesArray[i].Title,
-            url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name
+            url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name,
+            minimumPoints: badgeImagesArray[i].MinimumPoints
           });
         }
       }
       //if TOT is enabled get all the badges and filter for completed tournaments
       else {
-        badgeImagesArray = await sp.web.lists.getByTitle(stringsConstants.DigitalBadgeLibrary).items.select("Title", "Tournament/Title", "File/Name").expand("Tournament", "File").get();
+        badgeImagesArray = await sp.web.lists.getByTitle(stringsConstants.DigitalBadgeLibrary).items.select("Title", "MinimumPoints", "Tournament/Title", "File/Name").expand("Tournament", "File").get();
         //Checking if the user is in member list
         let filterQuery = "Title eq '" + userEmail.toLowerCase() + "'" + " and Status eq 'Approved'";
         let isApprovedChampion = await this.getItemsWithOnlyFilter(stringsConstants.MemberList, filterQuery);
@@ -233,13 +293,14 @@ export default class CommonServices {
         //Loop through badges and filter based on user's tournaments completion status
         for (let i = 0; i < badgeImagesArray.length; i++) {
           //For global badges do not check for Tournaments completion status
-  
+
           if (badgeImagesArray[i].Tournament == undefined) {
             // Show the global badges only for champion
             if (isApprovedChampion.length > 0) {
               finalImagesArray.push({
                 title: badgeImagesArray[i].Title,
-                url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name
+                url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name,
+                minimumPoints: badgeImagesArray[i].MinimumPoints
               });
             }
           }
@@ -248,7 +309,8 @@ export default class CommonServices {
             if (tournamentCompleted)
               finalImagesArray.push({
                 title: badgeImagesArray[i].Title,
-                url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name
+                url: rootSiteURL + "/" + listName + "/" + badgeImagesArray[i].File.Name,
+                minimumPoints: 0
               });
           }
         }
@@ -450,6 +512,27 @@ export default class CommonServices {
     });
   }
 
+  //Get Total Points for a Member from Event Track Details list
+  public async getTotalPointsForMember(memberEmailId: string): Promise<any> {
+
+    let filterQuery = "Title eq '" + memberEmailId.toLowerCase() + "'";
+    let totalPoints = 0;
+
+    await this.getFilteredListItemsWithSpecificColumns(stringsConstants.MemberList, "ID", filterQuery)
+      .then(async (memberID) => {    
+        //If current user is not a member skip the points calculation    
+        if (memberID.length != 0) {
+          let filter = "MemberId eq '" + memberID[0].ID + "'" + " and Status ne 'Pending' and Status ne 'Rejected'";
+          let memberPointsArray = await this.getFilteredListItemsWithSpecificColumns(stringsConstants.EventTrackDetailsList, stringsConstants.CountColumn, filter);
+
+          if (memberPointsArray.length > 0) {
+            totalPoints = memberPointsArray.reduce((previousValue, currentValue) => { return previousValue + currentValue[stringsConstants.CountColumn]; }, 0);
+          }
+        }
+      });
+
+    return totalPoints;
+  }
 
   private createParticipantReportObject = (
     tournamentName: string,

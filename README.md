@@ -11,13 +11,6 @@ The app provides an easy interface for designated users to add members to the ch
 ![CMP Screen](Images/AddTab_Teams.png)                   
 
 
-## Known issues
-
-1) If site is presenting with spinning blue circle check to ensure permissions are allowed to the ChampionManagementPlatform sharepoint site. If this is happening on the first load experience ensure that the user running first run experience has permissions to create a SharePoint site (first run creates the initial ChampionManagementPlatform site).If you continue to experience the blue circle, please remove the app from Teams and try again. Visit our issues list to log an issue if issue is still persistent. 
-
-2) If new users visit the Champion Management Platform app and receive a blue spinning circle, ensure that you have granted contribute/edit permissions to the SharePoint site created during first run to all users (or scoped users accessing the app). The default site created is ChampionManagementPlatform.
-
-
 ## Additional Customization Options
 
 The Champion Management Platform is built to provide a great starting point for managing your program. There are several ways you can modify the solution to fit your needs, refer to this [section](https://github.com/OfficeDev/microsoft-teams-apps-champion-management/wiki/Customizations) for more on customization.

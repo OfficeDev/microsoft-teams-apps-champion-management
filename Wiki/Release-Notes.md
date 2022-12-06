@@ -3,6 +3,7 @@ This page contains the different release details for Champion Management Platfor
 ## Version history
 | Version | Release Date |
 |----|----|
+| 2.4 | Dec 6, 2022 |
 | 2.3 | Jul 28, 2022 |
 | 2.2 | May 17, 2022 |
 | 2.1 | Apr 4, 2022 |
@@ -12,6 +13,21 @@ This page contains the different release details for Champion Management Platfor
 | 1.1 | Apr 1, 2021 |
 
 ## Release notes
+
+### 2.4 (Dec 6, 2022)
+
+Below improvements released,
+
+- Upgraded SPFx version from 1.13.0 to 1.15.0 and its related NPM packages.
+- Upgraded node.js to v16.18.0 which is compatible for SPFx v1.15.0.
+- New Feature: Added a new "Admin Tasks" feature, that allows admin to manage champion requests, event requests and config settings.
+- New Feature: Ability for the admin to enable events approval and allow them to review the events submitted by champions and approve it.
+- New Feature: Ability to send notification to Managers for the pending event requests.
+- New Feature: Ability to customize the display name and choices of Region, Group and Country columns in Member List and show/hide these columns in various screens of the application (eg: Add Member , Become a Champion, etc..)
+- New Feature: Implemented a functionality to unlock digital badges for Champions based on their points.
+- Bug Fix: Digital Badge error for profiles with no profile picture in CDN enabled tenant.
+- Bug Fix: Reversal of First name and Last name in Member List for the tenants with display name format as 'LastName FirstName'.
+- Other Changes: Few minor UI enhancements
 
 ### 2.3 (Jul 28, 2022)
 
