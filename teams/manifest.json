@@ -3,7 +3,7 @@
   "manifestVersion": "1.11",
   "packageName": "CMPHomeWebPart",
   "id": "6df47bd5-d84a-41ab-8c4a-9352076e8b6c",
-  "version": "2.4.0.0",
+  "version": "2.4.0",
   "developer": {
     "name": "Teams Customer Advocacy Group",
     "websiteUrl": "https://products.office.com/en-us/sharepoint/collaboration",
@@ -23,19 +23,25 @@
     "color": "6df47bd5-d84a-41ab-8c4a-9352076e8b6c_color.png"
   },
   "accentColor": "#004578",
-  "configurableTabs": [{
-    "configurationUrl": "https://{teamSiteDomain}{teamSitePath}/_layouts/15/TeamsLogon.aspx?SPFX=true&dest={teamSitePath}/_layouts/15/teamshostedapp.aspx%3FopenPropertyPane=true%26teams%26componentId=6df47bd5-d84a-41ab-8c4a-9352076e8b6c%26forceLocale={locale}",
-    "canUpdateConfiguration": true,
-    "scopes": [
-      "team"
-    ]
-  }],
-  "staticTabs": [{
-    "entityId": "Champion Management Platform",
-    "name": "Champion Management Platform",
-    "contentUrl": "https://{teamSiteDomain}/_layouts/15/TeamsLogon.aspx?SPFX=true&dest=/_layouts/15/teamshostedapp.aspx%3Fteams%26personal%26componentId=6df47bd5-d84a-41ab-8c4a-9352076e8b6c%26forceLocale={locale}",
-    "scopes": ["personal"]
-  }],
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://{teamSiteDomain}{teamSitePath}/_layouts/15/TeamsLogon.aspx?SPFX=true&dest={teamSitePath}/_layouts/15/teamshostedapp.aspx%3FopenPropertyPane=true%26teams%26componentId=6df47bd5-d84a-41ab-8c4a-9352076e8b6c%26forceLocale={locale}",
+      "canUpdateConfiguration": true,
+      "scopes": [
+        "team"
+      ]
+    }
+  ],
+  "staticTabs": [
+    {
+      "entityId": "Champion Management Platform",
+      "name": "Champion Management Platform",
+      "contentUrl": "https://{teamSiteDomain}/_layouts/15/TeamsLogon.aspx?SPFX=true&dest=/_layouts/15/teamshostedapp.aspx%3Fteams%26personal%26componentId=6df47bd5-d84a-41ab-8c4a-9352076e8b6c%26forceLocale={locale}",
+      "scopes": [
+        "personal"
+      ]
+    }
+  ],
   "validDomains": [
     "*.login.microsoftonline.com",
     "*.sharepoint.com",
