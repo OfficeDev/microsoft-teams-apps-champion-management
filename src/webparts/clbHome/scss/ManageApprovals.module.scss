@@ -1,800 +1,1616 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
 .manageApprovalsContainer {
-    padding-bottom: 1em;
+  padding-bottom: 1em;
 
-    .manageApprovalsPath {
-        display: inline-flex;
-        margin-top: 16px;
-        margin-bottom: 20px;
-        text-align: center;
-        font: normal normal bold 14px/24px Segoe UI;
-        letter-spacing: 0px;
-        color: #33344A;
-        opacity: 1;
+  .manageApprovalsPath {
+    display: inline-flex;
+    margin-top: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    font: normal normal bold 14px/24px Segoe UI;
+    letter-spacing: 0px;
+    color: #33344A;
+    opacity: 1;
 
-        .backImg {
-            width: 7px;
-            height: 12px;
-            margin-right: 10px;
-            margin-top: 6px;
-        }
-
-        .backLabel {
-            padding-right: 10px;
-            cursor: pointer;
-        }
-
-        .border {
-            width: 0px;
-            height: 14px;
-            border: 1px solid #33344A;
-            margin-top: 5px;
-        }
-
-        .manageApprovalsLabel {
-            padding-left: 10px;
-        }
+    .backImg {
+      width: 7px;
+      height: 12px;
+      margin-right: 10px;
+      margin-top: 6px;
     }
 
-    .manageApprovalsPivot {
+    .backLabel {
+      padding-right: 10px;
+      cursor: pointer;
+    }
 
-        div[role="tablist"] {
-            border-bottom: 2px solid #BDBEE3;
-            margin-bottom: 25px;
+    .backLabel:focus-visible {
+      box-shadow: none;
+      outline: 2px solid #414156 !important;
+      border-radius: 1px;
+      outline-offset: 4px;
+    }
 
-            button[class^="ms-Button"] {
-                width: 33.33%;
-                height: 40px;
-                background-color: #F5F5F5;
-                text-align: center;
-                font: normal normal normal 18px/22px Segoe UI;
-                letter-spacing: 0px;
-                color: #636363;
-                opacity: 1;
-                white-space: break-spaces;
-                border: 2px solid #F5F5F5;
-                border-top-left-radius: 3px;
-                border-top-right-radius: 3px;
-                border-bottom-left-radius: 0;
-                border-bottom-right-radius: 0;
+    .border {
+      width: 0px;
+      height: 14px;
+      border: 1px solid #33344A;
+      margin-top: 5px;
+    }
 
-                span[class^="ms-Button-flexContainer"] {
-                    justify-content: center;
+    .manageApprovalsLabel {
+      padding-left: 10px;
+    }
+  }
 
-                    .indicatorIcon {
-                        vertical-align: top;
-                        padding-left: 3px;
-                    }
-                }
-            }
+  .manageApprovalsPivot {
 
-            button[class^="ms-Button"]:hover {
-                background-color: #e1e1f2;
-                color: #000000;
-                border: 2px solid #e1e1f2;
-            }
+    div[role="tablist"] {
+      border-bottom: 2px solid #BDBEE3;
+      margin-bottom: 25px;
 
-            button[aria-selected="true"],
-            button[aria-selected="true"]:hover {
-                background-color: #BDBEE3;
-                color: #000000;
-                border: 2px solid #BDBEE3;
-            }
+      button[class^="ms-Button"] {
+        width: 33.33%;
+        height: 40px;
+        background-color: #F5F5F5;
+        text-align: center;
+        font: normal normal normal 18px/22px Segoe UI;
+        letter-spacing: 0px;
+        color: #636363;
+        opacity: 1;
+        white-space: break-spaces;
+        border: 2px solid #F5F5F5;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+
+        span[class^="ms-Button-flexContainer"] {
+          justify-content: center;
+
+          .indicatorIcon {
+            vertical-align: top;
+            padding-left: 3px;
+          }
         }
+      }
 
-        .approvalsContainer {
+      button[class^="ms-Button"]:hover {
+        background-color: #e1e1f2;
+        color: #000000;
+        border: 2px solid #e1e1f2;
+      }
 
-            .approveMessage {
-                text-align: left;
-                font: normal normal normal 18px/24px Segoe UI !important;
-                letter-spacing: 0px;
-                opacity: 1;
-                color: #000000;
-                margin-bottom: 10px;
-                padding-left: 0;
+      button[aria-selected="true"],
+      button[aria-selected="true"]:hover {
+        background-color: #BDBEE3;
+        color: #000000;
+        border: 2px solid #BDBEE3;
+      }
+    }
 
-                .tickImage {
-                    width: 28px;
-                    height: 28px;
-                    margin-right: 10px;
-                    margin-bottom: 7px;
+    .approvalsContainer {
+
+      .approveMessage {
+        text-align: left;
+        font: normal normal normal 18px/24px Segoe UI !important;
+        letter-spacing: 0px;
+        opacity: 1;
+        color: #000000;
+        margin-bottom: 10px;
+        padding-left: 0;
+
+        .tickImage {
+          width: 28px;
+          height: 28px;
+          margin-right: 10px;
+          margin-bottom: 7px;
+        }
+      }
+
+      .rejectMessage {
+        color: #e12636;
+        text-align: left;
+        font: normal normal normal 18px/24px Segoe UI !important;
+        letter-spacing: 0px;
+        opacity: 1;
+        margin-bottom: 10px;
+        padding-left: 0;
+      }
+
+      .searchboxPadding {
+        padding-left: 0px !important;
+        padding-bottom: 15px;
+
+        .approvalsSearchbox {
+          height: 40px;
+          color: rgb(97, 97, 97);
+          background-color: rgb(255, 255, 255);
+          border-color: rgb(138, 138, 138);
+
+          div[class~="ms-SearchBox-iconContainer"] {
+            color: rgb(98, 100, 167);
+          }
+
+          input[class~="ms-SearchBox-field"] {
+            color: #000000;
+
+            &::placeholder {
+              color: rgb(138, 138, 138);
+            }
+          }
+
+          div[class~="ms-SearchBox-clearButton"] {
+            button {
+              background-color: transparent;
+
+              i {
+                color: rgb(138, 138, 138);
+              }
+            }
+
+            &:hover {
+              button {
+                background-color: rgb(245, 245, 245);
+
+                i {
+                  color: rgb(97, 97, 97);
                 }
+              }
             }
+          }
 
-            .rejectMessage {
-                color: #e12636;
+          &:hover {
+            border-color: rgb(97, 97, 97);
+
+            div[class~="ms-SearchBox-iconContainer"] {
+              color: rgb(61, 62, 102);
+            }
+          }
+
+          &::after {
+            border-color: rgb(98, 100, 167);
+          }
+        }
+      }
+
+      .selectedRowText {
+        text-align: left;
+        font: normal normal normal 18px/24px Segoe UI !important;
+        letter-spacing: 0px;
+        opacity: 1;
+        color: #000000;
+      }
+
+      .approvalsTableWrapper {
+        margin-top: 10px;
+
+        table {
+          letter-spacing: 0px;
+          color: #000000;
+          opacity: 1;
+          table-layout: fixed;
+          display: flex;
+          flex-flow: column;
+          width: 100%;
+
+          thead {
+            flex: 0 0 auto;
+
+            tr {
+              width: 100%;
+              display: table;
+              table-layout: fixed;
+
+              th {
+                background-color: #6166A2;
+                padding: .55rem .75rem .55rem .75rem;
                 text-align: left;
-                font: normal normal normal 18px/24px Segoe UI !important;
-                letter-spacing: 0px;
-                opacity: 1;
-                margin-bottom: 10px;
-                padding-left: 0;
-            }
+                font: normal normal normal 18px/24px Segoe UI;
+                color: #fff;
+                vertical-align: top;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                border: none;
 
-            .searchboxPadding {
-                padding-left: 0px !important;
-                padding-bottom: 15px;
-
-                .approvalsSearchbox {
-                    height: 40px;
+                span[class="sort-order"] {
+                  vertical-align: middle;
+                  position: relative;
+                  margin: 10px 3.5px;
                 }
-            }
 
-            .selectedRowText {
-                text-align: left;
-                font: normal normal normal 18px/24px Segoe UI !important;
-                letter-spacing: 0px;
-                opacity: 1;
-                color: #000000;
-            }
-
-            .approvalsTableWrapper {
-                margin-top: 10px;
-
-                table {
-                    letter-spacing: 0px;
-                    color: #000000;
-                    opacity: 1;
-                    table-layout: fixed;
-                    display: flex;
-                    flex-flow: column;
-                    width: 100%;
-
-                    thead {
-                        flex: 0 0 auto;
-
-                        tr {
-                            width: 100%;
-                            display: table;
-                            table-layout: fixed;
-
-                            th {
-                                background-color: #6166A2;
-                                padding: .55rem .75rem .55rem .75rem;
-                                text-align: left;
-                                font: normal normal normal 18px/24px Segoe UI;
-                                color: #fff;
-                                vertical-align: top;
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                                white-space: nowrap;
-                                border: none;
-                            }
-
-                            th:nth-child(1) {
-                                text-align: center;
-
-                                .selectAllCheckbox {
-                                    label {
-                                        margin-top: 2px;
-                                        margin-bottom: 0.3rem;
-
-                                        div[class^="ms-Checkbox-checkbox"] {
-                                            border-color: #fff !important;
-                                            width: 18px;
-                                            height: 18px;
-
-                                            i,
-                                            i:hover {
-                                                color: #fff !important;
-                                            }
-
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        .championsApprovalTableHeaderWithAllCols {
-                            th:nth-child(1) {
-                                width: 45px;
-                            }
-
-                            th:nth-child(2) {
-                                width: 16%;
-                            }
-
-                            th:nth-child(3) {
-                                width: 30%;
-                            }
-
-                            th:nth-child(4) {
-                                width: 13%;
-                            }
-
-                            th:nth-child(5) {
-                                width: 13%;
-                            }
-
-                            th:nth-child(6) {
-                                width: 13%;
-                            }
-                        }
-
-                        .championsApprovalTableHeaderWithSixCols {
-                            th:nth-child(1) {
-                                width: 45px;
-                            }
-
-                            th:nth-child(2) {
-                                width: 17%;
-                            }
-
-                            th:nth-child(3) {
-                                width: 32%;
-                            }
-
-                            th:nth-child(4) {
-                                width: 16%;
-                            }
-
-                            th:nth-child(5) {
-                                width: 16%;
-                            }
-                        }
-
-                        .championsApprovalTableHeaderWithFiveCols {
-                            th:nth-child(1) {
-                                width: 45px;
-                            }
-
-                            th:nth-child(2) {
-                                width: 21%;
-                            }
-
-                            th:nth-child(3) {
-                                width: 37%;
-                            }
-
-                            th:nth-child(4) {
-                                width: 20%;
-                            }
-                        }
-
-                        .championsApprovalTableHeaderWithFourCols {
-                            th:nth-child(1) {
-                                width: 45px;
-                            }
-
-                            th:nth-child(2) {
-                                width: 27%;
-                            }
-
-                            th:nth-child(3) {
-                                width: 44%;
-                            }
-                        }
-
-                        .eventsApprovalTableHeader {
-                            th:nth-child(1) {
-                                width: 45px;
-                            }
-
-                            th:nth-child(2) {
-                                width: 18%;
-                            }
-
-                            th:nth-child(3) {
-                                width: 24%;
-                            }
-
-                            th:nth-child(4) {
-                                width: 15%;
-                            }
-
-                            th:nth-child(5) {
-                                width: 12%;
-                            }
-
-                            th:nth-child(6) {
-                                width: 7%;
-                            }
-                        }
-
-                    }
-
-                    tbody {
-                        flex: 1 1 auto;
-                        display: block;
-                        overflow-y: overlay;
-                        overflow-x: hidden;
-                        max-height: 425px;
-
-                        tr {
-                            width: 100%;
-                            display: table;
-                            table-layout: fixed;
-
-                            td {
-                                padding: .55rem .75rem .55rem .75rem;
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                                white-space: nowrap;
-                                text-align: left;
-                                font: normal normal normal 16px/22px Segoe UI;
-                                border: none;
-                            }
-
-                            td:nth-child(1) {
-
-                                .selectItemCheckbox {
-
-                                    label {
-                                        margin-top: 2px;
-                                        margin-bottom: 0.3rem;
-
-                                        div[class^="ms-Checkbox-checkbox"] {
-                                            width: 18px;
-                                            height: 18px;
-                                        }
-                                    }
-                                }
-                            }
-
-                        }
-                    }
-
-                    .championsApprovalTableBodyWithAllCols {
-                        tr {
-                            td:nth-child(1) {
-                                width: 45px;
-                            }
-
-                            td:nth-child(2) {
-                                width: 16%;
-                            }
-
-                            td:nth-child(3) {
-                                width: 30%;
-                            }
-
-                            td:nth-child(4) {
-                                width: 13%;
-                            }
-
-                            td:nth-child(5) {
-                                width: 13%;
-                            }
-
-                            td:nth-child(6) {
-                                width: 13%;
-                            }
-
-                        }
-                    }
-
-                    .championsApprovalTableBodyWithSixCols {
-                        tr {
-                            td:nth-child(1) {
-                                width: 45px;
-                            }
-
-                            td:nth-child(2) {
-                                width: 17%;
-                            }
-
-                            td:nth-child(3) {
-                                width: 32%;
-                            }
-
-                            td:nth-child(4) {
-                                width: 16%;
-                            }
-
-                            td:nth-child(5) {
-                                width: 16%;
-                            }
-                        }
-                    }
-
-                    .championsApprovalTableBodyWithFiveCols {
-                        tr {
-                            td:nth-child(1) {
-                                width: 45px;
-                            }
-
-                            td:nth-child(2) {
-                                width: 21%;
-                            }
-
-                            td:nth-child(3) {
-                                width: 37%;
-                            }
-
-                            td:nth-child(4) {
-                                width: 20%;
-                            }
-
-                        }
-                    }
-
-                    .championsApprovalTableBodyWithFourCols {
-                        tr {
-                            td:nth-child(1) {
-                                width: 45px;
-                            }
-
-                            td:nth-child(2) {
-                                width: 27%;
-                            }
-
-                            td:nth-child(3) {
-                                width: 44%;
-                            }
-
-                        }
-
-                    }
-
-                    .eventsApprovalTableBody {
-                        max-height: 576px;
-
-                        tr {
-                            td:nth-child(1) {
-                                width: 45px;
-                            }
-
-                            td:nth-child(2) {
-                                width: 18%;
-                            }
-
-                            td:nth-child(3) {
-                                width: 24%;
-                            }
-
-                            td:nth-child(4) {
-                                width: 15%;
-                            }
-
-                            td:nth-child(5) {
-                                width: 12%;
-                            }
-
-                            td:nth-child(6) {
-                                width: 7%;
-                            }
-
-                            td:nth-child(7) {
-                                padding-bottom: 0.25rem;
-                                text-overflow: unset;
-                                white-space: unset;
-                                display: -webkit-box;
-                                -webkit-line-clamp: 2;
-                                -webkit-box-orient: vertical;
-                                line-break: anywhere;
-                            }
-                        }
-                    }
-
-                    tbody::-webkit-scrollbar {
-                        width: 8px;
-                        background: rgb(206, 199, 199);
-                        height: 100%;
-                        border-radius: 8px;
-                    }
-
-                    tbody::-webkit-scrollbar-thumb {
-                        box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
-                        border-radius: 8px;
-                        background: #696969;
-                        width: 8px;
-                    }
-
+                span[class="dropdown-caret"] {
+                  margin: 10px 0 10px 5px;
+                  color: #ffffff;
+                  display: inline-block;
+                  margin-left: 2px;
+                  border-top: 4px dashed;
+                  border-right: 4px solid transparent;
+                  border-left: 4px solid transparent;
+                  position: relative;
                 }
-            }
 
-            .noRecordsArea {
+                span[class="dropup-caret"] {
+                  color: #ffffff;
+                  margin: 10px 0;
+                  display: inline-block;
+                  margin-left: 2px;
+                  border-bottom: 4px dashed;
+                  border-top: 0;
+                  border-right: 4px solid transparent;
+                  border-left: 4px solid transparent;
+                  position: relative;
+                }
+              }
+
+              th:nth-child(1) {
                 text-align: center;
-                margin-top: 2%;
-                margin-bottom: 2%;
-                opacity: 1;
 
-                .noRecordsImg {
+                .selectAllCheckbox {
+                  label {
+                    margin-top: 4px;
+                    margin-bottom: 0.3rem;
+
+                    div[class~="ms-Checkbox-checkbox"] {
+                      border-color: #616161 !important;
+                      background: #FFFFFF;
+                      width: 18px;
+                      height: 18px;
+                    }
+                  }
+
+                  &:hover {
+                    label {
+                      div[class~="ms-Checkbox-checkbox"] {
+                        i {
+                          color: rgb(138, 138, 138);
+                        }
+                      }
+                    }
+                  }
+                }
+
+                div[class~="is-checked"] {
+                  div[class~="ms-Checkbox-checkbox"] {
+                    background: rgb(98, 100, 167);
+
+                    i {
+                      color: #FFFFFF;
+                    }
+                  }
+
+                  &:hover {
+                    div[class~="ms-Checkbox-checkbox"] {
+                      i {
+                        color: #FFFFFF;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            .championsApprovalTableHeaderWithAllCols {
+              th:nth-child(1) {
+                width: 45px;
+              }
+
+              th:nth-child(2) {
+                width: 16%;
+              }
+
+              th:nth-child(3) {
+                width: 30%;
+              }
+
+              th:nth-child(4) {
+                width: 13%;
+              }
+
+              th:nth-child(5) {
+                width: 13%;
+              }
+
+              th:nth-child(6) {
+                width: 13%;
+              }
+            }
+
+            .championsApprovalTableHeaderWithSixCols {
+              th:nth-child(1) {
+                width: 45px;
+              }
+
+              th:nth-child(2) {
+                width: 17%;
+              }
+
+              th:nth-child(3) {
+                width: 32%;
+              }
+
+              th:nth-child(4) {
+                width: 16%;
+              }
+
+              th:nth-child(5) {
+                width: 16%;
+              }
+            }
+
+            .championsApprovalTableHeaderWithFiveCols {
+              th:nth-child(1) {
+                width: 45px;
+              }
+
+              th:nth-child(2) {
+                width: 21%;
+              }
+
+              th:nth-child(3) {
+                width: 37%;
+              }
+
+              th:nth-child(4) {
+                width: 20%;
+              }
+            }
+
+            .championsApprovalTableHeaderWithFourCols {
+              th:nth-child(1) {
+                width: 45px;
+              }
+
+              th:nth-child(2) {
+                width: 27%;
+              }
+
+              th:nth-child(3) {
+                width: 44%;
+              }
+            }
+
+            .eventsApprovalTableHeader {
+              th:nth-child(1) {
+                width: 45px;
+              }
+
+              th:nth-child(2) {
+                width: 18%;
+              }
+
+              th:nth-child(3) {
+                width: 24%;
+              }
+
+              th:nth-child(4) {
+                width: 15%;
+              }
+
+              th:nth-child(5) {
+                width: 12%;
+              }
+
+              th:nth-child(6) {
+                width: 7%;
+              }
+            }
+          }
+
+          tbody {
+            flex: 1 1 auto;
+            display: block;
+            overflow-y: overlay;
+            overflow-x: hidden;
+            max-height: 425px;
+
+            tr {
+              width: 100%;
+              display: table;
+              table-layout: fixed;
+
+              td {
+                padding: .55rem .75rem .55rem .75rem;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                text-align: left;
+                font: normal normal normal 16px/22px Segoe UI;
+                border: none;
+
+                .noRecordsArea {
+                  text-align: center;
+                  margin-top: 2%;
+                  margin-bottom: 2%;
+                  opacity: 1;
+
+                  .noRecordsImg {
                     width: 64px;
                     height: 64px;
-                }
+                  }
 
-                .noRecordsLabels {
+                  .noRecordsLabels {
                     margin-left: 15px;
                     text-align: left;
                     font: normal normal 600 18px/24px Segoe UI;
                     letter-spacing: 0px;
                     color: #000000;
-                }
-            }
-
-            .manageApprovalsBtnArea {
-                margin-top: 30px;
-
-                .rejectBtn {
-                    display: inline-flex;
-                    width: 108px;
-                    height: 38px;
-                    border-color: #33344A;
-                    background-color: white;
-                    border-radius: 2px;
-                    margin-left: 15px;
-                    margin-bottom: 1%;
-                    padding-left: 15px;
-
-                    .rejectBtnLabel {
-                        text-align: center;
-                        font: normal normal bold 14px/24px Segoe UI;
-                        letter-spacing: 0px;
-                        color: #000003;
-                        opacity: 1;
-                    }
-
-                    .rejectBtnIcon {
-                        margin-right: 10px;
-                        font-size: 17px;
-                        font-weight: bolder;
-                        color: #000003;
-                        opacity: 1;
-                    }
-
+                  }
                 }
 
-                .approveBtn {
-                    display: inline-flex;
-                    width: 108px;
-                    height: 38px;
-                    background: #6166A2;
-                    border-color: #6166A2;
-                    border-radius: 2px;
-                    padding-left: 15px;
-                    margin-bottom: 1%;
+                mgt-person[class="champion-person-card"] {
+                  --person-line1-text-color: var(--colorNeutralForeground1) !important;
+                  --person-line1-text-line-height: 24px;
+                  --person-line1-font-weight: 400;
+                }
+              }
 
-                    .approveBtnLabel {
-                        opacity: 1;
-                        text-align: center;
-                        font: normal normal bold 14px/24px Segoe UI;
-                        letter-spacing: 0px;
+              td:nth-child(1) {
+
+                .selectItemCheckbox {
+
+                  label {
+                    margin-top: 2px;
+                    margin-bottom: 0.3rem;
+
+                    div[class~="ms-Checkbox-checkbox"] {
+                      width: 18px;
+                      height: 18px;
+                      border-color: #616161 !important;
+                      background: transparent;
+                    }
+                  }
+
+                  &:hover {
+                    label {
+                      div[class~="ms-Checkbox-checkbox"] {
+                        i {
+                          color: rgb(138, 138, 138);
+                        }
+                      }
+                    }
+                  }
+                }
+
+                div[class~="is-checked"] {
+                  div[class~="ms-Checkbox-checkbox"] {
+                    background: rgb(98, 100, 167);
+
+                    i {
+                      color: #FFFFFF;
+                    }
+                  }
+
+                  &:hover {
+                    div[class~="ms-Checkbox-checkbox"] {
+                      i {
                         color: #FFFFFF;
+                      }
                     }
-
-                    .approveBtnIcon {
-                        margin-right: 10px;
-                        font-size: 17px;
-                        font-weight: bolder;
-                        color: #FFFFFF;
-                        opacity: 1;
-                    }
+                  }
                 }
+              }
             }
+          }
+
+          .championsApprovalTableBodyWithAllCols {
+            tr {
+              td:nth-child(1) {
+                width: 45px;
+              }
+
+              td:nth-child(2) {
+                width: 16%;
+              }
+
+              td:nth-child(3) {
+                width: 30%;
+              }
+
+              td:nth-child(4) {
+                width: 13%;
+              }
+
+              td:nth-child(5) {
+                width: 13%;
+              }
+
+              td:nth-child(6) {
+                width: 13%;
+              }
+            }
+          }
+
+          .championsApprovalTableBodyWithSixCols {
+            tr {
+              td:nth-child(1) {
+                width: 45px;
+              }
+
+              td:nth-child(2) {
+                width: 17%;
+              }
+
+              td:nth-child(3) {
+                width: 32%;
+              }
+
+              td:nth-child(4) {
+                width: 16%;
+              }
+
+              td:nth-child(5) {
+                width: 16%;
+              }
+            }
+          }
+
+          .championsApprovalTableBodyWithFiveCols {
+            tr {
+              td:nth-child(1) {
+                width: 45px;
+              }
+
+              td:nth-child(2) {
+                width: 21%;
+              }
+
+              td:nth-child(3) {
+                width: 37%;
+              }
+
+              td:nth-child(4) {
+                width: 20%;
+              }
+            }
+          }
+
+          .championsApprovalTableBodyWithFourCols {
+            tr {
+              td:nth-child(1) {
+                width: 45px;
+              }
+
+              td:nth-child(2) {
+                width: 27%;
+              }
+
+              td:nth-child(3) {
+                width: 44%;
+              }
+            }
+          }
+
+          .eventsApprovalTableBody {
+            max-height: 576px;
+
+            tr {
+              td:nth-child(1) {
+                width: 45px;
+              }
+
+              td:nth-child(2) {
+                width: 18%;
+              }
+
+              td:nth-child(3) {
+                width: 24%;
+              }
+
+              td:nth-child(4) {
+                width: 15%;
+              }
+
+              td:nth-child(5) {
+                width: 12%;
+              }
+
+              td:nth-child(6) {
+                width: 7%;
+              }
+
+              td:nth-child(7) {
+                padding-bottom: 0.25rem;
+                text-overflow: unset;
+                white-space: unset;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                line-break: anywhere;
+              }
+            }
+          }
+
+          tbody::-webkit-scrollbar {
+            width: 8px;
+            background: rgb(206, 199, 199);
+            height: 100%;
+            border-radius: 8px;
+          }
+
+          tbody::-webkit-scrollbar-thumb {
+            box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
+            border-radius: 8px;
+            background: #696969;
+            width: 8px;
+          }
+        }
+      }
+
+      div[class~="react-bootstrap-table-pagination"] {
+        button[id="pageDropDown"] {
+          color: #fff;
+          background-color: #6264A7;
+          border-color: #6264A7;
+
+          &:focus {
+            box-shadow: none;
+            outline-offset: 2px;
+            outline: 2px solid #000000;
+            border-radius: 3px;
+          }
         }
 
-        .configSettingsContainer {
-            .successMessage {
-                text-align: left;
-                font: normal normal normal 18px/24px Segoe UI !important;
-                letter-spacing: 0px;
-                opacity: 1;
-                color: #000000;
-                margin-bottom: 10px;
+        ul[class~="dropdown-menu"] {
+          background-color: #ffffff;
+          min-width: 5rem;
+          border: 1px solid rgba(0, 0, 0, .15);
 
-                .tickImage {
-                    width: 28px;
-                    height: 28px;
-                    margin-right: 10px;
-                    margin-bottom: 7px;
-                }
+          li[class~="dropdown-item"] {
+            background-color: transparent;
+            padding: 0.3rem 1.3rem;
+
+            a {
+              color: #212529;
+              background-color: transparent;
+              padding: 4px 8px;
+              border-radius: 3px;
+
+              &:hover {
+                color: #16181b;
+                background-color: #e9ecef;
+              }
+
+              &:focus-visible {
+                outline: 1px solid #000;
+              }
             }
 
-            .errorMessage {
-                color: #e12636;
-                text-align: left;
-                font: normal normal normal 18px/24px Segoe UI !important;
-                letter-spacing: 0px;
-                opacity: 1;
-                margin-bottom: 10px;
+            &:hover,
+            &:focus {
+              background-color: transparent;
+            }
+          }
+        }
+
+        div[class~="react-bootstrap-table-pagination-list"] {
+          ul[class~="react-bootstrap-table-page-btns-ul"] {
+            li[class~="page-item"] {
+              a[class~="page-link"] {
+                &:hover {
+                  color: #000000;
+                }
+
+                &:focus {
+                  outline: 2px solid #000;
+                  outline-offset: 1px;
+                  border-radius: 1px;
+                  box-shadow: none;
+                }
+              }
             }
 
-            .configSettingsToggleBtn {
+            li[class~="active"] {
 
-                justify-content: flex-end;
-                flex-direction: row-reverse;
-                margin-bottom: 10px;
+              a,
+              a:hover {
+                background-color: #6264A7 !important;
+                border-color: #6264A7 !important;
+                color: #FFFFFF !important;
+              }
 
-                label {
-                    margin-left: 0px;
-                    min-width: 305px;
-                    max-width: 305px;
-                }
+              &:focus {
+                outline: 2px solid #000;
+                outline-offset: 1px;
+                border-radius: 1px;
+                box-shadow: none;
+              }
+            }
+          }
+        }
+      }
 
-                .toggleBtnLabel {
-                    text-align: left;
-                    font: normal normal normal 18px/22px Segoe UI;
-                    letter-spacing: 0px;
-                    color: #000000;
-                    opacity: 1;
-                }
+      .manageApprovalsBtnArea {
+        margin-top: 30px;
 
-                .subLabel {
-                    font-weight: 300;
-                }
+        .rejectBtn {
+          display: inline-flex;
+          width: 108px;
+          height: 38px;
+          border-color: #33344A;
+          background-color: white;
+          border-radius: 2px;
+          margin-left: 15px;
+          margin-bottom: 1%;
+          padding-left: 15px;
 
-                .configSettingsInfoIcon {
-                    margin-left: 10px;
-                    position: relative;
-                    top: 4px;
+          .rejectBtnLabel {
+            text-align: center;
+            font: normal normal bold 14px/24px Segoe UI;
+            letter-spacing: 0px;
+            color: #000003;
+            opacity: 1;
+          }
 
-                    i {
-                        color: #000000;
-                    }
-                }
+          .rejectBtnIcon {
+            margin-right: 10px;
+            font-size: 17px;
+            font-weight: bolder;
+            color: #000003;
+            opacity: 1;
+          }
+        }
 
-                div[class^="ms-Toggle-innerContainer"] {
-                    margin-top: 3px;
-                    margin-left: 15px;
-                }
+        .rejectBtn.focus,
+        .rejectBtn:focus {
+          box-shadow: none;
+          outline: 2px solid #414156;
+          border-radius: 3px;
+          outline-offset: 2px;
+        }
+
+        .rejectBtn:focus-visible {
+          outline: 2px solid #414156;
+          border-radius: 3px;
+          outline-offset: 2px;
+        }
+
+        .approveBtn {
+          display: inline-flex;
+          width: 108px;
+          height: 38px;
+          background: #6166A2;
+          border-color: #6166A2;
+          border-radius: 2px;
+          padding-left: 15px;
+          margin-bottom: 1%;
+
+          .approveBtnLabel {
+            opacity: 1;
+            text-align: center;
+            font: normal normal bold 14px/24px Segoe UI;
+            letter-spacing: 0px;
+            color: #FFFFFF;
+          }
+
+          .approveBtnIcon {
+            margin-right: 10px;
+            font-size: 17px;
+            font-weight: bolder;
+            color: #FFFFFF;
+            opacity: 1;
+          }
+        }
+
+        .approveBtn.focus,
+        .approveBtn:focus {
+          box-shadow: none;
+          outline: 2px solid #414156;
+          border-radius: 3px;
+          outline-offset: 2px;
+        }
+
+        .approveBtn:focus-visible {
+          outline: 2px solid #414156;
+          border-radius: 3px;
+          outline-offset: 2px;
+        }
+      }
+    }
+
+    .configSettingsContainer {
+      .configSettingsSpinner {
+        margin-bottom: 15px;
+      }
+
+      .successMessage {
+        text-align: left;
+        font: normal normal normal 18px/24px Segoe UI !important;
+        letter-spacing: 0px;
+        opacity: 1;
+        color: #000000;
+        margin-bottom: 10px;
+
+        .tickImage {
+          width: 28px;
+          height: 28px;
+          margin-right: 10px;
+          margin-bottom: 7px;
+        }
+      }
+
+      .errorMessage {
+        color: #e12636;
+        text-align: left;
+        font: normal normal normal 18px/24px Segoe UI !important;
+        letter-spacing: 0px;
+        opacity: 1;
+        margin-bottom: 10px;
+      }
+
+      .configSettingsToggleBtn {
+        justify-content: flex-end;
+        flex-direction: row-reverse;
+        margin-bottom: 10px;
+
+        label {
+          margin-left: 0px;
+          min-width: 305px;
+          max-width: 305px;
+        }
+
+        .toggleBtnLabel {
+          text-align: left;
+          font: normal normal normal 18px/22px Segoe UI;
+          letter-spacing: 0px;
+          color: #000000;
+          opacity: 1;
+        }
+
+        .subLabel {
+          font-weight: 300;
+        }
+
+
+        div[class^="ms-Toggle-innerContainer"] {
+          margin-top: 3px;
+          margin-left: 15px;
+        }
+
+        button[class~="ms-Toggle-background"] {
+          &:focus:after {
+            outline: none;
+            border: none;
+          }
+
+          &:focus-visible {
+            outline: 2px solid #000000;
+            outline-offset: 2px;
+          }
+        }
+
+        button[aria-checked="true"] {
+          background-color: rgb(98, 100, 167);
+
+          span[class~="ms-Toggle-thumb"] {
+            background-color: #ffffff;
+          }
+
+          &:hover {
+            background-color: rgb(61, 62, 102);
+          }
+        }
+
+        button[aria-checked="false"] {
+          background-color: #ffffff;
+          border-color: rgb(138, 138, 138);
+
+          span[class~="ms-Toggle-thumb"] {
+            background-color: rgb(138, 138, 138);
+          }
+
+          &:hover {
+            background-color: #ffffff;
+            border-color: #000000;
+
+            span[class~="ms-Toggle-thumb"] {
+              background-color: #000000;
+            }
+          }
+        }
+      }
+
+      .appTitleSetting {
+        margin-bottom: 10px;
+
+        div[class~="ms-TextField-wrapper"] {
+          display: flex;
+
+          .appNameInputLabel {
+            margin-left: 0;
+            min-width: 305px;
+            max-width: 305px;
+            text-align: left;
+            font: normal normal normal 18px/22px Segoe UI;
+            letter-spacing: 0px;
+            color: #000000;
+            opacity: 1;
+
+            .asterisk {
+              color: #a4262c;
+              margin-left: 5px;
+            }
+          }
+
+          div[class~="ms-TextField-fieldGroup"] {
+            margin-left: 15px;
+            width: 240px;
+            border: 1px solid rgb(138, 138, 138);
+
+            input {
+              color: #000000;
+              background-color: #fff;
+              min-width: 140px;
+              max-width: 240px;
+
+              &::placeholder {
+                color: rgb(138, 138, 138);
+              }
             }
 
-            .listSettingLabel {
-                text-align: left;
-                font: normal normal normal 18px/22px Segoe UI;
-                letter-spacing: 0px;
-                color: #000000;
-                opacity: 1;
-                margin-bottom: 10px;
-
-                .listSettingLabelIcon {
-                    margin-left: 10px;
-                    position: relative;
-                    top: 4px;
-
-                    i {
-                        color: #000000;
-                    }
-                }
+            &:hover {
+              border-color: rgb(97, 97, 97);
             }
 
-            .saveBtn {
-                margin-top: 3%;
-                border-color: rgb(98, 100, 167);
-                background-color: rgb(98, 100, 167);
-                height: 36px;
+            &::after {
+              border-color: rgb(98, 100, 167);
+            }
+          }
+        }
+
+        p[class~="ms-TextField-errorMessage"] {
+          margin-left: 320px;
+
+          span {
+            color: rgb(164, 38, 44);
+          }
+        }
+      }
+
+      .configSettingsInfoIcon {
+        margin-left: 10px;
+        position: relative;
+        top: 4px;
+
+        i {
+          color: #000000;
+        }
+      }
+
+      .listSettingLabel {
+        text-align: left;
+        font: normal normal normal 18px/22px Segoe UI;
+        letter-spacing: 0px;
+        color: #000000;
+        opacity: 1;
+        margin-bottom: 10px;
+      }
+
+      .saveBtn {
+        margin-top: 3%;
+        border-color: rgb(98, 100, 167);
+        background-color: rgb(98, 100, 167);
+        height: 36px;
+
+        i {
+          font-size: 18px;
+          color: #fff;
+          opacity: 1;
+        }
+
+        i+span>span {
+          font: normal normal bold 16px/24px Segoe UI;
+          letter-spacing: 0px;
+          color: #fff;
+          opacity: 1;
+        }
+
+        &:focus::after {
+          outline: none;
+        }
+
+        &:focus-visible {
+          outline-offset: 2px;
+          border-radius: 3px;
+          outline: 2px solid #000000;
+        }
+
+        &:hover {
+          background-color: rgb(61, 62, 102);
+          border-color: transparent;
+        }
+      }
+    }
+  }
+}
+
+.manageApprovalsContainerDarkContrast {
+  .manageApprovalsPath {
+    color: var(--colorNeutralForeground1);
+
+    .backImg {
+      filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
+    }
+
+    .backLabel {
+      color: var(--colorBrandForegroundLink);
+    }
+
+    .backLabel:focus-visible {
+      outline-color: var(--colorPaletteBlueBorderActive);
+    }
+
+    .border {
+      border-color: var(--colorNeutralForeground1);
+    }
+  }
+
+  .manageApprovalsPivot {
+
+    div[role="tablist"] {
+      border-bottom-color: var(--colorCompoundBrandBackground);
+
+      button[class^="ms-Button"] {
+        color: #000000;
+      }
+
+      button[aria-selected="true"],
+      button[aria-selected="true"]:hover {
+        background-color: var(--colorCompoundBrandBackground);
+        color: var(--colorNeutralForeground1Selected);
+        border-color: var(--colorCompoundBrandBackground);
+      }
+    }
+
+    .approvalsContainer {
+
+      .approveMessage {
+        color: var(--colorNeutralForeground1);
+      }
+
+      .rejectMessage {
+        color: var(--colorPaletteRedForeground1);
+      }
+
+      .searchboxPadding {
+        .approvalsSearchbox {
+          color: var(--colorNeutralForeground1);
+          background-color: var(--colorNeutralBackground1);
+          border-color: var(--colorNeutralForeground1);
+
+          div[class~="ms-SearchBox-iconContainer"] {
+            color: var(--colorCompoundBrandForeground1);
+          }
+
+          input[class~="ms-SearchBox-field"] {
+            color: var(--colorNeutralForeground1);
+
+            &::placeholder {
+              color: var(--colorNeutralForeground1);
+            }
+          }
+
+          div[class~="ms-SearchBox-clearButton"] {
+            button {
+              background-color: var(--colorNeutralBackground1);
+
+              i {
+                color: var(--colorNeutralForeground1);
+              }
+            }
+
+            &:hover {
+              button {
+                background-color: var(--colorNeutralBackground1);
 
                 i {
-                    font-size: 18px;
-                    color: #fff;
-                    opacity: 1;
+                  color: var(--colorNeutralForeground1);
                 }
-
-                i+span>span {
-                    font: normal normal bold 16px/24px Segoe UI;
-                    letter-spacing: 0px;
-                    color: #fff;
-                    opacity: 1;
-                }
+              }
             }
+          }
 
-            .saveBtn:hover {
-                background-color: rgb(61, 62, 102);
-                border-color: transparent;
+          &:hover {
+            border-color: var(--colorNeutralForeground1);
+
+            div[class~="ms-SearchBox-iconContainer"] {
+              color: var(--colorCompoundBrandForeground1Hover);
             }
+          }
+
+          &::after {
+            border-color: var(--colorCompoundBrandForeground1Pressed);
+          }
         }
+      }
+
+      .selectedRowText {
+        color: var(--colorNeutralForeground1);
+      }
+
+      .approvalsTableWrapper {
+
+        table {
+          color: var(--colorNeutralForeground1);
+
+          thead {
+            tr {
+              th {
+                background-color: var(--colorCompoundBrandBackground);
+                color: var(--colorNeutralForeground1Selected);
+
+                span[class="dropdown-caret"] {
+                  color: var(--colorNeutralForeground1Selected);
+                }
+
+                span[class="dropup-caret"] {
+                  color: var(--colorNeutralForeground1Selected);
+                }
+              }
+
+              th:nth-child(1) {
+                .selectAllCheckbox {
+                  label {
+                    div[class~="ms-Checkbox-checkbox"] {
+                      border-color: var(--colorNeutralForeground1) !important;
+                      background: var(--colorNeutralBackground1);
+                    }
+                  }
+
+                  &:hover {
+                    label {
+                      div[class~="ms-Checkbox-checkbox"] {
+                        i {
+                          color: var(--colorNeutralForeground1);
+                        }
+                      }
+                    }
+                  }
+                }
+
+                div[class~="is-checked"] {
+                  div[class~="ms-Checkbox-checkbox"] {
+                    background: var(--colorCompoundBrandBackground);
+
+                    i {
+                      color: var(--colorNeutralForeground1Selected);
+                    }
+                  }
+
+                  &:hover {
+                    div[class~="ms-Checkbox-checkbox"] {
+                      i {
+                        color: var(--colorNeutralForeground1Selected);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          tbody {
+            tr {
+              td {
+                .noRecordsArea {
+                  .noRecordsLabels {
+                    color: var(--colorNeutralForeground1);
+                  }
+                }
+              }
+
+              td:nth-child(1) {
+
+                .selectItemCheckbox {
+
+                  label {
+                    div[class~="ms-Checkbox-checkbox"] {
+                      border-color: var(--colorNeutralForeground1) !important;
+                    }
+                  }
+
+                  &:hover {
+                    label {
+                      div[class~="ms-Checkbox-checkbox"] {
+                        i {
+                          color: var(--colorNeutralForeground1);
+                        }
+                      }
+                    }
+                  }
+                }
+
+                div[class~="is-checked"] {
+                  div[class~="ms-Checkbox-checkbox"] {
+                    background: var(--colorCompoundBrandBackground);
+
+                    i {
+                      color: var(--colorNeutralForeground1Selected);
+                    }
+                  }
+
+                  &:hover {
+                    div[class~="ms-Checkbox-checkbox"] {
+                      i {
+                        color: var(--colorNeutralForeground1Selected);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      div[class~="react-bootstrap-table-pagination"] {
+        button[id="pageDropDown"] {
+          color: var(--colorNeutralForeground1Selected);
+          background-color: var(--colorCompoundBrandBackground);
+          border-color: var(--colorCompoundBrandBackground);
+
+          &:focus {
+            outline-color: var(--colorPaletteBlueBorderActive);
+          }
+        }
+
+        ul[class~="dropdown-menu"] {
+          background-color: var(--colorNeutralBackground1);
+          border-color: var(--colorNeutralForeground1);
+
+          li[class~="dropdown-item"] {
+            a {
+              color: var(--colorNeutralForeground1);
+
+              &:hover {
+                color: #000000;
+                background-color: var(--colorNeutralForeground2LinkHover);
+              }
+
+              &:focus-visible {
+                outline-color: var(--colorPaletteBlueBorderActive);
+              }
+            }
+          }
+        }
+
+        div[class~="react-bootstrap-table-pagination-list"] {
+          ul[class~="react-bootstrap-table-page-btns-ul"] {
+            li[class~="page-item"] {
+              a[class~="page-link"] {
+                &:hover {
+                  background-color: var(--colorNeutralForeground2LinkHover);
+                  border-color: var(--colorNeutralForeground2LinkHover);
+                  color: #000000;
+                }
+
+                &:focus {
+                  outline-color: var(--colorPaletteBlueBorderActive);
+                }
+              }
+            }
+
+            li[class~="active"] {
+
+              a,
+              a:hover {
+                background-color: var(--colorCompoundBrandBackground) !important;
+                border-color: var(--colorCompoundBrandBackground) !important;
+                color: var(--colorNeutralForeground1Selected) !important;
+              }
+
+              &:focus {
+                outline-color: var(--colorPaletteBlueBorderActive);
+              }
+            }
+          }
+        }
+      }
+
+      .manageApprovalsBtnArea {
+
+        .rejectBtn {
+          background: #FFFFFF;
+          border-color: #000000;
+
+          .rejectBtnLabel {
+            color: #000000;
+          }
+
+          .rejectBtnIcon {
+            color: #000000;
+          }
+        }
+
+        .approveBtn {
+          background: var(--colorBrandStroke1);
+          border-color: #000000;
+
+          .approveBtnLabel {
+            color: var(--colorNeutralForegroundOnBrand);
+          }
+
+          .approveBtnIcon {
+            color: var(--colorNeutralForegroundOnBrand);
+          }
+
+        }
+
+        .rejectBtn:focus,
+        .approveBtn:focus {
+          outline-color: var(--colorPaletteBlueBorderActive);
+        }
+
+        .rejectBtn:focus-visible,
+        .approveBtn:focus-visible {
+          outline-color: var(--colorPaletteBlueBorderActive);
+        }
+      }
     }
+
+    .configSettingsContainer {
+      .successMessage {
+        color: var(--colorNeutralForeground1);
+      }
+
+      .errorMessage {
+        color: var(--colorPaletteRedForeground1);
+      }
+
+      .configSettingsToggleBtn {
+
+        .toggleBtnLabel {
+          color: var(--colorNeutralForeground1);
+        }
+
+        button[class~="ms-Toggle-background"] {
+          &:focus:after {
+            outline: none;
+            border: none;
+          }
+
+          &:focus-visible {
+            outline: 2px solid var(--colorPaletteBlueBorderActive);
+            outline-offset: 2px;
+          }
+        }
+
+        button[aria-checked="true"] {
+          background-color: var(--colorCompoundBrandStroke);
+
+          span[class~="ms-Toggle-thumb"] {
+            background-color: var(--colorNeutralBackground1);
+          }
+
+          &:hover {
+            background-color: var(--colorBrandForegroundLinkHover);
+          }
+        }
+
+        button[aria-checked="false"] {
+          background-color: var(--colorNeutralBackground1);
+          border-color: var(--colorNeutralForeground1);
+
+          span[class~="ms-Toggle-thumb"] {
+            background-color: var(--colorNeutralForeground1);
+          }
+
+          &:hover {
+            background-color: var(--colorNeutralBackground1);
+            border-color: var(--colorNeutralForeground1);
+
+            span[class~="ms-Toggle-thumb"] {
+              background-color: var(--colorNeutralForeground1);
+            }
+          }
+        }
+      }
+
+      .appTitleSetting {
+        div[class~="ms-TextField-wrapper"] {
+          .appNameInputLabel {
+            color: var(--colorNeutralForeground1);
+
+            .asterisk {
+              color: var(--colorPaletteBlueBorderActive);
+            }
+          }
+
+          div[class~="ms-TextField-fieldGroup"] {
+            border-color: var(--colorNeutralForeground1);
+
+            input {
+              color: var(--colorNeutralForeground1);
+              background-color: var(--colorNeutralBackground1);
+
+              &::placeholder {
+                color: var(--colorNeutralForeground1);
+              }
+            }
+
+            &:hover {
+              border-color: var(--colorNeutralForeground1);
+            }
+
+            &::after {
+              border-color: var(--colorCompoundBrandForeground1Pressed);
+            }
+          }
+        }
+
+        p[class~="ms-TextField-errorMessage"] {
+          span {
+            color: var(--colorPaletteRedForeground1);
+          }
+        }
+      }
+
+      .configSettingsInfoIcon {
+        i {
+          color: var(--colorNeutralForeground1);
+        }
+      }
+
+      .listSettingLabel {
+        color: var(--colorNeutralForeground1);
+      }
+
+      .saveBtn {
+        border-color: #000000;
+        background-color: var(--colorBrandStroke1);
+
+        i {
+          color: var(--colorNeutralForegroundOnBrand);
+        }
+
+        i+span>span {
+          color: var(--colorNeutralForegroundOnBrand);
+        }
+
+        &:focus-visible {
+          outline-color: var(--colorPaletteBlueBorderActive);
+        }
+
+        &:hover {
+          background-color: var(--colorBrandStroke1);
+          border-color: #000000;
+        }
+      }
+    }
+  }
 }
 
 @media screen and (max-width:767px) {
-    .manageApprovalsContainer {
-        .manageApprovalsPivot {
-            div[role="tablist"] {
-                button[class^="ms-Button"] {
-                    height: 50px;
-                }
-            }
+  .manageApprovalsContainer {
+    .manageApprovalsPivot {
+      div[role="tablist"] {
+        button[class^="ms-Button"] {
+          height: 50px;
         }
+      }
     }
+  }
 }
 
 @media screen and (max-width:375pt) {
-    .manageApprovalsContainer {
-        .manageApprovalsPivot {
-            div[role="tablist"] {
-                button[class^="ms-Button"] {
-                    font: normal normal normal 14px/20px Segoe UI;
+  .manageApprovalsContainer {
+    .manageApprovalsPivot {
+      div[role="tablist"] {
+        button[class^="ms-Button"] {
+          font: normal normal normal 14px/20px Segoe UI;
+        }
+      }
+
+      .approvalsContainer {
+
+        .approvalsTableWrapper {
+          overflow-y: overlay;
+          overflow-x: scroll;
+          max-height: 480px;
+          margin-bottom: 25px;
+
+          table {
+            table-layout: auto;
+            display: table-row-group;
+            flex-flow: unset;
+
+            thead {
+              font: normal normal bold 16px/21px Segoe UI;
+              flex: auto;
+
+              tr {
+                display: table-row;
+                table-layout: unset;
+
+                th {
+                  position: sticky;
+                  top: 0px;
                 }
+
+                th:nth-child(1) {
+                  z-index: 1;
+                }
+              }
             }
 
-            .approvalsContainer {
+            tbody {
+              font: normal normal normal 16px/21px Segoe UI;
+              flex: unset;
+              display: table-row-group;
+              overflow-y: unset;
+              overflow-x: unset;
 
-                .approvalsTableWrapper {
-                    overflow-y: overlay;
-                    overflow-x: scroll;
-                    max-height: 480px;
-                    margin-bottom: 25px;
+              tr {
+                display: table-row;
+                table-layout: fixed;
 
-                    table {
-                        table-layout: auto;
-                        display: table-row-group;
-                        flex-flow: unset;
-
-                        thead {
-                            font: normal normal bold 16px/21px Segoe UI;
-                            flex: auto;
-
-                            tr {
-                                display: table-row;
-                                table-layout: unset;
-
-                                th {
-                                    position: sticky;
-                                    top: 0px;
-                                }
-
-                                th:nth-child(1) {
-                                    z-index: 1;
-                                }
-                            }
-                        }
-
-                        tbody {
-                            font: normal normal normal 16px/21px Segoe UI;
-                            flex: unset;
-                            display: table-row-group;
-                            overflow-y: unset;
-                            overflow-x: unset;
-
-                            tr {
-                                display: table-row;
-                                table-layout: fixed;
-                            }
-                        }
-
-                        .eventsApprovalTableBody {
-                            tr {
-                                max-height: unset;
-                                td:nth-child(7) {
-                                    white-space: nowrap;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                .approvalsTableWrapper::-webkit-scrollbar {
-                    height: 8px;
-                    width: 8px;
-                    background: rgb(206, 199, 199);
-                    border-radius: 8px;
-                }
-
-                .approvalsTableWrapper::-webkit-scrollbar-thumb {
-                    box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
-                    border-radius: 8px;
-                    background: #696969;
-                    height: 8px;
-                    width: 8px;
-                }
-
-                .noRecordsArea {
+                td {
+                  .noRecordsArea {
                     .noRecordsImg {
-                        height: 44px;
-                        width: 44px;
+                      height: 44px;
+                      width: 44px;
                     }
 
                     .noRecordsLabels {
-                        font: normal normal 600 14px/24px Segoe UI;
+                      font: normal normal 600 14px/24px Segoe UI;
                     }
+                  }
                 }
+              }
             }
 
-            .configSettingsContainer {
-                .configSettingsToggleBtn {
-                    .toggleBtnLabel {
-                        font: normal normal normal 16px/22px Segoe UI;
-                    }
+            .eventsApprovalTableBody {
+              tr {
+                max-height: unset;
 
-                    .subLabel {
-                        font-weight: 300;
-                    }
+                td:nth-child(7) {
+                  white-space: nowrap;
                 }
-
-                .listSettingLabel {
-                    font: normal normal normal 16px/22px Segoe UI;
-                }
+              }
             }
+          }
         }
+
+        .approvalsTableWrapper::-webkit-scrollbar {
+          height: 8px;
+          width: 8px;
+          background: rgb(206, 199, 199);
+          border-radius: 8px;
+        }
+
+        .approvalsTableWrapper::-webkit-scrollbar-thumb {
+          box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
+          border-radius: 8px;
+          background: #696969;
+          height: 8px;
+          width: 8px;
+        }
+      }
+
+      .configSettingsContainer {
+        .appTitleSetting {
+          div[class~="ms-TextField-wrapper"] {
+
+            .appNameInputLabel {
+              min-width: 115px;
+              max-width: 115px;
+              font-size: 16px;
+            }
+          }
+        }
+
+        .configSettingsToggleBtn {
+          .toggleBtnLabel {
+            font-size: 16px;
+          }
+        }
+
+        .listSettingLabel {
+          font-size: 16px;
+        }
+      }
     }
+  }
 }

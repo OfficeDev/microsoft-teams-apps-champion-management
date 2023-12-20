@@ -60,6 +60,35 @@ Below are the high level steps to get you started on customizing the template.
 1. Delete the "TeamsSPFxApp.zip" folder and create a new zip folder with the images and the manifest file in the same location with the same name.
 1. Generate a new package file and follow the deployment instructions in the deployment guide.
 
+## Customize the App Title
+
+1. Follow the steps from `Standard Installation` section in the Deployment Guide. If you are having classic App Catalog skip the step 12 and if you are having modern App Catalog skip the step 4 under `Modern App Catalog` section.
+1. Instead of syncing the app to Teams through App Catalog follow the below steps.
+
+1. Download the folder `teams` from the app [repository](https://github.com/OfficeDev/microsoft-teams-apps-champion-management.git) locally.
+
+1. Open `teams` folder locally and open the `manifest.json` file and make the below changes. 
+
+   - To change the App title as it appears in App Store, modify the below properties in the manifest file
+     * name
+     * description 
+     <br /> 
+NOTE: Make sure the App Title doesn't exceed 30 characters.
+
+    ![Customization](../Images/CustomizeAppTitle1.png)  
+    
+   - To change the App title as it appears on the tab, modify the below property in the manifest file
+     * staticTabs
+<br/><br/>
+    
+    ![Customization](../Images/CustomizeAppTitle2.png)  
+
+1. Delete the `TeamsSPFxApp.zip` folder and create a new zip folder with the 2 images and the manifest file in the same location with exactly the same name `TeamsSPFxApp.zip`.
+
+1. Navigate to `Teams Admin Center` and upload the `TeamsSPFxApp.zip` zip file. The title changes to the app will take effect in Teams as shown below.
+
+![Customization](../Images/CustomizeAppTitle3.png)  
+
 ## Customize Member List
 
 Below customizations can be done in the Member list with no code changes required in the solution.

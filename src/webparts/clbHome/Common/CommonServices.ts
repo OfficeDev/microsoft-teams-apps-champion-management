@@ -215,6 +215,19 @@ export default class CommonServices {
     });
   }
 
+  //Create SharePoint Site List
+  public async createSPlist(listName: string) {
+    try {
+      const listResponse = await sp.web.lists.add(listName);
+      console.log("Created list successfully. ", listName);
+      return listResponse;
+    }
+    catch (error: any) {
+      console.log("Error in creating list. ", error);
+      return error;
+    }
+  }
+
   //create fields in SP lists
   public async createListFields(listname: string, fieldsToCreate: any): Promise<any> {
     return new Promise<any>(async (resolve, reject) => {
@@ -343,7 +356,7 @@ export default class CommonServices {
   }
 
   //get all user action for active tournament and bind to table
-  public async getUserActions(activeTournamentName): Promise<any> {
+  public async getUserActions(activeTournamentName: any): Promise<any> {
     return new Promise<any>(async (resolve, reject) => {
       try {
         let userActionsWithDisplayName: any = [];
@@ -363,8 +376,8 @@ export default class CommonServices {
             getAllUserActions.push(...getUserActions.results);
           }
           //groupby user and sum the points
-          var groupOfUniqueUsers = [];
-          getAllUserActions.reduce((res, value) => {
+          var groupOfUniqueUsers: any = [];
+          getAllUserActions.reduce((res: any, value: any) => {
             if (!res[value.Title]) {
               res[value.Title] = { Title: value.Title, Points: 0 };
               groupOfUniqueUsers.push(res[value.Title]);
@@ -374,7 +387,7 @@ export default class CommonServices {
             return res;
           }, {});
           //sorting by points and then by display name 
-          groupOfUniqueUsers.sort((a, b) => {
+          groupOfUniqueUsers.sort((a: any, b: any) => {
             if (a.Points < b.Points) return 1;
             if (a.Points > b.Points) return -1;
             if (a.Title > b.Title) return 1;
@@ -444,7 +457,7 @@ export default class CommonServices {
         let completedTournamentDetails: any = await sp.web.lists.getByTitle(stringsConstants.TournamentActionsMasterList).items.filter(filterCondition).getAll();
         if (completedTournamentDetails.length > 0) {
           totalTournamentActivities = completedTournamentDetails.length;
-          totalTournamentPoints = completedTournamentDetails.reduce((previousValue, currentValue) => { return previousValue + currentValue["Points"]; }, 0);
+          totalTournamentPoints = completedTournamentDetails.reduce((previousValue: any, currentValue: any) => { return previousValue + currentValue["Points"]; }, 0);
         }
 
         //Get first batch of items from User Actions list for the tournament
@@ -458,14 +471,14 @@ export default class CommonServices {
           }
 
           //Group the items by participants
-          let organizedParticipants = this.groupBy(allUserActionsArray, item => item.Title);
+          let organizedParticipants = this.groupBy(allUserActionsArray, (item: any) => item.Title);
 
           //Calculate the metrics for each participant and create an item in the Participants Report List
           organizedParticipants.forEach(async (participant) => {
 
             let participantName: string = participant[0].Author.Title;
             let activitiesCompleted: number = participant.length;
-            let pointsCompleted: number = participant.reduce((previousValue, currentValue) => { return previousValue + currentValue["Points"]; }, 0);
+            let pointsCompleted: number = participant.reduce((previousValue: any, currentValue: any) => { return previousValue + currentValue["Points"]; }, 0);
             let percentageCompletion: number = Math.round((activitiesCompleted * 100) / totalTournamentActivities);
 
             let participantReportObject: any = this.createParticipantReportObject(completedTournamentName.trim(),
@@ -482,7 +495,7 @@ export default class CommonServices {
         if (createParticipantReportItems.length > 0) {
           totalTournamentParticipants = createParticipantReportItems.length;
 
-          const completedParticipants = createParticipantReportItems.filter(obj => {
+          const completedParticipants = createParticipantReportItems.filter((obj: any) => {
             return obj.Completion_x0020_Percentage === 100;
           });
 
@@ -519,14 +532,14 @@ export default class CommonServices {
     let totalPoints = 0;
 
     await this.getFilteredListItemsWithSpecificColumns(stringsConstants.MemberList, "ID", filterQuery)
-      .then(async (memberID) => {    
+      .then(async (memberID) => {
         //If current user is not a member skip the points calculation    
         if (memberID.length != 0) {
           let filter = "MemberId eq '" + memberID[0].ID + "'" + " and Status ne 'Pending' and Status ne 'Rejected'";
           let memberPointsArray = await this.getFilteredListItemsWithSpecificColumns(stringsConstants.EventTrackDetailsList, stringsConstants.CountColumn, filter);
 
           if (memberPointsArray.length > 0) {
-            totalPoints = memberPointsArray.reduce((previousValue, currentValue) => { return previousValue + currentValue[stringsConstants.CountColumn]; }, 0);
+            totalPoints = memberPointsArray.reduce((previousValue: any, currentValue: any) => { return previousValue + currentValue[stringsConstants.CountColumn]; }, 0);
           }
         }
       });
@@ -570,9 +583,9 @@ export default class CommonServices {
     };
   }
   // Group the array of objects based on the key
-  public groupBy = (list, keyGetter) => {
+  public groupBy = (list: any, keyGetter: any) => {
     const map = new Map();
-    list.forEach((item) => {
+    list.forEach((item: any) => {
       const key = keyGetter(item);
       const collection = map.get(key);
       if (!collection) {
@@ -585,7 +598,7 @@ export default class CommonServices {
   }
 
   // Format Date to MMM DD, YYYY
-  public formatDate = (date) => {
+  public formatDate = (date: any) => {
     var utc = date.toUTCString(); // 'ddd, DD MMM YYYY HH:mm:ss GMT'
     return utc.slice(8, 12) + utc.slice(5, 7) + ", " + utc.slice(12, 16);
   }

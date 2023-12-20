@@ -19,11 +19,12 @@ import {
     Icon,
     Spinner,
     SpinnerSize,
-    TooltipHost
+    TooltipHost,
+    Label
 } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-import * as constants from "../constants/strings";
+import { Person } from "@microsoft/mgt-react/dist/es6/spfx";
 
 
 //Global Variables
@@ -56,8 +57,14 @@ export interface ITOTReportState {
 }
 
 export default class TOTReport extends React.Component<ITOTReportProps, ITOTReportState> {
+    private totReportGridRef: React.RefObject<HTMLDivElement>;
+    private totReportComboboxWrapperRef: React.RefObject<HTMLDivElement>;
+    private mainComboboxRef: React.RefObject<IComboBox>;
     constructor(props: ITOTReportProps, state: ITOTReportState) {
         super(props);
+        this.totReportGridRef = React.createRef();
+        this.totReportComboboxWrapperRef = React.createRef();
+        this.mainComboboxRef = React.createRef();
         this.state = {
             searchedString: "",
             tournamentsList: "",
@@ -96,19 +103,175 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
 
     //Refresh the data in the report whenever the tournament name is selected
     public componentDidUpdate(prevProps: Readonly<ITOTReportProps>, prevState: Readonly<ITOTReportState>, snapshot?: any): void {
-        if (prevState.selectedTournament != this.state.selectedTournament) {
+        try {
+            if (prevState.selectedTournament != this.state.selectedTournament) {
 
-            //Load the data for the header cards
-            this.getTournamentMetrics(this.state.selectedTournament);
-            //Load participants data into grid table    
-            this.getParticipantsList(this.state.selectedTournament);
-            //Load the Top 5 Participants Chart
-            this.loadTopParticipants();
-            //Load the Top 5 Tournaments Chart
-            this.loadTopTournaments();
-            //Load the Participants Status Chart
-            this.loadParticipantsStatus();
+                //Load the data for the header cards
+                this.getTournamentMetrics(this.state.selectedTournament);
+                //Load participants data into grid table    
+                this.getParticipantsList(this.state.selectedTournament);
+                //Load the Top 5 Participants Chart
+                this.loadTopParticipants();
+                //Load the Top 5 Tournaments Chart
+                this.loadTopTournaments();
+                //Load the Participants Status Chart
+                this.loadParticipantsStatus();
 
+            }
+            //Accessibility
+            //Update Page Per Size Dropdown and its button to be accessibile through Keyboard
+            if (prevState.participantsList !== this.state.participantsList && this.state.participantsList.length > 0) {
+                //Outside Click event for page dropdown button
+                document.addEventListener("click", this.onPageDropdownBtnOutsideClick);
+
+                //Set aria-label to participant details table element
+                const tableElement = this.totReportGridRef?.current?.querySelector("table");
+                tableElement.setAttribute("aria-label", LocaleStrings.ParticipantsDetailsLabel);
+
+                //Get Page Dropdown button element
+                const sizePerPageBtnElement: any = this.totReportGridRef?.current?.querySelector("#pageDropDown");
+                sizePerPageBtnElement.setAttribute("aria-label", stringsConstants.sizePerPageLabel + " " + sizePerPageBtnElement?.textContent);
+
+                //Update Page Dropdown button click event
+                sizePerPageBtnElement.addEventListener("click", (evt: any) => {
+
+                    const sizePerPageUlElement = this.getUlElement();
+                    if (sizePerPageUlElement.getAttribute("style") === "display:block") {
+                        sizePerPageUlElement.setAttribute("style", "display:none");
+                    }
+                    else {
+                        sizePerPageUlElement.setAttribute("style", "display:block");
+                    }
+                });
+
+                //Get Page Dropdown Callout element
+                const sizePerPageUlElement = this.getUlElement();
+
+                //Get Page Size anchor Elements
+                const pageSizeAnchorElements: any = sizePerPageUlElement.getElementsByTagName("a");
+
+                //Update all page size option elements to support access with keyboard arrow keys
+                for (let i = 0; i < pageSizeAnchorElements?.length; i++) {
+                    pageSizeAnchorElements[i]?.addEventListener("keydown", (event: any) => {
+                        if (event.keyCode === 38 && i > 0) {
+                            pageSizeAnchorElements[i - 1]?.focus();
+                        }
+                        else if (event.keyCode === 40 && i < pageSizeAnchorElements?.length - 1) {
+                            pageSizeAnchorElements[i + 1]?.focus();
+                        }
+                    });
+                }
+
+                //Update Page Dropdown button keydown event
+                sizePerPageBtnElement.addEventListener("keydown", (evt: any) => {
+                    if (evt.shiftKey && evt.key === stringsConstants.stringTab || evt.key === stringsConstants.stringEscape) {
+                        const sizePerPageUlElement = this.getUlElement();
+                        sizePerPageUlElement.setAttribute("style", "display:none");
+                    }
+                    else if (evt.keyCode === 40) {
+                        const sizePerPageUlElement = this.getUlElement();
+                        sizePerPageUlElement.setAttribute("style", "display:block");
+                        pageSizeAnchorElements[0]?.focus();
+                    }
+                });
+
+                //Update Page Size callout's first element keydown event
+                const firstPageSizeElement = pageSizeAnchorElements[0];
+                firstPageSizeElement.addEventListener("keydown", (evt: any) => {
+                    if (evt.keyCode === 38) {
+                        sizePerPageUlElement.setAttribute("style", "display:none");
+                        sizePerPageBtnElement?.focus();
+                    }
+                    else if (evt.shiftKey && evt.key === stringsConstants.stringTab) {
+                        sizePerPageUlElement.setAttribute("style", "display:none");
+                    }
+                    else if (evt.key === stringsConstants.stringTab || evt.shiftKey) {
+                        sizePerPageUlElement.setAttribute("style", "display:block");
+                    }
+                });
+
+                //Update Page Size callout's last element keydown event
+                const lastPageSizeElement = pageSizeAnchorElements[pageSizeAnchorElements.length - 1];
+                const paginationFirstBtn = this.totReportGridRef?.current?.querySelector(".pagination").getElementsByTagName('a')[0];
+                lastPageSizeElement.addEventListener("keydown", (evt: any) => {
+                    if (evt.keyCode === 40) {
+                        sizePerPageUlElement.setAttribute("style", "display:none");
+                        paginationFirstBtn.focus();
+                    }
+                    else if (!evt.shiftKey && evt.key === stringsConstants.stringTab) {
+                        sizePerPageUlElement.setAttribute("style", "display:none");
+                    }
+                });
+            }
+
+            /**Update aria-expanded attribute in combobox and update focus for combobox list for Accessibility in Android **/
+            if (prevState.tournamentsList !== this.state.tournamentsList && this.state.tournamentsList.length > 0) {
+                //Update aria-expanded attribute in combobox for Accessibility in Android
+                if (navigator.userAgent.match(/Android/i)) {
+
+                    //Outside Click event for Report Tournaments combobox for Accessibility in Android
+                    document.addEventListener("click", this.onReportTournamentsComboboxOutsideClick);
+
+                    //remove aria-expanded attribute from combobox input element
+                    const comboboxInput = this.totReportComboboxWrapperRef.current.querySelector("#report-tournaments-listbox-input");
+                    comboboxInput.removeAttribute("aria-expanded");
+
+                    //Update aria-expanded attribute for combobox expand/collapse button
+                    const comboboxButton = this.totReportComboboxWrapperRef.current.querySelector("#report-tournaments-listboxwrapper").querySelector("button");
+                    comboboxButton.setAttribute("aria-expanded", "false");
+
+                    //get focus area combobox list wrapper element to set focus and attributes
+                    const ulList: any = this.totReportComboboxWrapperRef?.current?.querySelector("#report-tournaments-listbox-list");
+                    ulList.setAttribute("tabindex", "0");
+                    comboboxButton.addEventListener("click", () => {
+                        setTimeout(() => {
+                            ulList.focus();
+                        }, 1000);
+                    });
+                }
+            }
+        }
+        catch (error) {
+            console.error("CMP_TOT_TOTReport_componentDidUpdate \n", error);
+        }
+    }
+
+    /**Remove Document click event listener on Unmount of Component **/
+    public componentWillUnmount(): void {
+        // For Accessibility in Android
+        if (navigator.userAgent.match(/Android/i)) {
+            document.removeEventListener("click", this.onReportTournamentsComboboxOutsideClick);
+        }
+        document.removeEventListener("click", this.onPageDropdownBtnOutsideClick);
+    }
+
+    //Close Report Tournaments Combobox Callout on click of outside for Accessibility in Android
+    public onReportTournamentsComboboxOutsideClick = (evt: any) => {
+        const isComboboxElement = document.getElementById("report-tournaments-listbox").contains(evt.target);
+        if (!isComboboxElement) {
+            this.mainComboboxRef.current.dismissMenu();
+        }
+    }
+
+    //Get Page Dropdown Button's Callout Element from DOM
+    public getUlElement = () => {
+        const ulElements: any = this.totReportGridRef?.current?.getElementsByTagName("ul");
+        let sizePerPageUlElement: HTMLUListElement;
+        for (let ulElement of ulElements) {
+            if (ulElement?.getAttribute("aria-labelledby") === "pageDropDown") {
+                sizePerPageUlElement = ulElement;
+                break;
+            }
+        }
+        return sizePerPageUlElement;
+    }
+
+    //Close Size Per Page List on click of outside 
+    public onPageDropdownBtnOutsideClick = (evt: any) => {
+        const isBtnElement = evt?.target?.getAttribute("id") === "pageDropDown";
+        if (!isBtnElement) {
+            const sizePerPageUlElement = this.getUlElement();
+            sizePerPageUlElement.setAttribute("style", "display:none");
         }
     }
 
@@ -240,7 +403,7 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
 
 
     //Load Top Participants based on points
-    private async loadTopParticipants(): Promise<Chart.ChartData> {
+    private async loadTopParticipants() {
         try {
 
             let arrLabels: string[] = [];
@@ -266,11 +429,11 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
                     }
                 }
                 //Group the items by participants
-                let organizedParticipants = commonServiceManager.groupBy(allParticipantsArray, item => item.User_x0020_Name);
+                let organizedParticipants = commonServiceManager.groupBy(allParticipantsArray, (item: any) => item.User_x0020_Name);
 
                 //Sum up the points for each participant
                 organizedParticipants.forEach((participant) => {
-                    let pointsCompleted: number = participant.reduce((previousValue, currentValue) => { return previousValue + currentValue["Points"]; }, 0);
+                    let pointsCompleted: number = participant.reduce((previousValue: any, currentValue: any) => { return previousValue + currentValue["Points"]; }, 0);
 
                     //Push the metrics of each participant into an array.
                     topParticipantsArray.push({
@@ -280,7 +443,7 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
                 });
 
                 //Sort by points and then by user name 
-                topParticipantsArray.sort((a, b) => {
+                topParticipantsArray.sort((a: any, b: any) => {
                     if (a.Points < b.Points) return 1;
                     if (a.Points > b.Points) return -1;
                     if (a.Title > b.Title) return 1;
@@ -288,11 +451,11 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
                 });
 
                 //Get Top 5 participants and add it to Top Participants List
-                let top5ParticipantsArray = topParticipantsArray.filter((item, idx) => idx < 5).map(item => { return item; });
+                let top5ParticipantsArray = topParticipantsArray.filter((item: any, idx: number) => idx < 5).map((item: any) => { return item; });
 
                 if (top5ParticipantsArray.length > 0) {
                     //Loop through top tournaments and add the lables and data for the chart display
-                    top5ParticipantsArray.forEach(element => {
+                    top5ParticipantsArray.forEach((element: any) => {
                         arrLabels.push(element.Title);
                         arrData.push(element.Points);
                     });
@@ -344,7 +507,7 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
     }
 
     //Load Top tournaments based on number of participants   
-    private async loadTopTournaments(): Promise<Chart.ChartData> {
+    private async loadTopTournaments() {
         try {
             let arrLabels: string[] = [];
             let arrData: number[] = [];
@@ -387,7 +550,7 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
     }
 
     //Load particpants status chart based on selected tournament
-    private async loadParticipantsStatus(): Promise<Chart.ChartData> {
+    private async loadParticipantsStatus() {
         try {
 
             let arrLabels: string[] = [stringsConstants.CompletedChartLabel, stringsConstants.NotCompletedChartLabel];
@@ -491,7 +654,7 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
     };
 
     //Options for doughnut chart
-    private doughNutChartOptions = {
+    private doughNutChartOptions: any = {
         legend: {
             display: true,
             position: "bottom"
@@ -526,17 +689,136 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
         );
     }
 
-    //Set pagination properties
+    //Set Pagination Properties
     private pagination = paginationFactory({
         page: 1,
         sizePerPage: 10,
-        lastPageText: '>>',
-        firstPageText: '<<',
-        nextPageText: '>',
-        prePageText: '<',
         showTotal: true,
-        alwaysShowAllBtns: false
+        alwaysShowAllBtns: false,
+        //Render Page Size Options
+        sizePerPageOptionRenderer: (options: any) => {
+            return (
+                <li className="dropdown-item" key={options.text} role="presentation" tabIndex={-1}>
+                    <a
+                        href="#"
+                        role="menuitem"
+                        tabIndex={0}
+                        data-page={options.page}
+                        onClick={() => {
+                            options.onSizePerPageChange(options.page);
+                            const sizePerPageUlElement = this.getUlElement();
+                            sizePerPageUlElement.setAttribute("style", "display:none");
+                            const sizePerPageBtnElement: HTMLButtonElement = this.totReportGridRef?.current?.querySelector("#pageDropDown");
+                            sizePerPageBtnElement.setAttribute("aria-label", stringsConstants.sizePerPageLabel + " " + options.text);
+                            sizePerPageBtnElement?.focus();
+                        }}
+                        onKeyDown={(evt: any) => {
+                            const sizePerPageUlElement = this.getUlElement();
+                            const sizePerPageBtnElement: HTMLButtonElement = this.totReportGridRef?.current?.querySelector("#pageDropDown");
+                            if (evt.key === stringsConstants.stringSpace) {
+                                options.onSizePerPageChange(options.page);
+                                sizePerPageBtnElement.setAttribute("aria-label", stringsConstants.sizePerPageLabel + " " + options.text);
+                                sizePerPageUlElement.setAttribute("style", "display:none");
+                                sizePerPageBtnElement?.focus();
+                            }
+                            else if (evt.key === stringsConstants.stringEscape) {
+                                sizePerPageUlElement.setAttribute("style", "display:none");
+                                sizePerPageBtnElement?.focus();
+                            }
+                        }}
+                        aria-label={stringsConstants.sizePerPageLabel + " " + options.text}
+                    >{options.text}</a>
+                </li>
+            );
+        },
+        //customized the render options for page list in the pagination
+        pageButtonRenderer: (options: any) => {
+            const handleClick = (e: any) => {
+                e.preventDefault();
+                if (options.disabled) return;
+                options.onPageChange(options.page);
+            };
+            const className = `${options.active ? 'active ' : ''}${options.disabled ? 'disabled ' : ''}`;
+            let ariaLabel = "";
+            let pageText = "";
+            switch (options.title) {
+                case "first page":
+                    ariaLabel = `Go to ${options.title}`;
+                    pageText = '<<';
+                    break;
+                case "previous page":
+                    ariaLabel = `Go to ${options.title}`;
+                    pageText = '<';
+                    break;
+                case "next page":
+                    ariaLabel = `Go to ${options.title}`;
+                    pageText = '>';
+                    break;
+                case "last page":
+                    ariaLabel = `Go to ${options.title}`;
+                    pageText = '>>';
+                    break;
+                default:
+                    ariaLabel = `Go to page ${options.title}`;
+                    pageText = options.title;
+                    break;
+            }
+            return (
+                <li key={options.title} className={`${className} page-item`} role="presentation" title={ariaLabel}>
+                    <a className="page-link" href="#" onClick={handleClick} role="button" aria-label={ariaLabel}>
+                        <span aria-hidden="true">{pageText}</span>
+                    </a>
+                </li>
+            );
+        },
+        paginationTotalRenderer: (from: any, to: any, size: any) => {
+            const resultsFound = size !== 0 ? `Showing ${from} to ${to} of ${size} results` : ""
+            return (<span className="react-bootstrap-table-pagination-total" aria-live="polite" role="status">
+                &nbsp;{resultsFound}
+            </span>
+            );
+        }
     });
+
+    /** On menu open add the attributes to fix the position issue in IOS and 
+   Update aria-expanded attribute in combobox in Android for Accessibility **/
+    private onMenuOpen = (listboxId: string) => {
+        //Update aria-expanded attribute in combobox for Accessibility in Android
+        if (navigator.userAgent.match(/Android/i)) {
+            //remove aria-expanded attribute from combobox input element
+            const comboboxInput = this.totReportComboboxWrapperRef.current.querySelector("#report-tournaments-listbox-input");
+            comboboxInput.removeAttribute("aria-expanded");
+
+            //Update aria-expanded attribute for combobox expand/collapse button
+            const comboboxButton = this.totReportComboboxWrapperRef.current.querySelector("#report-tournaments-listboxwrapper").querySelector("button");
+            comboboxButton.setAttribute("aria-expanded", "true");
+        }
+        //adding option position information to aria attribute to fix the accessibility issue in iOS Voiceover
+        if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i)) {
+            const listBoxElement: any = document.getElementById(listboxId + "-list")?.children;
+            if (listBoxElement?.length > 0) {
+                for (let i = 0; i < listBoxElement?.length; i++) {
+                    const buttonId = `${listboxId}-list${i}`;
+                    const buttonElement: any = document.getElementById(buttonId);
+                    const ariaLabel = `${buttonElement.innerText} ${i + 1} of ${listBoxElement.length}`;
+                    buttonElement?.setAttribute("aria-label", ariaLabel);
+                }
+            }
+        }
+
+    }
+
+    // format the cell for participant Name
+    participantFormatter = (cell: any, gridRow: any, rowIndex: any, formatExtraData: any) => {
+        return (
+            <Person
+                personQuery={cell}
+                view={3}
+                personCardInteraction={1}
+                className='participant-person-card'
+            />
+        );
+    }
 
     //Render method
     public render() {
@@ -548,23 +830,27 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
                 sort: true,
                 headerTitle: true,
                 title: true,
+                formatter: this.participantFormatter
             }, {
                 dataField: stringsConstants.ActivitiesCompleted,
                 text: LocaleStrings.ActivitiesCompletedLabel,
                 headerTitle: true,
-                title: true
+                title: true,
+                searchable: false
             }, {
                 dataField: stringsConstants.Points,
                 text: LocaleStrings.PointsLabel,
                 sort: true,
                 headerTitle: true,
-                title: true
+                title: true,
+                searchable: false
             }, {
                 dataField: stringsConstants.TournamentCompletedPercentage,
                 text: LocaleStrings.PercentageTournamentCompletedLabel,
                 headerTitle: true,
                 title: true,
-                formatter: this.progressBar
+                formatter: this.progressBar,
+                searchable: false
             }];
         const { SearchBar } = Search;
         return (
@@ -574,15 +860,21 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
                         <img src={require("../assets/TOTImages/BackIcon.png")}
                             className={styles.backImg}
                             alt={LocaleStrings.BackButton}
+                            aria-hidden="true"
                         />
                         <span
                             className={styles.backLabel}
                             onClick={() => this.props.onClickCancel()}
-                            title={LocaleStrings.TOTBreadcrumbLabel}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(evt: any) => { if (evt.key === stringsConstants.stringEnter || evt.key === stringsConstants.stringSpace) this.props.onClickCancel() }}
+                            aria-label={LocaleStrings.TOTBreadcrumbLabel}
                         >
-                            {LocaleStrings.TOTBreadcrumbLabel}
+                            <span title={LocaleStrings.TOTBreadcrumbLabel}>
+                                {LocaleStrings.TOTBreadcrumbLabel}
+                            </span>
                         </span>
-                        <span className={styles.border}></span>
+                        <span className={styles.border} aria-live="polite" role="alert" aria-label={LocaleStrings.TournamentReportsPageTitle + " Page"} />
                         <span className={styles.totReportLabel}>{LocaleStrings.TournamentReportsPageTitle}</span>
                     </div>
                     <br />
@@ -591,28 +883,56 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
                         :
                         <div>
                             {this.state.tournamentsList.length > 0 && (
-                                <div>
+                                <div className={styles.totReportComboboxWrapper} ref={this.totReportComboboxWrapperRef}>
+                                    <Label className={styles.totReportComboboxLabel}>{LocaleStrings.TournamentLabel} :</Label>
                                     <ComboBox
-                                        label={LocaleStrings.TournamentLabel}
                                         defaultSelectedKey={stringsConstants.AllLabel}
                                         options={this.state.tournamentsList}
                                         onChange={this.setSelectedTournament.bind(this)}
                                         className={styles.totReportDropdown}
-                                        calloutProps={{ className: "totReportComboBoxCallout" }}
+                                        calloutProps={{
+                                            className: "totReportComboBoxCallout", directionalHintFixed: true, doNotLayer: true,
+                                            preventDismissOnEvent: () => {
+                                                //Prevent callout closing in Android on very first time opening it for Accessibility
+                                                if (navigator.userAgent.match(/Android/i)) {
+                                                    return true;
+                                                }
+                                                else {
+                                                    return false;
+                                                }
+                                            }
+                                        }}
+                                        allowFreeInput={true}
+                                        persistMenu={true}
+                                        id="report-tournaments-listbox"
+                                        onMenuOpen={() => this.onMenuOpen("report-tournaments-listbox")}
+                                        useComboBoxAsMenuWidth={true}
+                                        ariaLabel={LocaleStrings.TournamentLabel}
+                                        onMenuDismissed={() => {
+                                            //Update aria-expanded attribute in combobox for Accessibility in Android
+                                            if (navigator.userAgent.match(/Android/i)) {
+                                                //remove aria-expanded attribute from combobox input element
+                                                const comboboxInput = this.totReportComboboxWrapperRef.current.querySelector("#report-tournaments-listbox-input");
+                                                comboboxInput.removeAttribute("aria-expanded");
+
+                                                //Update aria-expanded attribute for combobox expand/collapse button
+                                                const comboboxButton = this.totReportComboboxWrapperRef.current.querySelector("#report-tournaments-listboxwrapper").querySelector("button");
+                                                comboboxButton.setAttribute("aria-expanded", "false");
+                                            }
+                                        }}
+                                        componentRef={this.mainComboboxRef}
                                     />
-                                    <span className={styles.dDInfoIconArea}>
+                                    <div className={styles.dDInfoIconArea}>
                                         <TooltipHost
                                             content={LocaleStrings.ReportsDropdownInfoIconText}
-                                            delay={window.innerWidth < constants.MobileWidth ? 0 : 2}
+                                            delay={window.innerWidth < stringsConstants.MobileWidth ? 0 : 2}
                                             directionalHint={DirectionalHint.topCenter}
                                         >
                                             <Icon iconName='Info' className={styles.dDInfoIcon} aria-label={LocaleStrings.ReportsDropdownInfoIconText} />
                                         </TooltipHost>
-                                    </span>
+                                    </div>
                                 </div>
                             )}
-                            <br />
-
                             {this.state.selectedTournament &&
                                 <Row xl={4} lg={3} md={2} sm={2} xs={1}>
                                     <Col xl={3} lg={4} md={6} sm={6} xs={12}>
@@ -741,7 +1061,7 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
 
                                                 </div>
                                                 <div className={styles.tableHeadingAndCSVBtn}>
-                                                    <div className={styles.tableHeading}>{LocaleStrings.ParticipantsDetailsLabel}</div>
+                                                    <h2 className={styles.tableHeading} tabIndex={0} role="heading">{LocaleStrings.ParticipantsDetailsLabel}</h2>
                                                     <ExportCSVButton {...props.csvProps} className={styles.csvLink}>
                                                         <img
                                                             src={require("../assets/TOTImages/ExcelIcon.png")}
@@ -751,13 +1071,13 @@ export default class TOTReport extends React.Component<ITOTReportProps, ITOTRepo
                                                         <span className={styles.downloadText}>{LocaleStrings.DownloadButtonText}</span>
                                                     </ExportCSVButton>
                                                 </div>
-                                                <div className={styles.participantsGrid}>
+                                                <div className={styles.participantsGrid} ref={this.totReportGridRef}>
                                                     <BootstrapTable
                                                         {...props.baseProps}
                                                         table-responsive={true}
                                                         defaultSorted={[{ dataField: stringsConstants.Points, order: 'desc' }]}
                                                         pagination={this.pagination}
-                                                        noDataIndication={() => (<div>{LocaleStrings.NoRecordsinGridLabel}</div>)}
+                                                        noDataIndication={() => (<div aria-live="polite" role="alert">{LocaleStrings.NoRecordsinGridLabel}</div>)}
                                                     />
                                                 </div>
                                             </div>

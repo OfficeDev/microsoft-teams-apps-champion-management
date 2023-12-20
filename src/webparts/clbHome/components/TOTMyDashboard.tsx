@@ -11,12 +11,7 @@ import { Icon } from '@fluentui/react/lib/Icon';
 import { ComboBox, IComboBox, IComboBoxOption } from '@fluentui/react/lib/ComboBox';
 import { TooltipHost } from '@fluentui/react/lib/Tooltip';
 //PNP
-import {
-  TreeView,
-  ITreeItem,
-  TreeViewSelectionMode,
-  SelectChildrenMode
-} from "@pnp/spfx-controls-react/lib/TreeView";
+import { TreeView, ITreeItem, TreeViewSelectionMode, SelectChildrenMode } from "@pnp/spfx-controls-react/lib/TreeView";
 import commonServices from "../Common/CommonServices";
 import * as stringsConstants from "../constants/strings";
 import styles from "../scss/TOTMyDashBoard.module.scss";
@@ -24,7 +19,6 @@ import TOTSidebar from "./TOTSideBar";
 import { RxJsEventEmitter } from "../events/RxJsEventEmitter";
 import { EventData } from "../events/EventData";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
-import * as constants from "../constants/strings";
 
 //Global Variables
 let commonServiceManager: commonServices;
@@ -33,8 +27,9 @@ export interface ITOTMyDashboardProps {
   context?: WebPartContext;
   siteUrl: string;
   onClickCancel: Function;
+  currentThemeName?: string;
 }
-interface ITOTMyDashboardState {
+export interface ITOTMyDashboardState {
   actionsList: ITreeItem[];
   selectedActionsList: ITreeItem[];
   completedActionsList: ITreeItem[];
@@ -55,16 +50,14 @@ interface ITOTMyDashboardState {
   treeViewSelectedKeys?: string[];
 }
 
-export default class TOTMyDashboard extends React.Component<
-  ITOTMyDashboardProps,
-  ITOTMyDashboardState
-> {
-  private readonly _eventEmitter: RxJsEventEmitter =
-    RxJsEventEmitter.getInstance();
+export default class TOTMyDashboard extends React.Component<ITOTMyDashboardProps, ITOTMyDashboardState> {
+  private readonly _eventEmitter: RxJsEventEmitter = RxJsEventEmitter.getInstance();
   public totMyDashboardTreeViewRef1: React.RefObject<HTMLDivElement>;
   public totMyDashboardTreeViewRef2: React.RefObject<HTMLDivElement>;
+
   constructor(props: ITOTMyDashboardProps, state: ITOTMyDashboardState) {
     super(props);
+
     //Set default values
     this.totMyDashboardTreeViewRef1 = React.createRef();
     this.totMyDashboardTreeViewRef2 = React.createRef();
@@ -89,11 +82,9 @@ export default class TOTMyDashboard extends React.Component<
       treeViewSelectedKeys: [],
 
     };
+
     //Create object for CommonServices class
-    commonServiceManager = new commonServices(
-      this.props.context,
-      this.props.siteUrl
-    );
+    commonServiceManager = new commonServices(this.props.context, this.props.siteUrl);
 
     //Bind Methods
     this.onActionSelected = this.onActionSelected.bind(this);
@@ -121,9 +112,9 @@ export default class TOTMyDashboard extends React.Component<
       let activeTournamentDetails: any[] =
         await commonServiceManager.getActiveTournamentDetails();
 
-      var activeTournamentsChoices = [];
-      var myTournamentsChoices = [];
-      var tournamentDescriptionChoices = [];
+      let activeTournamentsChoices: any = [];
+      let myTournamentsChoices: any = [];
+      let tournamentDescriptionChoices: any = [];
       //If active tournament found
       if (activeTournamentDetails.length > 0) {
 
@@ -144,7 +135,7 @@ export default class TOTMyDashboard extends React.Component<
         });
 
         //Loop through all "Active" tournaments and create an array with key and text
-        await activeTournamentDetails.forEach((eachTournament) => {
+        activeTournamentDetails.forEach((eachTournament) => {
 
           //Create an array for My Tournaments dropdown
           if (uniqueUserTournaments.some(tournament => tournament.Tournament_x0020_Name == eachTournament["Title"])) {
@@ -165,8 +156,8 @@ export default class TOTMyDashboard extends React.Component<
             text: eachTournament["Description"]
           });
         });
-        activeTournamentsChoices.sort((a, b) => a.text.localeCompare(b.text));
-        myTournamentsChoices.sort((a, b) => a.text.localeCompare(b.text));
+        activeTournamentsChoices.sort((a: any, b: any) => a.text.localeCompare(b.text));
+        myTournamentsChoices.sort((a: any, b: any) => a.text.localeCompare(b.text));
 
         //Set state variables for dropdown options
         this.setState({
@@ -216,7 +207,7 @@ export default class TOTMyDashboard extends React.Component<
   }
 
   //Set a value when an option is selected in My Tournaments dropdown and reset the Active Tournaments dropdown
-  public getMyTournamentActions = (ev: React.FormEvent<IComboBox>, option?: IComboBoxOption): void => {
+  public getMyTournamentActions(ev: React.FormEvent<IComboBox>, option?: IComboBoxOption): void {
     this.setState({
       tournamentName: option.key,
       myTournamentName: option.key,
@@ -236,40 +227,68 @@ export default class TOTMyDashboard extends React.Component<
 
   //Refresh the tournament actions whenever the tournament name is selected
   public componentDidUpdate(prevProps: Readonly<ITOTMyDashboardProps>, prevState: Readonly<ITOTMyDashboardState>, snapshot?: any): void {
-    if (prevState.tournamentName != this.state.tournamentName) {
-      this.setState({ noPendingActions: false });
-      if (this.state.tournamentName !== "")
-        this.getPendingActions();
-      //Refresh the points and rank in the sidebar when a tournament is selected in My Tournaments / Active tournaments dropdown
-      this._eventEmitter.emit("rebindSideBar:start", {
-        tournamentName: this.state.tournamentName,
-      } as EventData);
-    }
+    try {
+      if (prevState.tournamentName != this.state.tournamentName) {
+        this.setState({ noPendingActions: false });
+        if (this.state.tournamentName !== "")
+          this.getPendingActions();
+        //Refresh the points and rank in the sidebar when a tournament is selected in My Tournaments / Active tournaments dropdown
+        this._eventEmitter.emit("rebindSideBar:start", {
+          tournamentName: this.state.tournamentName,
+        } as EventData);
+      }
 
-    //Update aria-label attribute to all Completed actions Treeview's info-icon-buttons.
-    if (prevState.completedActionsList.length !== this.state.completedActionsList.length) {
-      const infoButtons1 = this.totMyDashboardTreeViewRef2.current.getElementsByClassName('ms-Button--commandBar');
-      for (let i = 0; i < infoButtons1.length; i++) {
-        infoButtons1[i].setAttribute("aria-label", "info button");
+      //Update aria-label attribute to all Completed actions Treeview's info-icon-buttons.
+      if (prevState.completedActionsList.length !== this.state.completedActionsList.length) {
+        const completedActionsInfoButtons: any = this.totMyDashboardTreeViewRef2?.current?.getElementsByClassName('ms-Button--commandBar');
+        for (let btn of completedActionsInfoButtons) {
+          btn?.setAttribute("aria-label", "info");
+        }
+
+        //Update completed actions treeview expand buttons title attribute
+        const treeElements: any = this.totMyDashboardTreeViewRef2?.current.querySelectorAll('div[class^="listItem_"]');
+        for (let treeElement of treeElements) {
+          const validBtnElement = treeElement?.querySelector(".ms-Button--icon");
+          if (validBtnElement) {
+            const exactValidBtnElement = treeElement?.querySelector('div[class^="itemContent_"]')?.querySelector('div[class^="labels_"]')?.textContent;
+            validBtnElement?.setAttribute("title", exactValidBtnElement + " " + "Expanded");
+          }
+        }
+      }
+
+      //Update aria-label attribute to all Active actions Treeview's info-icon-buttons and Checkbox inputs.
+      if (prevState.actionsList.length !== this.state.actionsList.length) {
+        const pendingActionsInfoButtons: any = this.totMyDashboardTreeViewRef1?.current?.getElementsByClassName('ms-Button--commandBar');
+        for (let btn of pendingActionsInfoButtons) {
+          btn?.setAttribute("aria-label", "info");
+        }
+
+        //Update pending actions treeview expand buttons title attribute for accessibility
+        const treeElements: any = this.totMyDashboardTreeViewRef1?.current.querySelectorAll('div[class^="listItem_"]');
+        for (let treeElement of treeElements) {
+          const validBtnElement = treeElement?.querySelector(".ms-Button--icon");
+          if (validBtnElement) {
+            const parentLabel = treeElement?.querySelector('div[class^="itemContent_"]')?.querySelector('div[class^="labels_"]')?.textContent;
+            validBtnElement?.setAttribute("title", parentLabel + " " + "Expanded");
+            const mainCheckbox = treeElement?.querySelector('div[class^="itemContent_"]')?.querySelector(".ms-Checkbox-label");
+            mainCheckbox.setAttribute("aria-label", LocaleStrings.PendingActionsLabel + " " + parentLabel);
+            const childElements = treeElement?.nextElementSibling?.querySelectorAll("div[class^='itemContent_'");
+            for (let childElement of childElements) {
+              const childLabel = childElement?.querySelector("div[class^='labels_']")?.childNodes[0]?.textContent;
+              const childCheckbox = childElement?.querySelector(".ms-Checkbox-label");
+              childCheckbox.setAttribute("aria-label", parentLabel + " " + childLabel);
+            }
+          }
+        }
       }
     }
-
-    //Update aria-label attribute to all Active actions Treeview's info-icon-buttons and Checkbox inputs.
-    if (prevState.actionsList.length !== this.state.actionsList.length) {
-      const infoButtons2 = this.totMyDashboardTreeViewRef1.current.getElementsByClassName('ms-Button--commandBar');
-      for (let i = 0; i < infoButtons2.length; i++) {
-        infoButtons2[i].setAttribute("aria-label", "info button");
-      }
-
-      const checkboxes = this.totMyDashboardTreeViewRef1.current.getElementsByTagName('input');
-      for (let i = 0; i < checkboxes.length; i++) {
-        checkboxes[i].setAttribute("aria-label", checkboxes[i].getAttribute('id'));
-      }
+    catch (error: any) {
+      console.error("CMP_TOT_TOTMyDashboard_componentDidUpdate \n", error);
     }
   }
 
   //On select of a tree node change the state of selected actions
-  private onActionSelected(items: ITreeItem[]) {
+  private onActionSelected(items: any) {
     this.setState({ selectedActionsList: items, treeViewSelectedKeys: items["key"] });
   }
 
@@ -304,7 +323,7 @@ export default class TOTMyDashboard extends React.Component<
         "'";
 
       //Set the description for selected tournament
-      var tournmentDesc = this.state.tournamentDescriptionList.find((item) => item.key == this.state.tournamentName);
+      let tournmentDesc = this.state.tournamentDescriptionList.find((item) => item.key == this.state.tournamentName);
 
       this.setState({
         tournamentDescription: tournmentDesc.text
@@ -327,13 +346,13 @@ export default class TOTMyDashboard extends React.Component<
           filterUserTournaments
         );
 
-      var treeItemsArray: ITreeItem[] = [];
-      var completedTreeItemsArray: ITreeItem[] = [];
+      let treeItemsArray: ITreeItem[] = [];
+      let completedTreeItemsArray: ITreeItem[] = [];
 
       //Build the Parent Nodes(Categories) in Treeview. Skip the items which are already completed by the user in "User Actions" list
-      await allTournamentsActionsArray.forEach((vAction) => {
+      allTournamentsActionsArray.forEach((vAction) => {
         //Check if the category is present in the 'User Actions' list
-        var compareCategoriesArray = userActionsArray.filter((elArray) => {
+        let compareCategoriesArray = userActionsArray.filter((elArray) => {
           return (
             elArray.Action == vAction["Action"] &&
             elArray.Category == vAction["Category"]
@@ -346,7 +365,7 @@ export default class TOTMyDashboard extends React.Component<
         };
 
         //If the category is not present in User Actions list add it to 'Pending Tree view'
-        var found: boolean;
+        let found: boolean;
         if (compareCategoriesArray.length == 0) {
           //Check if Category is already added to the Treeview. If yes, skip adding.
           found = treeItemsArray.some((value) => {
@@ -365,9 +384,9 @@ export default class TOTMyDashboard extends React.Component<
       }); //For Loop
 
       //Build the child nodes(Actions) in Treeview. Skip the items which are already completed by the user in "User Actions" list
-      await allTournamentsActionsArray.forEach((vAction) => {
+      allTournamentsActionsArray.forEach((vAction) => {
         //Check if the action is present in the 'User Actions' list
-        var compareActionsArray = userActionsArray.filter((elChildArray) => {
+        let compareActionsArray = userActionsArray.filter((elChildArray) => {
           return (
             elChildArray.Action == vAction["Action"] &&
             elChildArray.Category == vAction["Category"]
@@ -410,14 +429,14 @@ export default class TOTMyDashboard extends React.Component<
                     title: LocaleStrings.MyDashboardInfoIconMessage
                   },
                   id: "GetItem",
-                  actionCallback: async (treeItem: ITreeItem) => {
+                  actionCallback: (treeItem: ITreeItem) => {
                     window.open(vAction["HelpURL"]);
                   },
                 },
               ],
             };
           }
-          var treeCol: Array<ITreeItem> = treeItemsArray.filter((value) => {
+          let treeCol: Array<ITreeItem> = treeItemsArray.filter((value) => {
             return value.label == vAction["Category"];
           });
           if (treeCol.length != 0) {
@@ -465,14 +484,14 @@ export default class TOTMyDashboard extends React.Component<
                     title: LocaleStrings.MyDashboardInfoIconMessage
                   },
                   id: "GetItem",
-                  actionCallback: async (treeItem: ITreeItem) => {
+                  actionCallback: (treeItem: ITreeItem) => {
                     window.open(vAction["HelpURL"]);
                   },
                 },
               ],
             };
           }
-          var treeColCompleted: Array<ITreeItem> =
+          let treeColCompleted: Array<ITreeItem> =
             completedTreeItemsArray.filter((value) => {
               return value.label == vAction["Category"];
             });
@@ -506,13 +525,13 @@ export default class TOTMyDashboard extends React.Component<
     try {
       this.setState({ showSpinner: true, actionsError: false });
       if (this.state.selectedActionsList.length > 0) {
-        var selectedTreeArray: ITreeItem[] = this.state.selectedActionsList;
+        let selectedTreeArray: ITreeItem[] = this.state.selectedActionsList;
         //Loop through actions selected and create a list item for each treeview selection
-        let createActionsPromise = [];
-        let checkActionsPromise = [];
-        for (let counter = 0; counter < selectedTreeArray.length; counter++) {
+        let createActionsPromise: any = [];
+        let checkActionsPromise: any = [];
+        for (let item of selectedTreeArray) {
           //Skip parent node for treeview which is not an action
-          if (selectedTreeArray[counter].data != undefined) {
+          if (item.data != undefined) {
             //Insert User Action only if its not already there.
             let filterUserTournaments: string =
               "Tournament_x0020_Name eq '" +
@@ -522,7 +541,7 @@ export default class TOTMyDashboard extends React.Component<
               currentUserEmail +
               "'" +
               " and Action eq '" +
-              selectedTreeArray[counter].label +
+              item.label.replace(/'/g, "''") +
               "'";
             let checkActionsPresent =
               await commonServiceManager.getItemsWithOnlyFilter(
@@ -586,10 +605,28 @@ export default class TOTMyDashboard extends React.Component<
     }
   }
 
+  //On menu open add the attributes to fix the position issue in IOS for Accessibility
+  private onMenuOpen = (listboxId: string) => {
+    //adding option position information to aria attribute to fix the accessibility issue in iOS Voiceover
+    if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i)) {
+      const listBoxElement: any = document.getElementById(listboxId + "-list")?.children;
+      if (listBoxElement?.length > 0) {
+        for (let i = 0; i < listBoxElement?.length; i++) {
+          const buttonId = `${listboxId}-list${i}`;
+          const buttonElement: any = document.getElementById(buttonId);
+          const ariaLabel = `${buttonElement.innerText} ${i + 1} of ${listBoxElement.length}`;
+          buttonElement?.setAttribute("aria-label", ariaLabel);
+        }
+      }
+    }
+
+  }
+
   //Render Method
   public render(): React.ReactElement<ITOTMyDashboardProps> {
+    const isDarkOrContrastTheme = this.props.currentThemeName === stringsConstants.themeDarkMode || this.props.currentThemeName === stringsConstants.themeContrastMode;
     return (
-      <div className={styles.container}>
+      <div className={`${styles.container}${isDarkOrContrastTheme ? " " + styles.containerDarkContrast : ""}`}>
         <div className={styles.totDashboardContent}>
           <TOTSidebar
             siteUrl={this.props.siteUrl}
@@ -602,24 +639,28 @@ export default class TOTMyDashboard extends React.Component<
                 <img src={require("../assets/CMPImages/BackIcon.png")}
                   className={styles.backImg}
                   alt={LocaleStrings.BackButton}
+                  aria-hidden="true"
                 />
                 <span
                   className={styles.backLabel}
                   onClick={() => this.props.onClickCancel()}
-                  title={LocaleStrings.TOTBreadcrumbLabel}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(evt: any) => { if (evt.key === stringsConstants.stringEnter || evt.key === stringsConstants.stringSpace) this.props.onClickCancel() }}
+                  aria-label={LocaleStrings.TOTBreadcrumbLabel}
                 >
-                  {LocaleStrings.TOTBreadcrumbLabel}
+                  <span title={LocaleStrings.TOTBreadcrumbLabel}>
+                    {LocaleStrings.TOTBreadcrumbLabel}
+                  </span>
                 </span>
-                <span className={styles.border}></span>
+                <span className={styles.border} aria-live="polite" role="alert" aria-label={LocaleStrings.TOTMyDashboardPageTitle + " Page"} />
                 <span className={styles.totDashboardLabel}>{LocaleStrings.TOTMyDashboardPageTitle}</span>
               </div>
               {this.state.showError && (
                 <div>
                   {this.state.noActiveTournament ? (
                     <div>
-                      <Label className={styles.noTourErrorMessage}>
-                        {this.state.errorMessage}
-                      </Label>
+                      <Label className={styles.noTourErrorMessage}>{this.state.errorMessage}</Label>
                       <DefaultButton
                         text={LocaleStrings.BackButton}
                         title={LocaleStrings.BackButton}
@@ -630,9 +671,7 @@ export default class TOTMyDashboard extends React.Component<
                     </div>
                   )
                     :
-                    <Label className={styles.errorMessage}>
-                      {this.state.errorMessage}
-                    </Label>
+                    <Label className={styles.errorMessage}>{this.state.errorMessage}</Label>
                   }
                 </div>
               )}
@@ -646,12 +685,16 @@ export default class TOTMyDashboard extends React.Component<
                         content={LocaleStrings.MyTournamentsTooltip}
                         calloutProps={{ gapSpace: 0 }}
                         hostClassName={styles.tooltipHostStyles}
-                        delay={window.innerWidth < constants.MobileWidth ? 0 : 2}
+                        delay={window.innerWidth < stringsConstants.MobileWidth ? 0 : 2}
+                        id="tot-my-dashboard-combobox-info"
                       >
                         <Icon
                           aria-label="Info"
+                          aria-describedby="tot-my-dashboard-combobox-info"
                           iconName="Info"
                           className={styles.myTournamentInfoIcon}
+                          tabIndex={0}
+                          role="button"
                         />
                       </TooltipHost>
                     </span>
@@ -662,7 +705,14 @@ export default class TOTMyDashboard extends React.Component<
                       onChange={this.getMyTournamentActions.bind(this)}
                       ariaLabel={LocaleStrings.MyTournamentsLabel + ' list'}
                       useComboBoxAsMenuWidth={true}
-                      calloutProps={{ className: styles.totMdbComboCallout }}
+                      calloutProps={{
+                        className: `totMdbComboCallout${isDarkOrContrastTheme ? ' totMdbComboCallout--' + this.props.currentThemeName : ""}`,
+                        directionalHintFixed: true, doNotLayer: true
+                      }}
+                      allowFreeInput={true}
+                      persistMenu={true}
+                      id="my-tournaments-listbox"
+                      onMenuOpen={() => this.onMenuOpen("my-tournaments-listbox")}
                     />
                   </Col>
                 )}
@@ -681,7 +731,14 @@ export default class TOTMyDashboard extends React.Component<
                       onChange={this.getActiveTournamentActions.bind(this)}
                       ariaLabel={LocaleStrings.ActiveTournamentLabel + ' list'}
                       useComboBoxAsMenuWidth={true}
-                      calloutProps={{ className: styles.totMdbComboCallout }}
+                      calloutProps={{
+                        className: `totMdbComboCallout${isDarkOrContrastTheme ? ' totMdbComboCallout--' + this.props.currentThemeName : ""}`,
+                        directionalHintFixed: true, doNotLayer: true
+                      }}
+                      allowFreeInput={true}
+                      persistMenu={true}
+                      id="active-tournaments-listbox"
+                      onMenuOpen={() => this.onMenuOpen("active-tournaments-listbox")}
                     />
                   </Col>
                 )}
@@ -698,9 +755,7 @@ export default class TOTMyDashboard extends React.Component<
                           <li className={styles.listVal}>
                             <span className={styles.labelHeading + " " + styles.descriptionHeading}>{LocaleStrings.DescriptionLabel}</span>
                             <span className={styles.descriptionColon}>:</span>
-                            <span className={styles.labelNormal}>
-                              {this.state.tournamentDescription}
-                            </span>
+                            <span className={styles.labelNormal}>{this.state.tournamentDescription}</span>
                           </li>
                         )}
                       </ul>
@@ -713,36 +768,67 @@ export default class TOTMyDashboard extends React.Component<
               <div className={styles.contentArea}>
                 <Row xl={2} lg={2} md={2} sm={1} xs={1}>
                   <Col xl={6} lg={6} md={6} sm={12} xs={12}>
-                    <Label className={styles.subHeaderUnderline}>
-                      {LocaleStrings.PendingActionsLabel}
-                    </Label>
+                    <h2 tabIndex={0} role="heading">
+                      <Label className={styles.subHeaderUnderline}>{LocaleStrings.PendingActionsLabel}</Label>
+                    </h2>
                     {this.state.noPendingActions && (
                       <Label className={styles.successMessage}>
                         <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
                         {LocaleStrings.PendingActionsSuccessMessage}
                       </Label>
                     )}
-                    <div className={styles.myDashBoardTreeView1} ref={this.totMyDashboardTreeViewRef1}>
-                      <TreeView
-                        items={this.state.actionsList}
-                        defaultExpanded={true}
-                        selectionMode={TreeViewSelectionMode.Multiple}
-                        selectChildrenMode={SelectChildrenMode.Select | SelectChildrenMode.Unselect}
-                        showCheckboxes={true}
-                        defaultSelectedKeys={this.state.treeViewSelectedKeys}
-                        onSelect={this.onActionSelected}
-                      />
-                    </div>
+                    {this.state.actionsList !== undefined && (
+                      <div className={styles.myDashBoardTreeView1} ref={this.totMyDashboardTreeViewRef1}>
+                        {this.state.actionsList.length > 0 &&
+                          <TreeView
+                            items={this.state.actionsList}
+                            defaultExpanded={true}
+                            selectionMode={TreeViewSelectionMode.Multiple}
+                            selectChildrenMode={SelectChildrenMode.Select | SelectChildrenMode.Unselect}
+                            showCheckboxes={true}
+                            defaultSelectedKeys={this.state.treeViewSelectedKeys}
+                            onSelect={this.onActionSelected}
+                            onExpandCollapse={(item, isExpanded: boolean) => {
+                              //Get all the tree structured div elements from the this.totMyDashboardTreeViewRef1 (DOM)
+                              const treeElements: any = this.totMyDashboardTreeViewRef1?.current.querySelectorAll('div[class^="listItem_"]');
+                              for (let treeElement of treeElements) {
+                                //Get Expand/collapse icon button elements from  each tree element
+                                const validBtnElement = treeElement?.querySelector(".ms-Button--icon");
+                                if (validBtnElement) {
+                                  //Get current expand/collapse button from selected tree element
+                                  const exactValidBtnElement = treeElement?.querySelector('div[class^="itemContent_"]')?.querySelector('div[class^="labels_"]')?.textContent;
+                                  if (exactValidBtnElement.trim() === item.label) {
+                                    //Update Title attribute
+                                    if (isExpanded) {
+                                      setTimeout(() => {
+                                        validBtnElement?.setAttribute("title", item.label + " " + "Expanded");
+                                        const childElements = treeElement?.nextElementSibling?.querySelectorAll("div[class^='itemContent_'");
+                                        for (let childElement of childElements) {
+                                          const childLabel = childElement?.querySelector("div[class^='labels_']")?.childNodes[0].textContent;
+                                          const childCheckbox = childElement?.querySelector(".ms-Checkbox-label");
+                                          childCheckbox.setAttribute("aria-label", item.label + " " + childLabel);
+                                        }
+                                      }, 5);
+                                    }
+                                    else {
+                                      setTimeout(() => {
+                                        validBtnElement?.setAttribute("title", item.label + " " + "Collapsed");
+                                      }, 5);
+                                    }
+                                    break;
+                                  }
+                                }
+                              }
+                            }}
+                          />
+                        }
+                      </div>
+                    )}
                     {this.state.actionsError && (
-                      <Label className={styles.errorMessage}>
-                        {LocaleStrings.SelectActionsErrorMessage}
-                      </Label>
+                      <Label className={styles.errorMessage}>{LocaleStrings.SelectActionsErrorMessage}</Label>
                     )}
                     {this.state.showSpinner && (
-                      <Spinner
-                        label={LocaleStrings.FormSavingMessage}
-                        size={SpinnerSize.large}
-                      />
+                      <Spinner label={LocaleStrings.FormSavingMessage} size={SpinnerSize.large} />
                     )}
                     <div className={styles.btnArea}>
                       {this.state.actionsList.length != 0 && (
@@ -765,15 +851,45 @@ export default class TOTMyDashboard extends React.Component<
                     </div>
                   </Col>
                   <Col xl={6} lg={6} md={6} sm={12} xs={12}>
-                    <Label className={styles.subHeaderUnderline}>
-                      {LocaleStrings.CompletedActionsLabel}
-                    </Label>
-                    <div className={styles.myDashBoardTreeView2} ref={this.totMyDashboardTreeViewRef2}>
-                      <TreeView
-                        items={this.state.completedActionsList}
-                        defaultExpanded={true}
-                      />
-                    </div>
+                    <h2 tabIndex={0} role="heading">
+                      <Label className={styles.subHeaderUnderline}>{LocaleStrings.CompletedActionsLabel}</Label>
+                    </h2>
+                    {this.state.completedActionsList !== undefined && (
+                      <div className={styles.myDashBoardTreeView2} ref={this.totMyDashboardTreeViewRef2}>
+                        {this.state.completedActionsList.length > 0 &&
+                          <TreeView
+                            items={this.state.completedActionsList}
+                            defaultExpanded={true}
+                            onExpandCollapse={(item, isExpanded: boolean) => {
+                              //Get all the tree structured div elements from the this.totMyDashboardTreeViewRef2(DOM)
+                              const treeElements: any = this.totMyDashboardTreeViewRef2?.current.querySelectorAll('div[class^="listItem_"]');
+                              for (let treeElement of treeElements) {
+                                //Get Expand/collapse icon button elements from  each tree element
+                                const validBtnElement = treeElement?.querySelector(".ms-Button--icon");
+                                if (validBtnElement) {
+                                  //Get current expand/collapse button from selected tree element
+                                  const exactValidBtnElement = treeElement?.querySelector('div[class^="itemContent_"]')?.querySelector('div[class^="labels_"]')?.textContent;
+                                  if (exactValidBtnElement.trim() === item.label) {
+                                    //Update Title attribute
+                                    if (isExpanded) {
+                                      setTimeout(() => {
+                                        validBtnElement?.setAttribute("title", item.label + " " + "Expanded");
+                                      }, 5);
+                                    }
+                                    else {
+                                      setTimeout(() => {
+                                        validBtnElement?.setAttribute("title", item.label + " " + "Collapsed");
+                                      }, 5);
+                                    }
+                                    break;
+                                  }
+                                }
+                              }
+                            }}
+                          />
+                        }
+                      </div>
+                    )}
                   </Col>
                   <Col xl={12} lg={12} md={12} sm={12} xs={12}>
                     <PrimaryButton

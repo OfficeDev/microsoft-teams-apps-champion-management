@@ -4,7 +4,7 @@ import Sidebar from '../components/Sidebar';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import '../scss/Employeeview.scss';
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
-
+import * as strings from "../constants/strings";
 
 interface EmployeeViewState {
 }
@@ -13,6 +13,8 @@ interface EmployeeViewProps {
   context: WebPartContext;
   onClickCancel: () => void;
   siteUrl: string;
+  appTitle: string;
+  currentThemeName?: string;
 }
 
 export default class EmployeeView extends Component<
@@ -24,8 +26,9 @@ export default class EmployeeView extends Component<
   }
 
   public render() {
+    const isDarkOrContrastTheme = this.props.currentThemeName === strings.themeDarkMode || this.props.currentThemeName === strings.themeContrastMode;
     return (
-      <div className="Employeeview d-flex">
+      <div className={`Employeeview d-flex${isDarkOrContrastTheme ? " EmployeeviewDarkContrast" : ""}`}>
         <Sidebar
           siteUrl={this.props.siteUrl}
           context={this.props.context}
@@ -37,13 +40,19 @@ export default class EmployeeView extends Component<
             <img src={require("../assets/CMPImages/BackIcon.png")}
               className="backImg"
               alt={LocaleStrings.BackButton}
+              aria-hidden="true"
             />
             <span
               className="backLabel"
               onClick={() => { this.props.onClickCancel(); }}
-              title={LocaleStrings.CMPBreadcrumbLabel}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(evt: any) => { if (evt.key === strings.stringEnter) this.props.onClickCancel(); }}
+              aria-label={this.props.appTitle}
             >
-              {LocaleStrings.CMPBreadcrumbLabel}
+              <span title={this.props.appTitle}>
+                {this.props.appTitle}
+              </span>
             </span>
             <span className="ClbBorder"></span>
             <span className="ClbLabel">{LocaleStrings.ChampionLeaderBoardLabel}</span>
@@ -52,6 +61,7 @@ export default class EmployeeView extends Component<
             siteUrl={this.props.siteUrl}
             context={this.props.context}
             type={""}
+            currentThemeName={this.props.currentThemeName}
           />
         </div>
       </div>

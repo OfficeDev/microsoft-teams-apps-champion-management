@@ -1,4 +1,4 @@
-# Installation Types (Customized vs Standard)
+# Installation Types (Standard vs Customized)
 
 ## Standard Installation
 The standard installation assumes you would like to take the SharePoint package file located in our GitHub repository and install using the configuration outlined in this readme file (assets all created under a SharePoint site
@@ -52,19 +52,27 @@ Continuing below steps you can take the cmp.sppkg file from the ***cmp.sppkg*** 
 
 10.	A confirmation dialog is displayed. Ensure the checkbox for "Make this solution available to all sites in the organization" is chosen and click ***Deploy***.
 
-    ![Quick Start Guide](../Images/Upgrade-2.png) 
+    ![Quick Start Guide](../Images/Upgrade-2.png)
 
-11.	Return to the ***SharePoint admin center***. Under expand the ***Advanced*** menu in the left navigation and select ***API access***. Select and approve all pending requests associated with ***championmanagement***.
+11.	select the ***championmanagement*** app. Select the Files tab in the ribbon and click the ***Sync to Teams*** button.
+
+    ![Quick Start Guide](../Images/SyncToTeams.png) 
+
+12. Repeat steps 8-10 to deploy another package "mgt-spfx-vv3.sppkg" to the App catalog. This package can be picked from ***"sharepoint/solution"*** location of the GitHub repo here. This package is required for the person card feature when hovering over a champion name in the app.
+
+    ![Quick Start Guide](../Images/GraphtoolkitModern.png)     
+
+13.	Return to the ***SharePoint admin center***. Under expand the ***Advanced*** menu in the left navigation and select ***API access***. Select and approve all pending requests associated with ***championmanagement***.
 
     **User.ReadWrite** : Allows the app to read the signed-in user's full profile. It also allows the app to update the signed-in user's profile information on their behalf. CMP app uses this permission to read and update the user's profile image with the digital badge.
 
-    **Sites.Manage.All** : Allows the app to manage and create lists, documents, and list items in all site collections on behalf of the signed-in user. CMP app uses this permission to create lists in the SharePoint site.
+    **User.Read.All** : Allows the app to read the full set of profile properties, reports, and managers of other users in your organization, on behalf of the signed-in user. CMP uses this permission to display person cards for all champions.
+
+    **People.Read**: Allows the app to read a scored list of people relevant to the signed-in user. The list can include local contacts, contacts from social networking or your organization's directory, and people from recent communications. CMP uses this permission to display person cards for all champions.
 
     ![Quick Start Guide](../Images/APIAccess.png) 
 
-12.	Return to app list in the App Catalog and select the ***championmanagement*** app. Select the Files tab in the ribbon and click the ***Sync to Teams*** button.
 
-    ![Quick Start Guide](../Images/SyncToTeams.png) 
 
 ### Modern App Catalog 
 
@@ -78,13 +86,17 @@ Continuing below steps you can take the cmp.sppkg file from the ***cmp.sppkg*** 
 
     ![Quick Start Guide](../Images/Modern_AppCatalog2.png)
 
-1. Click on "Go to API access page" to approve the permissions.
+1. Click on "Go to API access page" to approve the permissions. Refer to step 13 from previous section for details. 
 
     ![Quick Start Guide](../Images/Modern_AppCatalog3.png)
 
-1. Once done, click on "Add to Teams" to make this app available in Teams
+1. Once done, click on "Add to Teams" to make this app available in Teams. Sometimes you may see an error after clicking "Add to Teams". Navigate to "Manage Apps" in Teams Admins center to verify if the ChampionManagementPlatform is created. If yes, you can ignore the error and proceed.
 
     ![Quick Start Guide](../Images/Modern_AppCatalog4.png)
+
+1. Repeat steps 1-2 to deploy another package file "mgt-spfx-vv3.sppkg" to the App catalog by selecting "Enable this app and it to all sites" option. This package can be picked from ***"sharepoint/solution"*** location of the GitHub repo here. This package is required for the person card feature when hover over a champion name in the app.
+
+    ![Quick Start Guide](../Images/GraphtoolkitModern.png)    
 
 ## Customized Installation
 
@@ -152,6 +164,8 @@ If desired the administrator can configure the installation location including t
 ```
 
 3.	Navigate to the solution folder where you cloned and locate the newly created ***cmp.sppkg*** package in ***"sharepoint/solution"***.
+
+4. Follow the instructions in the previous sections of this deployment guide to deploy the custom package. 
 
 ## First Run Experience: Add **Champion Management Platform** Tab in Teams
 

@@ -16,10 +16,8 @@ import TOTLeaderBoard from "./TOTLeaderBoard";
 import TOTMyDashboard from "./TOTMyDashboard";
 import TOTCreateTournament from "./TOTCreateTournament";
 import TOTEnableTournament from "./TOTEnableTournament";
-import Navbar from "react-bootstrap/Navbar";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
 import DigitalBadge from "./DigitalBadge";
-import { ThemeStyle } from "msteams-ui-styles-core";
 import { Spinner, SpinnerSize } from "@fluentui/react";
 import TOTReport from "./TOTReport";
 
@@ -27,8 +25,10 @@ export interface ITOTLandingPageProps {
   context?: any;
   siteUrl: string;
   isTOTEnabled: boolean;
+  appTitle: string;
+  currentThemeName?: string;
 }
-interface ITOTLandingPageState {
+export interface ITOTLandingPageState {
   showSuccess: Boolean;
   showError: Boolean;
   errorMessage: string;
@@ -336,9 +336,9 @@ class TOTLandingPage extends React.Component<
           if (digitalLib != undefined) {
             digitalLib.fields.getByInternalNameOrTitle("Tournament").get()
               .then(() => {
-                let imageContext;
-                listStructure.forEach(async (element) => {
-                  const masterDataDetails: string[] = element["masterData"];
+                let imageContext: any;
+                listStructure.forEach(async (element: any) => {
+                  const masterDataDetails: any = element["masterData"];
                   for (let k = 0; k < masterDataDetails.length; k++) {
                     //check file exists before adding
                     let fileExists = await sp.web.getFileByServerRelativeUrl("/" + this.state.inclusionpath + "/"
@@ -365,7 +365,7 @@ class TOTLandingPage extends React.Component<
                           break;
                       }
                       //upload default badges
-                      imageContext.then(res => res.blob()).then((blob) => {
+                      imageContext.then((res: any) => res.blob()).then((blob: any) => {
                         sp.web.getFolderByServerRelativeUrl("/" + this.state.inclusionpath + "/"
                           + this.state.siteName + "/" + stringsConstants.DigitalBadgeLibrary).files.add(masterDataDetails[k]['Name'], blob, true)
                           .then((res) => {
@@ -383,9 +383,9 @@ class TOTLandingPage extends React.Component<
               }).catch(async () => {
                 //field doesn't exists, hence create it
                 await digitalLib.fields.addLookup("Tournament", resp.Id, "Title").then(() => {
-                  let imageContext;
-                  listStructure.forEach(async (element) => {
-                    const masterDataDetails: string[] = element["masterData"];
+                  let imageContext: any;
+                  listStructure.forEach(async (element: any) => {
+                    const masterDataDetails: any = element["masterData"];
                     for (let k = 0; k < masterDataDetails.length; k++) {
                       //unable to resolve the dynamic path from siteconfig, hence the switch case
                       switch (masterDataDetails[k]['Title']) {
@@ -406,7 +406,7 @@ class TOTLandingPage extends React.Component<
                           break;
                       }
                       //upload default badges
-                      imageContext.then(res => res.blob()).then((blob) => {
+                      imageContext.then((res: any) => res.blob()).then((blob: any) => {
                         sp.web.getFolderByServerRelativeUrl("/" + this.state.inclusionpath + "/"
                           + this.state.siteName + "/" + stringsConstants.DigitalBadgeLibrary).files.add(masterDataDetails[k]['Name'], blob, true)
                           .then((res) => {
@@ -445,13 +445,13 @@ class TOTLandingPage extends React.Component<
   private async provisionTOTListsAndFields(): Promise<any> {
     return new Promise<any>(async (resolve, reject) => {
       try {
-        const listPromise = [];
+        const listPromise: any = [];
         //get all lists schema from siteconfig
         const listStructure: any = siteconfig.totLists;
 
         for (let element = 0; element < listStructure.length; element++) {
           const spListTitle: string = listStructure[element]["listName"];
-          const spListTemplate = listStructure[element]["listTemplate"];
+          const spListTemplate: any = listStructure[element]["listTemplate"];
           const fieldsToCreate: string[] = listStructure[element]["fields"];
           const masterDataToAdd: string[] = listStructure[element]["masterData"];
           //Ensure list exists, creates if not found and add fields/data if already created
@@ -563,7 +563,20 @@ class TOTLandingPage extends React.Component<
     });
   }
 
+  //Get TOT Page Banner Class when Theme is switched to Dark or Contrast Mode
+  public getTOTSubHeaderBannerClass() {
+    if (this.props.currentThemeName === stringsConstants.themeDarkMode) {
+      return styles.totHeaderDark;
+    }
+    else if (this.props.currentThemeName === stringsConstants.themeContrastMode) {
+      return styles.totHeaderContrast;
+    }
+    else
+      return "";
+  }
+
   public render(): React.ReactElement<ITOTLandingPageProps> {
+    const isDarkOrContrastTheme = this.props.currentThemeName === stringsConstants.themeDarkMode || this.props.currentThemeName === stringsConstants.themeContrastMode;
     return (
       <div className={styles.totLandingPage}>
         <div className={styles.container}>
@@ -574,90 +587,119 @@ class TOTLandingPage extends React.Component<
             !this.state.manageTournament &&
             !this.state.tournamentReport && (
               <div>
-                <div className={styles.totHeader}>
-                  <span className={styles.totPageHeading} onClick={this.redirectTotHome}>{LocaleStrings.TOTBreadcrumbLabel}</span>
+                <div className={`${styles.totHeader} ${this.getTOTSubHeaderBannerClass()}`.trim()}>
+                  <h2 className={styles.totPageHeading} onClick={this.redirectTotHome} role="heading" tabIndex={0}>{LocaleStrings.TOTBreadcrumbLabel}</h2>
                 </div>
                 <div className={styles.grid}>
                   <div className={styles.messageContainer}>
                     {this.state.showSuccess && (
-                      <Label className={styles.successMessage}>
+                      <Label className={`${styles.successMessage}${isDarkOrContrastTheme ? " " + styles.successMessageDarkContrast : ""}`}>
                         <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
                         {LocaleStrings.EnableTOTSuccessMessage}
                       </Label>
                     )}
                     {this.state.showError && (
-                      <Label className={styles.errorMessage}>
+                      <Label className={`${styles.errorMessage}${isDarkOrContrastTheme ? " " + styles.errorMessageDarkContrast : ""}`}>
                         {this.state.errorMessage}
                       </Label>
                     )}
                     {this.state.isShowLoader && (
-                      <div><Label className={styles.setupMessage}>
-                        {this.state.setupMessage}
-                      </Label><Spinner
+                      <div>
+                        <Label className={`${styles.setupMessage}${isDarkOrContrastTheme ? " " + styles.setupMessageDarkContrast : ""}`}>
+                          {this.state.setupMessage}
+                        </Label>
+                        <Spinner
                           label={this.state.spinnerMessage}
-                          size={SpinnerSize.large} /></div>
+                          size={SpinnerSize.large}
+                        />
+                      </div>
                     )}
                   </div>
                   {!this.state.isShowLoader && (
-                    <h5 className={styles.pageSubHeader}>{LocaleStrings.QuickLinksLabel}</h5>
+                    <h3 className={`${styles.pageSubHeader}${isDarkOrContrastTheme ? " " + styles.pageSubHeaderDarkContrast : ""}`}
+                      role="heading" tabIndex={0}>{LocaleStrings.QuickLinksLabel}</h3>
                   )}
                   {!this.state.isShowLoader && (
                     <Row xl={4} lg={4} md={4} sm={3} xs={2} className="mt-4">
                       <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media
-                          className={styles.cursor}
+                          className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
                           onClick={() =>
                             this.setState({
                               leaderBoard: !this.state.leaderBoard,
                               showSuccess: false,
                             })
                           }
+                          onKeyDown={(evt: any) => {
+                            if (evt.key === stringsConstants.stringEnter || evt.key === stringsConstants.stringSpace)
+                              this.setState({
+                                leaderBoard: !this.state.leaderBoard,
+                                showSuccess: false,
+                              })
+                          }}
                         >
-                          <div className={styles.mb}>
+                          <div className={styles.mb} title={LocaleStrings.TOTLeaderBoardPageTitle} aria-hidden="true">
                             <img
                               src={require("../assets/TOTImages/LeaderBoard.svg")}
                               alt={LocaleStrings.TOTLeaderBoardPageTitle}
-                              title={LocaleStrings.TOTLeaderBoardPageTitle}
                               className={styles.dashboardimgs}
+                              role="button"
+                              tabIndex={0}
+                              aria-label={LocaleStrings.TOTLeaderBoardPageTitle}
                             />
-                            <div className={styles.center} title={LocaleStrings.TOTLeaderBoardPageTitle}>{LocaleStrings.TOTLeaderBoardPageTitle}</div>
+                            <div className={styles.center}>{LocaleStrings.TOTLeaderBoardPageTitle}</div>
                           </div>
                         </Media>
                       </Col>
                       <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media
-                          className={styles.cursor}
+                          className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
                           onClick={() =>
                             this.setState({
                               dashboard: !this.state.dashboard,
                               showSuccess: false,
                             })
                           }
+                          onKeyDown={(evt: any) => {
+                            if (evt.key === stringsConstants.stringEnter || evt.key === stringsConstants.stringSpace)
+                              this.setState({
+                                dashboard: !this.state.dashboard,
+                                showSuccess: false,
+                              })
+                          }}
                         >
-                          <div className={styles.mb}>
+                          <div className={styles.mb} title={LocaleStrings.TOTMyDashboardPageTitle} aria-hidden="true">
                             <img
                               src={require("../assets/TOTImages/MyDashboard.svg")}
                               alt={LocaleStrings.TOTMyDashboardPageTitle}
-                              title={LocaleStrings.TOTMyDashboardPageTitle}
                               className={styles.dashboardimgs}
+                              role="button"
+                              tabIndex={0}
+                              aria-label={LocaleStrings.TOTMyDashboardPageTitle}
                             />
-                            <div className={styles.center} title={LocaleStrings.TOTMyDashboardPageTitle}>{LocaleStrings.TOTMyDashboardPageTitle}</div>
+                            <div className={styles.center}>{LocaleStrings.TOTMyDashboardPageTitle}</div>
                           </div>
                         </Media>
                       </Col>
                       <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                         <Media
-                          className={styles.cursor}
+                          className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
                           onClick={() => this.setState({ digitalBadge: !this.state.digitalBadge })}
+                          onKeyDown={(evt: any) => {
+                            if (evt.key === stringsConstants.stringEnter || evt.key === stringsConstants.stringSpace)
+                              this.setState({ digitalBadge: !this.state.digitalBadge })
+                          }}
                         >
-                          <div className={styles.mb}>
+                          <div className={styles.mb} title={LocaleStrings.DigitalMembersToolTip} aria-hidden="true">
                             <img
                               src={require("../assets/CMPImages/DigitalBadge.svg")}
                               alt={LocaleStrings.DigitalMembersToolTip}
-                              title={LocaleStrings.DigitalMembersToolTip}
                               className={styles.dashboardimgs}
+                              tabIndex={0}
+                              role="button"
+                              aria-label={LocaleStrings.DigitalBadgeLabel}
                             />
-                            <div className={styles.center} title={LocaleStrings.DigitalBadgeLabel}>{LocaleStrings.DigitalBadgeLabel}</div>
+                            <div className={styles.center}>{LocaleStrings.DigitalBadgeLabel}</div>
                           </div>
                         </Media>
                       </Col>
@@ -665,138 +707,171 @@ class TOTLandingPage extends React.Component<
                   )}
 
                   {this.state.isAdmin && (
-                    <div>
-                      <h5 className={styles.pageSubHeader}>{LocaleStrings.AdminToolsLabel}</h5>
-                    </div>
-                  )}
-
-                  {this.state.isAdmin && (
-                    <Row xl={4} lg={4} md={4} sm={3} xs={2} className="mt-4">
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media className={styles.cursor}>
-                          <div className={styles.mb}>
-                            <a
-                              href={`/${this.state.inclusionpath}/${this.state.siteName}/Lists/Actions%20List/AllItems.aspx`}
-                              target="_blank"
-                            >
-                              <img
-                                src={require("../assets/TOTImages/ManageTournamentActions.svg")}
-                                alt={LocaleStrings.ManageTournamentActionsToolTip}
-                                title={LocaleStrings.ManageTournamentActionsToolTip}
-                                className={`${styles.dashboardimgs}`}
-                              />
-                            </a>
-                            <div className={`${styles.center}`} title={LocaleStrings.ManageTournamentActionsLabel}>
-                              {LocaleStrings.ManageTournamentActionsLabel}
+                    <>
+                      <h3 className={`${styles.pageSubHeader}${isDarkOrContrastTheme ? " " + styles.pageSubHeaderDarkContrast : ""}`}
+                        role="heading" tabIndex={0}>{LocaleStrings.AdminToolsLabel}</h3>
+                      <Row xl={4} lg={4} md={4} sm={3} xs={2} className="mt-4">
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}>
+                            <div className={styles.mb}>
+                              <a
+                                href={`/${this.state.inclusionpath}/${this.state.siteName}/Lists/Actions%20List/AllItems.aspx`}
+                                target="_blank"
+                              >
+                                <div aria-hidden="true" title={LocaleStrings.ManageTournamentActionsToolTip}>
+                                  <img
+                                    src={require("../assets/TOTImages/ManageTournamentActions.svg")}
+                                    alt={LocaleStrings.ManageTournamentActionsToolTip}
+                                    className={styles.dashboardimgs}
+                                    aria-label={LocaleStrings.ManageTournamentActionsLabel}
+                                    role="button"
+                                  />
+                                  <div className={styles.center}>
+                                    {LocaleStrings.ManageTournamentActionsLabel}
+                                  </div>
+                                </div>
+                              </a>
                             </div>
-                          </div>
-                        </Media>
-                      </Col>
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media
-                          className={styles.cursor}
-                          onClick={() =>
-                            this.setState({
-                              createTournament: !this.state.createTournament,
-                              showSuccess: false,
-                            })
-                          }
-                        >
-                          <div className={styles.mb}>
-                            <img
-                              src={require("../assets/TOTImages/CreateTournament.svg")}
-                              alt={LocaleStrings.CreateTournamentPageTitle}
-                              title={LocaleStrings.CreateTournamentPageTitle}
-                              className={styles.dashboardimgs}
-                            />
-                            <div className={styles.center} title={LocaleStrings.CreateTournamentPageTitle}>
-                              {LocaleStrings.CreateTournamentPageTitle}
-                            </div>
-                          </div>
-                        </Media>
-                      </Col>
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media
-                          className={styles.cursor}
-                          onClick={() =>
-                            this.setState({
-                              manageTournament: !this.state.manageTournament,
-                              showSuccess: false,
-                            })
-                          }
-                        >
-                          <div className={styles.mb}>
-                            <img
-                              src={require("../assets/TOTImages/ManageTournaments.svg")}
-                              alt={LocaleStrings.ManageTournamentsLabel}
-                              title={LocaleStrings.ManageTournamentsLabel}
-                              className={styles.dashboardimgs}
-                            />
-                            <div className={styles.center} title={LocaleStrings.ManageTournamentsLabel}>{LocaleStrings.ManageTournamentsLabel}</div>
-                          </div>
-                        </Media>
-                      </Col>
-
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media className={styles.cursor}>
-                          <div className={styles.mb}>
-                            <a
-                              href={`/${this.state.inclusionpath}/${this.state.siteName}/Lists/ToT%20Admins/AllItems.aspx`}
-                              target="_blank"
-                            >
+                          </Media>
+                        </Col>
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media
+                            className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
+                            onClick={() =>
+                              this.setState({
+                                createTournament: !this.state.createTournament,
+                                showSuccess: false,
+                              })
+                            }
+                            onKeyDown={(evt: any) => {
+                              if (evt.key === stringsConstants.stringEnter || evt.key === stringsConstants.stringSpace)
+                                this.setState({
+                                  createTournament: !this.state.createTournament,
+                                  showSuccess: false,
+                                })
+                            }}
+                          >
+                            <div className={styles.mb} title={LocaleStrings.CreateTournamentPageTitle} aria-hidden="true">
                               <img
-                                src={require("../assets/TOTImages/ManageAdmins.svg")}
-                                alt={LocaleStrings.ManageAdminsToolTip}
-                                title={LocaleStrings.ManageAdminsToolTip}
+                                src={require("../assets/TOTImages/CreateTournament.svg")}
+                                alt={LocaleStrings.CreateTournamentPageTitle}
                                 className={styles.dashboardimgs}
+                                tabIndex={0}
+                                aria-label={LocaleStrings.CreateTournamentPageTitle}
+                                role="button"
                               />
-                            </a>
-                            <div className={styles.center} title={LocaleStrings.ManageAdminsLabel}>{LocaleStrings.ManageAdminsLabel}</div>
-                          </div>
-                        </Media>
-                      </Col>
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media className={styles.cursor}>
-                          <div className={styles.mb}>
-                            <a
-                              href={`/${this.state.inclusionpath}/${this.state.siteName}/Digital%20Badge%20Assets/Forms/AllItems.aspx`}
-                              target="_blank"
-                            >
-                              <img
-                                src={require("../assets/TOTImages/ManageDigitalBadges.svg")}
-                                alt={LocaleStrings.ManageDigitalBadgesLabel}
-                                title={LocaleStrings.ManageDigitalBadgesLabel}
-                                className={`${styles.dashboardimgs}`}
-                              />
-                            </a>
-                            <div className={`${styles.center}`} title={LocaleStrings.ManageDigitalBadgesLabel}>
-                              {LocaleStrings.ManageDigitalBadgesLabel}
+                              <div className={styles.center}>
+                                {LocaleStrings.CreateTournamentPageTitle}
+                              </div>
                             </div>
-                          </div>
-                        </Media>
-                      </Col>
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media
-                          className={styles.cursor}
-                          onClick={() =>
-                            this.setState({
-                              tournamentReport: !this.state.tournamentReport,
-                              showSuccess: false,
-                            })
-                          }
-                        >
-                          <div className={styles.mb}>
-                            <img
-                              src={require("../assets/TOTImages/TournamentsReport.svg")}
-                              alt={LocaleStrings.TournamentReportsPageTitle}
-                              title={LocaleStrings.TournamentReportsPageTitle}
-                              className={styles.dashboardimgs}
-                            />
-                            <div className={styles.center} title={LocaleStrings.TournamentReportsPageTitle}>{LocaleStrings.TournamentReportsPageTitle}</div>
-                          </div>
-                        </Media>
-                      </Col>
-                    </Row>
+                          </Media>
+                        </Col>
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media
+                            className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
+                            onClick={() =>
+                              this.setState({
+                                manageTournament: !this.state.manageTournament,
+                                showSuccess: false,
+                              })
+                            }
+                            onKeyDown={(evt: any) => {
+                              if (evt.key === stringsConstants.stringEnter || evt.key === stringsConstants.stringSpace)
+                                this.setState({
+                                  manageTournament: !this.state.manageTournament,
+                                  showSuccess: false,
+                                })
+                            }}
+                          >
+                            <div className={styles.mb} title={LocaleStrings.ManageTournamentsLabel} aria-hidden="true">
+                              <img
+                                src={require("../assets/TOTImages/ManageTournaments.svg")}
+                                alt={LocaleStrings.ManageTournamentsLabel}
+                                className={styles.dashboardimgs}
+                                tabIndex={0}
+                                aria-label={LocaleStrings.ManageTournamentsLabel}
+                                role="button"
+                              />
+                              <div className={styles.center}>{LocaleStrings.ManageTournamentsLabel}</div>
+                            </div>
+                          </Media>
+                        </Col>
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}>
+                            <div className={styles.mb}>
+                              <a
+                                href={`/${this.state.inclusionpath}/${this.state.siteName}/Lists/ToT%20Admins/AllItems.aspx`}
+                                target="_blank"
+                              >
+                                <div aria-hidden="true" title={LocaleStrings.ManageAdminsToolTip}>
+                                  <img
+                                    src={require("../assets/TOTImages/ManageAdmins.svg")}
+                                    alt={LocaleStrings.ManageAdminsToolTip}
+                                    className={styles.dashboardimgs}
+                                    role="button"
+                                    aria-label={LocaleStrings.ManageAdminsLabel}
+                                  />
+                                  <div className={styles.center}>{LocaleStrings.ManageAdminsLabel}</div>
+                                </div>
+                              </a>
+                            </div>
+                          </Media>
+                        </Col>
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}>
+                            <div className={styles.mb}>
+                              <a
+                                href={`/${this.state.inclusionpath}/${this.state.siteName}/Digital%20Badge%20Assets/Forms/AllItems.aspx`}
+                                target="_blank"
+                              >
+                                <div aria-hidden="true" title={LocaleStrings.ManageDigitalBadgesLabel}>
+                                  <img
+                                    src={require("../assets/TOTImages/ManageDigitalBadges.svg")}
+                                    alt={LocaleStrings.ManageDigitalBadgesLabel}
+                                    className={`${styles.dashboardimgs}`}
+                                    role="button"
+                                    aria-label={LocaleStrings.ManageDigitalBadgesLabel}
+                                  />
+                                  <div className={`${styles.center}`}>
+                                    {LocaleStrings.ManageDigitalBadgesLabel}
+                                  </div>
+                                </div>
+                              </a>
+                            </div>
+                          </Media>
+                        </Col>
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media
+                            className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
+                            onClick={() =>
+                              this.setState({
+                                tournamentReport: !this.state.tournamentReport,
+                                showSuccess: false,
+                              })
+                            }
+                            onKeyDown={(evt: any) => {
+                              if (evt.key === stringsConstants.stringEnter || evt.key === stringsConstants.stringSpace)
+                                this.setState({
+                                  tournamentReport: !this.state.tournamentReport,
+                                  showSuccess: false,
+                                })
+                            }}
+                          >
+                            <div className={styles.mb} title={LocaleStrings.TournamentReportsPageTitle} aria-hidden="true">
+                              <img
+                                src={require("../assets/TOTImages/TournamentsReport.svg")}
+                                alt={LocaleStrings.TournamentReportsPageTitle}
+                                className={styles.dashboardimgs}
+                                tabIndex={0}
+                                aria-label={LocaleStrings.TournamentReportsPageTitle}
+                                role="button"
+                              />
+                              <div className={styles.center}>{LocaleStrings.TournamentReportsPageTitle}</div>
+                            </div>
+                          </Media>
+                        </Col>
+                      </Row>
+                    </>
                   )}
                 </div>
               </div>
@@ -807,12 +882,9 @@ class TOTLandingPage extends React.Component<
               <TOTLeaderBoard
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
-                onClickCancel={() => {
-                  this.setState({ leaderBoard: false });
-                }}
-                onClickMyDashboardLink={() => {
-                  this.setState({ dashboard: true, leaderBoard: false });
-                }}
+                onClickCancel={() => { this.setState({ leaderBoard: false }); }}
+                onClickMyDashboardLink={() => { this.setState({ dashboard: true, leaderBoard: false }); }}
+                currentThemeName={this.props.currentThemeName}
               />
             )
           }
@@ -821,10 +893,8 @@ class TOTLandingPage extends React.Component<
               <TOTMyDashboard
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
-                onClickCancel={() => {
-                  this.setState({ dashboard: false });
-                }
-                }
+                onClickCancel={() => this.setState({ dashboard: false })}
+                currentThemeName={this.props.currentThemeName}
               />
             )
           }
@@ -845,14 +915,9 @@ class TOTLandingPage extends React.Component<
               <DigitalBadge
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
-                clientId=""
-                description=""
-                theme={ThemeStyle.Light}
-                fontSize={12}
+                appTitle={this.props.appTitle}
                 clickcallback={() => this.setState({ digitalBadge: false })}
-                clickcallchampionview={() =>
-                  this.setState({ digitalBadge: false })
-                }
+                currentThemeName={this.props.currentThemeName}
               />
             )
           }
@@ -861,9 +926,8 @@ class TOTLandingPage extends React.Component<
               <TOTCreateTournament
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
-                onClickCancel={() => {
-                  this.setState({ createTournament: false });
-                }}
+                onClickCancel={() => { this.setState({ createTournament: false }); }}
+                currentThemeName={this.props.currentThemeName}
               />
             )
           }
@@ -872,9 +936,8 @@ class TOTLandingPage extends React.Component<
               <TOTEnableTournament
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
-                onClickCancel={() => {
-                  this.setState({ manageTournament: false });
-                }}
+                onClickCancel={() => { this.setState({ manageTournament: false }); }}
+                currentThemeName={this.props.currentThemeName}
               />
             )}
         </div>

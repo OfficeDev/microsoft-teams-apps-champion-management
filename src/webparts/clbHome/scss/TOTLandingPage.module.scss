@@ -1,10 +1,12 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
 .totLandingPage {
   .container {
     height: 100%;
     width: 100%;
 
     .totHeader {
-      background: url('../assets/CMPImages/BannerImage.png');
+      background-image: url('../assets/CMPImages/BannerImage.png');
       background-color: #464775;
       height: 80px;
       min-width: 100%;
@@ -22,8 +24,24 @@
         letter-spacing: 0px;
         color: #FFFFFF;
         opacity: 1;
-        text-align: left;
+        width: fit-content;
+
+        &:focus {
+          outline: 2px solid #fff;
+          outline-offset: 2px;
+          border-radius: 3px;
+        }
       }
+    }
+
+    .totHeaderDark {
+      background-image: url('../assets/CMPImages/BannerImageDark.svg');
+      background-position: 80% center;
+    }
+
+    .totHeaderContrast {
+      background-image: url('../assets/CMPImages/BannerImageContrast.svg');
+      background-position: 80% center;
     }
 
     .grid {
@@ -42,6 +60,10 @@
           opacity: 1;
         }
 
+        .errorMessageDarkContrast {
+          color: var(--colorPaletteRedForeground1);
+        }
+
         .successMessage {
           text-align: left;
           font: normal normal normal 18px/24px Segoe UI;
@@ -56,6 +78,10 @@
             margin-bottom: 7px;
           }
         }
+
+        .successMessageDarkContrast {
+          color: var(--colorPaletteGreenForeground1);
+        }
       }
 
       .setupMessage {
@@ -65,12 +91,31 @@
         margin-left: 3.5%;
       }
 
+      .setupMessageDarkContrast {
+        color: var(--colorCompoundBrandForeground1);
+      }
+
       .pageSubHeader {
         text-align: left;
         font: normal normal bold 24px/32px Segoe UI;
         letter-spacing: 0px;
         color: #33344A;
         opacity: 1;
+        width: fit-content;
+
+        &:focus {
+          outline: 2px solid #000;
+          border-radius: 3px;
+          outline-offset: 2px;
+        }
+      }
+
+      .pageSubHeaderDarkContrast {
+        color: var(--colorNeutralForeground1);
+
+        &:focus {
+          outline: 2px solid var(--colorNeutralForeground1);
+        }
       }
 
       .cursor {
@@ -94,7 +139,38 @@
           text-overflow: ellipsis;
         }
 
+        a {
+          text-decoration: none;
+        }
+
+        a:focus-visible {
+          outline-offset: 5px;
+          border-radius: 3px;
+          outline-color: #000;
+        }
+
+        &:focus-visible {
+          outline: 2px solid #000;
+          outline-offset: 3px;
+          border-radius: 3px;
+        }
+
       }
+
+      .cursorDarkContrast {
+        .center {
+          color: var(--colorBrandForegroundLink);
+        }
+
+        a:focus-visible {
+          outline-color: var(--colorPaletteBlueBorderActive);
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--colorPaletteBlueBorderActive);
+        }
+      }
+
 
       .imageLayout {
         margin-bottom: 2rem;

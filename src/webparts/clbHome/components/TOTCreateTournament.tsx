@@ -4,6 +4,7 @@ import commonServices from "../Common/CommonServices";
 import * as stringsConstants from "../constants/strings";
 import styles from "../scss/TOTCreateTournament.module.scss";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import * as XLSX from "xlsx";
 
 //React Boot Strap
 import Row from "react-bootstrap/Row";
@@ -14,34 +15,28 @@ import { TextField } from "@fluentui/react/lib/TextField";
 import { PrimaryButton } from "@fluentui/react/lib/Button";
 import { Label } from "@fluentui/react/lib/Label";
 import { Icon } from '@fluentui/react/lib/Icon';
-import { DirectionalHint, ITooltipProps, TooltipHost } from '@fluentui/react';
+import { DirectionalHint, ITooltipProps, TooltipHost, Spinner, SpinnerSize } from '@fluentui/react';
 
 //PNP
-import {
-  TreeView,
-  ITreeItem,
-  TreeViewSelectionMode,
-} from "@pnp/spfx-controls-react/lib/TreeView";
-
-import * as XLSX from "xlsx";
-import { Spinner, SpinnerSize } from "@fluentui/react";
+import { TreeView, ITreeItem, TreeViewSelectionMode } from "@pnp/spfx-controls-react/lib/TreeView";
 
 export interface ICreateTournamentProps {
   context?: WebPartContext;
   siteUrl: string;
   onClickCancel: Function;
+  currentThemeName?: string;
 }
 
-interface ICreateTournamentState {
+export interface ICreateTournamentState {
   actionsList: ITreeItem[];
   tournamentName: string;
   tournamentDescription: string;
   selectedActionsList: ITreeItem[];
-  tournamentError: Boolean;
-  actionsError: Boolean;
-  showForm: Boolean;
-  showSuccess: Boolean;
-  showError: Boolean;
+  tournamentError: boolean;
+  actionsError: boolean;
+  showForm: boolean;
+  showSuccess: boolean;
+  showError: boolean;
   errorMessage: string;
   singleTournament: boolean;
   multipleTournament: boolean;
@@ -52,23 +47,25 @@ interface ICreateTournamentState {
   disableForm: boolean;
   workBook: XLSX.WorkBook;
   totalSheets: string[];
+  tournamentNameLimitExceedError: boolean;
+  tournamentDescriptionLimitExceedError: boolean;
 }
 
 //global variables
 let commonServiceManager: commonServices;
 
 
-export default class TOTCreateTournament extends React.Component<
-  ICreateTournamentProps,
-  ICreateTournamentState
-> {
+export default class TOTCreateTournament extends React.Component<ICreateTournamentProps, ICreateTournamentState> {
   public createTrmtTreeViewRef: React.RefObject<HTMLDivElement>;
   public createTrmtFileSelectRef: React.RefObject<HTMLInputElement>;
-  constructor(props: ICreateTournamentProps, state: ICreateTournamentState) {
+
+  constructor(props: ICreateTournamentProps) {
     super(props);
-    //Set default values for state
+
     this.createTrmtTreeViewRef = React.createRef();
     this.createTrmtFileSelectRef = React.createRef();
+
+    //Set default values for state
     this.state = {
       actionsList: [],
       tournamentName: "",
@@ -88,7 +85,9 @@ export default class TOTCreateTournament extends React.Component<
       importError: "",
       disableForm: false,
       workBook: XLSX.utils.book_new(),
-      totalSheets: []
+      totalSheets: [],
+      tournamentNameLimitExceedError: false,
+      tournamentDescriptionLimitExceedError: false
     };
 
     //Create object for CommonServices class
@@ -114,13 +113,30 @@ export default class TOTCreateTournament extends React.Component<
   }
 
   public componentDidUpdate(prevProps: Readonly<ICreateTournamentProps>, prevState: Readonly<ICreateTournamentState>, snapshot?: any): void {
-
-    //Update aria-label attribute to all Create Tournament Treeview's Checkbox inputs
-    if (prevState.actionsList.length !== this.state.actionsList.length) {
-      const checkboxes = this.createTrmtTreeViewRef.current?.getElementsByTagName('input');
-      for (let i = 0; i < checkboxes.length; i++) {
-        checkboxes[i].setAttribute("aria-label", checkboxes[i].getAttribute('id'));
+    try {
+      //Update aria-label attribute to all Create Tournament Treeview's Checkbox inputs
+      if (prevState.actionsList.length !== this.state.actionsList.length) {
+        //Update actions treeview expand buttons title attribute for Accessibility
+        const treeElements: any = this.createTrmtTreeViewRef?.current.querySelectorAll('div[class^="listItem_"]');
+        for (let treeElement of treeElements) {
+          const validBtnElement = treeElement?.querySelector(".ms-Button--icon");
+          if (validBtnElement) {
+            const parentLabel = treeElement?.querySelector('div[class^="itemContent_"]')?.querySelector('div[class^="labels_"]')?.textContent;
+            validBtnElement?.setAttribute("title", parentLabel + " " + "Expanded");
+            const mainCheckbox = treeElement?.querySelector('div[class^="itemContent_"]')?.querySelector(".ms-Checkbox-label");
+            mainCheckbox.setAttribute("aria-label", LocaleStrings.SelectTeamsActionsLabel + " " + parentLabel);
+            const childElements = treeElement?.nextElementSibling?.querySelectorAll("div[class^='itemContent_'");
+            for (let childElement of childElements) {
+              const childLabel = childElement?.querySelector("div[class^='labels_']")?.childNodes[0]?.textContent;
+              const childCheckbox = childElement?.querySelector(".ms-Checkbox-label");
+              childCheckbox.setAttribute("aria-label", parentLabel + " " + childLabel);
+            }
+          }
+        }
       }
+    }
+    catch (error) {
+      console.error("CMP_TOT_CreateTournament_ComponentDidUpdate \n", error);
     }
   }
 
@@ -132,17 +148,17 @@ export default class TOTCreateTournament extends React.Component<
       const allActionsArray: any[] = await commonServiceManager.getAllListItems(
         stringsConstants.ActionsMasterList
       );
-      var treeItemsArray: ITreeItem[] = [];
+      let treeItemsArray: ITreeItem[] = [];
 
       //Loop through all actions and build parent nodes(Categories) for Treeview
-      await allActionsArray.forEach((vAction) => {
+      allActionsArray.forEach((vAction) => {
         const tree: ITreeItem = {
           key: vAction["Category"],
           label: vAction["Category"],
           children: [],
         };
         //Check if Category is already added to the Treeview. If yes, skip adding.
-        var found = treeItemsArray.some((value) => {
+        let found = treeItemsArray.some((value) => {
           return value.label === vAction["Category"];
         });
 
@@ -151,7 +167,7 @@ export default class TOTCreateTournament extends React.Component<
       });
 
       //Loop through all actions and build child nodes(Actions) to the Treeview
-      await allActionsArray.forEach((vAction) => {
+      allActionsArray.forEach((vAction) => {
         const tree: ITreeItem = {
           key: vAction.Id,
           label: vAction["Title"],
@@ -164,7 +180,7 @@ export default class TOTCreateTournament extends React.Component<
             stringsConstants.PointsDisplayString +
             vAction["Description"],
         };
-        var treeCol: Array<ITreeItem> = treeItemsArray.filter((value) => {
+        let treeCol: Array<ITreeItem> = treeItemsArray.filter((value) => {
           return value.label == vAction["Category"];
         });
         if (treeCol.length != 0) {
@@ -186,12 +202,31 @@ export default class TOTCreateTournament extends React.Component<
 
   //Handle state values for form fields
   private handleInput(event: any, key: string) {
+    const newText = event.target.value;
     switch (key) {
       case "tournamentName":
-        this.setState({ tournamentName: event.target.value });
+        this.setState({ tournamentName: newText });
+        if (newText.length === stringsConstants.MaxTournamentNameCharacterLimit) {
+          this.setState({
+            tournamentNameLimitExceedError: true
+          });
+        } else {
+          this.setState({
+            tournamentNameLimitExceedError: false
+          });
+        }
         break;
       case "tournamentDescription":
-        this.setState({ tournamentDescription: event.target.value });
+        this.setState({ tournamentDescription: newText });
+        if (newText.length === stringsConstants.MaxTournamentDescriptionCharacterLimit) {
+          this.setState({
+            tournamentDescriptionLimitExceedError: true
+          });
+        } else {
+          this.setState({
+            tournamentDescriptionLimitExceedError: false
+          });
+        }
         break;
       default:
         break;
@@ -204,8 +239,8 @@ export default class TOTCreateTournament extends React.Component<
   }
 
   //Validate fields on the form and set a flag
-  private ValidateFields(): Boolean {
-    let validateFlag: Boolean = true;
+  private ValidateFields(): boolean {
+    let validateFlag: boolean = true;
     try {
       //clear previous error messages on the form
       this.setState({ showError: false });
@@ -256,7 +291,7 @@ export default class TOTCreateTournament extends React.Component<
               submitTournamentsObject
             )
             .then((response) => {
-              var selectedTreeArray: ITreeItem[] =
+              let selectedTreeArray: ITreeItem[] =
                 this.state.selectedActionsList;
               //Loop through actions selected and create a list item for each treeview selection
               selectedTreeArray.forEach((c) => {
@@ -337,7 +372,7 @@ export default class TOTCreateTournament extends React.Component<
   }
 
   //Select and Read Multiple Tournament XLSX File 
-  public onFileSelect = async (event: any) => {
+  public async onFileSelect(event: any) {
 
     //Reset state variables
     this.setState({
@@ -381,7 +416,7 @@ export default class TOTCreateTournament extends React.Component<
   }
 
   //Remove file from the Input control
-  public onFileDeselect = () => {
+  public onFileDeselect() {
 
     this.createTrmtFileSelectRef.current.value = null;
     //Reset State variables
@@ -408,7 +443,7 @@ export default class TOTCreateTournament extends React.Component<
         sheetName = this.state.workBook.SheetNames[sheetCount];
         const workSheet = this.state.workBook.Sheets[sheetName];
         //Convert array to json
-        const sheetRows = XLSX.utils.sheet_to_json(workSheet, { header: 1, defval: null, blankrows: false });
+        const sheetRows: any = XLSX.utils.sheet_to_json(workSheet, { header: 1, defval: null, blankrows: false });
 
         let tournamentActions: any = [];
         let actionsData: any = [];
@@ -429,13 +464,13 @@ export default class TOTCreateTournament extends React.Component<
             //Validate headers
             let headerArray = [sheetRows[0][0], sheetRows[0][1], sheetRows[0][2], sheetRows[0][3], sheetRows[0][4], sheetRows[0][5], sheetRows[0][6]];
 
-            if (headerArray[0] != undefined && headerArray[0].includes(stringsConstants.TournamentNameHeader) &&
-              headerArray[1] != undefined && headerArray[1].includes(stringsConstants.DescriptionHeader) &&
-              headerArray[2] != undefined && headerArray[2].includes(stringsConstants.CategoryHeader) &&
-              headerArray[3] != undefined && headerArray[3].includes(stringsConstants.ActionHeader) &&
-              headerArray[4] != undefined && headerArray[4].includes(stringsConstants.ActionDescriptionHeader) &&
-              headerArray[5] != undefined && headerArray[5].includes(stringsConstants.PointsHeader) &&
-              headerArray[6] != undefined && headerArray[6].includes(stringsConstants.HelpURLHeader)) {
+            if (headerArray[0] !== undefined && headerArray[0].includes(stringsConstants.TournamentNameHeader) &&
+              headerArray[1] !== undefined && headerArray[1].includes(stringsConstants.DescriptionHeader) &&
+              headerArray[2] !== undefined && headerArray[2].includes(stringsConstants.CategoryHeader) &&
+              headerArray[3] !== undefined && headerArray[3].includes(stringsConstants.ActionHeader) &&
+              headerArray[4] !== undefined && headerArray[4].includes(stringsConstants.ActionDescriptionHeader) &&
+              headerArray[5] !== undefined && headerArray[5].includes(stringsConstants.PointsHeader) &&
+              headerArray[6] !== undefined && headerArray[6].includes(stringsConstants.HelpURLHeader)) {
 
               //Process data, if sheet is not blank
               let tournamentName = sheetRows[1][0];
@@ -506,28 +541,28 @@ export default class TOTCreateTournament extends React.Component<
                 //Importing data into Actions List
                 if (actionsData.length > 0) {
                   let responseStatus: boolean = true;
-                  for (let itemCount = 0; itemCount < actionsData.length; itemCount++) {
+                  for (let actionObj of actionsData) {
                     await commonServiceManager.getAllListItems(
                       stringsConstants.ActionsMasterList).then(async (allActionsItems) => {
                         //If Actions list is not empty
                         if (allActionsItems.length > 0) {
-                          const actionExists = allActionsItems.filter((action) =>
-                            action.Category.trim().replaceAll(" ", "") === actionsData[itemCount].category.trim().replaceAll(" ", "") &&
-                            action.Title.trim().replaceAll(" ", "") === actionsData[itemCount].action.trim().replaceAll(" ", ""));
+                          const actionExists = allActionsItems.filter((action: any) =>
+                            action.Category.trim().replaceAll(" ", "") === actionObj.category.trim().replaceAll(" ", "") &&
+                            action.Title.trim().replaceAll(" ", "") === actionObj.action.trim().replaceAll(" ", ""));
 
                           if (actionExists.length == 0) {
-                            const categoryExists = allActionsItems.filter((action) =>
-                              action.Category.trim().replaceAll(" ", "") === actionsData[itemCount].category.trim().replaceAll(" ", ""));
+                            const categoryExists = allActionsItems.filter((action: any) =>
+                              action.Category.trim().replaceAll(" ", "") === actionObj.category.trim().replaceAll(" ", ""));
 
                             if (categoryExists.length > 0) {
-                              actionsData[itemCount].category = categoryExists[0].Category;
+                              actionObj.category = categoryExists[0].Category;
                             }
-                            responseStatus = await this.createActions(actionsData[itemCount], sheetName);
+                            responseStatus = await this.createActions(actionObj, sheetName);
                           }
                         }
                         else {
                           //If Actions list is empty                     
-                          responseStatus = await this.createActions(actionsData[itemCount], sheetName);
+                          responseStatus = await this.createActions(actionObj, sheetName);
                         }
                       });
                     if (!responseStatus) {
@@ -549,19 +584,19 @@ export default class TOTCreateTournament extends React.Component<
                     stringsConstants.TournamentActionsMasterList, filter).then(async (tournamentActionsItem) => {
                       if (tournamentActionsItem.length > 0) {
                         //If any item exists already for the tournament in the Tournament Actions list.
-                        for (let itemCount = 0; itemCount < tournamentActions.length; itemCount++) {
-                          const tournamentActionExists = tournamentActionsItem.filter((tAction) => tAction.Title.trim() === tournamentActions[itemCount].name.trim() &&
-                            tAction.Category.trim().replaceAll(" ", "") === tournamentActions[itemCount].category.trim().replaceAll(" ", "") &&
-                            tAction.Action.trim().replaceAll(" ", "") === tournamentActions[itemCount].action.trim().replaceAll(" ", ""));
+                        for (let tActionObj of tournamentActions) {
+                          const tournamentActionExists = tournamentActionsItem.filter((tAction: any) => tAction.Title.trim() === tActionObj.name.trim() &&
+                            tAction.Category.trim().replaceAll(" ", "") === tActionObj.category.trim().replaceAll(" ", "") &&
+                            tAction.Action.trim().replaceAll(" ", "") === tActionObj.action.trim().replaceAll(" ", ""));
 
                           if (tournamentActionExists.length == 0) {
                             const categoryExists = allActionsItems.filter((action) =>
-                              action.Category.trim().replaceAll(" ", "") === tournamentActions[itemCount].category.trim().replaceAll(" ", ""));
+                              action.Category.trim().replaceAll(" ", "") === tActionObj.category.trim().replaceAll(" ", ""));
 
                             if (categoryExists.length > 0) {
-                              tournamentActions[itemCount].category = categoryExists[0].Category;
+                              tActionObj.category = categoryExists[0].Category;
                             }
-                            responseStatus = await this.createTournamentActions(tournamentActions[itemCount], sheetName);
+                            responseStatus = await this.createTournamentActions(tActionObj, sheetName);
                             if (!responseStatus)
                               break;
                           }
@@ -569,14 +604,14 @@ export default class TOTCreateTournament extends React.Component<
                       }
                       else {
                         //If no item exists for the tournament in the Tournament Actions list.
-                        for (let itemCount = 0; itemCount < tournamentActions.length; itemCount++) {
+                        for (let tActionObj of tournamentActions) {
                           const categoryExists = allActionsItems.filter((action) =>
-                            action.Category.trim().replaceAll(" ", "") === tournamentActions[itemCount].category.trim().replaceAll(" ", ""));
+                            action.Category.trim().replaceAll(" ", "") === tActionObj.category.trim().replaceAll(" ", ""));
 
                           if (categoryExists.length > 0) {
-                            tournamentActions[itemCount].category = categoryExists[0].Category;
+                            tActionObj.category = categoryExists[0].Category;
                           }
-                          responseStatus = await this.createTournamentActions(tournamentActions[itemCount], sheetName);
+                          responseStatus = await this.createTournamentActions(tActionObj, sheetName);
                           if (!responseStatus)
                             break;
                         }
@@ -622,8 +657,8 @@ export default class TOTCreateTournament extends React.Component<
   }
 
   //Creating actions in Actions list
-  private async createActions(actionData: any, sheetName: string): Promise<any> {
-    return new Promise<any>(async (resolve, reject) => {
+  private async createActions(actionData: any, sheetName: string) {
+    try {
       let submitActionsObject: any = {
         Category: actionData.category.trim(),
         Title: actionData.action.trim(),
@@ -632,24 +667,18 @@ export default class TOTCreateTournament extends React.Component<
         HelpURL: actionData.helpUrl
       };
       //Create item in 'Actions' list
-      await commonServiceManager
-        .createListItem(
-          stringsConstants.ActionsMasterList,
-          submitActionsObject
-        ).then((response) => {
-          if (response)
-            resolve(true);
-        })
-        .catch((error) => {
-          this.setState({ importLogs: this.state.importLogs.concat(sheetName + ": " + LocaleStrings.ErrorMsgActionsList) });
-          resolve(false);
-        });
-    });
+      await commonServiceManager.createListItem(stringsConstants.ActionsMasterList, submitActionsObject);
+      return true;
+    }
+    catch (error) {
+      this.setState({ importLogs: this.state.importLogs.concat(sheetName + ": " + LocaleStrings.ErrorMsgActionsList) });
+      return false;
+    }
   }
 
   //Creating tournament actions in Tournament Actions list
-  private async createTournamentActions(tournamentAction: any, sheetName: string): Promise<any> {
-    return new Promise<any>(async (resolve, reject) => {
+  private async createTournamentActions(tournamentAction: any, sheetName: string) {
+    try {
       let submitTournamentActionsObject: any = {
         Title: tournamentAction.name.trim(),
         Category: tournamentAction.category.trim(),
@@ -659,23 +688,17 @@ export default class TOTCreateTournament extends React.Component<
         HelpURL: tournamentAction.helpUrl
       };
       //Create item in 'Tournament Actions' list
-      await commonServiceManager
-        .createListItem(
-          stringsConstants.TournamentActionsMasterList,
-          submitTournamentActionsObject
-        ).then((response) => {
-          if (response)
-            resolve(true);
-        })
-        .catch((error) => {
-          this.setState({ importLogs: this.state.importLogs.concat(sheetName + ": " + LocaleStrings.ErrorMsgTournamentActionsList) });
-          resolve(false);
-        });
-    });
+      await commonServiceManager.createListItem(stringsConstants.TournamentActionsMasterList, submitTournamentActionsObject);
+      return true;
+    }
+    catch (error) {
+      this.setState({ importLogs: this.state.importLogs.concat(sheetName + ": " + LocaleStrings.ErrorMsgTournamentActionsList) });
+      return false;
+    }
   }
 
   //returns message label color in multi tournament screen
-  public messageColor = (element: string) => {
+  public messageColor(element: string) {
     const message = element.split(':')[1].trim();
     if (message === LocaleStrings.ErrorMsgTournamentList.trim() || message === LocaleStrings.ErrorMsgActionsList.trim()
       || message === LocaleStrings.ErrorMsgTournamentActionsList.trim()) {
@@ -704,38 +727,68 @@ export default class TOTCreateTournament extends React.Component<
         </ol>
       ),
     };
+
+    const isDarkOrContrastTheme = this.props.currentThemeName === stringsConstants.themeDarkMode || this.props.currentThemeName === stringsConstants.themeContrastMode;
     return (
-      <div className={styles.container}>
+      <div className={`${styles.container}${isDarkOrContrastTheme ? " " + styles.containerDarkContrast : ""}`}>
         <div className={styles.createTournamentPath}>
           <img src={require("../assets/CMPImages/BackIcon.png")}
             className={styles.backImg}
             alt={LocaleStrings.BackButton}
+            aria-hidden="true"
           />
           <span
             className={styles.backLabel}
             onClick={!this.state.disableForm && (() => this.props.onClickCancel())}
-            title={LocaleStrings.TOTBreadcrumbLabel}
+            role="button"
+            tabIndex={0}
+            onKeyDown={!this.state.disableForm && ((evt: any) => { if (evt.key === stringsConstants.stringEnter || evt.key === stringsConstants.stringSpace) { this.props.onClickCancel() } })}
+            aria-label={LocaleStrings.TOTBreadcrumbLabel}
           >
-            {LocaleStrings.TOTBreadcrumbLabel}
+            <span title={LocaleStrings.TOTBreadcrumbLabel}>
+              {LocaleStrings.TOTBreadcrumbLabel}
+            </span>
           </span>
-          <span className={styles.border} />
+          <span className={styles.border} aria-live="polite" role="alert" aria-label={LocaleStrings.CreateTournamentPageTitle + " Page"} />
           <span className={styles.createTournamentLabel}>{LocaleStrings.CreateTournamentPageTitle}</span>
         </div>
         <Row xl={1} lg={1} md={1} sm={1} xs={1}>
           <Col xl={5} lg={6} md={8} sm={10} xs={12}>
-            <div className={styles.toggleTournamentType}>
+            <div className={styles.toggleTournamentType} role="tablist">
               <div
-                className={`${styles.singleTrmntType} ${this.state.singleTournament ? styles.selectedTrmnt : ""}`}
+                className={`${styles.singleTrmntType}${this.state.singleTournament ? " " + styles.selectedTrmnt : ""}`}
                 onClick={!this.state.disableForm && (() => {
                   this.setState({ singleTournament: true, multipleTournament: false });
                   this.onFileDeselect();
                 })}
+                onKeyDown={!this.state.disableForm && ((evt: any) => {
+                  if (evt.key === stringsConstants.stringEnter || evt.key === stringsConstants.stringSpace) {
+                    this.setState({ singleTournament: true, multipleTournament: false });
+                    this.onFileDeselect();
+                  }
+                  else if (evt.key === stringsConstants.stringArrowRight) {
+                    evt?.currentTarget?.nextElementSibling?.focus();
+                  }
+                })}
+                aria-selected={this.state.singleTournament}
+                tabIndex={0}
+                role="tab"
               >
                 {LocaleStrings.SingleTournamentLabel}
               </div>
               <div
-                className={`${styles.multipleTrmntType} ${this.state.multipleTournament ? styles.selectedTrmnt : ""}`}
+                className={`${styles.multipleTrmntType}${this.state.multipleTournament ? " " + styles.selectedTrmnt : ""}`}
                 onClick={() => { this.setState({ singleTournament: false, multipleTournament: true }); }}
+                onKeyDown={(evt: any) => {
+                  if (evt.key === stringsConstants.stringEnter || evt.key === stringsConstants.stringSpace)
+                    this.setState({ singleTournament: false, multipleTournament: true })
+                  else if (evt.key === stringsConstants.stringArrowLeft) {
+                    evt?.currentTarget?.previousElementSibling?.focus();
+                  }
+                }}
+                tabIndex={0}
+                role="tab"
+                aria-selected={this.state.multipleTournament}
               >
                 {LocaleStrings.MultipleTournamentLabel}
               </div>
@@ -747,16 +800,14 @@ export default class TOTCreateTournament extends React.Component<
           <div>
             <div>
               {this.state.showSuccess && (
-                <Label className={styles.successMessage}>
-                  <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
+                <Label className={styles.successMessage} aria-live="polite" role="alert">
+                  <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" aria-hidden="true" className={styles.tickImage} />
                   {LocaleStrings.CreateTournamentSuccessLabel}
                 </Label>
               )}
 
               {this.state.showError && (
-                <Label className={styles.errorMessage}>
-                  {this.state.errorMessage}
-                </Label>
+                <Label className={styles.errorMessage} aria-live="polite" role="alert">{this.state.errorMessage}</Label>
               )}
             </div>
 
@@ -768,16 +819,28 @@ export default class TOTCreateTournament extends React.Component<
                       label={LocaleStrings.TournamentNameLabel}
                       required
                       placeholder={LocaleStrings.TournamentNamePlaceHolderLabel}
-                      maxLength={255}
+                      maxLength={stringsConstants.MaxTournamentNameCharacterLimit}
                       value={this.state.tournamentName}
                       onChange={(evt) => this.handleInput(evt, "tournamentName")}
                       className={styles.createTrmntTextField}
                     />
                     {this.state.tournamentError && (
-                      <Label className={styles.errorMessage}>
+                      <Label className={styles.errorMessage} id="tournament-name-error" role="status">
                         {LocaleStrings.TournamentNameErrorLabel}
                       </Label>
                     )}
+                    {this.state.tournamentNameLimitExceedError &&
+                      <Label className={styles.errorMessage} aria-live='polite' role="alert" aria-label={stringsConstants.ExceedLimitMessage + stringsConstants.MaxTournamentNameCharacterLimitMessage}>
+                        {navigator.userAgent.match(/iPhone/i) &&
+                          <span aria-label={stringsConstants.ExceedLimitMessage + stringsConstants.MaxTournamentNameCharacterLimitMessage}>
+                            {stringsConstants.ExceedLimitMessage}
+                          </span>
+                        }
+                        {!navigator.userAgent.match(/iPhone/i) &&
+                          <span aria-hidden="true">{stringsConstants.ExceedLimitMessage}</span>
+                        }
+                      </Label>
+                    }
                   </Col>
                 </Row>
                 <br />
@@ -786,14 +849,24 @@ export default class TOTCreateTournament extends React.Component<
                     <TextField
                       label={LocaleStrings.TournamentDescriptionLabel}
                       multiline
-                      maxLength={500}
+                      maxLength={stringsConstants.MaxTournamentDescriptionCharacterLimit}
                       placeholder={LocaleStrings.TournamentDescPlaceHolderLabel}
                       value={this.state.tournamentDescription}
-                      onChange={(evt) =>
-                        this.handleInput(evt, "tournamentDescription")
-                      }
+                      onChange={(evt) => this.handleInput(evt, "tournamentDescription")}
                       className={styles.createTrmntTextField}
                     />
+                    {this.state.tournamentDescriptionLimitExceedError &&
+                      <Label className={styles.errorMessage} aria-live='polite' role="alert" aria-label={stringsConstants.ExceedLimitMessage + stringsConstants.MaxTournamentDescriptionCharacterLimitMessage}>
+                        {navigator.userAgent.match(/iPhone/i) &&
+                          <span aria-label={stringsConstants.ExceedLimitMessage + stringsConstants.MaxTournamentDescriptionCharacterLimitMessage}>
+                            {stringsConstants.ExceedLimitMessage}
+                          </span>
+                        }
+                        {!navigator.userAgent.match(/iPhone/i) &&
+                          <span aria-hidden="true"> {stringsConstants.ExceedLimitMessage}</span>
+                        }
+                      </Label>
+                    }
                   </Col>
                 </Row>
                 <br />
@@ -809,8 +882,16 @@ export default class TOTCreateTournament extends React.Component<
                         calloutProps={{ gapSpace: 0 }}
                         hostClassName={styles.createTrmntTooltipHostStyles}
                         delay={window.innerWidth < stringsConstants.MobileWidth ? 0 : 2}
+                        id="create-tournament-actions-info"
                       >
-                        <Icon aria-label="Info" iconName="Info" className={styles.createTrmntSelectTeamsActionInfoIcon} />
+                        <Icon
+                          aria-label="Info"
+                          aria-describedby="create-tournament-actions-info"
+                          iconName="Info"
+                          className={styles.createTrmntSelectTeamsActionInfoIcon}
+                          tabIndex={0}
+                          role="button"
+                        />
                       </TooltipHost>
                     </div>
                     {this.state.actionsList.length > 0 && (
@@ -822,11 +903,43 @@ export default class TOTCreateTournament extends React.Component<
                           selectionMode={TreeViewSelectionMode.Multiple}
                           defaultExpanded={true}
                           onSelect={this.onActionSelected}
+                          onExpandCollapse={(item, isExpanded: boolean) => {
+                            //Get all the tree structured div elements from the this.createTrmtTreeViewRef (DOM)
+                            const treeElements: any = this.createTrmtTreeViewRef?.current.querySelectorAll('div[class^="listItem_"]');
+                            for (let treeElement of treeElements) {
+                              //Get Expand/collapse icon button elements from  each tree element
+                              const validBtnElement = treeElement?.querySelector(".ms-Button--icon");
+                              if (validBtnElement) {
+                                //Get current expand/collapse button from selected tree element
+                                const exactValidBtnElement = treeElement?.querySelector('div[class^="itemContent_"]')?.querySelector('div[class^="labels_"]')?.textContent;
+                                if (exactValidBtnElement.trim() === item.label) {
+                                  //Update Title attribute
+                                  if (isExpanded) {
+                                    setTimeout(() => {
+                                      validBtnElement?.setAttribute("title", item.label + " " + "Expanded");
+                                      const childElements = treeElement?.nextElementSibling?.querySelectorAll("div[class^='itemContent_'");
+                                      for (let childElement of childElements) {
+                                        const childLabel = childElement?.querySelector("div[class^='labels_']")?.childNodes[0].textContent;
+                                        const childCheckbox = childElement?.querySelector(".ms-Checkbox-label");
+                                        childCheckbox.setAttribute("aria-label", item.label + " " + childLabel);
+                                      }
+                                    }, 5);
+                                  }
+                                  else {
+                                    setTimeout(() => {
+                                      validBtnElement?.setAttribute("title", item.label + " " + "Collapsed");
+                                    }, 5);
+                                  }
+                                  break;
+                                }
+                              }
+                            }
+                          }}
                         />
                       </div>
                     )}
                     {this.state.actionsError && (
-                      <Label className={styles.errorMessage}>
+                      <Label className={styles.errorMessage} id="actions-list-error" role="status">
                         {LocaleStrings.ActionErrorLabel}
                       </Label>
                     )}
@@ -839,7 +952,11 @@ export default class TOTCreateTournament extends React.Component<
 
         {this.state.multipleTournament &&
           <div className={styles.multipleTrmntArea}>
-            <div className={styles.multiTrmntStep}><strong>{LocaleStrings.MultiTournamentStep} 1:</strong> <a href={stringsConstants.MultiTournamentTemplateURL}>{LocaleStrings.MultiTournamentStep1LinkLabel}</a> {LocaleStrings.MultiTournamentStep1Text}</div>
+            <div className={styles.multiTrmntStep}>
+              <strong>{LocaleStrings.MultiTournamentStep} 1: </strong>
+              <a href={stringsConstants.MultiTournamentTemplateURL}>{LocaleStrings.MultiTournamentStep1LinkLabel} </a>
+              {LocaleStrings.MultiTournamentStep1Text}
+            </div>
             <div className={styles.multiTrmntStep}>
               <strong>{LocaleStrings.MultiTournamentStep} 2: </strong>
               {LocaleStrings.MultiTournamentStep2}
@@ -850,11 +967,13 @@ export default class TOTCreateTournament extends React.Component<
                   directionalHint={DirectionalHint.rightCenter}
                   hostClassName={styles.createTrmntTooltipHostStyles}
                 >
-                  <Icon iconName="Info" className={styles.multiTrmntInfoIcon} />
+                  <Icon iconName="Info" className={styles.multiTrmntInfoIcon} tabIndex={0} />
                 </TooltipHost>
               </span>
             </div>
-            <div className={styles.multiTrmntStep}><strong>{LocaleStrings.MultiTournamentStep} 3:</strong> {LocaleStrings.MultiTournamentStep3}</div>
+            <div className={styles.multiTrmntStep}>
+              <strong>{LocaleStrings.MultiTournamentStep} 3: </strong>{LocaleStrings.MultiTournamentStep3}
+            </div>
             <div className={styles.selectFileArea}>
               <div className={styles.multipleTrmntsFileInput}>
                 <input
@@ -883,13 +1002,13 @@ export default class TOTCreateTournament extends React.Component<
                           iconName="ChromeClose"
                           title={LocaleStrings.RemoveFileLabel}
                           onClick={this.onFileDeselect}
+                          onKeyDown={(evt: any) => { if (evt.key === stringsConstants.stringEnter || evt.key === stringsConstants.stringSpace) this.onFileDeselect() }}
                           hidden={this.state.disableForm}
+                          tabIndex={0}
                         />
                       </div>
                     </div>
-                    <div className={styles.progressBar}>
-                      <span className={styles.percentage} />
-                    </div>
+                    <div className={styles.progressBar}><span className={styles.percentage} /></div>
                     <br />
                     {this.state.disableForm && (
                       <Spinner className={styles.spinnerArea}
@@ -899,21 +1018,15 @@ export default class TOTCreateTournament extends React.Component<
                     )}
                     <div>
                       {this.state.importError && (
-                        <Label className={styles.errorMessage}>
-                          {this.state.importError}
-                        </Label>
+                        <Label className={styles.errorMessage}>{this.state.importError}</Label>
                       )}
                     </div>
                     {this.state.importLogs.length > 0 && (
                       <div className={styles.importLogs}>
                         {LocaleStrings.LogProgress}
                         <ul className={styles.uList}>
-                          {this.state.importLogs.map((element) => {
-                            return (
-                              <li className={this.messageColor(element)}>
-                                {element}
-                              </li>
-                            );
+                          {this.state.importLogs.map((element: any) => {
+                            return (<li className={this.messageColor(element)}>{element}</li>);
                           })}
                         </ul>
                       </div>
@@ -934,6 +1047,8 @@ export default class TOTCreateTournament extends React.Component<
                   iconProps={{ iconName: 'Add' }}
                   onClick={this.saveTournament}
                   className={styles.createBtn}
+                  tabIndex={0}
+                  aria-describedby="tournament-name-error actions-list-error"
                 />
               )}
               {this.state.multipleTournament &&
@@ -944,7 +1059,7 @@ export default class TOTCreateTournament extends React.Component<
                   onClick={this.importTournament}
                   className={styles.createBtn}
                   disabled={this.state.disableCreateTournaments}
-
+                  tabIndex={0}
                 />
               }
               &nbsp; &nbsp;

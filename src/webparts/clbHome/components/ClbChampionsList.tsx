@@ -8,6 +8,7 @@ import styles from "../scss/CMPChampionsList.module.scss";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
 import { IConfigList } from "./ManageConfigSettings";
 import * as stringConstants from "../constants/strings";
+import { Person } from "@microsoft/mgt-react/dist/es6/spfx";
 
 
 export interface IClbChampionsListProps {
@@ -18,6 +19,8 @@ export interface IClbChampionsListProps {
   userStatus: string;
   configListData: Array<IConfigList>;
   memberListColumnsNames: Array<any>;
+  appTitle: string;
+  currentThemeName?: string
 }
 export interface ISPLists {
   value: ISPList[];
@@ -114,30 +117,36 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
   }
 
   public render() {
-
+    const isDarkOrContrastTheme = this.props.currentThemeName === stringConstants.themeDarkMode || this.props.currentThemeName === stringConstants.themeContrastMode;
     return (
       <div className={`container ${styles.championListContainer}`}>
-        <div className={styles.championListPath}>
+        <div className={`${styles.championListPath}${isDarkOrContrastTheme ? " " + styles.championListPathDarkContrast : ""}`}>
           <img src={require("../assets/CMPImages/BackIcon.png")}
             className={styles.backImg}
             alt={LocaleStrings.BackButton}
+            aria-hidden="true"
           />
           <span
             className={styles.backLabel}
             onClick={() => { this.props.onHomeCallBack(); }}
-            title={LocaleStrings.CMPBreadcrumbLabel}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(evt: any) => { if (evt.key === stringConstants.stringEnter) this.props.onHomeCallBack(); }}
+            aria-label={this.props.appTitle}
           >
-            {LocaleStrings.CMPBreadcrumbLabel}
+            <span title={this.props.appTitle}>
+              {this.props.appTitle}
+            </span>
           </span>
           <span className={styles.border}></span>
           <span className={styles.championListLabel}>{LocaleStrings.ChampionsListPageTitle}</span>
         </div>
         {this.props.userAdded ?
-          <Label className={styles.successMessage}>
+          <Label className={`${styles.successMessage}${isDarkOrContrastTheme ? " " + styles.successMessageDarkContrast : ""}`} aria-live="polite" role="alert">
             <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
             {this.props.userStatus === "Pending" ? LocaleStrings.UserNominatedMessage : LocaleStrings.UserAddedMessage}
           </Label> : null}
-        <div className={`${styles.listHeading}`}>{LocaleStrings.ChampionsListPageTitle}</div>
+        <div className={`${styles.listHeading}${isDarkOrContrastTheme ? " " + styles.listHeadingDarkContrast : ""}`}>{LocaleStrings.ChampionsListPageTitle}</div>
         <div className={styles.championListTableArea}>
           <table className="table table-bodered">
             <thead className={styles.listHeader}>
@@ -155,10 +164,13 @@ class ClbChampionsList extends React.Component<IClbChampionsListProps, IState> {
                   if (item.Status === "Approved") {//showing only approved list
                     return (
                       <tr>
-                        <td title={`${item.FirstName ? item.FirstName + " " : ""}${item.LastName ? item.LastName : ""}`}>
-                          {item.FirstName}
-                          <span className="mr-1"></span>
-                          {item.LastName}
+                        <td>
+                          <Person
+                            personQuery={item.Title}
+                            view={3}
+                            personCardInteraction={1}
+                            className="champion-person-card"
+                          />
                         </td>
                         {this.state.regionColumnName !== "" && <td title={item.Region ? item.Region : ""}>{item.Region}</td>}
                         {this.state.countryColumnName !== "" && <td title={`${item.Country ? item.Country : ""}`}>{item.Country}</td>}

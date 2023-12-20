@@ -16,12 +16,14 @@
     "noUnusedLocals": false,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/@microsoft"
     ],
     "types": [
-      "webpack-env"
+      "webpack-env",
+      "node"
     ],
     "lib": [
       "es5",

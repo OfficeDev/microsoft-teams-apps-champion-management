@@ -1,361 +1,722 @@
-.totLeaderboardContent {
-  display: flex !important;
-}
+@import '~@fluentui/react/dist/sass/References.scss';
 
-.container {
-  height: 100%;
-  width: 100%;
-  padding: 0;
-}
+div[class~="totLbComboCallout"] {
+  div[class~="ms-Callout-main"] {
+    background-color: #FFFFFF;
 
-.errorMessage {
-  color: #e12636;
-  margin-left: 1.5%;
-  font-weight: bolder;
-  font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
+    div[class~="ms-ComboBox-optionsContainerWrapper"] {
+      div[class~="ms-ComboBox-optionsContainer"] {
 
-.noActvPartErr {
-  color: #000;
-  margin: -2% 0% 2% 0%;
-  font: normal normal 600 18px/24px Segoe UI;
-  -webkit-font-smoothing: antialiased;
-}
-
-.noActvTourErr {
-  color: #000;
-  margin: 2% 0% 2% 1%;
-  font: normal normal 600 18px/24px Segoe UI;
-  -webkit-font-smoothing: antialiased;
-}
-
-.myDashboardLink {
-  cursor: pointer;
-  text-decoration: underline;
-  color: #6264A7;
-}
-
-.labelHeading {
-  color: #1d0f62;
-  display: table-cell;
-  font: normal normal 600 18px/24px Segoe UI;
-  -webkit-font-smoothing: antialiased;
-  padding: 0.5em;
-
-  .tooltipHostStyles {
-    display: inline-block;
-    cursor: pointer;
-  }
-
-  .myTournamentInfoIcon {
-    font-size: 16px;
-    padding-left: 10px;
-    font-weight: bolder;
-    color: #1d0f62;
-    position: relative;
-    top: 3px;
-  }
-}
-
-.labelNormal {
-  color: #1d0f62;
-  font-weight: normal;
-  display: table-cell;
-  padding: 0 0.5em;
-  text-align: justify;
-  font: normal normal normal 18px/24px Segoe UI;
-  -webkit-font-smoothing: antialiased;
-  overflow-wrap: anywhere;
-}
-
-.totLeaderboardPath {
-  display: inline-flex;
-  margin-left: 2%;
-  text-align: center;
-  font: normal normal bold 14px/24px Segoe UI;
-  letter-spacing: 0px;
-  color: #33344A;
-  opacity: 1;
-
-  .backImg {
-    width: 7px;
-    height: 12px;
-    margin-right: 10px;
-    margin-top: 6px;
-  }
-
-  .backLabel {
-    padding-right: 10px;
-    cursor: pointer;
-  }
-
-  .border {
-    width: 0px;
-    height: 14px;
-    border: 1px solid #33344A;
-    margin-top: 5px;
-  }
-
-  .totLeaderboardLabel {
-    font: normal normal bold 18px/23px Segoe UI;
-    padding-left: 10px;
-  }
-}
-
-.load {
-  border: 16px solid #dde2eb;
-  border-radius: 50%;
-  border-top: 10px solid #3498db;
-  width: 120px;
-  height: 120px;
-  -webkit-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
-  margin: auto;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  position: fixed;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.listArea {
-  font-style: normal;
-  font-variant-ligatures: normal;
-  font-variant-caps: normal;
-  font-variant-numeric: normal;
-  font-variant-east-asian: normal;
-  font-weight: normal;
-  font-stretch: normal;
-  font-family: "Segoe UI";
-  list-style: none;
-  display: table;
-  margin-left: 0%;
-  padding: 1%;
-
-  .listVal {
-    display: table-row;
-
-    .descriptionHeading {
-      content: "";
-    }
-
-    .descriptionColon {
-      display: unset;
-    }
-  }
-}
-
-.contentArea {
-  margin-left: 0.5%;
-}
-
-.dropdownArea {
-  margin-left: 1%;
-  margin-top: 2%;
-}
-
-.dropdownCol {
-  padding: 0.5em;
-
-  div[class^="ms-ComboBox"] {
-
-    button:hover {
-      background-color: transparent;
-    }
-  }
-}
-
-.totLbComboCallout {
-  div[class^="ms-Callout-main"] {
-    div[class^="ms-ComboBox-optionsContainerWrapper"] {
-      div[class^="ms-ComboBox-optionsContainer"] {
-
+        button,
         button:focus,
         button:hover {
-          background-color: transparent !important;
+          background-color: #FFFFFF;
+          color: #000;
         }
       }
     }
   }
 }
 
-.labelCol {
-  margin-top: auto;
-  text-align: -webkit-center;
-  align-self: center;
-}
+div[class~="totLbComboCallout--dark"] {
+  div[class~="ms-Callout-main"] {
+    background-color: #292929;
 
-.backBtn {
-  background-color: #fff !important;
-  color: #000 !important;
-  margin-left: 2% !important;
-  font-size: 14px;
-  font-weight: 600;
-}
+    div[class~="ms-ComboBox-optionsContainerWrapper"] {
+      div[class~="ms-ComboBox-optionsContainer"] {
 
-.table {
-  font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  margin-left: 1.5%;
-}
-
-table tr th {
-  font: normal normal 600 18px/24px Segoe UI;
-  background: #F6F5F4 0% 0% no-repeat padding-box;
-  border: 0.25px solid #C8C6C4;
-}
-
-table tr td {
-  font: normal normal normal 16px/21px Segoe UI;
-}
-
-:global {
-
-  .btn-secondary,
-  .btn-secondary:hover,
-  .btn-secondary:active,
-  .btn-secondary:focus,
-  .btn-secondary:not(:disabled):not(.disabled).active,
-  .show>.btn-secondary.dropdown-toggle {
-    color: #fff;
-    background-color: #6264A7;
-    border-color: #6264A7;
+        button,
+        button:focus,
+        button:hover {
+          color: #FFFFFF;
+          background-color: #292929;
+        }
+      }
+    }
   }
+}
 
-  .dropdown-item>a {
-    color: #000;
+div[class~="totLbComboCallout--contrast"] {
+  div[class~="ms-Callout-main"] {
+    background-color: #0000;
+
+    div[class~="ms-ComboBox-optionsContainerWrapper"] {
+      div[class~="ms-ComboBox-optionsContainer"] {
+
+        button,
+        button:focus,
+        button:hover {
+          color: #FFFFFF;
+          background-color: #000;
+        }
+      }
+    }
   }
+}
 
-  .page-item.active {
-    color: #000;
-    background-color: #6264A7;
-    border-color: #6264A7;
+.totLeaderboardWrapper {
+  .container {
+    height: 100%;
+    width: 100%;
+    padding: 0;
 
-    .page-link {
-      background-color: #6264A7;
-      border-color: #6264A7;
+    .totLeaderboardContent {
+      display: flex !important;
+
+      .contentTab {
+        width: 100vw;
+        min-height: 100vh;
+        margin: 1em;
+
+        .totLeaderboardPath {
+          display: inline-flex;
+          margin-left: 2%;
+          text-align: center;
+          font: normal normal bold 14px/24px Segoe UI;
+          letter-spacing: 0px;
+          color: #33344A;
+          opacity: 1;
+
+          .backImg {
+            width: 7px;
+            height: 12px;
+            margin-right: 10px;
+            margin-top: 6px;
+          }
+
+          .backLabel {
+            padding-right: 10px;
+            cursor: pointer;
+          }
+
+          .backLabel:focus-visible {
+            box-shadow: none;
+            outline: 2px solid #414156;
+            border-radius: 1px;
+            outline-offset: 4px;
+          }
+
+          .border {
+            width: 0px;
+            height: 14px;
+            border: 1px solid #33344A;
+            margin-top: 5px;
+          }
+
+          .totLeaderboardLabel {
+            font: normal normal bold 18px/23px Segoe UI;
+            padding-left: 10px;
+          }
+        }
+
+        .labelHeading {
+          color: #1d0f62;
+          display: table-cell;
+          font: normal normal 600 18px/24px Segoe UI;
+          -webkit-font-smoothing: antialiased;
+          padding: 0.5em;
+
+          .tooltipHostStyles {
+            display: inline-block;
+            cursor: pointer;
+          }
+
+          .myTournamentInfoIcon {
+            font-size: 16px;
+            padding-left: 10px;
+            font-weight: bolder;
+            color: #1d0f62;
+            position: relative;
+            top: 3px;
+          }
+        }
+
+        .dropdownArea {
+          margin-left: 1%;
+          margin-top: 2%;
+
+          .dropdownCol {
+            padding: 0.5em;
+
+            div[class~="ms-ComboBox"] {
+              background-color: rgb(255, 255, 255);
+
+              input[class~="ms-ComboBox-Input"] {
+                color: rgb(97, 97, 97);
+                background-color: rgb(255, 255, 255);
+
+                &::placeholder {
+                  color: rgb(97, 97, 97);
+                }
+              }
+
+              button[class~="ms-Button--icon"] {
+                color: rgb(138, 138, 138);
+                background-color: transparent;
+              }
+
+              &::after {
+                border-color: rgb(138, 138, 138);
+              }
+
+              &:hover::after {
+                border-color: rgb(97, 97, 97);
+              }
+
+              &:hover {
+                input[class~="ms-ComboBox-Input"] {
+                  color: rgb(66, 66, 66);
+
+                  &::placeholder {
+                    color: rgb(66, 66, 66);
+                  }
+                }
+
+                button[class~="ms-Button--icon"] {
+                  color: rgb(66, 66, 66);
+                }
+              }
+            }
+
+            div[class~="is-open"] {
+
+              &::after,
+              &:hover::after {
+                border-color: rgb(98, 100, 167);
+              }
+            }
+          }
+
+          .labelCol {
+            margin-top: auto;
+            text-align: -webkit-center;
+            align-self: center;
+          }
+        }
+
+        .listArea {
+          font-style: normal;
+          font-variant-ligatures: normal;
+          font-variant-caps: normal;
+          font-variant-numeric: normal;
+          font-variant-east-asian: normal;
+          font-weight: normal;
+          font-stretch: normal;
+          font-family: "Segoe UI";
+          list-style: none;
+          display: table;
+          margin-left: 0%;
+          padding: 1%;
+
+          .listVal {
+            display: table-row;
+
+            .descriptionHeading {
+              content: "";
+            }
+
+            .descriptionColon {
+              display: unset;
+            }
+
+            .labelNormal {
+              color: #1d0f62;
+              display: table-cell;
+              padding: 0 0.5em;
+              text-align: justify;
+              font: normal normal normal 18px/24px Segoe UI;
+              -webkit-font-smoothing: antialiased;
+              overflow-wrap: anywhere;
+            }
+          }
+        }
+
+        .table {
+          font-family: "Segoe UI";
+          -webkit-font-smoothing: antialiased;
+          margin-left: 1.5%;
+
+          table {
+            thead {
+              tr {
+                th {
+                  font: normal normal 600 18px/24px Segoe UI;
+                  background: #F6F5F4 0% 0% no-repeat padding-box;
+                  border: 0.25px solid #C8C6C4;
+                }
+              }
+            }
+
+            tbody {
+              tr {
+                td {
+                  font: normal normal normal 16px/21px Segoe UI;
+                }
+              }
+            }
+          }
+
+          .noActvPartErr {
+            color: #000;
+            margin: -2% 0% 2% 0%;
+            font: normal normal 600 18px/24px Segoe UI;
+            -webkit-font-smoothing: antialiased;
+
+            .myDashboardLink {
+              cursor: pointer;
+              text-decoration: underline;
+              color: #6264A7;
+            }
+          }
+
+          div[class~="react-bootstrap-table-pagination"] {
+            button[id="pageDropDown"] {
+              color: #fff;
+              background-color: #6264A7;
+              border-color: #6264A7;
+
+              &:focus {
+                box-shadow: none;
+                outline-offset: 2px;
+                outline: 2px solid #000000;
+                border-radius: 3px;
+              }
+            }
+
+            ul[class~="dropdown-menu"] {
+              background-color: #ffffff;
+              min-width: 5rem;
+              border: 1px solid rgba(0, 0, 0, .15);
+
+              li[class~="dropdown-item"] {
+                background-color: transparent;
+                padding: 0.3rem 1.3rem;
+
+                a {
+                  color: #212529;
+                  background-color: transparent;
+                  padding: 4px 8px;
+                  border-radius: 3px;
+
+                  &:hover {
+                    color: #16181b;
+                    background-color: #e9ecef;
+                  }
+
+                  &:focus-visible {
+                    outline: 1px solid #000;
+                  }
+                }
+
+                &:hover,
+                &:focus {
+                  background-color: transparent;
+                }
+              }
+            }
+
+            div[class~="react-bootstrap-table-pagination-list"] {
+              ul[class~="react-bootstrap-table-page-btns-ul"] {
+                li[class~="page-item"] {
+                  a[class~="page-link"] {
+                    &:hover {
+                      color: #000000;
+                    }
+
+                    &:focus {
+                      outline: 2px solid #000;
+                      outline-offset: 1px;
+                      border-radius: 1px;
+                      box-shadow: none;
+                    }
+                  }
+                }
+
+                li[class~="active"] {
+
+                  a,
+                  a:hover {
+                    background-color: #6264A7 !important;
+                    border-color: #6264A7 !important;
+                    color: #FFFFFF !important;
+                  }
+
+                  &:focus {
+                    outline: 2px solid #000;
+                    outline-offset: 1px;
+                    border-radius: 1px;
+                    box-shadow: none;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .contentArea {
+          margin-left: 0.5%;
+
+          .noActvTourErr {
+            color: #000;
+            margin: 2% 0% 2% 1%;
+            font: normal normal 600 18px/24px Segoe UI;
+            -webkit-font-smoothing: antialiased;
+          }
+
+          .errorMessage {
+            color: #e12636;
+            margin-left: 1.5%;
+            font-weight: bolder;
+            font-family: "Segoe UI";
+            -webkit-font-smoothing: antialiased;
+          }
+        }
+
+        .totLeaderboardBackBtn {
+          border-color: #33344A;
+          background-color: white;
+          margin-left: 1.5%;
+          margin-bottom: 30px;
+
+          i {
+            font-size: 17px;
+            font-weight: bolder;
+            color: #000003;
+            opacity: 1;
+          }
+
+          i+span>span {
+            font: normal normal bold 14px/24px Segoe UI;
+            letter-spacing: 0px;
+            color: #000003;
+            opacity: 1;
+            margin-top: -3px;
+          }
+
+          &:hover {
+            border-color: #33344A;
+            background-color: white;
+            color: #000003;
+          }
+
+          &:focus::after {
+            outline: none;
+          }
+
+          &:focus-visible {
+            outline: 2px solid #000;
+            outline-offset: 2px;
+            border-radius: 3px;
+          }
+        }
+
+        /* width */
+        ::-webkit-scrollbar {
+          width: 5px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+          background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+      }
     }
   }
 
-  .page-link:hover,
-  .page-link {
-    color: #000;
+  .load {
+    border: 16px solid #dde2eb;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    position: fixed;
   }
-}
 
-.rankCol {
-  width: 5%;
-}
-
-.userCol {
-  width: 25%;
-}
-
-.pointsCol {
-  width: 5%;
-}
-
-.contentTab {
-  width: 100vw;
-  min-height: 100vh;
-  margin: 1em;
-
-  .totLeaderboardBackBtn {
-    border-color: #33344A;
-    background-color: white;
-    margin-left: 1.5%;
-    margin-bottom: 30px;
-
-    i {
-      font-size: 17px;
-      font-weight: bolder;
-      color: #000003;
-      opacity: 1;
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
     }
 
-    i+span>span {
-      font: normal normal bold 14px/24px Segoe UI;
-      letter-spacing: 0px;
-      color: #000003;
-      opacity: 1;
-      margin-top: -3px;
+    100% {
+      transform: rotate(360deg);
     }
   }
+}
 
-  .totLeaderboardBackBtn:hover {
-    border-color: #33344A;
-    background-color: white;
-    color: #000003;
-  }
+.totLeaderboardWrapperDarkContrast {
+  .container {
+    .totLeaderboardContent {
+      .contentTab {
+        .totLeaderboardPath {
+          color: var(--colorNeutralForeground1);
 
-  /* width */
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
+          .backImg {
+            filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
+          }
 
-  /* Track */
-  ::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
+          .backLabel {
+            color: var(--colorBrandForegroundLink);
+          }
 
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    background: #888;
-  }
+          .backLabel:focus-visible {
+            outline-color: var(--colorPaletteBlueBorderActive);
+          }
 
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+          .border {
+            border-color: var(--colorNeutralForeground1);
+          }
+        }
+
+        .labelHeading {
+          color: var(--colorNeutralForeground1);
+
+          .myTournamentInfoIcon {
+            color: var(--colorNeutralForeground1);
+          }
+        }
+
+        .dropdownArea {
+          .dropdownCol {
+            div[class~="ms-ComboBox"] {
+              background-color: var(--colorNeutralBackground1);
+
+              input[class~="ms-ComboBox-Input"] {
+                color: var(--colorNeutralForeground1);
+                background-color: var(--colorNeutralBackground1);
+
+                &::placeholder {
+                  color: var(--colorNeutralForeground1);
+                }
+              }
+
+              button[class~="ms-Button--icon"] {
+                color: var(--colorNeutralForeground1);
+              }
+
+              &::after {
+                border-color: var(--colorNeutralForeground1);
+              }
+
+              &:hover::after {
+                border-color: var(--colorNeutralForeground1);
+              }
+
+              &:hover {
+                input[class~="ms-ComboBox-Input"] {
+                  color: var(--colorNeutralForeground1);
+
+                  &::placeholder {
+                    color: var(--colorNeutralForeground1);
+                  }
+                }
+
+                button[class~="ms-Button--icon"] {
+                  color: var(--colorNeutralForeground1);
+                }
+              }
+            }
+
+            div[class~="is-open"] {
+
+              &::after,
+              &:hover::after {
+                border-color: var(--colorCompoundBrandForeground1Pressed);
+              }
+            }
+          }
+        }
+
+        .listArea {
+          .listVal {
+            .labelNormal {
+              color: var(--colorNeutralForeground1);
+            }
+          }
+        }
+
+        .table {
+          table {
+            tbody {
+              tr {
+                td {
+                  color: var(--colorNeutralForeground1);
+                }
+              }
+            }
+          }
+
+          .noActvPartErr {
+            color: var(--colorNeutralForeground1);
+
+            .myDashboardLink {
+              color: var(--colorBrandForegroundLink);
+            }
+          }
+
+          div[class~="react-bootstrap-table-pagination"] {
+            button[id="pageDropDown"] {
+              color: var(--colorNeutralForeground1Selected);
+              background-color: var(--colorCompoundBrandBackground);
+              border-color: var(--colorCompoundBrandBackground);
+
+              &:focus {
+                outline-color: var(--colorPaletteBlueBorderActive);
+              }
+            }
+
+            ul[class~="dropdown-menu"] {
+              background-color: var(--colorNeutralBackground1);
+              border-color: var(--colorNeutralForeground1);
+
+              li[class~="dropdown-item"] {
+                a {
+                  color: var(--colorNeutralForeground1);
+
+                  &:hover {
+                    color: #000000;
+                    background-color: var(--colorNeutralForeground2LinkHover);
+                  }
+
+                  &:focus-visible {
+                    outline-color: var(--colorPaletteBlueBorderActive);
+                  }
+                }
+              }
+            }
+
+            div[class~="react-bootstrap-table-pagination-list"] {
+              ul[class~="react-bootstrap-table-page-btns-ul"] {
+                li[class~="page-item"] {
+                  a[class~="page-link"] {
+                    &:hover {
+                      background-color: var(--colorNeutralForeground2LinkHover);
+                      border-color: var(--colorNeutralForeground2LinkHover);
+                      color: #000000;
+                    }
+
+                    &:focus {
+                      outline-color: var(--colorPaletteBlueBorderActive);
+                    }
+                  }
+                }
+
+                li[class~="active"] {
+
+                  a,
+                  a:hover {
+                    background-color: var(--colorCompoundBrandBackground) !important;
+                    border-color: var(--colorCompoundBrandBackground) !important;
+                    color: var(--colorNeutralForeground1Selected) !important;
+                  }
+
+                  &:focus {
+                    outline-color: var(--colorPaletteBlueBorderActive);
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .contentArea {
+          .noActvTourErr {
+            color: var(--colorNeutralForeground1);
+          }
+
+          .errorMessage {
+            color: var(--colorPaletteRedForeground1);
+          }
+        }
+
+        .totLeaderboardBackBtn {
+          &:focus-visible {
+            outline-color: var(--colorPaletteBlueBorderActive);
+          }
+        }
+      }
+    }
   }
 }
+
+mgt-person[class="participant-person-card"] {
+  --person-line1-text-color: var(--colorNeutralForeground1) !important;
+  --person-line1-text-line-height: 24px;
+  --person-line1-font-weight: 400;
+}
+
 
 @media screen and (max-width: 375pt) {
-  .contentTab {
-    width: unset;
-  }
+  .totLeaderboardWrapper {
+    .container {
+      .totLeaderboardContent {
+        display: block !important;
 
-  .totLeaderboardContent {
-    display: block !important;
-  }
+        .contentTab {
+          width: unset;
 
-  .listArea {
-    display: flex;
+          .listArea {
+            display: flex;
 
-    .listVal {
-      display: grid;
+            .listVal {
+              display: grid;
 
-      .descriptionHeading::after {
-        content: " :";
-      }
+              .descriptionHeading::after {
+                content: " :";
+              }
 
-      .descriptionColon {
-        display: none;
+              .descriptionColon {
+                display: none;
+              }
+            }
+          }
+
+          .table {
+            table {
+              thead {
+                tr {
+                  th {
+
+                    &:nth-child(1),
+                    &:nth-child(3) {
+                      width: 25%;
+                    }
+
+                    &:nth-child(2) {
+                      width: 50%;
+                    }
+                  }
+                }
+              }
+
+              tbody {
+                tr {
+                  td {
+                    overflow-wrap: break-word;
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
-  }
-
-  table tr th:nth-child(1),
-  table tr th:nth-child(3) {
-    width: 25%;
-  }
-
-  table tr th:nth-child(2) {
-    width: 50%;
-  }
-
-  table tr td {
-    overflow-wrap: break-word;
   }
 
 }

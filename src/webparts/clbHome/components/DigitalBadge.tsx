@@ -1,57 +1,25 @@
-import { Icon } from '@fluentui/react/lib/Icon';
-import { List } from '@fluentui/react/lib/List';
-import { IRectangle } from '@fluentui/react/lib/Utilities';
+import * as React from "react";
+import {
+  Icon, List, IRectangle, PrimaryButton, MessageBar,
+  MessageBarType, Spinner, SpinnerSize, DefaultButton
+} from '@fluentui/react';
 import { MSGraphClientV3, SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
-import * as microsoftTeams from "@microsoft/teams-js";
-import { initializeIcons } from "@uifabric/icons";
-import * as LocaleStrings from 'ClbHomeWebPartStrings';
-import * as $ from "jquery";
-import {
-  ConnectedComponent,
-  Panel,
-  PanelBody, PanelFooter, PanelHeader, Surface, TeamsComponentContext, ThemeStyle
-} from "msteams-ui-components-react";
-import {
-  anchor, getContext,
-  primaryButton
-} from "msteams-ui-styles-core";
-import {
-  PrimaryButton
-} from "office-ui-fabric-react/lib/Button";
-import {
-  MessageBar,
-  MessageBarType
-} from "office-ui-fabric-react/lib/MessageBar";
-import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
-import * as React from "react";
-import "../assets/stylesheets/DigitalBadgeProfile.scss";
 import commonServices from '../Common/CommonServices';
 import siteconfig from "../config/siteconfig.json";
 import * as strings from "../constants/strings";
-import IProfileImage from "../models/IProfileImage";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
 import dbStyles from "../scss/CMPDigitalBadge.module.scss";
-import {
-  ITeamsBaseComponentProps,
-  ITeamsBaseComponentState, TeamsBaseComponent
-} from "./TeamsBaseComponent";
-
-const config = {
-  baseFontSize: 16,
-  style: ThemeStyle.Light,
-};
-const contextCSS = getContext(config);
 
 const graphUrl = "https://graph.microsoft.com";
 const graphMyPhotoApiUrl = graphUrl + "/v1.0/me/photo";
 const graphMyPhotoBitsUrl = graphMyPhotoApiUrl + "/$value";
 let upn: string | undefined = "";
 
-export interface IDigitalBadgeState extends ITeamsBaseComponentState {
-  entityId?: string;
+export interface IDigitalBadgeState {
   isLoading: boolean;
   themeLoaded: boolean;
-  profileImage?: IProfileImage;
+  profileImage: IProfileImage;
   isLoggedIn: boolean;
   hasAccepted: boolean;
   hasImageSelected: boolean;
@@ -59,7 +27,6 @@ export interface IDigitalBadgeState extends ITeamsBaseComponentState {
   isApplying: boolean;
   isApplied: boolean;
   error: string;
-  upn?: string;
   imageDownloaded: boolean;
   downloadText: string;
   showAccept: boolean;
@@ -69,50 +36,33 @@ export interface IDigitalBadgeState extends ITeamsBaseComponentState {
   inclusionpath: string;
   allBadgeImages: string[];
   noBadgesFlag: boolean;
+  digitalBadgeScreen: string;
 }
-export interface IDigitalBadgeProps extends ITeamsBaseComponentProps {
-  clientId: string;
-  description: string;
+export interface IDigitalBadgeProps {
   context: WebPartContext;
   clickcallback: () => void;
-  clickcallchampionview: () => void;
   siteUrl: string;
+  appTitle: string;
+  currentThemeName?: string;
 }
 
-export default class DigitalBadge extends TeamsBaseComponent<
-  IDigitalBadgeProps,
-  IDigitalBadgeState
-> {
+export interface IProfileImage {
+  url: string;
+  width: number;
+}
+
+export default class DigitalBadge extends React.Component<IDigitalBadgeProps, IDigitalBadgeState> {
   private columnCount = 0;
   private rowHeight = 0;
   private ROWS_PER_PAGE = 3;
   private MAX_ROW_HEIGHT = 300;
   private commonServiceManager: commonServices;
 
-  constructor(props: IDigitalBadgeProps, states: IDigitalBadgeState) {
-    super(props, states);
-    this.commonServiceManager = new commonServices(this.props.context, this.props.siteUrl);
-    this._onDownloadImage = this._onDownloadImage.bind(this);
-    this.onUserAcceptance = this.onUserAcceptance.bind(this);
-    this.onBadgeSelected = this.onBadgeSelected.bind(this);
-    this._onApplyProfileImage = this._onApplyProfileImage.bind(this);
-    this.getPhotoBits = this.getPhotoBits.bind(this);
-    this.getAllBadgeImages = this.getAllBadgeImages.bind(this);
-    this.onRenderCell = this.onRenderCell.bind(this);
-    this.getItemCountForPageService = this.getItemCountForPageService.bind(this);
-  }
-
-  private _requestOptions: {} = {
-    headers: {
-      "X-ClientTag": "NONISV|Microsoft|ChampBadge/1.0.0",
-    },
-  };
-  public componentWillMount() {
-    initializeIcons();
+  constructor(props: IDigitalBadgeProps) {
+    super(props);
     let profile: IProfileImage = { url: "", width: 0 };
-
-    this.setState({
-      fontSize: this.pageFontSize(),
+    //State object Initialization
+    this.state = {
       isLoading: true,
       themeLoaded: false,
       profileImage: profile,
@@ -131,14 +81,65 @@ export default class DigitalBadge extends TeamsBaseComponent<
       inclusionpath: siteconfig.inclusionPath,
       siteUrl: this.props.siteUrl,
       allBadgeImages: [],
-      noBadgesFlag: false
-    });
+      noBadgesFlag: false,
+      digitalBadgeScreen: strings.digitalBadgeScreen1
+    };
+    this.commonServiceManager = new commonServices(this.props.context, this.props.siteUrl);
+    this._onDownloadImage = this._onDownloadImage.bind(this);
+    this.onUserAcceptance = this.onUserAcceptance.bind(this);
+    this.onBadgeSelected = this.onBadgeSelected.bind(this);
+    this._onApplyProfileImage = this._onApplyProfileImage.bind(this);
+    this.getPhotoBits = this.getPhotoBits.bind(this);
+    this.getAllBadgeImages = this.getAllBadgeImages.bind(this);
+    this.onRenderCell = this.onRenderCell.bind(this);
+    this.getItemCountForPageService = this.getItemCountForPageService.bind(this);
+    this.navigateBack = this.navigateBack.bind(this);
+  }
 
-    this.forceUpdate();
-    setTimeout(() => {
-      this._renderListAsync();
-    }, 100);
+  //Component Life cycle method, gets called while the component is getting mounted
+  public componentDidMount(): void {
+    this._renderListAsync();
+  }
 
+  //component life cycle method, gets called whenever the component is updated
+  //update aria-label attribute to 'open outlook web application' link in digital badge apply screen
+  public componentDidUpdate(prevProps: Readonly<IDigitalBadgeProps>, prevState: Readonly<IDigitalBadgeState>, snapshot?: any): void {
+    if (prevState.hasImageSelected !== this.state.hasImageSelected) {
+      document.getElementById("linkToChangeProfileImage")?.setAttribute("aria-label", LocaleStrings.digitalBadgeProfileAriaLabel);
+    }
+  }
+
+  //Get currents user's details from Sharepoint Profiles for Digital Badge processing
+  private _renderListAsync() {
+    this.props.context.spHttpClient
+      .get(
+        "/" + this.state.inclusionpath + "/" + this.state.sitename +
+        "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
+        SPHttpClient.configurations.v1
+      )
+      .then((responseuser: SPHttpClientResponse) => {
+        responseuser.json().then((datauser: any) => {
+          let userassignletters = "";
+          let usernamearray = datauser.DisplayName.split(" ");
+          if (usernamearray.length === 1) {
+            userassignletters = usernamearray[0][0].toUpperCase();
+          }
+          else if (usernamearray.length > 1) {
+            userassignletters =
+              usernamearray[0][0].toUpperCase() +
+              usernamearray[
+                usernamearray.length - 1
+              ][0].toUpperCase();
+          }
+          upn = datauser.Email;
+          this.setState({
+            showAccept: true,
+            userletters: userassignletters,
+            isLoading: false,
+          });
+          this.showUserInformation();
+        });
+      });
   }
 
   //Method to get how many items to render per page from specified index
@@ -149,7 +150,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
     return serviceObj.itemCountForPage;
   }
 
-  //Multiple Badges   
+  //Multiple Badges section starts
   //Render Fluent UI list cell to show the images and hyperlinks
   private onRenderCell = (item: any, index: number | undefined) => {
     try {
@@ -163,7 +164,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
         >
           <div className={dbStyles.listGridSizer}>
             <div className={`${dbStyles.listGridPadder}${!item.enabled ? " " + dbStyles.disabledBadge : ""}`}>
-              <a onClick={item.enabled && (() => { this.onBadgeSelected(item.url); })}>
+              <a onClick={item.enabled && (() => { this.onBadgeSelected(item.url); })} role="button">
                 {this.state.profileImage.url && (
                   <>
                     {this.state.profileImage.url !==
@@ -188,8 +189,13 @@ export default class DigitalBadge extends TeamsBaseComponent<
                       src={item.url}
                       title={item.enabled ? "" : LocaleStrings.BadgePointsTooltip + " " + item.points}
                     />
-                    <span className={dbStyles.listGridLabel} title={this.state.userletters}>{this.state.userletters}</span>
-                    <span className={dbStyles.listGridLabel} title={item.title}>{item.title}</span>
+                    <span className={dbStyles.listGridLabel} title={this.state.userletters} >{this.state.userletters}</span>
+                    <span className={dbStyles.listGridLabel} title={item.title} tabIndex={0} role="button"
+                      onKeyDown={item.enabled && ((evt: any) => { if (evt.key === strings.stringEnter) this.onBadgeSelected(item.url) })}
+                      aria-label={item.title}
+                    >
+                      {item.title}
+                    </span>
                   </>
                 )}
               </a>
@@ -212,9 +218,10 @@ export default class DigitalBadge extends TeamsBaseComponent<
     try {
       this.setState({
         hasImageSelected: true,
+        digitalBadgeScreen: strings.digitalBadgeScreen3,
         imageURL: img,
       });
-      this.showUserInformation(upn);
+      this.showUserInformation();
     }
     catch (error) {
       console.error("CMP_DigitalBadge_onBadgeSelected \n", JSON.stringify(error));
@@ -282,495 +289,382 @@ export default class DigitalBadge extends TeamsBaseComponent<
   }
   //Multiple Badges Section Ends
 
-  //Get currents user's details from Mmber List for Digital Badge processing
-  private _renderListAsync() {
-    microsoftTeams.initialize();
-    microsoftTeams.registerOnThemeChangeHandler(this.updateTheme);
-    microsoftTeams.getContext((context: microsoftTeams.Context) => {
-      this.props.context.spHttpClient
-        .get(
-          "/" + this.state.inclusionpath + "/" + this.state.sitename +
-          "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
-          SPHttpClient.configurations.v1
-        )
-        .then((responseuser: SPHttpClientResponse) => {
-          responseuser.json().then((datauser: any) => {
-
-            let userassignletters = "";
-            let usernamearray = datauser.DisplayName.split(" ");
-            if (usernamearray.length === 1) {
-              userassignletters = usernamearray[0][0].toUpperCase();
-            } else if (usernamearray.length > 1) {
-              userassignletters =
-                usernamearray[0][0].toUpperCase() +
-                usernamearray[
-                  usernamearray.length - 1
-                ][0].toUpperCase();
-            }
-            this.setState({
-              showAccept: true,
-              userletters: userassignletters,
-            });
-
-            this.updateTheme(context.theme);
-            upn = datauser.Email;
-            this.setState({
-              isLoading: false,
-              entityId: context.entityId,
-              upn: context.upn,
-            });
-            this.showUserInformation(upn);
-          });
+  //Method to navigate back 
+  private navigateBack() {
+    try {
+      if (this.state.digitalBadgeScreen === strings.digitalBadgeScreen1) {
+        this.props.clickcallback();
+      }
+      else if (this.state.digitalBadgeScreen === strings.digitalBadgeScreen2) {
+        this.setState({
+          hasAccepted: false,
+          showAccept: true,
+          digitalBadgeScreen: strings.digitalBadgeScreen1,
+          noBadgesFlag: false,
+          allBadgeImages: [],
         });
-    });
+      }
+      else if (this.state.digitalBadgeScreen === strings.digitalBadgeScreen3) {
+        this.setState({
+          hasImageSelected: false,
+          isApplied: false
+        });
+        this.onUserAcceptance();
+      }
+    }
+    catch (error: any) {
+      console.error("CMP_DigitalBadge_NavigateBack \n", JSON.stringify(error));
+    }
   }
 
-
   public render(): React.ReactElement<IDigitalBadgeProps> {
-
+    const isDarkOrContrastTheme = this.props.currentThemeName === strings.themeDarkMode || this.props.currentThemeName === strings.themeContrastMode;
     return (
-      <div>
+      <div className={`${dbStyles.digitalBadgeWrapper}${isDarkOrContrastTheme ? " " + dbStyles.digitalBadgeWrapperDarkContrast : ""}`}>
         {this.state.isLoading && (
-          <Spinner
-            size={SpinnerSize.large}
-            ariaLabel={LocaleStrings.LoadingSpinnerLabel}
-            label={LocaleStrings.LoadingSpinnerLabel}
-            ariaLive="assertive"
-          />
+          <div id="spinnerMessageLabel" aria-label={LocaleStrings.LoadingDigitalBadgeLabel} role="alert"
+            aria-live="assertive" className={dbStyles.dbMainSpinner}>
+            <Spinner
+              size={SpinnerSize.large}
+              ariaLabel={LocaleStrings.LoadingSpinnerLabel}
+              label={LocaleStrings.LoadingSpinnerLabel}
+              aria-hidden="true"
+            />
+          </div>
         )}
         {!this.state.isLoading && (
-          <TeamsComponentContext
-            fontSize={this.state.fontSize}
-            theme={this.state.theme}
-          >
-            <ConnectedComponent
-              render={(props: { context: any }) => {
-                const { context } = props;
-                const { rem, font, colors, style } = context;
-                const { sizes, weights } = font;
-                contextCSS.style = this.state.theme;
-                const styleProps: any = {};
-                switch (style) {
-                  case ThemeStyle.Dark:
-                    styleProps.color = colors.dark.brand00;
-                    break;
-                  case ThemeStyle.HighContrast:
-                    styleProps.color = colors.highContrast.white;
-                    break;
-                  case ThemeStyle.Light:
-                  default:
-                    styleProps.color = colors.light.brand00;
-                }
-                const styles = {
-                  header: { ...sizes.title, ...weights.semibold },
-                  section: {
-                    ...sizes.base,
-                    marginTop: rem(1.4),
-                    marginBottom: rem(1.4),
-                  },
-                  footer: { ...sizes.xsmall },
-                  div: {},
-                };
-                const anchorClass: string = anchor(contextCSS);
-
-                return (
-                  <Surface>
-                    <Panel className={dbStyles.panelArea}>
-                      <PanelHeader>
-                        <div className={dbStyles.digitalBadgePath}>
-                          <img src={require("../assets/CMPImages/BackIcon.png")}
-                            className={dbStyles.backImg}
-                            alt={LocaleStrings.BackButton}
-                          />
-                          <span
-                            className={dbStyles.backLabel}
-                            onClick={this.props.clickcallback}
-                            title={LocaleStrings.CMPBreadcrumbLabel}
-                          >
-                            {LocaleStrings.CMPBreadcrumbLabel}
-                          </span>
-                          <span className={dbStyles.border}></span>
-                          <span className={dbStyles.digitalBadgeLabel}>{LocaleStrings.DigitalBadgePageTitle}</span>
-                        </div>
-                      </PanelHeader>
-                      <PanelBody className={dbStyles.dbPanelBody}>
-                        <div className={"DigitalBadge"} style={styles.section}>
-                          <div className={`container`}>
-                            {this.state.isLoading && (
-                              <Spinner
-                                size={SpinnerSize.large}
-                                ariaLabel={LocaleStrings.LoadingSpinnerLabel}
-                                label={LocaleStrings.LoadingSpinnerLabel}
-                                ariaLive="assertive"
-                              />
-                            )}
-                            {!this.state.isLoading && (
-                              <section
-                                aria-live="polite"
-                                className={"contentSection"}
-                              >
-                                <div
-                                  className={dbStyles.introPageBox}
-                                >
-                                  {!this.state.hasAccepted && (
-                                    <div className={dbStyles.divChild1}>
-                                      <div className={dbStyles.imgText}>
-                                        {LocaleStrings.PreAcceptPageTitle}
-                                      </div>
-                                      <img
-                                        src={require("../assets/CMPImages/AppBanner.png")}
-                                        className={"bannerimage"}
-                                        alt={LocaleStrings.DigitalBadgeAppBannerAltText}
-                                      />
-                                      {this.state.badgeImgURL}
-                                    </div>
-                                  )}
-                                  <div className={dbStyles.divChild2}>
-                                    {!this.state.hasAccepted &&
-                                      this.state.showAccept && (
-                                        <p
-                                          className={"description"}
-                                          dangerouslySetInnerHTML={this.createMarkup(
-                                            LocaleStrings.PreAcceptDisclaimer
-                                          )}
-                                        />
-                                      )}
-                                    <br />
-                                    {!this.state.hasAccepted &&
-                                      this.state.showAccept && (
-                                        <p
-                                          className={"description"}
-                                          dangerouslySetInnerHTML={this.createMarkup(
-                                            LocaleStrings.PreAcceptDisclaimer2
-                                          )}
-                                        />
-                                      )}
-                                    {!this.state.hasAccepted &&
-                                      !this.state.showAccept && (
-                                        <div>
-                                          <p
-                                            className={"description"}
-                                            dangerouslySetInnerHTML={this.createMarkup(
-                                              LocaleStrings.NotQualifiedPreAcceptDisclaimer
-                                            )}
-                                          />
-                                          <p onClick={this.props.clickcallback}>
-                                            {LocaleStrings.HowtoGetDigitalBadgeText}
-                                          </p>
-                                        </div>
-                                      )}
-                                  </div>
-                                </div>
-                                {this.state.hasAccepted && !this.state.hasImageSelected && (
-                                  <div className={dbStyles.badgeList}>
-                                    <p
-                                      dangerouslySetInnerHTML={this.createMarkup(
-                                        LocaleStrings.MultipleBadgeMessage
-                                      )}
-                                    />
-                                    {this.state.noBadgesFlag && (
-                                      <p
-                                        className={"description"}
-                                        dangerouslySetInnerHTML={this.createMarkup(
-                                          LocaleStrings.NoBadgeMessage
-                                        )}
-                                      />
-                                    )}
-                                    <List
-                                      className={dbStyles.listGrid}
-                                      items={this.state.allBadgeImages}
-                                      renderedWindowsAhead={6}
-                                      getItemCountForPage={this.getItemCountForPageService}
-                                      getPageHeight={() => this.commonServiceManager.getPageHeight(this.rowHeight, this.ROWS_PER_PAGE)}
-                                      onRenderCell={this.onRenderCell.bind(this)}
-                                    />
-                                  </div>
-                                )}
-                                {this.state.hasAccepted && this.state.hasImageSelected && (
-                                  <div className={dbStyles.badgeDetailsHeading}>
-                                    {LocaleStrings.DigitalBadgeSubPageTitle}
-                                  </div>
-                                )}
-                                <div className={dbStyles.badgeDetailsContainer}>
-                                  <div className={dbStyles.badgeBtnArea}>
-                                    <div className={`profileContainer ${dbStyles.profileArea}`}>
-                                      {this.state.profileImage.url &&
-                                        this.state.hasAccepted &&
-                                        this.state.hasImageSelected &&
-                                        this.state.profileImage.url !==
-                                        "../assets/images/noimage.png" && (
-                                          <div
-                                            id="forDomToImage"
-                                            style={{ maxWidth: "700px" }}
-                                          >
-                                            <img
-                                              style={{
-                                                width: `120px`,
-                                              }}
-                                              src={this.state.profileImage.url}
-                                              id={"profileImage"}
-                                              alt={LocaleStrings.ProfileImageAlt}
-                                            />
-                                            <img
-                                              style={{
-                                                width: `120px`,
-                                                marginTop: `-120px`,
-                                              }}
-                                              id={"badgeImage"}
-                                              alt={LocaleStrings.BadgeImageAlt}
-                                              src={this.state.imageURL}
-                                            />
-                                          </div>
-                                        )}
-                                      {this.state.profileImage.url &&
-                                        this.state.profileImage.url ===
-                                        "../assets/images/noimage.png" &&
-                                        this.state.hasAccepted &&
-                                        this.state.hasImageSelected && (
-                                          <div
-                                            id="forDomToImage"
-                                            style={{ maxWidth: "700px" }}
-                                          >
-                                            <img
-                                              src={require("../assets/images/noimage.png")}
-                                              style={{ width: `120px` }}
-                                              id={"profileImage"}
-                                              alt={LocaleStrings.ProfileImageAlt}
-                                            />
-                                            <div className={"profiletext"}>
-                                              {this.state.userletters}
-                                            </div>
-                                            <img
-                                              style={{
-                                                width: `120px`,
-                                                marginTop: `-120px`,
-                                              }}
-                                              id={"badgeImage"}
-                                              alt={LocaleStrings.BadgeImageAlt}
-                                              src={this.state.imageURL}
-                                            />
-                                          </div>
-                                        )}
-                                      {!this.state.profileImage.url &&
-                                        this.state.hasAccepted &&
-                                        this.state.hasImageSelected && (
-                                          <div>
-                                            <img
-                                              src={require("../assets/images/noprofile.png")}
-                                              id={"photoStuff"}
-                                              alt={LocaleStrings.NoProfileImageAlt}
-                                              aria-hidden="true"
-                                              style={{ width: "150px", height: "auto" }}
-                                            />
-                                          </div>
-                                        )}
-                                    </div>
-                                    {!this.state.isApplying &&
-                                      this.state.profileImage.url &&
-                                      this.state.hasAccepted &&
-                                      this.state.hasImageSelected &&
-                                      !this.state.isApplying &&
-                                      !this.state.isApplied && (
-                                        <div className={`buttonContainer ${dbStyles.buttonArea}`}>
-                                          <PrimaryButton
-                                            className={`${primaryButton(contextCSS)} ${dbStyles.applyBtn}`}
-                                            onClick={this._onApplyProfileImage}
-                                            ariaLabel={LocaleStrings.ApplyButtonText}
-                                            ariaDescription={
-                                              LocaleStrings.ApplyButtonAriaDescription
-                                            }
-                                            disabled={
-                                              this.state.isApplying ||
-                                              this.state.isApplied ||
-                                              this.state.error.length > 0
-                                            }
-                                            title={LocaleStrings.ApplyButton}
-                                          >
-                                            <Icon iconName="Completed" className={dbStyles.acceptIcon} />
-                                            {LocaleStrings.ApplyButtonText}
-                                          </PrimaryButton>
-                                          <br />
-                                          {this.state.profileImage.url !==
-                                            "../assets/images/noimage.png" && (
-                                              <div className={dbStyles.downloadArea}>
-                                                <PrimaryButton
-                                                  iconProps={{
-                                                    iconName: "Download"
-                                                  }}
-                                                  className={`${primaryButton(contextCSS)} ${dbStyles.downloadBtn}`}
-                                                  title={this.state.imageDownloaded
-                                                    ? LocaleStrings.DownloadedButtonSecondaryText
-                                                    : LocaleStrings.DownloadButtonSecondaryText}
-                                                  onClick={this._onDownloadImage}
-                                                  ariaLabel={
-                                                    LocaleStrings.DownloadButtonText
-                                                  }
-                                                  ariaDescription={
-                                                    LocaleStrings.DownloadButtonAriaDescription
-                                                  }
-                                                  disabled={
-                                                    this.state.isApplying ||
-                                                    this.state.isApplied ||
-                                                    this.state.imageDownloaded
-                                                  }
-                                                >
-                                                  {this.state.downloadText}
-                                                </PrimaryButton>
-                                              </div>
-                                            )}
-                                        </div>
-                                      )}
-                                  </div>
-                                  <div className={dbStyles.badgeDetailsText}>
-                                    {this.state.hasAccepted &&
-                                      this.state.hasImageSelected &&
-                                      !this.state.isApplied &&
-                                      this.state.profileImage.url &&
-                                      this.state.profileImage.url !==
-                                      "../assets/images/noimage.png" && (
-                                        <p
-                                          dangerouslySetInnerHTML={this.createMarkup(
-                                            LocaleStrings.PreApplyDisclaimer,
-                                            anchorClass
-                                          )}
-                                        />
-                                      )}
-                                    {this.state.hasAccepted &&
-                                      this.state.hasImageSelected &&
-                                      !this.state.isApplied &&
-                                      this.state.profileImage.url && (
-                                        <p
-                                          dangerouslySetInnerHTML={this.createMarkup(
-                                            LocaleStrings.PreApplyDisclaimer1,
-                                            anchorClass
-                                          )}
-                                        />
-                                      )}
-                                  </div>
-                                </div>
-                                {!this.state.profileImage.url &&
-                                  this.state.hasAccepted &&
-                                  this.state.hasImageSelected && (
-                                    <p
-                                      dangerouslySetInnerHTML={this.createMarkup(
-                                        LocaleStrings.NoProfileImageDescription,
-                                        anchorClass
-                                      )}
-                                    />
-                                  )}
-                                {!this.state.isApplying && (
-                                  <div className={"buttonContainer"}>
-                                    {!this.state.hasAccepted &&
-                                      this.state.showAccept && (
-                                        <PrimaryButton
-                                          className={primaryButton(contextCSS) + " " + dbStyles.acceptBtn}
-                                          onClick={this.onUserAcceptance}
-                                          ariaLabel={LocaleStrings.AcceptButtonText}
-                                          ariaDescription={
-                                            LocaleStrings.AcceptButtonAriaDescription
-                                          }
-                                          title={LocaleStrings.AcceptButtonText}
-                                        >
-                                          <Icon iconName="Completed" className={dbStyles.acceptIcon} />
-                                          {LocaleStrings.AcceptButtonText}
-                                        </PrimaryButton>
-                                      )}
-                                    {!this.state.hasAccepted &&
-                                      !this.state.showAccept && (
-                                        <p
-                                          className={"description"}
-                                          style={{ color: "red" }}
-                                          dangerouslySetInnerHTML={this.createMarkup(
-                                            LocaleStrings.UnauthorizedText
-                                          )}
-                                        />
-                                      )}
-                                  </div>
-                                )}
-                                {this.state.isApplying &&
-                                  !this.state.isApplied && (
-                                    <div className={"applySpinnerContainer"}>
-                                      <Spinner
-                                        ariaLabel={LocaleStrings.ApplySpinnerLabel}
-                                        size={SpinnerSize.large}
-                                        label={LocaleStrings.ApplySpinnerLabel}
-                                        ariaLive="assertive"
-                                      />
-                                    </div>
-                                  )}
-                                {this.state.isApplied &&
-                                  !this.state.isApplying && (
-                                    <div className={"messagingContainer"}>
-                                      <MessageBar
-                                        ariaLabel={LocaleStrings.DigitalBadgeSuccessMessage}
-                                        messageBarType={MessageBarType.success}
-                                      >
-                                        <span
-                                          dangerouslySetInnerHTML={this.createMarkup(
-                                            LocaleStrings.DigitalBadgeSuccessMessage,
-                                            anchorClass
-                                          )}
-                                        />
-                                      </MessageBar>
-                                    </div>
-                                  )}
-                                {this.state.error && (
-                                  <div className={"messagingContainer"}>
-                                    <MessageBar
-                                      ariaLabel={this.state.error}
-                                      messageBarType={MessageBarType.error}
-                                    >
-                                      {this.state.error}
-                                    </MessageBar>
-                                  </div>
-                                )}
-                              </section>
-                            )}
-                            <canvas
-                              id="profileCanvas"
-                              width={this.state.profileImage.width}
-                              height={this.state.profileImage.width}
-                              style={{ display: "none" }}
-                            ></canvas>
-                            <canvas
-                              id="profileCanvasDownload"
-                              width={this.state.profileImage.width}
-                              height={this.state.profileImage.width}
-                              style={{ display: "none" }}
-                            ></canvas>
+          <>
+            <div className={dbStyles.dbPanelHeader}>
+              <div className={dbStyles.digitalBadgePath}>
+                <img src={require("../assets/CMPImages/BackIcon.png")}
+                  className={dbStyles.backImg}
+                  alt={LocaleStrings.BackButton}
+                  aria-hidden="true"
+                />
+                <span
+                  className={dbStyles.backLabel}
+                  onClick={this.props.clickcallback}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(evt: any) => { if (evt.key === strings.stringEnter || evt.key === strings.stringSpace) this.props.clickcallback(); }}
+                  aria-label={this.props.appTitle}
+                >
+                  <span title={this.props.appTitle}>
+                    {this.props.appTitle}
+                  </span>
+                </span>
+                <span className={dbStyles.border} aria-live="polite" role="alert" aria-label={LocaleStrings.DigitalBadgePageTitle + " Page"} />
+                <span className={dbStyles.digitalBadgeLabel}>{LocaleStrings.DigitalBadgePageTitle}</span>
+              </div>
+            </div>
+            <div className={dbStyles.dbPanelBody}>
+              <div className={dbStyles.digitalBadge}>
+                <div className={`container ${dbStyles.dbContainer}`}>
+                  {this.state.isLoading && (
+                    <Spinner
+                      size={SpinnerSize.large}
+                      ariaLabel={LocaleStrings.LoadingSpinnerLabel}
+                      label={LocaleStrings.LoadingSpinnerLabel}
+                      area-hidden={true}
+                    />
+                  )}
+                  {!this.state.isLoading && (
+                    <section aria-live="polite" className={dbStyles.contentSection}>
+                      <div className={dbStyles.introPageBox}>
+                        {!this.state.hasAccepted && (
+                          <div className={dbStyles.divChild1}>
+                            <h2>
+                              <div className={dbStyles.imgText}>
+                                {LocaleStrings.PreAcceptPageTitle}
+                              </div>
+                            </h2>
+                            <img
+                              src={require("../assets/CMPImages/AppBanner.png")}
+                              className={dbStyles.bannerimage}
+                              alt={LocaleStrings.DigitalBadgeAppBannerAltText}
+                            />
                           </div>
+                        )}
+                        <div className={dbStyles.divChild2}>
+                          {!this.state.hasAccepted &&
+                            this.state.showAccept && (
+                              <>
+                                <p dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.PreAcceptDisclaimer)} />
+                                <p dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.PreAcceptDisclaimer1)} />
+                                <p dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.PreAcceptDisclaimer2)} />
+                              </>
+                            )}
+                          <br />
+                          {!this.state.hasAccepted &&
+                            this.state.showAccept && (
+                              <p dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.PreAcceptDisclaimer3)} />
+                            )}
+                          {!this.state.hasAccepted &&
+                            !this.state.showAccept && (
+                              <div>
+                                <p dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.NotQualifiedPreAcceptDisclaimer)} />
+                                <p onClick={this.props.clickcallback}>{LocaleStrings.HowtoGetDigitalBadgeText}</p>
+                              </div>
+                            )}
                         </div>
-                        <div hidden={true} style={styles.section}>
-                          {this.state.entityId}
+                      </div>
+                      {this.state.hasAccepted && !this.state.hasImageSelected && (
+                        <div className={dbStyles.badgeList}>
+                          <p dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.MultipleBadgeMessage)} />
+                          {this.state.noBadgesFlag && (
+                            <p dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.NoBadgeMessage)} />
+                          )}
+                          <List
+                            className={dbStyles.listGrid}
+                            items={this.state.allBadgeImages}
+                            renderedWindowsAhead={6}
+                            getItemCountForPage={this.getItemCountForPageService}
+                            getPageHeight={() => this.commonServiceManager.getPageHeight(this.rowHeight, this.ROWS_PER_PAGE)}
+                            onRenderCell={this.onRenderCell}
+                          />
                         </div>
-                      </PanelBody>
-                      <PanelFooter>
-                        <div style={styles.footer}></div>
-                      </PanelFooter>
-                    </Panel>
-                  </Surface>
-                );
-              }}
-            ></ConnectedComponent>
-          </TeamsComponentContext>
+                      )}
+                      {this.state.hasAccepted && this.state.hasImageSelected && (
+                        <h2>
+                          <div className={dbStyles.badgeDetailsHeading}>{LocaleStrings.DigitalBadgeSubPageTitle}</div>
+                        </h2>
+                      )}
+                      <div className={dbStyles.badgeDetailsContainer}>
+                        <div className={dbStyles.badgeBtnArea}>
+                          <div className={`${dbStyles.profileContainer} ${dbStyles.profileArea}`}>
+                            {this.state.profileImage.url &&
+                              this.state.hasAccepted &&
+                              this.state.hasImageSelected &&
+                              this.state.profileImage.url !==
+                              "../assets/images/noimage.png" && (
+                                <div style={{ maxWidth: "700px" }} aria-label={LocaleStrings.DigitalBadgeLabel} role="img">
+                                  <img
+                                    style={{ width: `120px` }}
+                                    src={this.state.profileImage.url}
+                                    className={dbStyles.profileImage}
+                                    alt={LocaleStrings.ProfileImageAlt}
+                                    aria-hidden="true"
+                                  />
+                                  <img
+                                    style={{ width: `120px`, marginTop: `-120px` }}
+                                    className={dbStyles.badgeImage}
+                                    alt={LocaleStrings.BadgeImageAlt}
+                                    src={this.state.imageURL}
+                                    aria-hidden="true"
+                                  />
+                                </div>
+                              )}
+                            {this.state.profileImage.url &&
+                              this.state.profileImage.url ===
+                              "../assets/images/noimage.png" &&
+                              this.state.hasAccepted &&
+                              this.state.hasImageSelected && (
+                                <div style={{ maxWidth: "700px" }} aria-label={LocaleStrings.DigitalBadgeLabel} role="img">
+                                  <img
+                                    src={require("../assets/images/noimage.png")}
+                                    style={{ width: `120px` }}
+                                    className={dbStyles.profileImage}
+                                    alt={LocaleStrings.ProfileImageAlt}
+                                    aria-hidden="true"
+                                  />
+                                  <div className={dbStyles.profiletext}>{this.state.userletters}</div>
+                                  <img
+                                    style={{ width: `120px`, marginTop: `-120px` }}
+                                    className={dbStyles.badgeImage}
+                                    alt={LocaleStrings.BadgeImageAlt}
+                                    src={this.state.imageURL}
+                                    aria-hidden="true"
+                                  />
+                                </div>
+                              )}
+                            {!this.state.profileImage.url &&
+                              this.state.hasAccepted &&
+                              this.state.hasImageSelected && (
+                                <div>
+                                  <img
+                                    src={require("../assets/images/noprofile.png")}
+                                    id="photoStuff"
+                                    alt={LocaleStrings.NoProfileImageAlt}
+                                    style={{ width: "150px", height: "auto" }}
+                                  />
+                                </div>
+                              )}
+                          </div>
+                          {!this.state.isApplying &&
+                            this.state.profileImage.url &&
+                            this.state.hasAccepted &&
+                            this.state.hasImageSelected &&
+                            !this.state.isApplied && (
+                              <div className={dbStyles.buttonArea}>
+                                <PrimaryButton
+                                  className={dbStyles.applyBtn}
+                                  onClick={this._onApplyProfileImage}
+                                  ariaLabel={LocaleStrings.ApplyButtonText}
+                                  ariaDescription={LocaleStrings.ApplyButtonAriaDescription}
+                                  disabled={
+                                    this.state.isApplying ||
+                                    this.state.isApplied ||
+                                    this.state.error.length > 0
+                                  }
+                                  title={LocaleStrings.ApplyButton}
+                                >
+                                  <Icon iconName="Completed" className={dbStyles.acceptIcon} />
+                                  {LocaleStrings.ApplyButtonText}
+                                </PrimaryButton>
+                                <br />
+                                {this.state.profileImage.url !==
+                                  "../assets/images/noimage.png" && (
+                                    <div className={dbStyles.downloadArea}>
+                                      <PrimaryButton
+                                        iconProps={{ iconName: "Download" }}
+                                        className={dbStyles.downloadBtn}
+                                        title={this.state.imageDownloaded
+                                          ? LocaleStrings.DownloadedButtonSecondaryText
+                                          : LocaleStrings.DownloadButtonSecondaryText}
+                                        onClick={this._onDownloadImage}
+                                        ariaLabel={LocaleStrings.DownloadButtonText}
+                                        ariaDescription={LocaleStrings.DownloadButtonAriaDescription}
+                                        disabled={
+                                          this.state.isApplying ||
+                                          this.state.isApplied ||
+                                          this.state.imageDownloaded
+                                        }
+                                      >
+                                        {this.state.downloadText}
+                                      </PrimaryButton>
+                                    </div>
+                                  )}
+                              </div>
+                            )}
+                        </div>
+                        <div className={dbStyles.badgeDetailsText}>
+                          {this.state.hasAccepted &&
+                            this.state.hasImageSelected &&
+                            !this.state.isApplied &&
+                            this.state.profileImage.url &&
+                            this.state.profileImage.url !==
+                            "../assets/images/noimage.png" && (
+                              <p dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.PreApplyDisclaimer)} />
+                            )}
+                          {this.state.hasAccepted &&
+                            this.state.hasImageSelected &&
+                            !this.state.isApplied &&
+                            this.state.profileImage.url && (
+                              <>
+                                <p dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.PreApplyDisclaimer1)} />
+                                <p dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.PreApplyDisclaimer2)} />
+                              </>
+                            )}
+                        </div>
+                      </div>
+                      {!this.state.profileImage.url &&
+                        this.state.hasAccepted &&
+                        this.state.hasImageSelected && (
+                          <p className={dbStyles.noProfileDescription} dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.NoProfileImageDescription)} />
+                        )}
+                      {this.state.isApplying &&
+                        !this.state.isApplied && (
+                          <div className={dbStyles.applySpinnerContainer}>
+                            <Spinner
+                              ariaLabel={LocaleStrings.ApplySpinnerLabel}
+                              size={SpinnerSize.large}
+                              label={LocaleStrings.ApplySpinnerLabel}
+                              ariaLive="polite"
+                              role="alert"
+                            />
+                          </div>
+                        )}
+                      {this.state.isApplied &&
+                        !this.state.isApplying && (
+                          <div className={dbStyles.messagingContainer}>
+                            <MessageBar
+                              aria-label={LocaleStrings.DigitalBadgeSuccessMessage}
+                              messageBarType={MessageBarType.success}
+                              aria-live='polite'
+                              role="alert"
+                            >
+                              <span dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.DigitalBadgeSuccessMessage)} />
+                            </MessageBar>
+                          </div>
+                        )}
+                      {this.state.error && (
+                        <div className={dbStyles.messagingContainer}>
+                          <MessageBar
+                            aria-label={this.state.error}
+                            messageBarType={MessageBarType.error}
+                            aria-live="polite"
+                            role="alert"
+                          >
+                            {this.state.error}
+                          </MessageBar>
+                        </div>
+                      )}
+                      <div className={dbStyles.navigateBackAndAcceptBtnWrapper}>
+                        <DefaultButton
+                          text={LocaleStrings.BackButton}
+                          title={LocaleStrings.BackButton}
+                          iconProps={{ iconName: 'NavigateBack' }}
+                          onClick={this.navigateBack}
+                          disabled={this.state.isApplying}
+                          className={dbStyles.navigateBackBtn}
+                        />
+                        {!this.state.isApplying && (
+                          <div>
+                            {!this.state.hasAccepted &&
+                              this.state.showAccept && (
+                                <PrimaryButton
+                                  className={dbStyles.acceptBtn}
+                                  onClick={this.onUserAcceptance}
+                                  ariaLabel={LocaleStrings.AcceptButtonText}
+                                  ariaDescription={LocaleStrings.AcceptButtonAriaDescription}
+                                  title={LocaleStrings.AcceptButtonText}
+                                >
+                                  <Icon iconName="Completed" className={dbStyles.acceptIcon} />
+                                  {LocaleStrings.AcceptButtonText}
+                                </PrimaryButton>
+                              )}
+                            {!this.state.hasAccepted &&
+                              !this.state.showAccept && (
+                                <p className={dbStyles.unAuthorizedText} dangerouslySetInnerHTML={this.createMarkup(LocaleStrings.UnauthorizedText)} />
+                              )}
+                          </div>
+                        )}
+                      </div>
+                    </section>
+                  )}
+                  <canvas
+                    id="profileCanvas"
+                    width={this.state.profileImage.width}
+                    height={this.state.profileImage.width}
+                    aria-hidden="true"
+                  />
+                  <canvas
+                    id="profileCanvasDownload"
+                    width={this.state.profileImage.width}
+                    height={this.state.profileImage.width}
+                    aria-hidden="true"
+                  />
+                </div>
+              </div>
+            </div>
+          </>
         )}
       </div>
     );
   }
+
   public createMarkup(markup: string, anchorClass: string = "") {
     if (markup.indexOf(strings.ANCHOR_ID) !== -1 && anchorClass !== "") {
       markup = markup.replace(strings.ANCHOR_ID, anchorClass);
     }
     return { __html: markup };
   }
-  public getPhotoBits(): Promise<any> {
+  public async getPhotoBits(): Promise<any> {
     let canvas: any = document.getElementById("profileCanvas");
     if (canvas.msToBlob) {
       // for IE
       console.log("Function msToBlob found. Using existing function.");
-      return new Promise<Blob>((resolve: (arg0: any) => void) => {
-        resolve(canvas.msToBlob());
-      });
+      return Promise.resolve(canvas.msToBlob());
     } else {
       // other browsers ** this isn't currently working **
       console.log("Function msToBlob not found. Using custom function.");
@@ -792,14 +686,12 @@ export default class DigitalBadge extends TeamsBaseComponent<
     let promise: Promise<any> = new Promise<any>(
       (resolve: any, _reject: any) => {
         const canvas: any = document.getElementById("profileCanvas");
-        const canvasDownload: any = document.getElementById(
-          "profileCanvasDownload"
-        );
+        const canvasDownload: any = document.getElementById("profileCanvasDownload");
         const context = canvas.getContext("2d");
         const contextDownload = canvasDownload.getContext("2d");
         const profileImageObj: HTMLImageElement = new Image();
         const badgeImageObj: HTMLImageElement = new Image();
-        profileImageObj.src = profileImage.url;        
+        profileImageObj.src = profileImage.url;
         badgeImageObj.src = this.state.imageURL;
         profileImageObj.onload = () => {
           context.drawImage(
@@ -834,21 +726,19 @@ export default class DigitalBadge extends TeamsBaseComponent<
     let promise: Promise<any> = new Promise<any>(
       (resolve: any, _reject: any) => {
         const canvas: any = document.getElementById("profileCanvas");
-        const canvasDownload: any = document.getElementById(
-          "profileCanvasDownload"
-        );
+        const canvasDownload: any = document.getElementById("profileCanvasDownload");
         const context = canvas.getContext("2d");
         const contextDownload = canvasDownload.getContext("2d");
         const profileImageObj: HTMLImageElement = new Image();
         const badgeImageObj: HTMLImageElement = new Image();
         profileImage.width = 100;
-        profileImage.url = "../assets/images/noimage.png";        
+        profileImage.url = "../assets/images/noimage.png";
         this.setState({
           profileImage: profileImage,
         });
         profileImageObj.src = require("../assets/images/noimage.png");
         //To avoid CORS issue in CDN enabled tenants
-        profileImageObj.crossOrigin= "Anonymous";
+        profileImageObj.crossOrigin = "Anonymous";
         badgeImageObj.src = this.state.imageURL;
         profileImageObj.onload = () => {
           context.font = "32px Arial";
@@ -929,7 +819,6 @@ export default class DigitalBadge extends TeamsBaseComponent<
 
     if (canvasDownload.msToBlob) {
       // for IE
-      let blob = canvasDownload.msToBlob();
       this.setState({ downloadText: LocaleStrings.DownloadedButtonText });
     } else {
       // other browsers
@@ -950,6 +839,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
   public onUserAcceptance(): void {
     this.setState({
       hasAccepted: true,
+      digitalBadgeScreen: strings.digitalBadgeScreen2
     });
     this.getAllBadgeImages();
   }
@@ -966,7 +856,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
               .api("me/photo/$value")
               .version("v1.0")
               .header("Content-Type", "image/jpeg")
-              .put(blob, (errDb, _res, rawresponse) => {
+              .put(blob, (errDb: any, _res: any) => {
                 if (!errDb) {
                   resolve(_res);
                 }
@@ -997,10 +887,10 @@ export default class DigitalBadge extends TeamsBaseComponent<
               .version("v1.0")
               .headers({ "Content-Type": "blob", responseType: "blob" })
               .get()
-              .then((data) => {
+              .then((data: any) => {
                 resolve(data);
               })
-              .catch((errDb) => {
+              .catch((errDb: any) => {
                 reject(errDb);
               });
           });
@@ -1020,7 +910,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
               .version("v1.0")
               .headers({ "Content-Type": "blob", responseType: "blob" })
               .get()
-              .then((data) => {
+              .then((data: any) => {
                 resolve(data);
               });
           });
@@ -1029,22 +919,20 @@ export default class DigitalBadge extends TeamsBaseComponent<
     return photoPromise;
   }
 
-  public showUserInformation(_upn1: string) {
+  //Get and Process Profile photo data and update Canvas Elements.
+  public showUserInformation() {
     let currentProfileImageObj: IProfileImage = { url: "", width: 0 };
     this.getgraphMyPhotoBitsUrl()
       .then((blob) => {
         let blobUrl = URL.createObjectURL(blob);
         currentProfileImageObj.url = blobUrl;
-        $("#photoStuff").attr("src", blobUrl);
+        document.querySelector("#photoStuff")?.setAttribute("src", blobUrl);
         currentProfileImageObj.url = blobUrl;
       })
-      .then((_asd) => {
+      .then(() => {
         this.getgraphMyPhotoApiUrl().then((json) => {
           currentProfileImageObj.width = json.width;
-          this.setState({
-            profileImage: currentProfileImageObj,
-          });
-          this.forceUpdate();
+          this.setState({ profileImage: currentProfileImageObj });
           this._onRenderCanvas(currentProfileImageObj);
         });
       })
@@ -1059,7 +947,7 @@ export default class DigitalBadge extends TeamsBaseComponent<
     let queryParams = { upn: "", tenantId: "" };
     alert("Request query string params: " + location.search);
     location.search
-      .substr(1)
+      .substring(1)
       .split("&")
       .forEach((item) => {
         let s = item.split("="),

@@ -1,25 +1,30 @@
-import * as React from "react";
-import Button from "react-bootstrap/esm/Button";
-import "../scss/Championleaderboard.scss";
+import {
+  ISPHttpClientOptions, SPHttpClient,
+  SPHttpClientResponse
+} from "@microsoft/sp-http";
+import { sp } from "@pnp/sp";
+import "@pnp/sp/items";
+import "@pnp/sp/lists";
+import "@pnp/sp/webs";
+import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import * as _ from "lodash";
+import { Icon, initializeIcons } from "office-ui-fabric-react";
 import { Dropdown, IDropdownOption, IDropdownStyles } from "office-ui-fabric-react/lib/Dropdown";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
-import * as _ from "lodash";
-import { sp } from "@pnp/sp";
-import {
-  SPHttpClient,
-  SPHttpClientResponse,
-  ISPHttpClientOptions,
-} from "@microsoft/sp-http";
-import "@pnp/sp/webs";
-import "@pnp/sp/lists";
-import "@pnp/sp/items";
-import { Icon, initializeIcons } from "office-ui-fabric-react";
-import siteconfig from "../config/siteconfig.json";
-import * as LocaleStrings from 'ClbHomeWebPartStrings';
-import * as stringsConstants from "../constants/strings";
-import { IConfigList } from './ManageConfigSettings';
+import { Dialog, DialogType } from '@fluentui/react/lib/Dialog';
+import * as React from "react";
+import Button from "react-bootstrap/esm/Button";
 import commonServices from "../Common/CommonServices";
-
+import siteconfig from "../config/siteconfig.json";
+import * as stringsConstants from "../constants/strings";
+import "../scss/Championleaderboard.scss";
+import { IConfigList } from './ManageConfigSettings';
+import RecordEvents from "./RecordEvents";
+import ChampionEvents from "./ChampionEvents";
+import EventsChart from "./EventsChart";
+import Row from "react-bootstrap/esm/Row";
+import Col from "react-bootstrap/esm/Col";
+import { Person } from "@microsoft/mgt-react/dist/es6/spfx";
 
 initializeIcons();
 
@@ -31,6 +36,8 @@ export interface ISidebarStateProps {
   onClickCancel: () => void; //will redirects to back/home
   callBack?: Function;
   siteUrl: string;
+  setEventsSubmissionMessage?: Function;
+  currentThemeName?: string;
 }
 interface IUserDetail {
   ID: number;
@@ -39,8 +46,6 @@ interface IUserDetail {
 export class ISPLists {
   public value: ISPList[];
 }
-
-
 export class ISPList {
   public Title: string;
   public FirstName: string;
@@ -53,7 +58,6 @@ export class ISPList {
   public Group: string;
   public FocusArea: string;
 }
-
 interface IState {
   currentUser: ISPList;
   UserDetails: Array<any>;
@@ -83,6 +87,11 @@ interface IState {
   regionColumnName: string;
   countryColumnName: string;
   groupColumnName: string;
+  showRecordEventPopup: boolean;
+  showDashBoardPopup: boolean;
+  memberEvents: Array<any>;
+  selectedMemberID: string;
+  isDesktop: boolean;
 }
 export interface EventList {
   Title: string;
@@ -126,7 +135,12 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       memberListColumnNames: [],
       regionColumnName: "",
       countryColumnName: "",
-      groupColumnName: ""
+      groupColumnName: "",
+      showRecordEventPopup: false,
+      showDashBoardPopup: false,
+      memberEvents: [],
+      selectedMemberID: "",
+      isDesktop: true
     };
     this.handleInput = this.handleInput.bind(this);
     this._createorupdateItem = this._createorupdateItem.bind(this);
@@ -135,6 +149,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     this.optionsEventsList = this.optionsEventsList.bind(this);
     this.onFocusAreaChange = this.onFocusAreaChange.bind(this);
     this.populateColumnNames = this.populateColumnNames.bind(this);
+    this.updateRecordEventsPopupState = this.updateRecordEventsPopupState.bind(this);
 
     //Create object for CommonServices class
     commonServiceManager = new commonServices(
@@ -157,8 +172,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
   }
 
   public optionsEventsList() {
-    let optionArray = [];
-    let optionArrayIds = [];
+    let optionArray: any = [];
+    let optionArrayIds: any = [];
     if (this.state.edetails.length == 0)
       this.props.context.spHttpClient
         .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Events List')/Items", SPHttpClient.configurations.v1)
@@ -201,7 +216,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
   };
 
   public handleInput(event: any, key: string) {
-    let user = this.state.currentUser;
+    let user: any = this.state.currentUser;
     user[key] = event.target.value;
     this.setState({ currentUser: user });
   }
@@ -219,7 +234,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
-        response.json().then((regions) => {
+        response.json().then((regions: any) => {
           if (!regions.error) {
             this.props.context.spHttpClient
               .get(
@@ -232,7 +247,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
               )
               // tslint:disable-next-line:no-shadowed-variable
               .then((response: SPHttpClientResponse) => {
-                response.json().then((countries) => {
+                response.json().then((countries: any) => {
                   if (!countries.error) {
                     this.setState({
                       regions: regions.Choices,
@@ -255,7 +270,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
-        response.json().then((roles) => {
+        response.json().then((roles: any) => {
           if (!roles.error) {
             this.props.context.spHttpClient
               .get(
@@ -268,7 +283,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
               )
               // tslint:disable-next-line: no-shadowed-variable
               .then((response: SPHttpClientResponse) => {
-                response.json().then((status) => {
+                response.json().then((status: any) => {
                   if (!status.error) {
                     this.setState({
                       roles: roles.Choices,
@@ -280,6 +295,33 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
           }
         });
       });
+    // Adding window resize event listener while mounting the component
+    window.addEventListener("resize", this.resize.bind(this));
+    this.resize();
+    //set css properties to Person card control
+    this.updatePersonCardCSS();
+  }
+
+  // Set the state object for screen size
+  resize = () => this.setState({ isDesktop: window.innerWidth > 568 });
+
+  //set css properties to Person card control
+  public updatePersonCardCSS() {
+    setTimeout(() => {
+      const sidebarPersonWrapper = document.getElementById("sidebar-person-wrapper")?.querySelector("mgt-person")
+        ?.shadowRoot?.querySelector("mgt-flyout")?.querySelector(".vertical");
+      sidebarPersonWrapper?.setAttribute("style", "row-gap:10px;");
+      if (this.state.isDesktop) {
+        sidebarPersonWrapper?.querySelector(".avatar-wrapper")?.setAttribute("style", "width: 100px; height: 100px;");
+        sidebarPersonWrapper?.querySelector(".details-wrapper")?.querySelector(".line1")?.setAttribute("style",
+          "width: 180px;overflow-wrap: break-word;text-align: center;");
+      }
+      else {
+        sidebarPersonWrapper?.querySelector(".avatar-wrapper")?.setAttribute("style", "");
+        sidebarPersonWrapper?.querySelector(".details-wrapper")?.querySelector(".line1")
+          ?.setAttribute("style", "font-size:14px;width: 140px;overflow-wrap: break-word;text-align: center;");
+      }
+    }, 5000);
   }
 
   public async componentDidUpdate(prevProps: Readonly<ISidebarStateProps>, prevState: Readonly<IState>, snapshot?: any) {
@@ -318,6 +360,16 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       if (this.state.configListSettings.length > 0 && this.state.memberListColumnNames.length > 0)
         this.populateColumnNames();
     }
+
+    if (prevState.isDesktop !== this.state.isDesktop) {
+      //set css properties to Person card control
+      this.updatePersonCardCSS();
+    }
+  }
+
+  // Before unmounting, remove event listener
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.resize.bind(this));
   }
 
   //Get current user's details from Member list and Event track details to display rank and points on side bar
@@ -341,13 +393,16 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                 SPHttpClient.configurations.v1
               )
               .then((response: SPHttpClientResponse) => {
-                response.json().then((datada) => {
+                response.json().then((datada: any) => {
                   let memberDataIds = datada.value.find(
                     (d: { Title: string }) =>
                       d.Title.toLowerCase() === datauser.Email.toLowerCase()
                   );
                   let memberData =
                     memberDataIds !== undefined ? memberDataIds.ID : 0;
+                  this.setState({
+                    selectedMemberID: memberData
+                  });
                   if (memberData === 0)
                     this.setState({
                       emailValue: datauser.Email,
@@ -394,7 +449,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                   this.setState({ currentUser: user });
                   if (!datada.error) {
                     let totalchamps: number = 0;
-                    totalchamps = datada.value.filter((x) =>
+                    totalchamps = datada.value.filter((x: any) =>
                       (x.Role.toLowerCase() === "champion" ||
                         x.Role.toLowerCase() === "manager") &&
                         x.Status !== null &&
@@ -420,7 +475,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                         .then((responseeventsdetails: SPHttpClientResponse) => {
                           responseeventsdetails
                             .json()
-                            .then((eventsdatauser) => {
+                            .then((eventsdatauser: any) => {
+                              this.setState({
+                                memberEvents: eventsdatauser.value
+                              });
                               if (!eventsdatauser.error) {
                                 let memberids: any = _.uniqBy(
                                   eventsdatauser.value,
@@ -648,7 +706,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       });
   }
 
-  public addDefaultSrc(ev) {
+  public addDefaultSrc(ev: any) {
     ev.target.src = require("../assets/images/noprofile.png"); //if no profile then we are showing default image
   }
 
@@ -698,58 +756,81 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     } //When an option unselected from the dropdown other than "All"
     else {
       this.setState({
-        multiSelectChoices: this.state.multiSelectChoices.filter((key) => key !== item.key && key !== stringsConstants.AllLabel)
+        multiSelectChoices: this.state.multiSelectChoices.filter((key: any) => key !== item.key && key !== stringsConstants.AllLabel)
       });
     }
   }
 
+  private updateRecordEventsPopupState(show: boolean) {
+    this.setState({ showRecordEventPopup: show });
+  }
 
   public render() {
+    const isDarkOrContrastTheme = this.props.currentThemeName === stringsConstants.themeDarkMode || this.props.currentThemeName === stringsConstants.themeContrastMode;
     return (
       <div className="Championleaderboard">
         {this.state.isLoaded && (
           <div className="sidenav">
             <div className="imagePointsArea">
-              <div>
-                {/* user profile image*/}
-                <img
-                  src={
-                    "/_layouts/15/userphoto.aspx?size=L&username=" +
-                    this.state.emailValue
-                  }
-                  className="profilepic"
-                  onError={this.addDefaultSrc}
-                  alt={displayName}
+              <div id="sidebar-person-wrapper">
+                <Person
+                  personQuery="me"
+                  view={3}
+                  personCardInteraction={1}
+                  verticalLayout={true}
+                  className="championSideBar"
                 />
-                {/* username */}
-                <div className="championname">
-                  {displayName}
-                </div>
               </div>
               {!this.state.bc && !this.state.form && (
-                <div>
-                  {/* here we are showing rank and points  */}
-                  <div className="pointcircle">
-                    <div className="insidecircle">
-                      <div className="pointsscale">
-                        <div><Icon iconName="FavoriteStarFill" id="star" className="yellowStar" /></div>
-                        <div className="pointsValueLabel">{this.state.totalUserPointsfromList} {LocaleStrings.CMPSideBarPointsLabel}</div>
-                      </div>
-                      <div className="line" />
-                      <div className="globalrank">
-                        <div>
-                          <span className="bold">{this.state.userRank} </span>
-                          {LocaleStrings.CMPSideBarGlobalRankLabel}
+                <>
+                  <div className="links-wrapper">
+                    <div className="sidebar-action-link"
+                      title={LocaleStrings.DashboardLabel}
+                      onClick={() => this.setState({ showDashBoardPopup: true })}
+                    >
+                      <img
+                        src={require("../assets/CMPImages/Dashboard.svg")}
+                        alt="dashboard"
+                        className="action-img"
+                      />
+                      <span className="action-text">{LocaleStrings.DashboardLabel}</span>
+                    </div>
+                    <div className="sidebar-action-link"
+                      title={LocaleStrings.RecordEventLabel}
+                      onClick={() => this.setState({ showRecordEventPopup: true })}
+                    >
+                      <img
+                        src={require("../assets/CMPImages/RecordEvents.svg")}
+                        alt="record events"
+                        className="action-img"
+                      />
+                      <span className="action-text">{LocaleStrings.RecordEventLabel}</span>
+                    </div>
+                  </div>
+                  <div>
+                    {/* here we are showing rank and points  */}
+                    <div className="pointcircle">
+                      <div className="insidecircle">
+                        <div className="pointsscale">
+                          <div><Icon iconName="FavoriteStarFill" id="star" className="yellowStar" /></div>
+                          <div className="pointsValueLabel">{this.state.totalUserPointsfromList} {LocaleStrings.CMPSideBarPointsLabel}</div>
                         </div>
-                        <div>
-                          of{" "}
-                          {this.state.totalUsers + " "}
-                          {LocaleStrings.CMPSideBarChampionsLabel}
+                        <div className="line" />
+                        <div className="globalrank">
+                          <div>
+                            <span className="bold">{this.state.userRank} </span>
+                            {LocaleStrings.CMPSideBarGlobalRankLabel}
+                          </div>
+                          <div>
+                            of{" "}
+                            {this.state.totalUsers + " "}
+                            {LocaleStrings.CMPSideBarChampionsLabel}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </>
               )}
               {this.state.bc && (
                 <div>
@@ -894,9 +975,52 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                 </div>
               </div>
             )}
-
-          </div>
-        )}
+            {this.state.showRecordEventPopup &&
+              <RecordEvents
+                siteUrl={this.props.siteUrl}
+                context={this.props.context}
+                showRecordEventPopup={this.state.showRecordEventPopup}
+                callBack={this.props.callBack}
+                updateRecordEventsPopupState={this.updateRecordEventsPopupState}
+                setEventsSubmissionMessage={this.props.setEventsSubmissionMessage}
+                currentThemeName={this.props.currentThemeName}
+              />
+            }
+            {this.state.showDashBoardPopup &&
+              <Dialog
+                hidden={!this.state.showDashBoardPopup}
+                onDismiss={() => this.setState({ showDashBoardPopup: false })}
+                modalProps={{
+                  isBlocking: true,
+                  className: `clb-dashboard-popup${isDarkOrContrastTheme ? " clb-dashboard-popup-" + this.props.currentThemeName : ""}`
+                }}
+                dialogContentProps={{ type: DialogType.normal, title: LocaleStrings.DashboardLabel, className: "clb-dialog-content" }}
+              >
+                <Row xl={2} lg={2} md={1} sm={1}>
+                  <Col xl={5} lg={5} md={12} sm={12}>
+                    <ChampionEvents
+                      context={this.props.context}
+                      filteredAllEvents={this.state.memberEvents}
+                      parentComponent={stringsConstants.SidebarLabel}
+                      selectedMemberID={this.state.selectedMemberID}
+                    />
+                  </Col>
+                  <Col xl={7} lg={7} md={12} sm={12}>
+                    <EventsChart
+                      siteUrl={this.props.siteUrl}
+                      context={this.props.context}
+                      filteredAllEvents={this.state.memberEvents}
+                      parentComponent={stringsConstants.SidebarLabel}
+                      selectedMemberID={this.state.selectedMemberID}
+                      currentThemeName={this.props.currentThemeName}
+                    />
+                  </Col>
+                </Row>
+              </Dialog>
+            }
+          </div >
+        )
+        }
       </div>
     );
   }

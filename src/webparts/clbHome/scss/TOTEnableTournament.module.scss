@@ -1,342 +1,414 @@
-.manageTournamentPath {
-  display: inline-flex;
-  margin-top: 36px;
-  margin-bottom: 26px;
-  text-align: center;
-  font: normal normal bold 14px/24px Segoe UI;
-  letter-spacing: 0px;
-  color: #33344A;
-  opacity: 1;
-
-  .backImg {
-    width: 7px;
-    height: 12px;
-    margin-right: 10px;
-    margin-top: 6px;
-  }
-
-  .backLabel {
-    padding-right: 10px;
-    cursor: pointer;
-  }
-
-  .border {
-    width: 0px;
-    height: 14px;
-    border: 1px solid #33344A;
-    margin-top: 5px;
-  }
-
-  .manageTournamentLabel {
-    font: normal normal bold 18px/23px Segoe UI;
-    padding-left: 10px;
-  }
-}
-
-.errorMessage {
-  color: #e12636;
-  text-align: left;
-  font: normal normal normal 18px/24px Segoe UI;
-  letter-spacing: 0px;
-  opacity: 1;
-}
-
-.successMessage {
-  text-align: left;
-  font: normal normal normal 18px/24px Segoe UI;
-  letter-spacing: 0px;
-  opacity: 1;
-  color: #000000;
-
-  .tickImage {
-    width: 28px;
-    height: 28px;
-    margin-right: 10px;
-    margin-bottom: 7px;
-  }
-}
-
-.completeBtn,
-.yesBtn,
-.noBtn {
-  background-color: #6264A7;
-  border-color: #6264A7;
-}
-
-.disabledBtn {
-  background-color: #a3a3ba !important;
-  border-color: #a3a3ba !important;
-  cursor: not-allowed !important;
-}
-
-.enableBtn {
-  background-color: #6264A7;
-  border-color: #6264A7;
-  color: #FFFFFF;
-  margin-top: 30px;
-  height: 40px;
-  opacity: 1;
-
-  i {
-    font-size: 18px;
-    font-weight: bolder;
-    color: #FFFFFF;
-    opacity: 1;
-  }
-
-  i+span>span {
-    font-size: 16px;
-  }
-}
-
-.enableBtn:hover {
-  background-color: #6264A7;
-  border-color: #6264A7;
-  color: #FFFFFF;
-  opacity: 0.9;
-}
-
-.endTrmntBtn {
-  background-color: #6264a7;
-  border-color: #6264a7;
-  margin-top: 32px;
-  margin-bottom: 20px;
-  height: 38px;
-  color: #FFFFFF;
-  opacity: 1;
-
-  i {
-    font-size: 26px;
-    font-weight: bolder;
-    color: #FFFFFF;
-    opacity: 1;
-  }
-
-  i+span>span {
-    font-size: 16px;
-  }
-}
-
-.endTrmntBtn:hover {
-  background-color: #6264a7;
-  border-color: #6264a7;
-  color: #FFFFFF;
-  opacity: 0.9;
-}
+@import '~@fluentui/react/dist/sass/References.scss';
 
 .textDialog {
-  max-width: 100%;
-  width: 400px;
-  max-height: 100%;
-  height: 200px;
-}
+  div[class~="ms-Dialog-main"] {
+    max-width: 100%;
+    width: 400px;
+    max-height: 100%;
+    height: 200px;
 
-.textDialog>div:nth-child(2)>.endTotDialougeText>div:nth-child(2)>div {
-  p[class^='ms-Dialog-subText'] {
-    color: #757575;
-  }
-}
+    .endTotDialougeText {
+      p[class~='ms-Dialog-subText'] {
+        color: #757575;
+      }
 
-.tournamentStatus {
-  text-align: left;
-  font: normal normal 600 18px/24px Segoe UI;
-  letter-spacing: 0px;
-  color: #000000;
-  opacity: 1;
-  margin-bottom: 20px;
-}
-
-.subHeaderUnderline {
-  text-align: left;
-  font: normal normal 600 18px/24px Segoe UI;
-  letter-spacing: 0px;
-  color: #000000;
-  opacity: 1;
-}
-
-.pageHeader {
-  text-align: left;
-  font: normal normal 600 24px/32px Segoe UI;
-  letter-spacing: 0px;
-  color: #000000;
-  opacity: 1;
-  margin-bottom: 20px;
-}
-
-.textLabels {
-  width: 100%;
-
-  Label {
-    text-align: left;
-    font: normal normal normal 18px/26px Segoe UI;
-    letter-spacing: 0px;
-    color: #000000;
-    opacity: 1;
-  }
-}
-
-.manageTrmntSearchBox {
-  width: 300px;
-  margin-bottom: 20px;
-
-  div[class^="ms-TextField-wrapper"]>div[class^="ms-TextField-fieldGroup"] {
-    background-color: rgb(255, 255, 255) !important;
-    border-color: rgb(138, 138, 138) !important;
-  }
-
-  div[class^="ms-TextField-wrapper"]>div[class^="ms-TextField-fieldGroup"]:hover {
-    border-color: rgb(138, 138, 138) !important;
-  }
-
-  input {
-    color: #000000;
-  }
-
-  input::placeholder {
-    color: gray;
-  }
-
-  label {
-    color: #000000;
-    font: normal normal 600 16px/22px Segoe UI;
-  }
-
-  .clearSearchIcon {
-    cursor: pointer;
-  }
-
-  .searchIcon {
-    margin: 2px 10px auto auto;
-    font-size: 18px;
-    transform: rotate(270deg);
-  }
-
-  .chromeCloseIcon {
-    margin: 6px 10px auto auto;
-  }
-}
-
-.noResultsFound {
-  font: normal normal normal 16px/24px Segoe UI;
-  color: #727170;
-  margin-left: 20px;
-}
-
-.managePendingTrmntCheckboxGrp {
-  height: 200px;
-  overflow-y: scroll;
-
-  .pendingTrmntCheckBox {
-    width: fit-content;
-
-    label {
-      margin-top: 8px;
-    }
-
-    label>span {
-      text-align: left;
-      font: normal normal 600 18px/20px Segoe UI !important;
-      letter-spacing: 0;
-      color: #727170;
-      opacity: 1;
-    }
-
-    label>span:hover {
-      color: rgb(66, 66, 66);
+      .yesBtn,
+      .noBtn {
+        background-color: #6264A7;
+        border-color: #6264A7;
+      }
     }
   }
 
-  .filteredPendingTournaments {
-    margin-left: 10px;
-  }
 }
 
-.manageActiveTrmntChoiceGrpArea {
-  height: 200px;
-  overflow-y: scroll;
-}
-
-.manageActiveTrmntChoiceGrp>div>div>div {
-  text-align: left;
-  font: normal normal 600 18px/20px Segoe UI;
-  letter-spacing: 0px;
-  color: #727170;
-  opacity: 1;
-
-  input {
-    width: fit-content;
-    height: fit-content;
-  }
-
-  label>span[class^="ms-ChoiceFieldLabel"]:hover {
-    color: rgb(66, 66, 66);
-  }
-}
-
-.manageActiveTrmntChoiceGrp>div>div>div:hover {
-  color: rgb(66, 66, 66);
-}
-
-.manageActiveTrmntChoiceGrpArea::-webkit-scrollbar,
-.managePendingTrmntCheckboxGrp::-webkit-scrollbar {
-  width: 8px;
-  background: rgb(206, 199, 199);
-  height: 100%;
-  border-radius: 8px;
-}
-
-.manageActiveTrmntChoiceGrpArea::-webkit-scrollbar-thumb,
-.managePendingTrmntCheckboxGrp::-webkit-scrollbar-thumb {
-  border-radius: 8px;
-  background: #696969;
-  box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
-  width: 8px;
-}
-
-.manageTrmntBackBtn {
-  border-color: #33344A;
-  background-color: white;
-  height: 32px;
-  margin: 5px auto 1rem;
-
-  i {
-    font-size: 17px;
-    font-weight: bolder;
-    color: #000003;
-    opacity: 1;
-  }
-
-  i+span>span {
+.manageTournamentsWrapper {
+  .manageTournamentPath {
+    display: inline-flex;
+    margin-top: 36px;
+    margin-bottom: 26px;
+    text-align: center;
     font: normal normal bold 14px/24px Segoe UI;
     letter-spacing: 0px;
-    color: #000003;
+    color: #33344A;
     opacity: 1;
-    margin-top: -3px;
+
+    .backImg {
+      width: 7px;
+      height: 12px;
+      margin-right: 10px;
+      margin-top: 6px;
+    }
+
+    .backLabel {
+      padding-right: 10px;
+      cursor: pointer;
+    }
+
+    .backLabel:focus-visible {
+      box-shadow: none;
+      outline: 2px solid #414156;
+      border-radius: 1px;
+      outline-offset: 4px;
+    }
+
+    .border {
+      width: 0px;
+      height: 14px;
+      border: 1px solid #33344A;
+      margin-top: 5px;
+    }
+
+    .manageTournamentLabel {
+      font: normal normal bold 18px/23px Segoe UI;
+      padding-left: 10px;
+    }
   }
-}
 
-.manageTrmntBackBtn:hover {
-  border-color: #33344A;
-  background-color: white;
-  color: #000003;
-}
-
-
-@media screen and (max-width: 375pt) {
+  .pageHeader {
+    text-align: left;
+    font: normal normal 600 24px/32px Segoe UI;
+    letter-spacing: 0px;
+    color: #000000;
+    opacity: 1;
+    margin-bottom: 20px;
+    width: fit-content;
+    outline-offset: 2px;
+  }
 
   .textLabels {
     width: 100%;
 
     Label {
-      text-align: justify;
+      text-align: left;
+      font: normal normal normal 18px/26px Segoe UI;
+      letter-spacing: 0px;
+      color: #000000;
+      opacity: 1;
     }
   }
 
-  .pageHeader {
-    font: normal normal 600 20px/32px Segoe UI;
+  .successMessage {
+    text-align: left;
+    font: normal normal normal 18px/24px Segoe UI;
+    letter-spacing: 0px;
+    opacity: 1;
+    color: #000000;
+
+    .tickImage {
+      width: 28px;
+      height: 28px;
+      margin-right: 10px;
+      margin-bottom: 7px;
+    }
   }
 
+  .errorMessage {
+    color: #e12636;
+    text-align: left;
+    font: normal normal normal 18px/24px Segoe UI;
+    letter-spacing: 0px;
+    opacity: 1;
+  }
+
+  .tournamentStatus {
+    text-align: left;
+    font: normal normal 600 18px/24px Segoe UI;
+    letter-spacing: 0px;
+    color: #000000;
+    opacity: 1;
+    margin-bottom: 20px;
+
+    .subHeaderUnderline {
+      text-align: left;
+      font: normal normal 600 18px/24px Segoe UI;
+      letter-spacing: 0px;
+      color: #000000;
+      opacity: 1;
+      width: fit-content;
+      outline-offset: 2px;
+    }
+  }
+
+  .manageTrmntSearchBox {
+    width: 300px;
+    margin-bottom: 20px;
+
+    div[class^="ms-TextField-wrapper"]>div[class^="ms-TextField-fieldGroup"] {
+      background-color: rgb(255, 255, 255) !important;
+      border-color: rgb(138, 138, 138) !important;
+    }
+
+    div[class^="ms-TextField-wrapper"]>div[class^="ms-TextField-fieldGroup"]:hover {
+      border-color: rgb(138, 138, 138) !important;
+    }
+
+    input {
+      color: #000000;
+    }
+
+    input::placeholder {
+      color: gray;
+    }
+
+    label {
+      color: #000000;
+      font: normal normal 600 16px/22px Segoe UI;
+    }
+
+    .clearSearchIcon {
+      cursor: pointer;
+    }
+
+    .searchIcon {
+      margin: 5px 10px auto auto;
+      font-size: 18px;
+    }
+
+    .chromeCloseIcon {
+      margin: 6px 10px auto auto;
+    }
+  }
+
+  .noResultsFound {
+    font: normal normal normal 16px/24px Segoe UI;
+    color: #727170;
+    margin-left: 20px;
+  }
+
+  .manageActiveTrmntChoiceGrpArea {
+    height: 200px;
+    overflow-y: scroll;
+
+    .manageActiveTrmntChoiceGrp>div>div>div {
+      text-align: left;
+      font: normal normal 600 18px/20px Segoe UI;
+      letter-spacing: 0px;
+      color: #727170;
+      opacity: 1;
+
+      input {
+        width: fit-content;
+        height: fit-content;
+      }
+
+      label>span[class^="ms-ChoiceFieldLabel"]:hover {
+        color: rgb(66, 66, 66);
+      }
+    }
+
+    .manageActiveTrmntChoiceGrp>div>div>div:hover {
+      color: rgb(66, 66, 66);
+    }
+  }
+
+  .endTrmntBtn {
+    background-color: #6264a7;
+    border-color: #6264a7;
+    margin-top: 32px;
+    margin-bottom: 20px;
+    height: 38px;
+    color: #FFFFFF;
+    opacity: 1;
+
+    i {
+      font-size: 16px;
+      font-weight: bolder;
+      color: #FFFFFF;
+      opacity: 1;
+    }
+
+    i+span>span {
+      font-size: 16px;
+    }
+
+    &:hover {
+      background-color: #6264a7;
+      border-color: #6264a7;
+      color: #FFFFFF;
+      opacity: 0.9;
+    }
+
+    &:disabled {
+      background-color: #a3a3ba;
+      border-color: #a3a3ba;
+      cursor: not-allowed;
+    }
+
+    &:focus::after {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+      border-radius: 3px;
+    }
+  }
+
+  .managePendingTrmntCheckboxGrp {
+    height: 200px;
+    overflow-y: scroll;
+
+    .pendingTrmntCheckBox {
+      width: fit-content;
+
+      label {
+        margin-top: 8px;
+      }
+
+      label>span {
+        text-align: left;
+        font: normal normal 600 18px/20px Segoe UI !important;
+        letter-spacing: 0;
+        color: #727170;
+        opacity: 1;
+      }
+
+      label>span:hover {
+        color: rgb(66, 66, 66);
+      }
+    }
+
+    .filteredPendingTournaments {
+      margin-left: 10px;
+    }
+  }
+
+  .enableBtn {
+    background-color: #6264A7;
+    border-color: #6264A7;
+    color: #FFFFFF;
+    margin-top: 30px;
+    height: 40px;
+    opacity: 1;
+
+    i {
+      font-size: 18px;
+      font-weight: bolder;
+      color: #FFFFFF;
+      opacity: 1;
+    }
+
+    i+span>span {
+      font-size: 16px;
+    }
+
+    &:hover {
+      background-color: #6264A7;
+      border-color: #6264A7;
+      color: #FFFFFF;
+      opacity: 0.9;
+    }
+
+    &:focus::after {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  }
+
+  .manageActiveTrmntChoiceGrpArea::-webkit-scrollbar,
+  .managePendingTrmntCheckboxGrp::-webkit-scrollbar {
+    width: 8px;
+    background: rgb(206, 199, 199);
+    height: 100%;
+    border-radius: 8px;
+  }
+
+  .manageActiveTrmntChoiceGrpArea::-webkit-scrollbar-thumb,
+  .managePendingTrmntCheckboxGrp::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background: #696969;
+    box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
+    width: 8px;
+  }
+
+  .manageTrmntBackBtn {
+    border-color: #33344A;
+    background-color: white;
+    height: 32px;
+    margin: 5px auto 1rem;
+
+    i {
+      font-size: 17px;
+      font-weight: bolder;
+      color: #000003;
+      opacity: 1;
+    }
+
+    i+span>span {
+      font: normal normal bold 14px/24px Segoe UI;
+      letter-spacing: 0px;
+      color: #000003;
+      opacity: 1;
+      margin-top: -3px;
+    }
+
+    &:hover {
+      border-color: #33344A;
+      background-color: white;
+      color: #000003;
+    }
+
+    &:focus::after {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+      border-radius: 3px;
+    }
+  }
+}
+
+.manageTournamentsWrapperDarkContrast {
+  .manageTournamentPath {
+    color: var(--colorNeutralForeground1);
+
+    .backImg {
+      filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
+    }
+
+    .backLabel {
+      color: var(--colorBrandForegroundLink);
+    }
+
+    .backLabel:focus-visible {
+      outline-color: var(--colorPaletteBlueBorderActive);
+    }
+
+    .border {
+      border-color: var(--colorNeutralForeground1);
+    }
+  }
+}
+
+
+
+@media screen and (max-width: 375pt) {
   .textDialog {
-    max-width: 90%;
+    div[class~="ms-Dialog-main"] {
+      max-width: 90%;
+    }
+  }
+
+  .manageTournamentsWrapper {
+    .textLabels {
+      width: 100%;
+
+      Label {
+        text-align: justify;
+      }
+    }
+
+    .pageHeader {
+      font: normal normal 600 20px/32px Segoe UI;
+    }
   }
 }

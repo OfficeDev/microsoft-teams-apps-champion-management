@@ -1,0 +1,589 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+@mixin fontstyles($font-weight, $font-color, $font-size, $line-height, $text-align) {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: $font-color;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: $font-weight;
+  font-size: $font-size;
+  line-height: $line-height;
+  letter-spacing: 0;
+  opacity: 1;
+  text-align: $text-align;
+}
+
+.cvDatePickerCallout {
+  .ms-Callout-main {
+    .calendarProps {
+      .ms-DatePicker-picker {
+        .ms-DatePicker-holder {
+          .ms-DatePicker-frame {
+            .ms-DatePicker-wrap {
+              .ms-DatePicker-dayPicker {
+                .ms-DatePicker-header {
+                  .ms-DatePicker-monthComponents {
+                    .ms-DatePicker-navContainer {
+                      button:hover {
+                        background-color: #D0D0D0 !important;
+                        color: #000 !important;
+                        font-weight: 600;
+                      }
+                    }
+                  }
+                }
+
+                .ms-FocusZone {
+                  table {
+                    tr {
+                      th {
+                        background-color: #f6f5f4 !important;
+                        color: #616161 !important;
+                      }
+
+                      td:hover {
+                        background-color: #D0D0D0 !important;
+                        color: #000 !important;
+                        font-weight: 600;
+                      }
+
+                      .ms-DatePicker-day--outfocus {
+                        color: #757575;
+                      }
+                    }
+                  }
+                }
+              }
+
+              .ms-DatePicker-monthPicker {
+                .ms-DatePicker-header {
+                  .ms-DatePicker-yearComponents {
+                    .ms-DatePicker-navContainer {
+                      button:hover {
+                        background-color: #D0D0D0 !important;
+                        color: #000 !important;
+                        font-weight: 600;
+                      }
+                    }
+                  }
+                }
+
+                .ms-FocusZone {
+                  .ms-DatePicker-monthOption:hover {
+                    background-color: #D0D0D0 !important;
+                    color: #000 !important;
+                    font-weight: 600;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.cvEventTypeDropdown {
+  .ms-Callout-main {
+    .ms-FocusZone {
+      button:hover {
+        background-color: #E8E8E8 !important;
+        color: #000;
+      }
+    }
+  }
+}
+
+.record-events-popup {
+  .ms-Dialog-main {
+    width: 65%;
+    max-width: none;
+    min-width: unset;
+    max-height: 420px;
+    min-height: 200px;
+    background-color: #FFFFFF;
+
+    .dialog-content {
+      .ms-Dialog-header {
+        .ms-Dialog-title {
+          min-height: 0px;
+          @include fontstyles(600, #242424, 22px, 30px, left);
+        }
+
+        .ms-Button--icon {
+          .ms-Icon {
+            color: #242424;
+            font-weight: 600;
+          }
+
+          &:hover {
+            background-color: rgb(245, 245, 245);
+
+            .ms-Icon {
+              color: #242424;
+            }
+          }
+        }
+      }
+
+      .ms-Dialog-inner {
+        padding: 0px 24px 5px !important;
+
+        .record-events-date-picker {
+          .ms-TextField-fieldGroup {
+            background-color: rgb(255, 255, 255);
+
+            .ms-TextField-field {
+              color: rgb(97, 97, 97);
+            }
+
+            .ms-DatePicker-event--with-label {
+              color: rgb(138, 138, 138);
+            }
+          }
+        }
+
+        .record-events-dropdown {
+          .ms-Dropdown-title {
+            color: #757575;
+            background-color: rgb(255, 255, 255);
+          }
+        }
+
+        .record-events-count-field,
+        .record-events-notes-field {
+          .ms-TextField-fieldGroup {
+            background-color: rgb(255, 255, 255);
+
+            input {
+              color: #000;
+            }
+
+            input::placeholder {
+              color: rgb(117, 117, 117);
+            }
+          }
+        }
+
+        .record-events-date-picker,
+        .record-events-dropdown,
+        .record-events-count-field,
+        .record-events-notes-field {
+          label {
+            @include fontstyles(600, #242424, 18px, 24px, left);
+          }
+        }
+
+        .add-event-icon {
+          color: #6264A7;
+          font-size: 28px;
+          margin-top: 30px;
+          cursor: pointer;
+        }
+
+        .error-message {
+          @include fontstyles(normal, #E12636, 16px, 21px, left);
+          margin-top: 10px;
+        }
+
+        .events-collection-table {
+          margin-top: 10px;
+
+          table {
+            border: none;
+            display: flex;
+            flex-flow: column;
+            width: 100%;
+
+            tbody {
+              flex: 1 1 auto;
+              display: block;
+              overflow-y: overlay;
+              overflow-x: hidden;
+
+              tr {
+                background-color: #fff;
+                display: table;
+                table-layout: fixed;
+
+                td {
+                  border: none;
+                  padding: .55rem .75rem .55rem .75rem;
+                  overflow-wrap: anywhere;
+                  @include fontstyles(normal, #000, 16px, 22px, left);
+
+                  .tickImage {
+                    width: 24px;
+                    height: 24px;
+                    opacity: 1;
+                  }
+
+                  .event-delete-icon {
+                    font-size: 20px;
+                    color: #616161;
+                    cursor: pointer;
+                  }
+
+                  @media screen and (max-width:375pt) {
+                    white-space: nowrap;
+                  }
+
+                }
+
+                td:nth-child(1) {
+                  width: 50px;
+                }
+
+                td:nth-child(2) {
+                  width: 20%;
+                }
+
+                td:nth-child(3) {
+                  width: 25%;
+                }
+
+                td:nth-child(4) {
+                  width: 5%;
+                }
+
+                td:nth-child(5) {
+                  width: 40%;
+                }
+
+                td:nth-child(6) {
+                  width: 5%;
+                }
+              }
+            }
+          }
+
+          /* width */
+          &::-webkit-scrollbar {
+            height: 5px;
+          }
+
+          /* Track */
+          &::-webkit-scrollbar-track {
+            background: #f1f1f1;
+          }
+
+          /* Handle */
+          &::-webkit-scrollbar-thumb {
+            background: #888;
+          }
+
+          /* Handle on hover */
+          &::-webkit-scrollbar-thumb:hover {
+            background: #555;
+          }
+        }
+
+        .submission-spinner {
+          margin-top: 15px;
+        }
+
+        .help-text {
+          @include fontstyles(normal, #616161, 16px, 21px, left);
+        }
+
+        .record-events-submit-btn {
+          display: flex;
+          margin-left: auto;
+          margin-right: 0;
+          border: 1px solid rgb(98, 100, 167);
+          background-color: rgb(98, 100, 167);
+          color: rgb(255, 255, 255);
+
+          &:hover {
+            background-color: rgb(61, 62, 102);
+            border: 1px solid rgb(61, 62, 102);
+            color: rgb(255, 255, 255);
+          }
+        }
+      }
+
+    }
+  }
+}
+
+.record-events-popup-dark {
+  .ms-Dialog-main {
+    background-color: #292929;
+
+    .dialog-content {
+      .ms-Dialog-header {
+        .ms-Dialog-title {
+          color: #fff;
+        }
+
+        .ms-Button--icon {
+          .ms-Icon {
+            color: #FFFFFF;
+          }
+
+          &:hover {
+            background-color: #FFFFFF;
+
+            .ms-Icon {
+              color: #000000;
+            }
+          }
+        }
+      }
+
+      .ms-Dialog-inner {
+        padding: 0px 24px 5px !important;
+
+        .record-events-date-picker {
+          .ms-TextField-fieldGroup {
+            background-color: #292929;
+
+            .ms-TextField-field {
+              color: #FFF;
+            }
+
+            .ms-DatePicker-event--with-label {
+              color: #FFF;
+            }
+          }
+        }
+
+        .record-events-dropdown {
+          .ms-Dropdown-title {
+            color: #FFF;
+            background-color: #292929;
+          }
+        }
+
+        .record-events-count-field,
+        .record-events-notes-field {
+          .ms-TextField-fieldGroup {
+            background-color: #292929;
+
+            input {
+              color: #FFF;
+            }
+
+            input::placeholder {
+              color: #FFF;
+            }
+          }
+        }
+
+        .record-events-date-picker,
+        .record-events-dropdown,
+        .record-events-count-field,
+        .record-events-notes-field {
+          label {
+            color: #FFF;
+          }
+        }
+
+        .add-event-icon {
+          color: #7f85f5;
+        }
+
+        .error-message {
+          color: #FFF;
+        }
+
+        .events-collection-table {
+          table {
+            tbody {
+              tr {
+                background-color: #000;
+
+                td {
+                  color: #FFF;
+
+                  .event-delete-icon {
+                    color: #7f85f5;
+                  }
+                }
+
+              }
+            }
+          }
+        }
+
+        .help-text {
+          color: #FFF;
+        }
+
+        .record-events-submit-btn {
+          border: 1px solid rgb(158, 162, 255);
+          background-color: rgb(158, 162, 255);
+          color: #000;
+
+          &:hover {
+            background-color: rgb(178, 181, 255);
+            border: 1px solid rgb(178, 181, 255);
+            color: #000;
+          }
+        }
+      }
+    }
+  }
+}
+
+.record-events-popup-contrast {
+  .ms-Dialog-main {
+    background-color: #000000;
+    border: 1px solid #FFFFFF;
+
+    .dialog-content {
+      .ms-Dialog-header {
+        .ms-Dialog-title {
+          color: #FFF;
+        }
+
+        .ms-Button--icon {
+          .ms-Icon {
+            color: #FFFFFF;
+          }
+
+          &:hover {
+            background-color: #FFFFFF;
+            color: #000;
+          }
+        }
+      }
+
+      .ms-Dialog-inner {
+        padding: 0px 24px 5px !important;
+
+        .record-events-date-picker {
+          .ms-TextField-fieldGroup {
+            background-color: #000000;
+
+            .ms-TextField-field {
+              color: #FFF;
+            }
+
+            .ms-DatePicker-event--with-label {
+              color: #FFFFFF;
+            }
+          }
+        }
+
+        .record-events-dropdown {
+          .ms-Dropdown-title {
+            color: #FFFFFF;
+            background-color: #000000;
+          }
+        }
+
+        .record-events-count-field,
+        .record-events-notes-field {
+          .ms-TextField-fieldGroup {
+            background-color: #000000;
+
+            input {
+              color: #FFFFFF;
+            }
+
+            input::placeholder {
+              color: #FFFFFF;
+            }
+          }
+        }
+
+        .record-events-date-picker,
+        .record-events-dropdown,
+        .record-events-count-field,
+        .record-events-notes-field {
+          label {
+            color: #FFF;
+          }
+        }
+
+        .add-event-icon {
+          color: #ffff00;
+        }
+
+        .error-message {
+          color: #FFF;
+        }
+
+        .events-collection-table {
+          table {
+            tbody {
+              tr {
+                background-color: #292929;
+
+                td {
+                  color: #FFF;
+
+                  .event-delete-icon {
+                    color: #ffff00;
+                  }
+                }
+
+              }
+            }
+          }
+        }
+
+        .help-text {
+          color: #FFF;
+        }
+
+        .record-events-submit-btn {
+          background-color: rgb(0, 235, 255);
+          border: 1px solid rgb(0, 235, 255);
+          color: #000;
+
+          &:hover {
+            background-color: rgb(255, 255, 0);
+            border: 1px solid rgb(255, 255, 0);
+            color: #000;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width:767px) {
+  .record-events-popup {
+    .ms-Dialog-main {
+      width: 90% !important;
+      max-height: 500px !important;
+
+      .dialog-content {
+        .ms-Dialog-inner {
+          .add-event-icon {
+            margin-top: 10px;
+          }
+
+          .events-collection-table {
+            overflow-x: scroll;
+
+            table {
+              table-layout: auto;
+              display: table-row-group;
+              flex-flow: unset;
+
+              tbody {
+                flex: unset;
+                display: table-row-group;
+                overflow-y: unset;
+                overflow-x: unset;
+
+                tr {
+                  display: table-row;
+                  table-layout: fixed;
+
+                  td {
+                    overflow-wrap: normal;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
