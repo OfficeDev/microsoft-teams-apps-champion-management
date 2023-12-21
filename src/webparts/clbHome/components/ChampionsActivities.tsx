@@ -8,6 +8,7 @@ import ToolkitProvider, { ToolkitContextType } from 'react-bootstrap-table2-tool
 import commonServices from '../Common/CommonServices';
 import * as stringConstants from "../constants/strings";
 import styles from "../scss/ManageApprovals.module.scss";
+import { Person } from "@microsoft/mgt-react/dist/es6/spfx";
 
 export interface IChampionPendingEvent {
     Champion: string;
@@ -89,15 +90,15 @@ export default class ChampionsActivities extends Component<ChampionsActivitiesPr
             const pendingEvents: any[] = await this.commonServiceManager.getItemsSortedWithFilter(stringConstants.EventTrackDetailsList, pendingEventsFilterQuery, sortColumn);
 
             //Getting member ids from event track details list
-            const memberIds = [];
+            const memberIds: any = [];
             pendingEvents.forEach((event: any) => memberIds.push(event.MemberId));
 
             //Filtering member ids from duplicate member ids
-            const filteredMemberIds = memberIds.filter((item, index) => memberIds.indexOf(item) === index);
+            const filteredMemberIds = memberIds.filter((item: any, index: number) => memberIds.indexOf(item) === index);
 
             //Creating a filter query to fetch data from member list
             let memberIdFilterQuery = "";
-            filteredMemberIds.forEach((id, idx) => {
+            filteredMemberIds.forEach((id: any, idx: number) => {
                 memberIdFilterQuery = idx === 0 ? "ID eq " + id : memberIdFilterQuery + " or ID eq " + id;
             });
             //Getting data from member list
@@ -197,7 +198,7 @@ export default class ChampionsActivities extends Component<ChampionsActivitiesPr
         //When "Select All" is checked
         if (selectAll && isChecked) {
             this.setState({ isAllSelected: true });
-            let selectedEvents = [];
+            let selectedEvents: any = [];
             this.state.filteredChampionPendingEvents.forEach((event: IChampionPendingEvent) => {
                 selectedEvents.push(event.EventActivityId);
             });
@@ -242,15 +243,62 @@ export default class ChampionsActivities extends Component<ChampionsActivitiesPr
         nextPageText: '>',
         prePageText: '<',
         showTotal: true,
-        alwaysShowAllBtns: false
+        alwaysShowAllBtns: false,
+        paginationTotalRenderer: (from: any, to: any, size: any) => {
+            const resultsFound = size !== 0 ? `Showing ${from} to ${to} of ${size} Results` : ""
+            return (
+                <span className="react-bootstrap-table-pagination-total" aria-live="polite" role="alert">
+                    &nbsp;{resultsFound}
+                </span>
+            )
+        }
     });
+
+    //render the sort caret on the header column for accessbility
+    customSortCaret = (order: any, column: any) => {
+        if (!order) {
+            return (
+                <span className="sort-order">
+                    <span className="dropdown-caret">
+                    </span>
+                    <span className="dropup-caret">
+                    </span>
+                </span>);
+        }
+        else if (order === 'asc') {
+            return (
+                <span className="sort-order">
+                    <span className="dropup-caret">
+                    </span>
+                </span>);
+        }
+        else if (order === 'desc') {
+            return (
+                <span className="sort-order">
+                    <span className="dropdown-caret">
+                    </span>
+                </span>);
+        }
+        return null;
+    }
+
+    // format the cell for Champion Name
+    championFormatter = (cell: any, gridRow: any, rowIndex: any, formatExtraData: any) => {
+        return (
+            <Person
+                personQuery={cell}
+                view={3}
+                personCardInteraction={1}
+                className='champion-person-card'
+            />
+        );
+    }
 
     public render() {
 
-        const eventsTableHeader = [
+        const eventsTableHeader: any = [
             {
                 dataField: "EventActivityId",
-                headerTitle: () => LocaleStrings.SelectAllEvents,
                 headerFormatter: () => {
                     return (
                         <Checkbox
@@ -264,6 +312,7 @@ export default class ChampionsActivities extends Component<ChampionsActivitiesPr
                         />
                     );
                 },
+                headerTitle: () => LocaleStrings.SelectAllEvents,
                 title: () => LocaleStrings.SelectEvent,
                 attrs: (_cell: any, row: any) => ({ key: row.EventActivityId }),
                 formatter: (_: any, gridRow: any) => {
@@ -284,46 +333,49 @@ export default class ChampionsActivities extends Component<ChampionsActivitiesPr
             {
                 dataField: "Champion",
                 text: LocaleStrings.ChampionLabel,
-                headerTitle: LocaleStrings.ChampionLabel,
-                title: true,
+                headerTitle: true,
                 searchable: true,
-                sort: true
+                sort: true,
+                sortCaret: this.customSortCaret,
+                formatter: this.championFormatter
             },
             {
                 dataField: "Email",
                 text: LocaleStrings.EmailLabel,
-                headerTitle: LocaleStrings.EmailLabel,
+                headerTitle: true,
                 title: true,
                 searchable: true,
-                sort: true
+                sort: true,
+                sortCaret: this.customSortCaret
             },
             {
                 dataField: "Event",
                 text: LocaleStrings.EventLabel,
-                headerTitle: LocaleStrings.EventLabel,
+                headerTitle: true,
                 title: true,
                 searchable: true
             },
             {
                 dataField: "Date",
                 text: LocaleStrings.DateLabel,
-                headerTitle: LocaleStrings.DateLabel,
+                headerTitle: true,
                 title: (_cell: any, row: any) => row.Date.toDateString().slice(4),
                 searchable: false,
                 sort: true,
+                sortCaret: this.customSortCaret,
                 formatter: (_cell: any, gridRow: any) => <>{gridRow.Date.toDateString().slice(4)}</>
             },
             {
                 dataField: "Points",
                 text: LocaleStrings.PointsLabel,
-                headerTitle: LocaleStrings.PointsLabel,
+                headerTitle: true,
                 title: true,
                 searchable: false
             },
             {
                 dataField: "Notes",
                 text: LocaleStrings.NotesLabel,
-                headerTitle: LocaleStrings.NotesLabel,
+                headerTitle: true,
                 title: true,
                 searchable: false
             }
@@ -332,7 +384,7 @@ export default class ChampionsActivities extends Component<ChampionsActivitiesPr
         return (
             <div className={styles.approvalsContainer}>
                 {this.state.approveMessage &&
-                    <Label className={styles.approveMessage + ' col-xl-5 col-lg-5 col-md-6 col-sm-8 col-xs-9'}>
+                    <Label className={styles.approveMessage + ' col-xl-5 col-lg-5 col-md-6 col-sm-8 col-xs-9'} aria-live="polite" role="alert">
                         <img
                             src={require('../assets/TOTImages/tickIcon.png')}
                             alt={LocaleStrings.SuccessIcon}
@@ -342,7 +394,7 @@ export default class ChampionsActivities extends Component<ChampionsActivitiesPr
                     </Label>
                 }
                 {this.state.rejectMessage &&
-                    <Label className={styles.rejectMessage + ' col-xl-5 col-lg-5 col-md-6 col-sm-8 col-xs-9'}>
+                    <Label className={styles.rejectMessage + ' col-xl-5 col-lg-5 col-md-6 col-sm-8 col-xs-9'} aria-live="polite" role="alert">
                         {this.state.rejectMessage}
                     </Label>
                 }
@@ -384,7 +436,7 @@ export default class ChampionsActivities extends Component<ChampionsActivitiesPr
                                         striped
                                         {...props.baseProps}
                                         table-responsive={true}
-                                        pagination={(this.state.filteredChampionPendingEvents.length > 0 && this.state.filteredChampionPendingEvents.length > 10) && this.pagination}
+                                        pagination={this.pagination}
                                         wrapperClasses={styles.approvalsTableWrapper}
                                         headerClasses={styles.eventsApprovalTableHeader}
                                         bodyClasses={styles.eventsApprovalTableBody}
@@ -400,8 +452,9 @@ export default class ChampionsActivities extends Component<ChampionsActivitiesPr
                                                             src={require('../assets/CMPImages/Norecordsicon.svg')}
                                                             alt={LocaleStrings.NoRecordsIcon}
                                                             className={styles.noRecordsImg}
+                                                            aria-hidden={true}
                                                         />
-                                                        <span className={styles.noRecordsLabels}>
+                                                        <span className={styles.noRecordsLabels} aria-live='polite' role="alert" tabIndex={0}>
                                                             {this.state.championPendingEvents.length === 0 ?
                                                                 LocaleStrings.NoPendingEventsLabel
                                                                 :

@@ -1,3 +1,5 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
 .championFocusAreaCallout {
     width: 250px;
 
@@ -12,6 +14,11 @@
             }
         }
     }
+}
+
+.no-results--DarkContrast {
+    color: var(--colorNeutralForeground1);
+    background-color: var(--colorNeutralBackground1);
 }
 
 .championsFilterArea {
@@ -64,6 +71,30 @@
 
 }
 
+.championsFilterAreaDarkContrast {
+    .topChampionsLabel {
+        color: var(--colorNeutralForeground1);
+    }
+
+    .championFocusAreaComboboxArea {
+
+        .championFocusAreaCombobox {
+
+            label {
+                color: var(--colorNeutralForeground1);
+            }
+        }
+    }
+}
+
+.records-count-label {
+    margin-bottom: 5px;
+}
+
+.records-count-labelDarkContrast {
+    color: var(--colorNeutralForeground1);
+}
+
 .gtc-cards {
     margin: 0 0%;
 
@@ -77,22 +108,27 @@
         opacity: 1;
 
         .card-img-text-block {
-            display: inline-flex;
+            display: inline-block;
             width: 100%;
             justify-content: space-around;
+            margin-top: 10px;
+            padding-left: 20px;
+            padding-right: 20px;
 
             .rank-points-block {
-                width: 196px;
                 height: 32px;
-                background: transparent url('../assets/CMPImages/RankPointsBG.png') 0% 0% no-repeat padding-box;
                 padding: 6px 12px;
                 margin-top: 8px;
+                background-color: #E4E4F2;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
 
                 .card-rank {
                     text-align: left;
                     letter-spacing: 0px;
                     color: #464775;
-                    float: left;
+
                     font: normal normal normal 14px/19px Segoe UI;
 
                     .card-rank-value {
@@ -106,7 +142,7 @@
                     letter-spacing: 0px;
                     color: #464775;
                     opacity: 1;
-                    float: right;
+
 
                     .card-points-star {
                         color: #464775;
@@ -114,6 +150,22 @@
                         margin-left: 4px;
                         position: relative;
                         top: 1px;
+                    }
+                }
+            }
+
+            .highlight-data {
+                background-color: #464775;
+
+                .card-rank {
+                    color: #fff;
+                }
+
+                .card-points {
+                    color: #fff;
+
+                    .card-points-star {
+                        color: #fff;
                     }
                 }
             }
@@ -141,48 +193,85 @@
 
         .card-icon-link-area {
             margin: 15px 0px 12px;
-            display: inline-flex;
+            display: flex;
             width: 100%;
             justify-content: space-between;
+            align-items: center;
+            column-gap: 10px;
+            padding: 0 20px;
+            font: normal normal normal 14px/26px Segoe UI;
+            letter-spacing: 0px;
+            color: #5B5FC7;
+            opacity: 1;
 
-            .card-icon-area {
-                display: inline-flex;
-                justify-content: space-around;
-                width: 150px;
-
-                .card-icon {
-                    width: 27px;
-                    height: 27px;
-                    cursor: pointer;
-                }
-            }
-
-            .card-link-area {
-                margin-right: 20px;
-                text-align: left;
-                font: normal normal normal 14px/26px Segoe UI;
-                letter-spacing: 0px;
-                color: #5B5FC7;
-                opacity: 1;
+            .request-to-call-link {
                 cursor: pointer;
+                text-align: left;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                width: 50%;
             }
 
+            .view-activities-link {
+                cursor: pointer;
+                text-align: right;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                width: 50%;
+            }
+
+        }
+
+        .align-link-end {
+            justify-content: flex-end;
         }
 
     }
 
     .cards-show-label {
-        text-align: center;
-        margin-top: 70px;
-        margin-bottom: 70px;
-        color: #000000;
-        cursor: pointer;
+        align-items: center;
+        width: 300px;
+        height: 150px;
+        display: flex;
+        justify-content: center;
 
-        .showMoreIcon {
-            width: 15px;
-            height: 15px;
-            margin-left: 5px;
-            margin-bottom: 3px;
+        .show-more-text-img-wrapper {
+            color: #000000;
+            cursor: pointer;
+
+            .showMoreIcon {
+                width: 15px;
+                height: 15px;
+                margin-left: 8px;
+            }
+
+            &:hover {
+                color: #5b5fc7;
+
+                .showMoreIcon {
+                    filter: invert(42%) sepia(6%) saturate(7243%) hue-rotate(204deg) brightness(89%) contrast(87%);
+                }
+            }
+        }
+    }
+
+    .cards-show-labelDarkContrast {
+        .show-more-text-img-wrapper {
+            color: var(--colorNeutralForeground1);
+
+            .showMoreIcon {
+                filter: brightness(0) saturate(100%) invert(98%) sepia(39%) saturate(9%) hue-rotate(271deg) brightness(117%) contrast(100%);
+            }
+
+            &:hover {
+                color: var(--colorCompoundBrandForeground1);
+
+                .showMoreIcon {
+                    filter: brightness(0) saturate(100%) invert(98%) sepia(39%) saturate(9%) hue-rotate(271deg) brightness(117%) contrast(100%);
+                }
+            }
         }
     }
 }
@@ -205,7 +294,8 @@
         }
 
         .chrome-close-icon-area {
-            float: right;
+            display: flex;
+            justify-content: flex-end;
             margin: 15px 10px 10px;
 
             .chrome-close-icon {
@@ -221,146 +311,543 @@
             }
         }
 
-        .showActivitiesPopupBody {
-            display: inline-flex;
+        .gtc-cards {
+            .showActivitiesPopupBody {
+                display: inline-flex;
 
-            .showActivitiesImage-IconArea {
-                display: grid;
-                justify-content: center;
+                .showActivitiesImage-IconArea {
+                    display: grid;
+                    justify-content: center;
+                    row-gap: 15px;
 
-                .showActivities-profile-img {
-                    width: 200px;
-                    height: 200px;
-                    border-radius: 50%;
-                    margin-bottom: 20px;
-                }
 
-                .showActivities-profile-name {
-                    text-align: center;
-                    font: normal normal 600 14px/19px Segoe UI;
-                    letter-spacing: 0px;
-                    color: #242424;
-                    opacity: 1;
-                    margin-bottom: 20px;
-                }
+                    mgt-person[class="activities-profile-image"] {
+                        --person-line1-font-size: 18px;
+                        --person-line1-font-weight: 600;
+                        --person-line1-text-color: var(--colorNeutralForegroundStaticInverted) !important;
+                        --person-line1-text-transform: capitalize;
+                        --person-line1-text-line-height: 24px;
 
-                .showActivities-rank-points-block {
-                    width: 200px;
-                    height: 32px;
-                    background: transparent url('../assets/CMPImages/RankPointsBG.png') 0% 0% no-repeat padding-box;
-                    padding: 6px 12px;
-                    margin-bottom: 20px;
+                        margin-bottom: 10px;
+                        margin-top: 40px;
+                    }
 
-                    .showActivities-rank {
-                        text-align: left;
+                    .showActivities-profile-name {
+                        text-align: center;
+                        font: normal normal 600 14px/19px Segoe UI;
                         letter-spacing: 0px;
-                        color: #464775;
-                        float: left;
-                        font: normal normal normal 14px/19px Segoe UI;
+                        color: #242424;
+                        opacity: 1;
+                        margin-bottom: 20px;
+                    }
 
-                        .showActivities-rank-value {
-                            font-weight: 600;
+                    .showActivities-rank-points-block {
+                        width: 200px;
+                        height: 32px;
+                        background: transparent url('../assets/CMPImages/RankPointsBG.png') 0% 0% no-repeat padding-box;
+                        padding: 6px 12px;
+
+                        .showActivities-rank {
+                            text-align: left;
+                            letter-spacing: 0px;
+                            color: #464775;
+                            float: left;
+                            font: normal normal normal 14px/19px Segoe UI;
+
+                            .showActivities-rank-value {
+                                font-weight: 600;
+                            }
+                        }
+
+                        .showActivities-points {
+                            text-align: left;
+                            font: normal normal 600 14px/19px Segoe UI;
+                            letter-spacing: 0px;
+                            color: #464775;
+                            opacity: 1;
+                            float: right;
+
+                            .showActivities-points-star {
+                                color: #464775;
+                                font-size: 14px;
+                                margin-left: 4px;
+                                position: relative;
+                                top: 1px;
+                            }
                         }
                     }
 
-                    .showActivities-points {
+                    .showActivities-icon-area {
+                        display: inline-flex;
+                        justify-content: space-evenly;
+
+                        .request-to-call-link {
+                            color: #5B5FC7;
+                            opacity: 1;
+                            cursor: pointer;
+                        }
+                    }
+                }
+
+                .showActivities-grid-area {
+                    .activities-grid-heading {
                         text-align: left;
                         font: normal normal 600 14px/19px Segoe UI;
                         letter-spacing: 0px;
-                        color: #464775;
+                        color: #242424;
                         opacity: 1;
-                        float: right;
+                        margin-bottom: 10px;
+                    }
 
-                        .showActivities-points-star {
-                            color: #464775;
-                            font-size: 14px;
-                            margin-left: 4px;
-                            position: relative;
-                            top: 1px;
+                    .events-table-wrapper-class {
+                        table {
+                            table-layout: fixed;
+                            display: flex;
+                            flex-flow: column;
+                            width: 100%;
+
+                            thead {
+                                flex: 0 0 auto;
+
+                                tr {
+                                    width: 100%;
+                                    display: table;
+                                    table-layout: fixed;
+
+                                    th {
+                                        text-align: left;
+                                        font: normal normal 600 14px/19px Segoe UI;
+                                        letter-spacing: 0px;
+                                        color: #242424;
+                                        opacity: 1;
+
+                                        div[class~="header-div-wrapper"] {
+                                            display: flex;
+                                            align-items: center;
+
+                                            span[class~="header-span-text"] {
+                                                width: auto;
+                                                overflow: hidden;
+                                                white-space: nowrap;
+                                                text-overflow: ellipsis;
+                                            }
+                                        }
+
+                                        button[class="sort-header"] {
+                                            background: inherit;
+                                            font: normal normal 600 16px/24px Segoe UI;
+                                            color: #000000;
+                                            border: none;
+                                            padding-left: 1%;
+                                            overflow: hidden;
+                                            white-space: nowrap;
+                                        }
+
+                                        button[class="sort-header"]:focus-visible {
+                                            border: 0px 0px 0px 0px;
+                                            box-shadow: none;
+                                            outline: 2px solid #000000;
+                                            border-radius: 3px;
+                                            outline-offset: 2px;
+                                        }
+
+                                        span[class="sort-order"] {
+                                            vertical-align: middle;
+                                            position: relative;
+                                            margin: 4px 3.5px 0px;
+                                            display: flex;
+                                            width: 20px;
+                                        }
+
+                                        span[class="dropdown-caret"] {
+                                            margin: 0px 0 0px 5px;
+                                            color: #000000;
+                                            margin-left: 2px;
+                                            border-top: 4px dashed;
+                                            border-right: 4px solid transparent;
+                                            border-left: 4px solid transparent;
+                                            position: relative;
+                                        }
+
+                                        span[class="dropup-caret"] {
+                                            color: #000000;
+                                            margin: 0;
+                                            margin-left: 2px;
+                                            border-bottom: 4px dashed;
+                                            border-top: 0;
+                                            border-right: 4px solid transparent;
+                                            border-left: 4px solid transparent;
+                                            position: relative;
+                                        }
+                                    }
+
+                                    th:nth-child(1) {
+                                        width: 35%;
+                                    }
+
+                                    th:nth-child(2) {
+                                        width: 45%;
+                                    }
+                                }
+                            }
+
+                            tbody {
+                                max-height: 220px;
+                                min-height: 34px;
+                                flex: 1 1 auto;
+                                display: block;
+                                overflow-y: overlay;
+                                overflow-x: hidden;
+
+                                tr {
+                                    width: 100%;
+                                    display: table;
+                                    table-layout: fixed;
+
+                                    td {
+                                        text-align: left;
+                                        font: normal normal normal 14px/19px Segoe UI;
+                                        letter-spacing: 0px;
+                                        color: #212121;
+                                        opacity: 1;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        white-space: nowrap;
+                                        padding: 0.5rem;
+
+                                        .activities-noRecordsFound {
+                                            text-align: center;
+                                        }
+                                    }
+
+                                    td:nth-child(1) {
+                                        width: 35.2%;
+                                    }
+
+                                    td:nth-child(2) {
+                                        width: 45.2%;
+                                    }
+                                }
+
+                                /* width */
+                                &::-webkit-scrollbar {
+                                    width: 3px;
+                                }
+
+                                /* Track */
+                                &::-webkit-scrollbar-track {
+                                    background: #f1f1f1;
+                                }
+
+                                /* Handle */
+                                &::-webkit-scrollbar-thumb {
+                                    background: gray;
+                                }
+
+                                /* Handle on hover */
+                                &::-webkit-scrollbar-thumb:hover {
+                                    background: #000;
+                                }
+                            }
                         }
                     }
-                }
 
-                .showActivities-icon-area {
-                    display: inline-flex;
-                    justify-content: space-evenly;
-                    width: 200px;
+                    div[class~="react-bootstrap-table-pagination"] {
+                        align-items: center;
 
-                    .showActivities-icon {
-                        width: 27px;
-                        height: 27px;
-                        cursor: pointer;
-                    }
-                }
-            }
-
-            .showActivities-grid-area {
-                .activities-grid-heading {
-                    text-align: left;
-                    font: normal normal 600 14px/19px Segoe UI;
-                    letter-spacing: 0px;
-                    color: #242424;
-                    opacity: 1;
-                    margin-bottom: 10px;
-                }
-
-                table {
-                    thead {
-                        tr {
-                            th {
-                                text-align: left;
-                                font: normal normal 600 14px/19px Segoe UI;
-                                letter-spacing: 0px;
-                                color: #242424;
-                                opacity: 1;
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                                white-space: nowrap;
-                            }
-
-                            th:nth-child(1) {
-                                width: 35%;
-                            }
-
-                            th:nth-child(2) {
-                                width: 45%;
-                            }
+                        span[class~="react-bootstrap-table-pagination-total"] {
+                            color: #000000;
                         }
-                    }
 
-                    tbody {
-                        tr {
-                            td {
-                                text-align: left;
-                                font: normal normal normal 14px/19px Segoe UI;
-                                letter-spacing: 0px;
-                                color: #212121;
-                                opacity: 1;
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                                white-space: nowrap;
+                        div[class~="react-bootstrap-table-pagination-list"] {
+                            ul[class~="react-bootstrap-table-page-btns-ul"] {
+                                margin-bottom: 0;
 
-                                .activities-noRecordsFound {
-                                    text-align: center;
+                                li[class~="page-item"] {
+                                    a[class~="page-link"] {
+                                        color: #000000;
+
+                                        &:hover {
+                                            color: #000000;
+                                        }
+
+                                        &:focus {
+                                            outline: 2px solid #000;
+                                            outline-offset: 1px;
+                                            border-radius: 1px;
+                                            box-shadow: none;
+                                        }
+                                    }
+                                }
+
+                                li[class~="active"] {
+
+                                    a,
+                                    a:hover {
+                                        background-color: #6264A7 !important;
+                                        border-color: #6264A7 !important;
+                                        color: #FFFFFF !important;
+                                    }
+
+                                    &:focus {
+                                        outline: 2px solid #000;
+                                        outline-offset: 1px;
+                                        border-radius: 1px;
+                                        box-shadow: none;
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+}
 
-                .pagination-area {
-                    text-align: center;
-                    font: normal normal normal 12px/16px Segoe UI;
-                    letter-spacing: 0px;
-                    color: #212121;
-                    opacity: 1;
+.darkPopup {
+    .ms-Dialog-main {
+        background-color: #292929;
 
-                    .Chevron-Icon {
-                        cursor: pointer;
-                        font-size: 12px;
-                        margin-left: 20px;
+        .chrome-close-icon-area {
+
+            .chrome-close-icon {
+                color: #FFF;
+            }
+
+            .chrome-close-icon:hover {
+                color: #000;
+            }
+        }
+
+        .gtc-cards {
+            .showActivitiesPopupBody {
+                .showActivitiesImage-IconArea {
+                    .showActivities-profile-name {
+                        color: #ffffff;
                     }
 
+                    .showActivities-rank-points-block {
+                        .showActivities-rank {
+                            color: #FFF;
+                        }
+
+                        .showActivities-points {
+                            color: #FFF;
+
+                            .showActivities-points-star {
+                                color: #FFF;
+                            }
+                        }
+                    }
+
+                }
+
+                .showActivities-grid-area {
+                    .activities-grid-heading {
+                        color: #ffffff;
+                    }
+
+                    .events-table-wrapper-class {
+                        table {
+                            thead {
+                                tr {
+                                    th {
+                                        color: #fff;
+
+                                        button[class="sort-header"] {
+                                            color: #fff;
+                                        }
+
+                                        button[class="sort-header"]:focus-visible {
+                                            outline-color: #5caae5;
+                                        }
+
+                                        span[class="dropdown-caret"] {
+                                            color: #fff;
+                                        }
+
+                                        span[class="dropup-caret"] {
+                                            color: #fff;
+                                        }
+                                    }
+                                }
+                            }
+
+                            tbody {
+                                tr {
+                                    td {
+                                        color: #FFF
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    div[class~="react-bootstrap-table-pagination"] {
+                        span[class~="react-bootstrap-table-pagination-total"] {
+                            color: #fff;
+                        }
+
+                        div[class~="react-bootstrap-table-pagination-list"] {
+                            ul[class~="react-bootstrap-table-page-btns-ul"] {
+                                li[class~="page-item"] {
+                                    a[class~="page-link"] {
+                                        color: #000000;
+
+                                        &:hover {
+                                            background-color: #ffffff;
+                                            border-color: #ffffff;
+                                            color: #000000;
+                                        }
+
+                                        &:focus {
+                                            outline-color: #5caae5;
+                                        }
+                                    }
+                                }
+
+                                li[class~="active"] {
+
+                                    a,
+                                    a:hover {
+                                        background-color: #7f85f5 !important;
+                                        border-color: #7f85f5 !important;
+                                        color: #ffffff !important;
+                                    }
+
+                                    &:focus {
+                                        outline-color: #5caae5;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.contrastPopup {
+    .ms-Dialog-main {
+        background-color: #000000;
+        border: 1px solid #FFF;
+
+        .chrome-close-icon-area {
+
+            .chrome-close-icon {
+                color: #FFF;
+            }
+
+            .chrome-close-icon:hover {
+                color: #000;
+            }
+        }
+
+        .gtc-cards {
+            .showActivitiesPopupBody {
+                .showActivitiesImage-IconArea {
+                    .showActivities-profile-name {
+                        color: #ffffff;
+                    }
+
+                    .showActivities-rank-points-block {
+                        .showActivities-rank {
+                            color: #FFF;
+                        }
+
+                        .showActivities-points {
+                            color: #FFF;
+
+                            .showActivities-points-star {
+                                color: #FFF;
+                            }
+                        }
+                    }
+
+                }
+
+                .showActivities-grid-area {
+                    .activities-grid-heading {
+                        color: #ffffff;
+                    }
+
+                    .events-table-wrapper-class {
+                        table {
+                            thead {
+                                tr {
+                                    th {
+                                        color: #fff;
+
+                                        button[class="sort-header"] {
+                                            color: #fff;
+                                        }
+
+                                        button[class="sort-header"]:focus-visible {
+                                            outline-color: #1aebff;
+                                        }
+
+                                        span[class="dropdown-caret"] {
+                                            color: #fff;
+                                        }
+
+                                        span[class="dropup-caret"] {
+                                            color: #fff;
+                                        }
+                                    }
+                                }
+                            }
+
+                            tbody {
+                                tr {
+                                    td {
+                                        color: #FFF
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    div[class~="react-bootstrap-table-pagination"] {
+                        span[class~="react-bootstrap-table-pagination-total"] {
+                            color: #fff;
+                        }
+
+                        div[class~="react-bootstrap-table-pagination-list"] {
+                            ul[class~="react-bootstrap-table-page-btns-ul"] {
+                                li[class~="page-item"] {
+                                    a[class~="page-link"] {
+                                        color: #000000;
+
+                                        &:hover {
+                                            background-color: #ffffff;
+                                            border-color: #ffffff;
+                                            color: #000000;
+                                        }
+
+                                        &:focus {
+                                            outline-color: #1aebff;
+                                        }
+                                    }
+                                }
+
+                                li[class~="active"] {
+
+                                    a,
+                                    a:hover {
+                                        background-color: #1aebff !important;
+                                        border-color: #1aebff !important;
+                                        color: #000000 !important;
+                                    }
+
+                                    &:focus {
+                                        outline-color: #1aebff;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -383,34 +870,90 @@
             height: 90%;
             width: 90%;
 
-            .showActivitiesPopupBody {
-                .showActivities-grid-area {
-                    table {
-                        thead {
-                            tr {
-                                th {
-                                    overflow: visible;
-                                    text-overflow: unset;
-                                    white-space: unset;
-                                    font: normal normal 600 12px/19px Segoe UI;
+            div[class~="ms-Dialog-inner"] {
+                padding: 0 !important;
+
+                .gtc-cards {
+                    margin: 0 10px;
+
+                    .showActivitiesPopupBody {
+                        display: block;
+
+                        .showActivities-grid-area {
+                            .events-table-wrapper-class {
+                                overflow-y: overlay;
+                                overflow-x: scroll;
+                                max-height: 522px;
+                                border: 1px solid;
+
+                                table {
+                                    table-layout: auto;
+                                    display: table-row-group;
+                                    flex-flow: unset;
+
+                                    thead {
+                                        flex: auto;
+
+                                        tr {
+                                            display: table-row;
+                                            table-layout: unset;
+
+                                            th {
+                                                overflow: visible;
+                                                text-overflow: none;
+                                                white-space: nowrap;
+                                                padding-left: 10px;
+                                                position: sticky;
+                                                top: 0px;
+                                            }
+                                        }
+                                    }
+
+                                    tbody {
+                                        flex: unset;
+                                        display: table-row-group;
+                                        overflow-y: unset;
+                                        overflow-x: unset;
+
+                                        tr {
+                                            display: table-row;
+                                            table-layout: fixed;
+
+                                            td {
+                                                padding-left: 10px;
+                                                overflow: visible;
+                                                text-overflow: none;
+                                                white-space: nowrap;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                &::-webkit-scrollbar {
+                                    height: 3px;
+                                }
+
+                                /* Track */
+                                &::-webkit-scrollbar-track {
+                                    background: #f1f1f1;
+                                }
+
+                                /* Handle */
+                                &::-webkit-scrollbar-thumb {
+                                    background: gray;
+                                }
+
+                                /* Handle on hover */
+                                &::-webkit-scrollbar-thumb:hover {
+                                    background: #000;
                                 }
                             }
-                        }
 
-                        tbody {
-                            tr {
-                                td {
-                                    overflow: visible;
-                                    text-overflow: unset;
-                                    white-space: unset;
-                                    font: normal normal normal 12px/19px Segoe UI;
-                                }
+                            div[class~="react-bootstrap-table-pagination"] {
+                                flex-wrap: nowrap;
+                                margin: 15px 0;
                             }
                         }
-                    }
-
-                    .pagination-area {
-                        padding-bottom: 20px;
                     }
                 }
             }

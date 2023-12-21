@@ -14,6 +14,8 @@ import { TooltipHost } from '@fluentui/react/lib/Tooltip';
 import { Icon } from '@fluentui/react/lib/Icon';
 import { Label } from "@fluentui/react/lib/Label";
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
+import { ITextFieldProps, TextField } from '@fluentui/react/lib/TextField';
+import { TOTBreadcrumbLabel } from 'ClbHomeWebPartStrings';
 
 //global variables
 let commonServiceManager: commonServices;
@@ -21,6 +23,8 @@ let commonServiceManager: commonServices;
 export interface IManageConfigSettingsProps {
     context?: WebPartContext;
     siteUrl: string;
+    appTitle: string;
+    updateAppTitle: Function;
 }
 
 export interface IConfigList {
@@ -37,6 +41,8 @@ export interface IManageConfigSettingsState {
     updatedSettings: Array<any>;
     memberListColumns: Array<any>;
     showSpinner: boolean;
+    appTitle: string;
+    appTitleError: boolean;
 }
 
 export default class ManageConfigSettings extends React.Component
@@ -50,7 +56,9 @@ export default class ManageConfigSettings extends React.Component
             configListSettings: [],
             updatedSettings: [],
             memberListColumns: [],
-            showSpinner: false
+            showSpinner: false,
+            appTitle: this.props.appTitle,
+            appTitleError: false
         };
 
         //Bind Methods
@@ -159,38 +167,84 @@ export default class ManageConfigSettings extends React.Component
         });
     }
 
+    //on change event for App Title field
+    private onAppTitleChange(_eve: any, newValue: string) {
+        //update the state with new value
+        this.setState({
+            showSuccess: false,
+            showError: false,
+            appTitleError: false,
+            appTitle: newValue
+        })
+    }
+
     //Update the selected settings into the Config list on click of save
     private async saveConfigSettings() {
-        if (this.state.updatedSettings.length > 0) {
-            this.setState({ showSpinner: true });
-            commonServiceManager
-                .updateMultipleItemsWithDifferentValues(
-                    stringsConstants.ConfigList,
-                    this.state.updatedSettings
-                ).then(() => {
-                    this.setState({ showSuccess: true, updatedSettings: [], showSpinner: false });
-                }).catch((error) => {
-                    console.error("CMP_ManageConfigSettings_saveConfigSettings \n", error);
-                    this.setState({
-                        showError: true,
-                        errorMessage:
-                            stringsConstants.CMPErrorMessage +
-                            " while saving the selection. Below are the details: \n" +
-                            JSON.stringify(error),
-                        updatedSettings: [],
-                        showSpinner: false
+        let newTitle = this.state.appTitle.trim();
+        this.setState({
+            showError: false,
+            showSuccess: false,
+            appTitleError: false,
+            errorMessage: "",
+            appTitle: newTitle
+        })
+
+        if (newTitle === "" || newTitle === undefined) {
+            this.setState({
+                appTitleError: true
+            })
+        } else {
+            //updating the AppTitle entry in the config list, if it is changed 
+            if (this.props.appTitle !== newTitle) {
+                let itemID = this.state.configListSettings.filter((item) => {
+                    return item.Title === stringsConstants.AppTitle;
+                })
+                this.state.updatedSettings.push({
+                    id: itemID[0].ID,
+                    value: { Value: newTitle }
+                })
+            }
+
+            if (this.state.updatedSettings.length > 0) {
+                this.setState({ showSpinner: true });
+                commonServiceManager
+                    .updateMultipleItemsWithDifferentValues(
+                        stringsConstants.ConfigList,
+                        this.state.updatedSettings
+                    ).then(() => {
+                        this.setState({ showSuccess: true, updatedSettings: [], showSpinner: false });
+                        //update the state of Parent Component "Manage Approvals" to show the new app title in the app header and breadcrumb
+                        if (this.props.appTitle !== newTitle) {
+                            this.props.updateAppTitle({
+                                appTitle: newTitle
+                            });
+                        }
+                    }).catch((error) => {
+                        console.error("CMP_ManageConfigSettings_saveConfigSettings \n", error);
+                        this.setState({
+                            showError: true,
+                            errorMessage:
+                                stringsConstants.CMPErrorMessage +
+                                " while saving the selection. Below are the details: \n" +
+                                JSON.stringify(error),
+                            updatedSettings: [],
+                            showSpinner: false
+                        });
                     });
+            }
+            else {
+                this.setState({
+                    showSuccess: true,
+                    updatedSettings: []
                 });
-        }
-        else {
-            this.setState({ showSuccess: true });
+            }
         }
     }
 
     //Tooltip for info Icon
     private iconWithTooltip(iconName: string, tooltipContent: string, className: string) {
         return (
-            <span className={styles[className]}>
+            <span className={(styles as any)[className]}>
                 <TooltipHost
                     content={tooltipContent}
                     calloutProps={{ gapSpace: 0 }}
@@ -214,12 +268,14 @@ export default class ManageConfigSettings extends React.Component
                         <Spinner
                             label={LocaleStrings.ProcessingSpinnerLabel}
                             size={SpinnerSize.large}
+                            className={styles.configSettingsSpinner}
                         />
                     }
+
                     {this.state.configListSettings.length > 0 &&
                         <>
                             {this.state.showSuccess && (
-                                <Label className={styles.successMessage}>
+                                <Label className={styles.successMessage} aria-live="polite" role="alert">
                                     <img
                                         src={require('../assets/TOTImages/tickIcon.png')}
                                         alt={LocaleStrings.SuccessIcon}
@@ -228,6 +284,25 @@ export default class ManageConfigSettings extends React.Component
                                     {LocaleStrings.ConfigSettingsSaved}
                                 </Label>
                             )}
+                            <TextField
+                                onRenderLabel={() =>
+                                    <label className={styles.appNameInputLabel}>
+                                        {LocaleStrings.AppTitleLabel}
+                                        <span className={styles.asterisk}>*</span>
+                                        {this.iconWithTooltip(
+                                            "Info", //Icon library name
+                                            LocaleStrings.AppTitleInfoIconText,
+                                            "configSettingsInfoIcon" //Class name
+                                        )}
+                                    </label>
+                                }
+                                maxLength={30}
+                                className={styles.appTitleSetting}
+                                value={this.state.appTitle}
+                                placeholder={LocaleStrings.AppTitlePlaceholderText}
+                                onChange={this.onAppTitleChange.bind(this)}
+                                errorMessage={this.state.appTitleError && LocaleStrings.AppTitleErrorLabel}
+                            />
                             <Toggle
                                 checked={this.state.configListSettings.find((setting: IConfigList) => {
                                     return setting.Title === stringsConstants.ChampionEventApprovals;
@@ -253,7 +328,7 @@ export default class ManageConfigSettings extends React.Component
                                 {this.iconWithTooltip(
                                     "Info", //Icon library name
                                     LocaleStrings.TooltipContentForMemberListFieldsHeading,
-                                    "listSettingLabelIcon" //Class name
+                                    "configSettingsInfoIcon" //Class name
                                 )}
                             </Label>
                             {this.state.memberListColumns.length > 0 &&
@@ -266,7 +341,7 @@ export default class ManageConfigSettings extends React.Component
                                             <Toggle
                                                 checked={setting.Value === stringsConstants.EnabledStatus}
                                                 label={
-                                                    <div className={styles.toggleBtnLabel + " " + styles.subLabel}>
+                                                    <div className={styles.toggleBtnLabel + " " + styles.subLabel} aria-label={`${LocaleStrings.ShowHideToggle} ${column.Title} ${LocaleStrings.ToggleView}`}>
                                                         {column.Title}
                                                     </div>
                                                 }
@@ -280,6 +355,7 @@ export default class ManageConfigSettings extends React.Component
                                     })}
                                 </>
                             }
+
                             <PrimaryButton
                                 text={LocaleStrings.SaveButton}
                                 title={LocaleStrings.SaveButton}

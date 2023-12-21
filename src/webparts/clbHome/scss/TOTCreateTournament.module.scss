@@ -1,372 +1,725 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.createTrmntTooltipInsideContent {
+  margin: 10px;
+  padding-left: 10px;
+}
+
 .container {
   height: 100%;
   width: 100%;
   padding: 2% 5%;
-}
 
-.toggleTournamentType {
-  display: flex;
-  width: 100%;
-  justify-content: start;
-  border-bottom: 1px solid grey;
-  margin-bottom: 20px;
-
-  .singleTrmntType {
-    color: #1d0f62;
-    cursor: pointer;
-    height: fit-content;
-    position: relative;
-    top: 1px;
-    padding-bottom: 7px;
-    padding-left: 3px;
-    padding-right: 3px;
-    text-align: left;
-    font: normal normal 600 16px/24px Segoe UI;
+  .createTournamentPath {
+    display: inline-flex;
+    margin-bottom: 26px;
+    text-align: center;
+    font: normal normal bold 14px/24px Segoe UI;
     letter-spacing: 0px;
-    color: #636363;
+    color: #33344A;
     opacity: 1;
-  }
 
-  .singleTrmntType:hover {
-    border-bottom: 3px solid #989ad7;
-  }
-
-  .multipleTrmntType {
-    color: #1d0f62;
-    cursor: pointer;
-    height: fit-content;
-    position: relative;
-    top: 1px;
-    padding-bottom: 7px;
-    padding-left: 3px;
-    padding-right: 3px;
-    text-align: left;
-    font: normal normal 600 16px/24px Segoe UI;
-    letter-spacing: 0px;
-    color: #636363;
-    opacity: 1;
-    margin-left: 30px;
-  }
-
-  .multipleTrmntType:hover {
-    border-bottom: 3px solid #989ad7;
-  }
-
-  .selectedTrmnt,
-  .selectedTrmnt:hover {
-    color: #5B5FC7;
-    border-bottom: 3px solid #5B5FC7;
-  }
-}
-
-.selectFileArea {
-  margin-left: 50px;
-}
-
-.spinnerArea {
-  width: 250px;
-}
-
-.multipleTrmntArea {
-  padding-bottom: 2vh;
-
-  .multiTrmntStep {
-    text-align: left;
-    font: normal normal normal 14px/24px Segoe UI;
-    letter-spacing: 0px;
-    color: #000000;
-    margin-bottom: 15px;
-
-    a,
-    a:hover,
-    a:active,
-    a:any-link {
-      color: #5b5fc7;
+    .backImg {
+      width: 7px;
+      height: 12px;
+      margin-right: 10px;
+      margin-top: 6px;
     }
 
-    .multiTrmntInfoIcon {
-      top: 4px;
-      position: relative;
-      margin-left: 5px;
-      font-size: 16px;
-      font-weight: 500;
+    .backLabel {
+      padding-right: 10px;
       cursor: pointer;
     }
-  }
-}
 
-.multipleTrmntsFileInput {
-  .multipleTrmntsFile {
-    opacity: 0;
-    width: 0.1px;
-    height: 0.1px;
-    position: absolute;
+    .backLabel:focus-visible {
+      box-shadow: none;
+      outline: 2px solid #414156;
+      border-radius: 1px;
+      outline-offset: 4px;
+    }
+
+    .border {
+      width: 0px;
+      height: 14px;
+      border: 1px solid #33344A;
+      margin-top: 5px;
+    }
+
+    .createTournamentLabel {
+      font: normal normal bold 18px/23px Segoe UI;
+      padding-left: 10px;
+    }
   }
 
-  label {
-    position: relative;
-    width: 142px;
-    height: 32px;
-    border-radius: 0px;
-    background: #6264A7;
-    box-shadow: 0 4px 7px rgba(0, 0, 0, 0.4);
+  .toggleTournamentType {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-weight: 600;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    cursor: pointer;
-    font-size: 14px;
+    width: 100%;
+    justify-content: start;
+    border-bottom: 1px solid grey;
+    margin-bottom: 20px;
+
+    .singleTrmntType {
+      cursor: pointer;
+      height: fit-content;
+      position: relative;
+      top: 1px;
+      padding-bottom: 7px;
+      padding-left: 3px;
+      padding-right: 3px;
+      text-align: left;
+      font: normal normal 600 16px/24px Segoe UI;
+      letter-spacing: 0px;
+      color: #636363;
+      opacity: 1;
+
+      &:hover {
+        border-bottom: 3px solid #989ad7;
+      }
+    }
+
+    .multipleTrmntType {
+      cursor: pointer;
+      height: fit-content;
+      position: relative;
+      top: 1px;
+      padding-bottom: 7px;
+      padding-left: 3px;
+      padding-right: 3px;
+      text-align: left;
+      font: normal normal 600 16px/24px Segoe UI;
+      letter-spacing: 0px;
+      color: #636363;
+      opacity: 1;
+      margin-left: 30px;
+
+      &:hover {
+        border-bottom: 3px solid #989ad7;
+      }
+    }
+
+    .selectedTrmnt,
+    .selectedTrmnt:hover {
+      color: #5B5FC7;
+      border-bottom: 3px solid #5B5FC7;
+    }
+  }
+
+  .successMessage {
+    font: normal normal normal 18px/24px Segoe UI;
+    letter-spacing: 0px;
+    opacity: 1;
+    color: #000000;
+
+    .tickImage {
+      width: 28px;
+      height: 28px;
+      margin-right: 10px;
+      margin-bottom: 7px;
+    }
+  }
+
+  .errorMessage {
+    color: #e12636;
+    font: normal normal normal 18px/24px Segoe UI;
+    letter-spacing: 0px;
     opacity: 1;
   }
 
-  label:hover {
-    opacity: 0.9;
-  }
-}
-
-.multipleTrmntProgressBarContainer {
-  margin-top: 20px;
-
-  .fileNameAndCancelIconArea {
-    display: inline-flex;
-    width: 250px;
-
-    .multipleTrmntsFileName {
-      font-size: 0.85rem;
+  .createTrmntTextField {
+    label {
+      text-align: left;
+      font: normal normal 600 18px/24px Segoe UI;
+      letter-spacing: 0px;
       color: #000000;
-      width: 85%;
-      overflow-wrap: break-word;
+      opacity: 1;
+
+      &::after {
+        color: rgb(164, 38, 44);
+      }
     }
 
-    .cancelIconArea {
-      margin-top: auto;
-      margin-bottom: auto;
-      width: 15%;
-      text-align: center;
+    div[class~="ms-TextField-fieldGroup"] {
+      color: rgb(97, 97, 97);
+      background-color: rgb(255, 255, 255);
+      border-color: rgb(138, 138, 138);
 
-      i {
-        color: #6264A7;
-        font-weight: 700;
-        cursor: pointer;
+      input[class~="ms-TextField-field"],
+      textarea[class~="ms-TextField-field"] {
+        color: #000000;
+
+        &::placeholder {
+          color: rgb(138, 138, 138);
+        }
+      }
+
+      &:hover {
+        border-color: rgb(97, 97, 97);
+      }
+
+      &::after {
+        border-color: rgb(98, 100, 167);
       }
     }
   }
 
-  .progressBar {
-    width: 250px;
-    height: 8px;
-    margin-top: 10px;
-    border: 1px solid #565656;
-    border-radius: 5px;
+  .createTrmntTooltipHostStyles {
+    display: inline-block;
+    cursor: pointer;
+  }
 
-    .percentage {
-      display: block;
-      height: 100%;
-      background-color: #6264A7;
-      border-radius: 5px;
-      animation: progress 1500ms ease-in 1;
+  .treeViewContent {
+    .selectTeamActionArea {
+      display: inline-flex;
+
+      .selectTeamActionLabel {
+        text-align: left;
+        font: normal normal 600 18px/24px Segoe UI;
+        letter-spacing: 0px;
+        color: #000000;
+        opacity: 1;
+
+        .asteriskStyle {
+          color: #a4262c;
+        }
+      }
+
+      .createTrmntSelectTeamsActionInfoIcon {
+        font-size: 16px;
+        padding-left: 10px;
+        padding-top: 6px;
+        font-weight: bolder;
+        color: #1d0f62;
+      }
+    }
+
+    div[class^='treeView_'] {
       width: 100%;
     }
 
-    @keyframes progress {
-      from {
-        width: 0;
+    div[class^='treeView_']>div>div:first-child {
+      background-color: #BDBDE6;
+      padding: 5px 5px 0 5px;
+
+      div[class^="labels_"] {
+        color: #000000 !important;
+      }
+    }
+
+    button[class~="ms-Button--icon"] {
+      background-color: transparent;
+      color: rgb(98, 100, 167);
+
+      &:hover {
+        color: rgb(61, 62, 102);
+        background-color: rgb(245, 245, 245);
+      }
+    }
+
+    div[class^='itemSubLabel_'] {
+      color: #757575 !important;
+    }
+
+    div[class~="ms-Checkbox"] {
+      div[class~="ms-Checkbox-checkbox"] {
+        border-color: #616161 !important;
+        background: #FFFFFF;
+      }
+
+      &:hover {
+        div[class~="ms-Checkbox-checkbox"] {
+          i {
+            color: rgb(138, 138, 138);
+          }
+        }
+      }
+    }
+
+    div[class~="is-checked"] {
+      div[class~="ms-Checkbox-checkbox"] {
+        background: rgb(98, 100, 167);
+
+        i {
+          color: #FFFFFF;
+        }
+      }
+
+      &:hover {
+        div[class~="ms-Checkbox-checkbox"] {
+          i {
+            color: #FFFFFF;
+          }
+        }
       }
     }
   }
 
-  .uList {
-    padding-left: 18px;
+  .multipleTrmntArea {
+    padding-bottom: 2vh;
 
-    .errorRed {
-      color: #e12636;
+    .multiTrmntStep {
+      text-align: left;
+      font: normal normal normal 14px/24px Segoe UI;
+      letter-spacing: 0px;
+      color: #000000;
+      margin-bottom: 15px;
+
+      a,
+      a:hover,
+      a:active,
+      a:any-link {
+        color: #5b5fc7;
+      }
+
+      .multiTrmntInfoIcon {
+        top: 4px;
+        position: relative;
+        margin-left: 5px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+      }
     }
 
-    .successGreen {
-      color: green;
+    .selectFileArea {
+      margin-left: 50px;
+
+      .multipleTrmntsFileInput {
+        .multipleTrmntsFile {
+          opacity: 0;
+          width: 0.1px;
+          height: 0.1px;
+          position: absolute;
+        }
+
+        .multipleTrmntsFile:focus-visible+label {
+          outline: 2px solid #000;
+          border-radius: 3px;
+          outline-offset: 2px;
+        }
+
+        label {
+          position: relative;
+          width: 142px;
+          height: 32px;
+          border-radius: 0px;
+          background: #6264A7;
+          box-shadow: 0 4px 7px rgba(0, 0, 0, 0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          font-weight: 600;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          cursor: pointer;
+          font-size: 14px;
+          opacity: 1;
+        }
+
+        label:hover {
+          opacity: 0.9;
+        }
+      }
+
+      .multipleTrmntProgressBarContainer {
+        margin-top: 20px;
+
+        .fileNameAndCancelIconArea {
+          display: inline-flex;
+          width: 250px;
+
+          .multipleTrmntsFileName {
+            font-size: 0.85rem;
+            color: #000000;
+            width: 85%;
+            overflow-wrap: break-word;
+          }
+
+          .cancelIconArea {
+            margin-top: auto;
+            margin-bottom: auto;
+            width: 15%;
+            text-align: center;
+
+            i {
+              color: #6264A7;
+              font-weight: 700;
+              cursor: pointer;
+            }
+          }
+        }
+
+        .progressBar {
+          width: 250px;
+          height: 8px;
+          margin-top: 10px;
+          border: 1px solid #565656;
+          border-radius: 5px;
+
+          .percentage {
+            display: block;
+            height: 100%;
+            background-color: #6264A7;
+            border-radius: 5px;
+            animation: progress 1500ms ease-in 1;
+            width: 100%;
+          }
+
+          @keyframes progress {
+            from {
+              width: 0;
+            }
+          }
+        }
+
+        .spinnerArea {
+          width: 250px;
+        }
+
+        .importLogs {
+          margin-top: 10px;
+
+          .uList {
+            padding-left: 18px;
+
+            .errorRed {
+              color: #e12636;
+            }
+
+            .successGreen {
+              color: green;
+            }
+          }
+        }
+      }
     }
   }
 
-  .importLogs {
-    margin-top: 10px;
+  .createBtn {
+    background-color: #6264A7;
+    border-color: #6264A7;
+    color: #ffffff;
+
+    i {
+      color: #ffffff;
+    }
+
+    &:hover {
+      background-color: #6264A7;
+      border-color: #6264A7;
+      opacity: 0.9;
+    }
+
+    &:disabled,
+    &:hover:disabled {
+      background-color: gray;
+      border-color: gray;
+      color: #fff;
+      opacity: 0.5;
+    }
+
+    &:focus::after {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+    }
+  }
+
+  .createTrnmtBackBtn {
+    border-color: #33344A;
+    background-color: white;
+
+    i {
+      font-size: 17px;
+      font-weight: bolder;
+      color: #000003;
+      opacity: 1;
+    }
+
+    i+span>span {
+      font: normal normal bold 14px/24px Segoe UI;
+      letter-spacing: 0px;
+      color: #000003;
+      opacity: 1;
+      margin-top: -3px;
+    }
+
+    &:hover {
+      border-color: #33344A;
+      background-color: white;
+      color: #000003;
+    }
+
+    &:focus::after {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+    }
   }
 }
 
-.errorMessage {
-  color: #e12636;
-  font: normal normal normal 18px/24px Segoe UI !important;
-  letter-spacing: 0px;
-  opacity: 1;
-}
+.containerDarkContrast {
+  .createTournamentPath {
+    color: var(--colorNeutralForeground1);
 
-.successMessage {
-  font: normal normal normal 18px/24px Segoe UI !important;
-  letter-spacing: 0px;
-  opacity: 1;
-  color: #000000;
-}
+    .backImg {
+      filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
+    }
 
-.createTrmntTooltipHostStyles {
-  display: inline-block;
-  cursor: pointer;
-}
+    .backLabel {
+      color: var(--colorBrandForegroundLink);
+    }
 
-.createTrmntTextField {
-  label {
-    text-align: left;
-    font: normal normal 600 18px/24px Segoe UI;
-    letter-spacing: 0px;
-    color: #000000;
-    opacity: 1;
-  }
-}
+    .backLabel:focus-visible {
+      outline-color: var(--colorPaletteBlueBorderActive);
+    }
 
-.createTrnmtBackBtn {
-  border-color: #33344A;
-  background-color: white;
-
-  i {
-    font-size: 17px;
-    font-weight: bolder;
-    color: #000003;
-    opacity: 1;
+    .border {
+      border-color: var(--colorNeutralForeground1);
+    }
   }
 
-  i+span>span {
-    font: normal normal bold 14px/24px Segoe UI;
-    letter-spacing: 0px;
-    color: #000003;
-    opacity: 1;
-    margin-top: -3px;
-  }
-}
+  .toggleTournamentType {
+    border-color: var(--colorNeutralForeground1);
 
-.createTrnmtBackBtn:hover {
-  border-color: #33344A;
-  background-color: white;
-  color: #000003;
-}
+    .singleTrmntType {
+      color: var(--colorNeutralForeground1);
 
-.asteriskStyle {
-  color: #a4262c;
-}
+      &:hover {
+        border-color: var(--colorCompoundBrandForeground1Hover);
+      }
+    }
 
-.createBtn {
-  background-color: #6264A7;
-  border-color: #6264A7;
-  color: #ffffff !important;
+    .multipleTrmntType {
+      color: var(--colorNeutralForeground1);
 
-  i {
-    color: #ffffff !important;
-  }
-}
+      &:hover {
+        border-color: var(--colorCompoundBrandForeground1Hover);
+      }
+    }
 
-.createBtn:hover {
-  background-color: #6264A7 !important;
-  border-color: #6264A7 !important;
-  opacity: 0.9;
-}
-
-.disabledBtn {
-  background-color: #A2A3BA;
-  border-color: #A2A3BA;
-}
-
-.selectTeamActionArea {
-  display: inline-flex;
-
-  .selectTeamActionLabel {
-    text-align: left;
-    font: normal normal 600 18px/24px Segoe UI;
-    letter-spacing: 0px;
-    color: #000000;
-    opacity: 1;
+    .selectedTrmnt,
+    .selectedTrmnt:hover {
+      color: var(--colorCompoundBrandForeground1);
+      border-color: var(--colorCompoundBrandForeground1);
+    }
   }
 
-  .createTrmntSelectTeamsActionInfoIcon {
-    font-size: 16px;
-    padding-left: 10px;
-    padding-top: 6px;
-    font-weight: bolder;
-    color: #1d0f62;
-  }
-}
-
-.createTournamentPath {
-  display: inline-flex;
-  margin-bottom: 26px;
-  text-align: center;
-  font: normal normal bold 14px/24px Segoe UI;
-  letter-spacing: 0px;
-  color: #33344A;
-  opacity: 1;
-
-  .backImg {
-    width: 7px;
-    height: 12px;
-    margin-right: 10px;
-    margin-top: 6px;
+  .successMessage {
+    color: var(--colorNeutralForeground1);
   }
 
-  .backLabel {
-    padding-right: 10px;
-    cursor: pointer;
+  .errorMessage {
+    color: var(--colorPaletteRedForeground1);
   }
 
-  .border {
-    width: 0px;
-    height: 14px;
-    border: 1px solid #33344A;
-    margin-top: 5px;
+  .createTrmntTextField {
+    label {
+      color: var(--colorNeutralForeground1);
+
+      &::after {
+        color: var(--colorPaletteBlueBorderActive);
+      }
+    }
+
+    div[class~="ms-TextField-fieldGroup"] {
+      color: var(--colorNeutralForeground1);
+      background-color: var(--colorNeutralBackground1);
+      border-color: var(--colorNeutralForeground1);
+
+      input[class~="ms-TextField-field"],
+      textarea[class~="ms-TextField-field"] {
+        color: var(--colorNeutralForeground1);
+
+        &::placeholder {
+          color: var(--colorNeutralForeground1);
+        }
+      }
+
+      &:hover {
+        border-color: var(--colorNeutralForeground1);
+      }
+
+      &::after {
+        border-color: var(--colorCompoundBrandForeground1Pressed);
+      }
+    }
   }
 
-  .createTournamentLabel {
-    font: normal normal bold 18px/23px Segoe UI;
-    padding-left: 10px;
-  }
-}
+  .treeViewContent {
+    .selectTeamActionArea {
+      .selectTeamActionLabel {
+        color: var(--colorNeutralForeground1);
 
-.tickImage {
-  width: 28px;
-  height: 28px;
-  margin-right: 10px;
-  margin-bottom: 7px;
-}
+        .asteriskStyle {
+          color: var(--colorPaletteBlueBorderActive);
+        }
+      }
 
-:global {
-  .ms-Label {
-    font: normal normal 600 18px/24px Segoe UI;
-  }
+      .createTrmntSelectTeamsActionInfoIcon {
+        color: var(--colorNeutralForeground1);
+      }
+    }
 
-  .createTrmntTooltipInsideContent {
-    margin: 10px;
-    padding-left: 10px;
-  }
-}
+    div[class^='treeView_']>div>div:first-child {
+      background-color: var(--colorCompoundBrandBackground);
 
-.treeViewContent {
-  div[class^='treeView_'] {
-    width: 100%;
-  }
+      div[class^="labels_"] {
+        color: var(--colorNeutralForeground1Selected) !important;
+      }
+    }
 
-  div[class^='treeView_']>div>div:first-child {
-    background-color: #BDBDE6;
-    padding: 5px 5px 0 5px;
-  }
+    button[class~="ms-Button--icon"] {
+      color: var(--colorNeutralForeground1Selected);
 
-  div[class^='treeView_']>div>div:nth-child(2) {
+      &:hover {
+        color: #000000;
+        background-color: var(--colorNeutralForeground2LinkHover);
+      }
+    }
+
     div[class^='itemSubLabel_'] {
-      color: #757575;
+      color: var(--colorNeutralForeground1) !important;
+    }
+
+    div[class~="ms-Checkbox"] {
+      div[class~="ms-Checkbox-checkbox"] {
+        border-color: var(--colorNeutralForeground1) !important;
+        background: var(--colorNeutralBackground1);
+      }
+
+      &:hover {
+        div[class~="ms-Checkbox-checkbox"] {
+          i {
+            color: var(--colorNeutralForeground1);
+          }
+        }
+      }
+    }
+
+    div[class~="is-checked"] {
+      div[class~="ms-Checkbox-checkbox"] {
+        background: var(--colorCompoundBrandBackground);
+
+        i {
+          color: var(--colorNeutralForeground1Selected);
+        }
+      }
+
+      &:hover {
+        div[class~="ms-Checkbox-checkbox"] {
+          i {
+            color: var(--colorNeutralForeground1Selected);
+          }
+        }
+      }
+    }
+  }
+
+  .multipleTrmntArea {
+    .multiTrmntStep {
+      color: var(--colorNeutralForeground1);
+
+      a,
+      a:hover,
+      a:active,
+      a:any-link {
+        color: var(--colorBrandForegroundLink);
+      }
+    }
+
+    .selectFileArea {
+      .multipleTrmntsFileInput {
+        label {
+          background: var(--colorBrandBackground);
+          box-shadow: 0 4px 7px rgba(255, 255, 255, 0.1);
+          color: var(--colorNeutralForeground1Selected);
+        }
+      }
+
+      .multipleTrmntsFile:focus-visible+label {
+        outline-color: var(--colorPaletteBlueBorderActive) !important;
+      }
+
+      .multipleTrmntProgressBarContainer {
+        .fileNameAndCancelIconArea {
+          .multipleTrmntsFileName {
+            color: var(--colorNeutralForeground1);
+          }
+
+          .cancelIconArea {
+            i {
+              color: var(--colorBrandForegroundLink);
+            }
+          }
+        }
+
+        .progressBar {
+          border-color: var(--colorNeutralForeground1);
+
+          .percentage {
+            background-color: var(--colorCompoundBrandForeground1);
+          }
+        }
+
+        .importLogs {
+          .uList {
+            .errorRed {
+              color: var(--colorPaletteRedForeground1);
+            }
+
+            .successGreen {
+              color: var(--colorPaletteGreenForeground1);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .createBtn {
+    background-color: var(--colorBrandBackground);
+    border-color: var(--colorBrandBackground);
+    color: var(--colorNeutralForeground1Selected);
+
+    i {
+      color: var(--colorNeutralForeground1Selected);
+    }
+
+    &:hover {
+      background-color: var(--colorBrandBackground);
+      border-color: var(--colorBrandBackground);
+    }
+
+    &:disabled,
+    &:hover:disabled {
+      background-color: var(--colorNeutralStrokeDisabled);
+      border-color: var(--colorNeutralStrokeDisabled);
+    }
+
+    &:focus-visible {
+      outline-color: var(--colorPaletteBlueBorderActive);
+    }
+  }
+
+  .createTrnmtBackBtn {
+    &:focus-visible {
+      outline-color: var(--colorPaletteBlueBorderActive);
     }
   }
 }
 
 @media screen and (max-width: 375pt) {
-  .toggleTournamentType {
-    .tournamentType {
-      font: normal normal 600 16px/20px Segoe UI;
+  .container {
+    .toggleTournamentType {
+      .tournamentType {
+        font: normal normal 600 16px/20px Segoe UI;
+      }
     }
   }
 }

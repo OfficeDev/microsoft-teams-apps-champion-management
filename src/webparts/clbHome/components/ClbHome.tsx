@@ -1,5 +1,5 @@
 import {
-  ISPHttpClientOptions, MSGraphClientV3, SPHttpClient,
+  ISPHttpClientOptions, SPHttpClient,
   SPHttpClientResponse
 } from "@microsoft/sp-http";
 import "@pnp/sp/lists";
@@ -8,9 +8,13 @@ import "@pnp/sp/views";
 import "@pnp/sp/fields";
 import { Web } from "@pnp/sp/webs";
 import { initializeIcons } from "@uifabric/icons";
+import {
+  teamsLightTheme, teamsDarkTheme, teamsHighContrastTheme,
+  FluentProvider, Theme
+} from '@fluentui/react-components';
+import { app } from "@microsoft/teams-js-v2";
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
-import { ThemeStyle } from "msteams-ui-styles-core";
 import * as React from "react";
 import Col from "react-bootstrap/Col";
 import Media from "react-bootstrap/Media";
@@ -26,6 +30,8 @@ import Header from "./Header";
 import { IClbHomeProps } from "./IClbHomeProps";
 import ManageApprovals from "./ManageApprovals";
 import TOTLandingPage from "./TOTLandingPage";
+import ChampionReport from "./ChampionReport";
+import CommonServices from "../Common/CommonServices";
 
 initializeIcons();
 
@@ -51,17 +57,19 @@ export interface IClbHomeState {
   appLogoURL: string;
   isChampionApprovalPending: boolean;
   isEventApprovalPending: boolean;
+  championReport: boolean;
+  appTitle: string;
+  currentTeamsTheme: Theme;
+  currentThemeName: string;
 }
 
 //Global Variables
 let flagCheckUserRole: boolean = true;
 let rootSiteURL: string;
 let spweb: any;
+let commonService: CommonServices;
+export default class ClbHome extends React.Component<IClbHomeProps, IClbHomeState> {
 
-export default class ClbHome extends React.Component<
-  IClbHomeProps,
-  IClbHomeState
-> {
   constructor(_props: any) {
     super(_props);
     this.state = {
@@ -85,44 +93,48 @@ export default class ClbHome extends React.Component<
       firstName: "",
       appLogoURL: "",
       isChampionApprovalPending: false,
-      isEventApprovalPending: false
+      isEventApprovalPending: false,
+      championReport: false,
+      appTitle: "",
+      currentTeamsTheme: teamsLightTheme,
+      currentThemeName: stringsConstants.themeDefaultMode
     };
     this.checkUserRole = this.checkUserRole.bind(this);
     this.callBackFunction = this.callBackFunction.bind(this);
-
-    //Set the context for PNP
-    sp.setup({
-      spfxContext: this.props.context as any
-    });
-
     //set context
     if (this.props.context.pageContext.web.serverRelativeUrl == "/")
       rootSiteURL = this.props.context.pageContext.web.absoluteUrl;
     else
       rootSiteURL = this.props.siteUrl;
-
+    sp.setup({
+      spfxContext: this.props.context as any
+    });
     spweb = Web(rootSiteURL + '/' + this.state.inclusionpath + "/" + siteconfig.sitename);
   }
 
   public componentDidMount() {
-
     this.setState({
       isShow: true,
     });
     //check if TOT is already enabled
     this.checkTOTIsEnabled();
+
+    //setting href on 'skip to main content' to navigate to main content
+    const skipToMainContent = document.getElementById("sp-skipToContent");
+    skipToMainContent.setAttribute("href", "#skipToMainContent");
+    //adding span as a first element to the body to fix NVDA accessibility issue
+    const spanElement = document.createElement("span");
+    spanElement.innerHTML = "&nbsp;";
+    spanElement.setAttribute("style", "height: 0px;display: block;");
+    document.body.insertBefore(spanElement, skipToMainContent);
+
     //Get current user details and set state
     this.props.context.spHttpClient
-      .get(
-
-        "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
-        SPHttpClient.configurations.v1
-      )
+      .get("/_api/SP.UserProfiles.PeopleManager/GetMyProperties", SPHttpClient.configurations.v1)
       .then((responseuser: SPHttpClientResponse) => {
         responseuser.json().then((datauser: any) => {
           this.setState({ loggedinUserName: datauser.DisplayName });
           this.setState({ loggedinUserEmail: datauser.Email });
-
           //Create site and lists when app is installed 
           this.createSiteAndLists().then(() => {
             //Check current user's role and set UI components
@@ -131,20 +143,48 @@ export default class ClbHome extends React.Component<
             this.getMembersListData();
             //Get pending events from event track details list
             this.getPendingEventsData();
+            //get appTitle from Config List
+            this.getConfigData();
           });
-          var props = {};
-          datauser.UserProfileProperties.forEach((prop) => {
+          let props: any = {};
+          datauser.UserProfileProperties.forEach((prop: any) => {
             props[prop.Key] = prop.Value;
           });
           datauser.userProperties = props;
           this.setState({ firstName: datauser.userProperties.FirstName });
         });
-      }).catch((error) => {
+      }).catch((error: any) => {
         alert(stringsConstants.CMPErrorMessage + "while retrieving user details. Below is the " + JSON.stringify(error));
         console.error("CMP_CLBHome_componentDidMount_FailedToGetUserDetails \n", JSON.stringify(error));
       });
 
+    //Get current Teams theme to pass into fluent provider
+    app.initialize();
+    app.getContext().then((ctx: any) => {
+      const theme = ctx.theme || stringsConstants.themeDefaultMode;
+      this.updateCMPTheme(theme);
+    });
+    app.registerOnThemeChangeHandler((theme: string) => {
+      this.updateCMPTheme(theme);
+    });
+
   }
+
+  //Get Current theme when Teams theme is switched
+  protected updateCMPTheme = (theme: string) => {
+    switch (theme.toLocaleLowerCase()) {
+      case stringsConstants.themeDefaultMode:
+        this.setState({ currentTeamsTheme: teamsLightTheme, currentThemeName: stringsConstants.themeDefaultMode });
+        break;
+      case stringsConstants.themeDarkMode:
+        this.setState({ currentTeamsTheme: teamsDarkTheme, currentThemeName: stringsConstants.themeDarkMode });
+        break;
+      case stringsConstants.themeContrastMode:
+        this.setState({ currentTeamsTheme: teamsHighContrastTheme, currentThemeName: stringsConstants.themeContrastMode });
+        break;
+    }
+  };
+
   //verify tot is enabled
   private async checkTOTIsEnabled() {
     try {
@@ -152,11 +192,11 @@ export default class ClbHome extends React.Component<
       let listsPresent = [];
       let allTOTLists = [];
       let fieldsMisMatchCount = 0;
-      await listStructure.forEach(async (element) => {
+      await listStructure.forEach(async (element: any) => {
         const spListTitle: string = element["listName"];
         const fieldsToCreate: string[] = element["fields"];
         allTOTLists.push(spListTitle);
-        await spweb.lists.getByTitle(spListTitle).get().then(async (list) => {
+        await spweb.lists.getByTitle(spListTitle).get().then(async (list: any) => {
           if (list != undefined) {
             listsPresent.push(spListTitle);
             //validate for fields
@@ -198,7 +238,7 @@ export default class ClbHome extends React.Component<
         const parser = new DOMParser();
         const xml = parser.parseFromString(fieldsToCreate[i], 'text/xml');
         let fieldNameToCheck = xml.querySelector('Field').getAttribute('DisplayName');
-        let fieldExists = filterFields.filter(e => e.Title == fieldNameToCheck);
+        let fieldExists = filterFields.filter((e: any) => e.Title == fieldNameToCheck);
         if (fieldExists.length == 0) {
           totalFieldsToCreate.push(fieldsToCreate[i]);
         }
@@ -211,198 +251,140 @@ export default class ClbHome extends React.Component<
     }
   }
 
-  //create lists 
-  private createNewList(siteId: any, item: any) {
-    this.props.context.msGraphClientFactory
-      .getClient('3')
-      .then(async (client: MSGraphClientV3) => {
-        client
-          .api("sites/" + siteId + "/lists")
-          .version("v1.0")
-          .header("Content-Type", "application/json")
-          .post(item, (errClbHome, _res, rawresponse) => {
-            if (!errClbHome) {
-              if (_res) {
-                console.log(stringsConstants.CMPLog + "List created: " + "'" + item.displayName + "'");
-                setTimeout(() => {
-                  this.props.context.spHttpClient
-                    .get(
-
-                      "/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
-                      SPHttpClient.configurations.v1
-                    )
-                    .then(
-                      (
-                        userProperties: SPHttpClientResponse
-                      ) => {
-                        userProperties
-                          .json()
-                          .then(async (adminUser: any) => {
-
-                            let goAndCreateMember: boolean;
-                            goAndCreateMember = false;
-                            if (adminUser) {
-
+  //create lists and Columns
+  private async createNewList(item: any) {
+    try {
+      //Create List
+      const listReponse = await commonService.createSPlist(item.displayName);
+      console.log(stringsConstants.CMPLog + "List created: " + "'" + item.displayName + "'");
+      //Create Columns
+      const fieldsResponse = await commonService.createListFields(item.displayName, item.columns);
+      console.log(stringsConstants.CMPLog + item.displayName + " List columns created");
+      console.log("Responses", listReponse, fieldsResponse);
+      if (listReponse && fieldsResponse === "Success") {
+        setTimeout(() => {
+          if (item.displayName === stringsConstants.MemberList) {
+            //Add current user as a manager to the Champion Management Platform
+            this.props.context.spHttpClient
+              .get(
+                "/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
+                SPHttpClient.configurations.v1
+              )
+              .then((userProperties: SPHttpClientResponse) => {
+                userProperties.json().then(async (adminUser: any) => {
+                  if (adminUser) {
+                    this.props.context.spHttpClient
+                      .get(
+                        "/" + this.state.inclusionpath + "/" + this.state.sitename + `/_api/web/lists/GetByTitle('Member List')/Items?$filter= Title eq '${adminUser.Email}'`,
+                        SPHttpClient.configurations.v1
+                      )
+                      .then((response: SPHttpClientResponse) => {
+                        response.json().then((datada: any) => {
+                          if (!datada.error) {
+                            let val = datada.value;
+                            if (val.length === 0 && item.displayName === stringsConstants.MemberList) {
+                              const listDefinition: any = {
+                                Title: adminUser.Email,
+                                FirstName: adminUser.DisplayName.split(
+                                  " "
+                                )[0],
+                                LastName: adminUser.DisplayName.split(
+                                  " "
+                                )[1],
+                                Role: "Manager",
+                                Status: "Approved",
+                                Group: "IT Pro",
+                                FocusArea: ['All'],
+                              };
+                              const spHttpClientOptions: ISPHttpClientOptions = {
+                                body: JSON.stringify(listDefinition)
+                              };
+                              const url: string =
+                                "/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Member List')/items";
                               this.props.context.spHttpClient
-                                .get(
-
-                                  "/" + this.state.inclusionpath + "/" + this.state.sitename + `/_api/web/lists/GetByTitle('Member List')/Items?$filter= Title eq '${adminUser.Email}'`,
-                                  SPHttpClient.configurations.v1
-                                )
-                                .then((response: SPHttpClientResponse) => {
-                                  response.json().then((datada) => {
-                                    if (!datada.error) {
-                                      let val = datada.value;
-                                      if (val.length === 0 && item.displayName === "Member List") {
-                                        {
-                                          const listDefinition: any = {
-                                            Title: adminUser.Email,
-                                            FirstName: adminUser.DisplayName.split(
-                                              " "
-                                            )[0],
-                                            LastName: adminUser.DisplayName.split(
-                                              " "
-                                            )[1],
-                                            Role: "Manager",
-                                            Status: "Approved",
-                                            Group: "IT Pro",
-                                            FocusArea: ['All'],
-                                          };
-                                          const spHttpClientOptions: ISPHttpClientOptions = {
-                                            body: JSON.stringify(
-                                              listDefinition
-                                            ),
-                                          };
-                                          const url: string =
-                                            "/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Member List')/items";
-                                          this.props.context.spHttpClient
-                                            .post(
-                                              url,
-                                              SPHttpClient.configurations
-                                                .v1,
-                                              spHttpClientOptions
-                                            )
-                                            .then(
-                                              (
-                                                newUserResponse: SPHttpClientResponse
-                                              ) => {
-                                                this.setState({
-                                                  isShow: false,
-                                                });
-                                                if (
-                                                  newUserResponse.status ===
-                                                  201
-                                                ) {
-                                                  alert(
-                                                    ` ${this.state.loggedinUserName} has been added as a manager to the Champion Management Platform, please refresh the app to complete the setup.`
-                                                  );
-                                                } else {
-                                                  alert(
-                                                    "Response status " +
-                                                    newUserResponse.status +
-                                                    " - " +
-                                                    newUserResponse.statusText
-                                                  );
-                                                }
-                                              }
-                                            );
-                                        }
-                                      }
-                                    }
-                                  });
-                                });
+                                .post(url, SPHttpClient.configurations.v1, spHttpClientOptions)
+                                .then((newUserResponse: SPHttpClientResponse) => {
+                                  this.setState({ isShow: false });
+                                  if (newUserResponse.status === 201) {
+                                    alert(
+                                      ` ${this.state.loggedinUserName} has been added as a manager to the Champion Management Platform, please refresh the app to complete the setup.`
+                                    );
+                                  } else {
+                                    alert("Response status " + newUserResponse.status + " - " + newUserResponse.statusText);
+                                  }
+                                }
+                                );
                             }
-
-                          });
-                      }
-                    );
-                }, 6000);
-                setTimeout(() => {
-                  if (item.displayName === "Events List") {
-                    siteconfig.eventsMasterData.forEach(
-                      (eventData) => {
-                        let eventDataList: any = {
-                          Title: eventData.Title,
-                          Points: eventData.Points,
-                          Description: eventData.Description,
-                          IsActive: true,
-                        };
-                        const spHttpClientOptions: ISPHttpClientOptions = {
-                          body: JSON.stringify(eventDataList),
-                        };
-
-                        const url: string =
-
-                          "/" +
-                          this.state.inclusionpath +
-                          "/" +
-                          this.state.sitename +
-                          "/_api/web/lists/GetByTitle('Events List')/items";
-                        this.props.context.spHttpClient
-                          .post(
-                            url,
-                            SPHttpClient.configurations.v1,
-                            spHttpClientOptions
-                          )
-                          .then(
-                            (
-                              newUserResponse: SPHttpClientResponse
-                            ) => {
-
-                            }
-                          );
-                      }
-                    );
+                          }
+                        });
+                      });
                   }
-                  //Creating items in Config List
-                  if (item.displayName === stringsConstants.ConfigList) {
-                    siteconfig.configMasterData.forEach(
-                      (configData) => {
-                        let configList: any = {
-                          Title: configData.Title,
-                          Value: configData.Value
-                        };
-                        const spHttpClientOptions: ISPHttpClientOptions = {
-                          body: JSON.stringify(configList),
-                        };
 
-                        const url: string =
-                          "/" +
-                          this.state.inclusionpath +
-                          "/" +
-                          this.state.sitename +
-                          "/_api/web/lists/GetByTitle('" + stringsConstants.ConfigList + "')/items";
-                        this.props.context.spHttpClient
-                          .post(
-                            url,
-                            SPHttpClient.configurations.v1,
-                            spHttpClientOptions
-                          )
-                          .then(
-                            (
-                              newUserResponse: SPHttpClientResponse
-                            ) => {
-
-                            }
-                          );
-                      }
-                    );
-                  }
-                }, 5000);
+                });
               }
-            }
-          });
-      }).catch((error) => {
-        alert(stringsConstants.CMPErrorMessage + "while creating new list. Below are the details: \n" + JSON.stringify(error));
-        console.error("CMP_CLBHome_createNewList_FailedtoCreateList \n", JSON.stringify(error));
-      });
+              );
+          }
+        }, 6000);
+        setTimeout(() => {
+          if (item.displayName === stringsConstants.EventsList) {
+            siteconfig.eventsMasterData.forEach(
+              (eventData) => {
+                let eventDataList: any = {
+                  Title: eventData.Title,
+                  Points: eventData.Points,
+                  Description: eventData.Description,
+                  IsActive: true,
+                };
+                const spHttpClientOptions: ISPHttpClientOptions = {
+                  body: JSON.stringify(eventDataList),
+                };
+
+                const url: string = "/" + this.state.inclusionpath + "/" + this.state.sitename +
+                  "/_api/web/lists/GetByTitle('Events List')/items";
+                this.props.context.spHttpClient.post(url, SPHttpClient.configurations.v1, spHttpClientOptions)
+              }
+            );
+          }
+          //Creating items in Config List
+          if (item.displayName === stringsConstants.ConfigList) {
+            siteconfig.configMasterData.forEach(
+              (configData) => {
+                let configList: any = {
+                  Title: configData.Title,
+                  Value: configData.Value
+                };
+                const spHttpClientOptions: ISPHttpClientOptions = {
+                  body: JSON.stringify(configList),
+                };
+
+                const url: string =
+                  "/" +
+                  this.state.inclusionpath +
+                  "/" +
+                  this.state.sitename +
+                  "/_api/web/lists/GetByTitle('" + stringsConstants.ConfigList + "')/items";
+                this.props.context.spHttpClient
+                  .post(url, SPHttpClient.configurations.v1, spHttpClientOptions)
+              }
+            );
+          }
+        }, 5000);
+      }
+      else {
+        throw new Error(listReponse + "\n" + fieldsResponse);
+      }
+    }
+    catch (error) {
+      alert(stringsConstants.CMPErrorMessage + "while creating new list. Below are the details: \n" + JSON.stringify(error));
+      console.error("CMP_CLBHome_createNewList_FailedtoCreateList \n", JSON.stringify(error));
+    }
   }
 
   //When app is installed create new site collection and lists if not existing already
   private async createSiteAndLists() {
     console.log(stringsConstants.CMPLog + "Checking if site exists already.");
     //Set Variables
-    var exSiteId;
+    let exSiteId: any;
     try {
       //Check if CMP site exists        
       await sp.site.exists(rootSiteURL + "/" + this.state.inclusionpath + "/" + this.state.sitename).then(async (response) => {
@@ -452,199 +434,28 @@ export default class ClbHome extends React.Component<
                   siteResponse.json().then((siteData: any) => {
                     if (siteData.SiteId) {
                       exSiteId = siteData.SiteId;
-                      this.setState({ siteId: siteData.SiteId }, () => {
-                        let isMembersListNotExists = false;
-                        console.log(stringsConstants.CMPLog + "Creating Lists in new site");
-                        //Create 3 lists in the newly created site
-                        if (exSiteId) {
-                          let lists = [];
-                          siteconfig.lists.forEach((item) => {
-                            let listColumns = [];
-                            item.columns.forEach((element) => {
-                              let column;
-                              switch (element.type) {
-                                case "text":
-                                  column = {
-                                    name: element.name,
-                                    text: {},
-                                  };
-                                  listColumns.push(column);
-                                  break;
-                                case "multilineText":
-                                  column = {
-                                    name: element.name,
-                                    text: {
-                                      allowMultipleLines: true,
-                                      appendChangesToExistingText: false,
-                                      linesForEditing: 6,
-                                      textType: "plain"
-                                    },
-                                  };
-                                  listColumns.push(column);
-                                  break;
-                                case "choice":
-                                  switch (element.name) {
-                                    case "Region":
-                                      column = {
-                                        name: element.name,
-                                        choice: {
-                                          allowTextEntry: false,
-                                          choices: [
-                                            "Africa",
-                                            "Asia",
-                                            "Australia / Pacific",
-                                            "Europe",
-                                            "Middle East",
-                                            "North America / Central America / Caribbean",
-                                            "South America",
-                                          ],
-                                          displayAs: "dropDownMenu",
-                                        },
-                                      };
-                                      listColumns.push(column);
-                                      break;
-                                    case "Country":
-                                      column = {
-                                        name: element.name,
-                                        choice: {
-                                          allowTextEntry: false,
-                                          choices: ["INDIA", "USA"],
-                                          displayAs: "dropDownMenu",
-                                        },
-                                      };
-                                      listColumns.push(column);
-                                      break;
-                                    case "Role":
-                                      column = {
-                                        name: element.name,
-                                        choice: {
-                                          allowTextEntry: false,
-                                          choices: ["Manager", "Champion"],
-                                          displayAs: "dropDownMenu",
-                                        },
-                                      };
-                                      listColumns.push(column);
-                                      break;
-                                    case "Status":
-                                      column = {
-                                        name: element.name,
-                                        choice: {
-                                          allowTextEntry: false,
-                                          choices: ["Approved", "Pending", "Rejected"],
-                                          displayAs: "dropDownMenu",
-                                        },
-                                      };
-                                      listColumns.push(column);
-                                      break;
-                                    case "FocusArea":
-                                      column = {
-                                        name: element.name,
-                                        choice: {
-                                          allowTextEntry: false,
-                                          choices: [
-                                            "Marketing",
-                                            "Teamwork",
-                                            "Business Apps",
-                                            "Virtual Events",
-                                          ],
-                                          displayAs: "checkBoxes",
-                                        },
-                                      };
-                                      listColumns.push(column);
-                                      break;
-                                    case "Group":
-                                      column = {
-                                        name: element.name,
-                                        choice: {
-                                          allowTextEntry: false,
-                                          choices: [
-                                            "IT Pro",
-                                            "Sales",
-                                            "Engineering",
-                                          ],
-                                          displayAs: "dropDownMenu",
-                                        },
-                                      };
-                                      listColumns.push(column);
-                                      break;
-                                    case "Description":
-                                      column = {
-                                        name: element.name,
-                                        choice: {
-                                          allowTextEntry: false,
-                                          choices: [
-                                            "Event Moderator",
-                                            "Office Hours",
-                                            "Blogs",
-                                            "Training",
-                                          ],
-                                          displayAs: "dropDownMenu",
-                                        },
-                                      };
-                                      listColumns.push(column);
-                                      break;
-                                    default:
-                                      break;
-                                  }
-                                  break;
-                                case "boolean":
-                                  column = {
-                                    name: element.name,
-                                    boolean: {},
-                                  };
-                                  listColumns.push(column);
-                                  break;
-                                case "dateTime":
-                                  column = {
-                                    name: element.name,
-                                    dateTime: {},
-                                  };
-                                  listColumns.push(column);
-                                  break;
-                                case "number":
-                                  column = {
-                                    name: element.name,
-                                    number: {},
-                                  };
-                                  listColumns.push(column);
-                                  break;
-                                default:
-                                  break;
-                              }
-                            });
-                            let list = {
-                              displayName: item.listName,
-                              columns: listColumns,
-                              list: {
-                                template: "genericList",
-                              },
-                            };
-                            lists.push(list);
-                          });
-
-                          lists.forEach((item) => {
-                            let siteId =
-                              item.displayName === siteconfig.lists[0].listName
-                                ? this.state.siteId // siteconfig.rootSiteId
-                                : exSiteId;
-                            if (
-                              item.displayName === siteconfig.lists[0].listName &&
-                              !isMembersListNotExists
-                            ) {
-                              this.createNewList(siteId, item);
-
-                            } else {
-                              this.createNewList(siteId, item);
-
-                            }
-                          });
-                        }
-                      });
+                      this.setState({ siteId: siteData.SiteId });
+                      console.log(stringsConstants.CMPLog + "Creating Lists in new site");
+                      //Create 3 lists in the newly created site
+                      if (exSiteId) {
+                        let lists: any = [];
+                        siteconfig.lists.forEach((spList) => {
+                          let list = {
+                            displayName: spList.listName,
+                            columns: spList.fields
+                          };
+                          lists.push(list);
+                        });
+                        commonService = new CommonServices(this.props.context, this.props.siteUrl);
+                        lists.forEach((spList: any) => {
+                          this.createNewList(spList);
+                        });
+                      }
                     }
                   });
                 }
 
-              }).catch((error) => {
+              }).catch((error: any) => {
                 alert(stringsConstants.CMPErrorMessage + "while creating new site. Below are the details: \n" + JSON.stringify(error));
                 console.error("CMP_CLBHome_createSiteAndLists_FailedToCreateSite \n", JSON.stringify(error));
               });
@@ -679,181 +490,23 @@ export default class ClbHome extends React.Component<
                           if (exSiteId) {
                             console.log(stringsConstants.CMPLog + "Creating lists");
                             //Set up List Creation Information
-                            let lists = [];
-                            siteconfig.lists.forEach((item) => {
-                              let listColumns = [];
-                              item.columns.forEach((element) => {
-                                let column;
-                                switch (element.type) {
-                                  case "text":
-                                    column = {
-                                      name: element.name,
-                                      text: {},
-                                    };
-                                    listColumns.push(column);
-                                    break;
-                                  case "multilineText":
-                                    column = {
-                                      name: element.name,
-                                      text: {
-                                        allowMultipleLines: true,
-                                        appendChangesToExistingText: false,
-                                        linesForEditing: 6,
-                                        textType: "plain"
-                                      },
-                                    };
-                                    listColumns.push(column);
-                                    break;
-                                  case "choice":
-                                    switch (element.name) {
-                                      case "Region":
-                                        column = {
-                                          name: element.name,
-                                          choice: {
-                                            allowTextEntry: false,
-                                            choices: [
-                                              "Africa",
-                                              "Asia",
-                                              "Australia / Pacific",
-                                              "Europe",
-                                              "Middle East",
-                                              "North America / Central America / Caribbean",
-                                              "South America",
-                                            ],
-                                            displayAs: "dropDownMenu",
-                                          },
-                                        };
-                                        listColumns.push(column);
-                                        break;
-                                      case "Country":
-                                        column = {
-                                          name: element.name,
-                                          choice: {
-                                            allowTextEntry: false,
-                                            choices: ["INDIA", "USA"],
-                                            displayAs: "dropDownMenu",
-                                          },
-                                        };
-                                        listColumns.push(column);
-                                        break;
-                                      case "Role":
-                                        column = {
-                                          name: element.name,
-                                          choice: {
-                                            allowTextEntry: false,
-                                            choices: ["Manager", "Champion"],
-                                            displayAs: "dropDownMenu",
-                                          },
-                                        };
-                                        listColumns.push(column);
-                                        break;
-                                      case "Status":
-                                        column = {
-                                          name: element.name,
-                                          choice: {
-                                            allowTextEntry: false,
-                                            choices: ["Approved", "Pending", "Rejected"],
-                                            displayAs: "dropDownMenu",
-                                          },
-                                        };
-                                        listColumns.push(column);
-                                        break;
-                                      case "FocusArea":
-                                        column = {
-                                          name: element.name,
-                                          choice: {
-                                            allowTextEntry: false,
-                                            choices: [
-                                              "Marketing",
-                                              "Teamwork",
-                                              "Business Apps",
-                                              "Virtual Events",
-                                            ],
-                                            displayAs: "checkBoxes",
-                                          },
-                                        };
-                                        listColumns.push(column);
-                                        break;
-                                      case "Group":
-                                        column = {
-                                          name: element.name,
-                                          choice: {
-                                            allowTextEntry: false,
-                                            choices: [
-                                              "IT Pro",
-                                              "Sales",
-                                              "Engineering",
-                                            ],
-                                            displayAs: "dropDownMenu",
-                                          },
-                                        };
-                                        listColumns.push(column);
-                                        break;
-                                      case "Description":
-                                        column = {
-                                          name: element.name,
-                                          choice: {
-                                            allowTextEntry: false,
-                                            choices: [
-                                              "Event Moderator",
-                                              "Office Hours",
-                                              "Blogs",
-                                              "Training",
-                                            ],
-                                            displayAs: "dropDownMenu",
-                                          },
-                                        };
-                                        listColumns.push(column);
-                                        break;
-                                      default:
-                                        break;
-                                    }
-                                    break;
-                                  case "boolean":
-                                    column = {
-                                      name: element.name,
-                                      boolean: {},
-                                    };
-                                    listColumns.push(column);
-                                    break;
-                                  case "dateTime":
-                                    column = {
-                                      name: element.name,
-                                      dateTime: {},
-                                    };
-                                    listColumns.push(column);
-                                    break;
-                                  case "number":
-                                    column = {
-                                      name: element.name,
-                                      number: {},
-                                    };
-                                    listColumns.push(column);
-                                    break;
-                                  default:
-                                    break;
-                                }
-                              });
+                            let lists: any = [];
+                            siteconfig.lists.forEach((spList) => {
                               let list = {
-                                displayName: item.listName,
-                                columns: listColumns,
-                                list: {
-                                  template: "genericList",
-                                },
+                                displayName: spList.listName,
+                                columns: spList.fields
                               };
                               lists.push(list);
                             });
-
+                            commonService = new CommonServices(this.props.context, this.props.siteUrl);
                             //Iterate and create all the lists
-                            lists.forEach((item) => {
-                              this.createNewList(exSiteId, item);
+                            lists.forEach((spList: any) => {
+                              this.createNewList(spList);
                             });
-
                           }
-
                         });
                       }
-                    }).catch((error) => {
+                    }).catch((error: any) => {
                       alert(stringsConstants.CMPErrorMessage + "while retrieving SiteID. Below are the details: \n" + JSON.stringify(error));
                       console.error("CMP_CLBHome_createSiteAndLists_FailedToGetSiteID \n", JSON.stringify(error));
                     });
@@ -870,25 +523,25 @@ export default class ClbHome extends React.Component<
                   const eventTrackDetailsColumns = await spweb.lists.getByTitle(stringsConstants.EventTrackDetailsList).fields.filter("Hidden eq false and ReadOnlyField eq false").select("Title").get();
 
                   //Check if Notes column exists, if not create it.
-                  let notesFieldExists = eventTrackDetailsColumns.filter(e => e.Title == stringsConstants.NotesColumn);
+                  let notesFieldExists = eventTrackDetailsColumns.filter((e: any) => e.Title == stringsConstants.NotesColumn);
                   if (notesFieldExists.length == 0) {
                     await spweb.lists.getByTitle(stringsConstants.EventTrackDetailsList).fields.addMultilineText(stringsConstants.NotesColumn, 6, false, false, false, false).then(async () => {
                       await spweb.lists.getByTitle(stringsConstants.EventTrackDetailsList).defaultView.fields.add(stringsConstants.NotesColumn).then(() => {
                         console.log("CMP_CLBHome_Added Notes column to Event Track Details List");
                       });
-                    }).catch((error) => {
+                    }).catch((error: any) => {
                       console.error("CMP_CLBHome_Failed to add Notes Column to Event Track Details List \n", JSON.stringify(error));
                     });
                   }
 
                   //Check if Status column exists, if not create it.
-                  let statusFieldExists = eventTrackDetailsColumns.filter(e => e.Title == stringsConstants.StatusColumn);
+                  let statusFieldExists = eventTrackDetailsColumns.filter((e: any) => e.Title == stringsConstants.StatusColumn);
                   if (statusFieldExists.length == 0) {
                     await spweb.lists.getByTitle(stringsConstants.EventTrackDetailsList).fields.addText(stringsConstants.StatusColumn, 255).then(async () => {
                       await spweb.lists.getByTitle(stringsConstants.EventTrackDetailsList).defaultView.fields.add(stringsConstants.StatusColumn).then(() => {
                         console.log("CMP_CLBHome_Added Status column to Event Track Details List");
                       });
-                    }).catch((error) => {
+                    }).catch((error: any) => {
                       console.error("CMP_CLBHome_Failed to add Status Column to Event Track Details List \n", JSON.stringify(error));
                     });
                   }
@@ -896,13 +549,7 @@ export default class ClbHome extends React.Component<
                   //Add Config List to the CMP site
                   let configList = {
                     displayName: stringsConstants.ConfigList,
-                    columns: [{
-                      name: stringsConstants.ValueColumn,
-                      text: {}
-                    }],
-                    list: {
-                      template: "genericList",
-                    },
+                    columns: siteconfig.lists.find((item) => item.listName === stringsConstants.ConfigList).fields
                   };
 
                   //Get Sitecollection ID for creating Config list   
@@ -916,12 +563,31 @@ export default class ClbHome extends React.Component<
                       else {
                         responseSiteId.json().then((datauser: any) => {
                           exSiteId = datauser.value;
+                          console.log("exSiteId: " + exSiteId);
                           this.props.context.spHttpClient
                             .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Config List')/Items", SPHttpClient.configurations.v1)
                             .then(async (responseConfigList: SPHttpClientResponse) => {
                               if (responseConfigList.status === 404) {
-                                this.createNewList(exSiteId, configList);
+                                commonService = new CommonServices(this.props.context, this.props.siteUrl);
+                                this.createNewList(configList);
                                 console.log("CMP_CLBHome_Config List was created");
+                              }
+                              else {
+                                //creating the default entries in the config list, if not exists.
+                                let configItems = await spweb.lists.getByTitle(stringsConstants.ConfigList).items.getAll();
+
+                                siteconfig.configMasterData.forEach(async (configData) => {
+                                  if (configItems.length === 0 ||
+                                    configItems.find((item: any) => item.Title === configData.Title) === undefined) {
+                                    let configListItem: any = {
+                                      Title: configData.Title,
+                                      Value: configData.Value
+                                    };
+                                    await spweb.lists.getByTitle(stringsConstants.ConfigList).items.add(configListItem).then().catch((error: any) => {
+                                      console.error("CMP_CLBHome_Failed to add item to Config List \n", JSON.stringify(error));
+                                    });
+                                  }
+                                })
                               }
                             });
                         });
@@ -929,7 +595,7 @@ export default class ClbHome extends React.Component<
                     });
 
                 }
-              }).catch((error) => {
+              }).catch((error: any) => {
                 alert(stringsConstants.CMPErrorMessage + "while checking if MemberList exists. Below are the details: \n" + JSON.stringify(error));
                 console.error("CMP_CLBHome_createSiteAndLists_FailedToCheckMemberListExists \n", JSON.stringify(error));
               });
@@ -1032,8 +698,8 @@ export default class ClbHome extends React.Component<
               });
               fetch(require('../assets/images/CMPBadge.png')).then(res => res.blob()).then((blob) => {
                 spweb.getFolderByServerRelativeUrl("/" + this.state.inclusionpath + "/" + this.state.sitename + "/" + spListTitle).files.add("digitalbadge.png", blob, true)
-                  .then((res) => {
-                    res.file.getItem().then(item => {
+                  .then((res: any) => {
+                    res.file.getItem().then((item: any) => {
                       item.update({
                         Title: "Teamwork Champion"
                       });
@@ -1075,10 +741,10 @@ export default class ClbHome extends React.Component<
                 isShow: false,
               });
             }
-            response.json().then((datada) => {
+            response.json().then((datada: any) => {
               if (!datada.error) {
                 let dataexists: any = datada.value.find(
-                  (x) =>
+                  (x: any) =>
                     x.Title.toLowerCase() === this.state.loggedinUserEmail.toLowerCase()
                 );
                 if (dataexists) {
@@ -1100,7 +766,7 @@ export default class ClbHome extends React.Component<
                   this.setState({ eV: true });
               }
             });
-          }).catch((error) => {
+          }).catch((error: any) => {
             alert(stringsConstants.CMPErrorMessage + "while retrieving user role. Below are the details: \n" + JSON.stringify(error));
             console.error("CMP_CLBHome_checkUserRole_FailedtoGetUserRole \n", JSON.stringify(error));
           });
@@ -1120,9 +786,8 @@ export default class ClbHome extends React.Component<
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
-        let res = response.json();
         if (response.status === 200) {
-          res.then((responseJSON: any) => {
+          response.json().then((responseJSON: any) => {
             this.setState({
               isChampionApprovalPending: responseJSON.value.length > 0
             });
@@ -1131,6 +796,22 @@ export default class ClbHome extends React.Component<
       });
   }
 
+  //get Config List data
+  private async getConfigData(): Promise<void> {
+    try {
+      let filterQuery = "Title eq '" + stringsConstants.AppTitle + "'";
+      const configListData = await spweb.lists.getByTitle(stringsConstants.ConfigList).items.filter(filterQuery).getAll();
+
+      if (configListData.length > 0) {
+        this.setState({ appTitle: configListData[0].Value });
+      }
+      else {
+        this.setState({ appTitle: siteconfig.appTitle });
+      }
+    } catch (error) {
+      console.error("CMP_clbhome_getConfigData \n", error);
+    }
+  }
   //Check for any pending approvals in the event track details list
   private getPendingEventsData(): void {
     this.props.context.spHttpClient
@@ -1139,9 +820,8 @@ export default class ClbHome extends React.Component<
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
-        let res = response.json();
         if (response.status === 200) {
-          res.then((responseJSON: any) => {
+          response.json().then((responseJSON: any) => {
             this.setState({
               isEventApprovalPending: responseJSON.value.length > 0
             });
@@ -1170,14 +850,28 @@ export default class ClbHome extends React.Component<
     }
   }
 
+  //Get CMP Page Banner Class when Theme is switched to Dark or Contrast Mode.
+  public getCMPSubHeaderBannerClass() {
+    if (this.state.currentThemeName === stringsConstants.themeDarkMode) {
+      return styles.cmpHeaderDark;
+    }
+    else if (this.state.currentThemeName === stringsConstants.themeContrastMode) {
+      return styles.cmpHeaderContrast;
+    }
+    else
+      return "";
+  }
+
   public render(): React.ReactElement<IClbHomeProps> {
+    const isDarkOrContrastTheme = this.state.currentThemeName === stringsConstants.themeDarkMode || this.state.currentThemeName === stringsConstants.themeContrastMode;
     return (
-      <div className={styles.clbHome} >
+      <FluentProvider className={styles.clbHome} theme={this.state.currentTeamsTheme}>
         {this.state.isShow && <div className={styles.load}></div>}
         < div className={styles.container} >
           <div>
             <Header
               logoImageURL={this.state.appLogoURL}
+              appTitle={this.state.appTitle}
               showSearch={this.state.cB}
               clickcallback={() =>
                 this.setState({
@@ -1186,328 +880,402 @@ export default class ClbHome extends React.Component<
                   addMember: false,
                   dB: false,
                   manageApprovals: false,
-                  enableTOT: false
+                  enableTOT: false,
+                  championReport: false
+
                 })
               }
+              currentThemeName={this.state.currentThemeName}
             />
           </div>
-          {!this.state.cB &&
-            !this.state.ChampionsList &&
-            !this.state.addMember && !this.state.manageApprovals &&
-            !this.state.dB && !this.state.enableTOT && (
-              <div>
-                <div className={styles.imgheader}>
-                  <span className={styles.cmpPageHeading}>{LocaleStrings.WelcomeLabel} {this.state.firstName}!</span>
-                </div>
-                <div className={styles.grid}>
-                  <div className={styles.quickguide}>{LocaleStrings.GetStartedLabel}</div>
-                  <Row xl={4} lg={4} md={4} sm={3} xs={2} className="mt-4">
-                    <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                      <Media
-                        className={styles.cursor}
-                        onClick={() => this.setState({ cB: !this.state.cB })}
-                      >
-                        <div className={styles.mb}>
-                          <img
-                            src={require("../assets/CMPImages/ChampionLeaderBoard.svg")}
-                            alt={LocaleStrings.ChampionLeaderBoardLabel}
-                            title={LocaleStrings.ChampionLeaderBoardLabel}
-                            className={styles.dashboardimgs}
-                          />
-                          <div className={styles.center} title={LocaleStrings.ChampionLeaderBoardLabel}>
-                            {LocaleStrings.ChampionLeaderBoardLabel}
-                          </div>
-                        </div>
-                      </Media>
-                    </Col>
-                    {(this.state.cV || this.state.clB) && (
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media
-                          className={styles.cursor}
-                          onClick={() =>
-                            this.setState({
-                              addMember: !this.state.addMember,
-                            })
-                          }
-                        >
-                          <div className={styles.mb}>
-                            <img
-                              src={require("../assets/CMPImages/AddMembers.svg")}
-                              alt={LocaleStrings.AddMembersToolTip}
-                              title={LocaleStrings.AddMembersToolTip}
-                              className={styles.dashboardimgs}
-                            />
-                            <div className={styles.center} title={(this.state.clB && !this.state.cV) ? LocaleStrings.AddMemberLabel : LocaleStrings.NominateMemberLabel}>
-                              {(this.state.clB && !this.state.cV) ? LocaleStrings.AddMemberLabel : LocaleStrings.NominateMemberLabel}
-                            </div>
-                          </div>
-                        </Media>
-                      </Col>
-                    )}
-                    {(this.state.cV || this.state.clB) && (
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media
-                          className={styles.cursor}
-                          onClick={() => this.setState({ dB: !this.state.dB })}
-                        >
-                          <div className={styles.mb}>
-                            <img
-                              src={require("../assets/CMPImages/DigitalBadge.svg")}
-                              alt={LocaleStrings.DigitalMembersToolTip}
-                              title={LocaleStrings.DigitalMembersToolTip}
-                              className={styles.dashboardimgs}
-                            />
-                            <div className={styles.center} title={LocaleStrings.DigitalBadgeLabel}>{LocaleStrings.DigitalBadgeLabel}</div>
-                          </div>
-                        </Media>
-                      </Col>
-                    )}
-                    {this.state.isTOTEnabled && (
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <div>
-                          <Media
-                            className={styles.cursor}
-                            onClick={() => this.setState({ enableTOT: !this.state.enableTOT })}
-                          >
-                            <div className={styles.mb}>
-                              <img
-                                src={require("../assets/CMPImages/TournamentOfTeams.svg")}
-                                alt={LocaleStrings.TOTLabel}
-                                title={LocaleStrings.TOTLabel}
-                                className={styles.dashboardimgs}
-                              />
-                              {this.state.isTOTEnabled && (<div className={`${styles.center} ${styles.totLabel}`} title={LocaleStrings.TOTLabel}>
-                                {LocaleStrings.TOTLabel}</div>)}
-                            </div>
-                          </Media>
-                        </div>
-                      </Col>)}
-                  </Row>
-
-                  {this.state.clB && !this.state.cV && (
-                    <div className={styles.admintools}>{LocaleStrings.AdminToolsLabel}</div>)}
-
-                  {this.state.clB && !this.state.cV && (
+          <main aria-label={this.state.appTitle} id="skipToMainContent">
+            {!this.state.cB &&
+              !this.state.ChampionsList &&
+              !this.state.addMember && !this.state.manageApprovals &&
+              !this.state.dB && !this.state.enableTOT && !this.state.championReport && (
+                <div>
+                  <div className={`${styles.imgheader} ${this.getCMPSubHeaderBannerClass()}`.trim()}>
+                    <span className={styles.cmpPageHeading}>{LocaleStrings.WelcomeLabel} {this.state.firstName}!</span>
+                  </div>
+                  <div className={styles.grid}>
+                    <h2><div className={`${styles.quickguide}${isDarkOrContrastTheme ? " " + styles.quickguideDarkContrast : ""}`}>
+                      {LocaleStrings.GetStartedLabel}</div></h2>
                     <Row xl={4} lg={4} md={4} sm={3} xs={2} className="mt-4">
                       <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media className={styles.cursor}
-                          onClick={() =>
-                            this.setState({
-                              manageApprovals: !this.state.manageApprovals,
-                            })
-                          }
+                        <Media
+                          className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
+                          onClick={() => this.setState({ cB: !this.state.cB })}
+                          onKeyDown={(evt: any) => { if (evt.key === stringsConstants.stringEnter) this.setState({ cB: !this.state.cB }) }}
                         >
                           <div className={styles.mb}>
                             <img
-                              src={(this.state.isChampionApprovalPending || this.state.isEventApprovalPending) ?
-                                require("../assets/CMPImages/ManagePendingApprovals.svg") :
-                                require("../assets/CMPImages/ManageApprovals.svg")}
-                              alt={LocaleStrings.AdminTasksLabel}
-                              title={LocaleStrings.AdminTasksLabel}
+                              src={require("../assets/CMPImages/ChampionLeaderBoard.svg")}
+                              alt={LocaleStrings.ChampionLeaderBoardLabel}
                               className={styles.dashboardimgs}
+                              title={LocaleStrings.ChampionLeaderBoardLabel}
+                              aria-label={LocaleStrings.ChampionLeaderBoardLabel}
+                              role="button"
+                              tabIndex={0}
                             />
-                            <div className={styles.center} title={LocaleStrings.AdminTasksLabel}>
-                              {LocaleStrings.AdminTasksLabel}
+                            <div className={styles.center} aria-hidden="true" title={LocaleStrings.ChampionLeaderBoardLabel}>
+                              {LocaleStrings.ChampionLeaderBoardLabel}
                             </div>
                           </div>
                         </Media>
                       </Col>
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media className={styles.cursor}>
-                          <div className={styles.mb}>
-                            <a
-                              href={`/${this.state.inclusionpath}/${this.state.sitename}/Lists/Member%20List/AllItems.aspx`}
-                              target="_blank"
-                            >
-                              <img
-                                src={require("../assets/CMPImages/ChampionList.svg")}
-                                alt={LocaleStrings.ChampionsListToolTip}
-                                title={LocaleStrings.ChampionsListToolTip}
-                                className={styles.dashboardimgs}
-                              />
-                            </a>
-                            <div className={styles.center} title={LocaleStrings.ChampionListLabel}>{LocaleStrings.ChampionListLabel}</div>
-                          </div>
-                        </Media>
-                      </Col>
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media className={styles.cursor}>
-                          <div className={styles.mb}>
-                            <a
-                              href={`/${this.state.inclusionpath}/${this.state.sitename}/Lists/Events%20List/AllItems.aspx`}
-                              target="_blank"
-                            >
-                              <img
-                                src={require("../assets/CMPImages/EventsList.svg")}
-                                alt={LocaleStrings.EventsListToolTip}
-                                title={LocaleStrings.EventsListToolTip}
-                                className={styles.dashboardimgs}
-                              />
-                            </a>
-                            <div className={styles.center} title={LocaleStrings.EventsListLabel}>{LocaleStrings.EventsListLabel}</div>
-                          </div>
-                        </Media>
-                      </Col>
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media className={styles.cursor}>
-                          <div className={styles.mb}>
-                            <a
-                              href={`/${this.state.inclusionpath}/${this.state.sitename}/Lists/Event%20Track%20Details/AllItems.aspx`}
-                              target="_blank"
-                            >
-                              <img
-                                src={require("../assets/CMPImages/EventTrackList.svg")}
-                                alt={LocaleStrings.EventTrackListToolTip}
-                                title={LocaleStrings.EventTrackListToolTip}
-                                className={styles.dashboardimgs}
-                              />
-                            </a>
-                            <div className={styles.center} title={LocaleStrings.EventsTrackListLabel}>
-                              {LocaleStrings.EventsTrackListLabel}
-                            </div>
-                          </div>
-                        </Media>
-                      </Col>
-                      {!this.state.isTOTEnabled && (
+                      {(this.state.cV || this.state.clB) && (
                         <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
                           <Media
-                            className={styles.cursor}
-                            onClick={() => this.setState({ enableTOT: !this.state.enableTOT })}
+                            className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
+                            onKeyDown={(evt: any) => {
+                              if (evt.key === stringsConstants.stringEnter) this.setState({
+                                addMember: !this.state.addMember,
+                              })
+                            }}
+                            onClick={() =>
+                              this.setState({
+                                addMember: !this.state.addMember,
+                              })
+                            }
                           >
-                            <div className={styles.mb}>
+                            <div className={styles.mb} >
                               <img
-                                src={require("../assets/CMPImages/EnableTOT.svg")}
-                                alt={LocaleStrings.EnableTOTToolTip}
-                                title={LocaleStrings.EnableTOTToolTip}
+                                src={require("../assets/CMPImages/AddMembers.svg")}
+                                alt={LocaleStrings.AddMembersToolTip}
                                 className={styles.dashboardimgs}
+                                aria-label={(this.state.clB && !this.state.cV) ? LocaleStrings.AddMemberLabel : LocaleStrings.NominateMemberLabel}
+                                role="button"
+                                tabIndex={0}
+                                title={LocaleStrings.AddMembersToolTip}
                               />
-                              {!this.state.isTOTEnabled && (<div className={`${styles.center} ${styles.enableTournamentLabel}`} title={LocaleStrings.EnableTOTLabel}>
-                                {LocaleStrings.EnableTOTLabel}</div>)}
+                              <div className={styles.center} aria-hidden="true" title={(this.state.clB && !this.state.cV) ? LocaleStrings.AddMemberLabel : LocaleStrings.NominateMemberLabel}>
+                                {(this.state.clB && !this.state.cV) ? LocaleStrings.AddMemberLabel : LocaleStrings.NominateMemberLabel}
+                              </div>
                             </div>
                           </Media>
+                        </Col>
+                      )}
+                      {(this.state.cV || this.state.clB) && (
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media
+                            className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
+                            onClick={() => this.setState({ dB: !this.state.dB })}
+                            onKeyDown={(evt: any) => { if (evt.key === stringsConstants.stringEnter) this.setState({ dB: !this.state.dB }) }}
+                          >
+                            <div className={styles.mb} >
+                              <img
+                                src={require("../assets/CMPImages/DigitalBadge.svg")}
+                                alt={LocaleStrings.DigitalMembersToolTip}
+                                className={styles.dashboardimgs}
+                                aria-label={LocaleStrings.DigitalBadgeLabel}
+                                role="button"
+                                tabIndex={0}
+                                title={LocaleStrings.DigitalMembersToolTip}
+                              />
+                              <div className={styles.center} aria-hidden="true" title={LocaleStrings.DigitalBadgeLabel}>{LocaleStrings.DigitalBadgeLabel}</div>
+                            </div>
+                          </Media>
+                        </Col>
+                      )}
+                      {this.state.isTOTEnabled && (
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <div>
+                            <Media
+                              className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
+                              onClick={() => this.setState({ enableTOT: !this.state.enableTOT })}
+                              onKeyDown={(evt: any) => { if (evt.key === stringsConstants.stringEnter) this.setState({ enableTOT: !this.state.enableTOT }) }}
+                            >
+                              <div className={styles.mb} >
+                                <img
+                                  src={require("../assets/CMPImages/TournamentOfTeams.svg")}
+                                  alt={LocaleStrings.TOTLabel}
+                                  className={styles.dashboardimgs}
+                                  title={LocaleStrings.TOTLabel}
+                                  aria-label={LocaleStrings.TOTLabel}
+                                  role="button"
+                                  tabIndex={0}
+                                />
+                                {this.state.isTOTEnabled && (<div className={`${styles.center} ${styles.totLabel}`} aria-hidden="true" title={LocaleStrings.TOTLabel}>
+                                  {LocaleStrings.TOTLabel}</div>)}
+                              </div>
+                            </Media>
+                          </div>
                         </Col>)}
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media className={styles.cursor}>
-                          <div className={styles.mb}>
-                            <a
-                              href={`/${this.state.inclusionpath}/${this.state.sitename}/Digital%20Badge%20Assets/Forms/AllItems.aspx`}
-                              target="_blank"
-                            >
-                              <img
-                                src={require("../assets/CMPImages/ManageDigitalBadges.svg")}
-                                alt={LocaleStrings.ManageDigitalBadgesToolTip}
-                                title={LocaleStrings.ManageDigitalBadgesToolTip}
-                                className={styles.dashboardimgs}
-                              />
-                            </a>
-                            <div className={styles.center} title={LocaleStrings.ManageDigitalBadgesLabel}>
-                              {LocaleStrings.ManageDigitalBadgesLabel}
-                            </div>
-                          </div>
-                        </Media>
-                      </Col>
-                      <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
-                        <Media className={styles.cursor}>
-                          <div className={styles.mb}>
-                            <a
-                              href={`/${this.state.inclusionpath}/${this.state.sitename}/CMP%20Logo/Forms/AllItems.aspx`}
-                              target="_blank"
-                            >
-                              <img
-                                src={require("../assets/CMPImages/ManageAppLogo.svg")}
-                                alt={LocaleStrings.ManageAppLogoToolTip}
-                                title={LocaleStrings.ManageAppLogoToolTip}
-                                className={styles.dashboardimgs}
-                              />
-                            </a>
-                            <div className={styles.center} title={LocaleStrings.ManageAppLogoLabel}>
-                              {LocaleStrings.ManageAppLogoLabel}
-                            </div>
-                          </div>
-                        </Media>
-                      </Col>
                     </Row>
-                  )}
+
+                    {this.state.clB && !this.state.cV && (
+                      <h2><div className={`${styles.admintools}${isDarkOrContrastTheme ? " " + styles.admintoolsDarkContrast : ""}`}>
+                        {LocaleStrings.AdminToolsLabel}</div></h2>)}
+
+                    {this.state.clB && !this.state.cV && (
+                      <Row xl={4} lg={4} md={4} sm={3} xs={2} className="mt-4">
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
+                            onKeyDown={(evt: any) => {
+                              if (evt.key === stringsConstants.stringEnter) this.setState({
+                                manageApprovals: !this.state.manageApprovals,
+                              })
+                            }}
+
+                            onClick={() =>
+                              this.setState({
+                                manageApprovals: !this.state.manageApprovals,
+                              })
+                            }
+                          >
+                            <div className={styles.mb} >
+                              <img
+                                src={(this.state.isChampionApprovalPending || this.state.isEventApprovalPending) ?
+                                  require("../assets/CMPImages/ManagePendingApprovals.svg") :
+                                  require("../assets/CMPImages/ManageApprovals.svg")}
+                                alt={LocaleStrings.AdminTasksLabel}
+                                className={styles.dashboardimgs}
+                                title={LocaleStrings.AdminTasksLabel}
+                                aria-label={LocaleStrings.AdminTasksLabel}
+                                role="button"
+                                tabIndex={0}
+                              />
+                              <div className={styles.center} aria-hidden="true" title={LocaleStrings.AdminTasksLabel}>
+                                {LocaleStrings.AdminTasksLabel}
+                              </div>
+                            </div>
+                          </Media>
+                        </Col>
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}>
+                            <div className={styles.mb}>
+                              <a
+                                href={`/${this.state.inclusionpath}/${this.state.sitename}/Lists/Member%20List/AllItems.aspx`}
+                                target="_blank"
+
+                              >
+                                <img
+                                  src={require("../assets/CMPImages/ChampionList.svg")}
+                                  alt={LocaleStrings.ChampionsListToolTip}
+                                  className={styles.dashboardimgs}
+                                  title={LocaleStrings.ChampionsListToolTip}
+                                  aria-label={LocaleStrings.ChampionListLabel}
+                                  role="button"
+                                />
+                              </a>
+                              <div className={styles.center} aria-hidden="true" title={LocaleStrings.ChampionListLabel}>{LocaleStrings.ChampionListLabel}</div>
+                            </div>
+                          </Media>
+                        </Col>
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}>
+                            <div className={styles.mb} >
+                              <a
+                                href={`/${this.state.inclusionpath}/${this.state.sitename}/Lists/Events%20List/AllItems.aspx`}
+                                target="_blank"
+                              >
+                                <img
+                                  src={require("../assets/CMPImages/EventsList.svg")}
+                                  alt={LocaleStrings.EventsListToolTip}
+                                  className={styles.dashboardimgs}
+                                  title={LocaleStrings.EventsListToolTip}
+                                  aria-label={LocaleStrings.EventsListLabel}
+                                  role="button"
+                                />
+                              </a>
+                              <div className={styles.center} aria-hidden="true" title={LocaleStrings.EventsListLabel}>{LocaleStrings.EventsListLabel}</div>
+                            </div>
+                          </Media>
+                        </Col>
+                        {!this.state.isTOTEnabled && (
+                          <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                            <Media
+                              className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
+                              onClick={() => this.setState({ enableTOT: !this.state.enableTOT })}
+                              onKeyDown={(evt: any) => { if (evt.key === stringsConstants.stringEnter) this.setState({ enableTOT: !this.state.enableTOT }) }}
+
+                            >
+                              <div className={styles.mb} >
+                                <img
+                                  src={require("../assets/CMPImages/EnableTOT.svg")}
+                                  alt={LocaleStrings.EnableTOTToolTip}
+                                  className={styles.dashboardimgs}
+                                  title={LocaleStrings.EnableTOTToolTip}
+                                  aria-label={LocaleStrings.EnableTOTLabel}
+                                  role="button"
+                                  tabIndex={0}
+                                />
+                                {!this.state.isTOTEnabled && (<div className={`${styles.center} ${styles.enableTournamentLabel}`} title={LocaleStrings.EnableTOTLabel} aria-hidden="true">
+                                  {LocaleStrings.EnableTOTLabel}</div>)}
+                              </div>
+                            </Media>
+                          </Col>)}
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}>
+                            <div className={styles.mb} >
+                              <a
+                                href={`/${this.state.inclusionpath}/${this.state.sitename}/Digital%20Badge%20Assets/Forms/AllItems.aspx`}
+                                target="_blank"
+                              >
+                                <img
+                                  src={require("../assets/CMPImages/ManageDigitalBadges.svg")}
+                                  alt={LocaleStrings.ManageDigitalBadgesToolTip}
+                                  className={styles.dashboardimgs}
+                                  title={LocaleStrings.ManageDigitalBadgesToolTip}
+                                  aria-label={LocaleStrings.ManageDigitalBadgesLabel}
+                                  role="button"
+                                />
+                              </a>
+                              <div className={styles.center} aria-hidden="true" title={LocaleStrings.ManageDigitalBadgesLabel}>
+                                {LocaleStrings.ManageDigitalBadgesLabel}
+                              </div>
+                            </div>
+                          </Media>
+                        </Col>
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}>
+                            <div className={styles.mb} >
+                              <a
+                                href={`/${this.state.inclusionpath}/${this.state.sitename}/CMP%20Logo/Forms/AllItems.aspx`}
+                                target="_blank"
+
+                              >
+                                <img
+                                  src={require("../assets/CMPImages/ManageAppLogo.svg")}
+                                  alt={LocaleStrings.ManageAppLogoToolTip}
+                                  className={styles.dashboardimgs}
+                                  title={LocaleStrings.ManageAppLogoToolTip}
+                                  role="button"
+                                  aria-label={LocaleStrings.ManageAppLogoLabel}
+                                />
+                              </a>
+                              <div className={styles.center} aria-hidden="true" title={LocaleStrings.ManageAppLogoLabel}>
+                                {LocaleStrings.ManageAppLogoLabel}
+                              </div>
+                            </div>
+                          </Media>
+                        </Col>
+                        <Col xl={3} lg={3} md={3} sm={4} xs={6} className={styles.imageLayout}>
+                          <Media
+                            className={`${styles.cursor}${isDarkOrContrastTheme ? " " + styles.cursorDarkContrast : ""}`}
+                            onClick={() => this.setState({ championReport: !this.state.championReport })}
+                            onKeyDown={(evt: any) => { if (evt.key === stringsConstants.stringEnter) this.setState({ championReport: !this.state.championReport }) }}
+                          >
+                            <div className={styles.mb} >
+                              <img
+                                src={require("../assets/TOTImages/TournamentsReport.svg")}
+                                alt={LocaleStrings.ChampionReportToolTip}
+                                className={styles.dashboardimgs}
+                                title={LocaleStrings.ChampionReportToolTip}
+                                aria-label={LocaleStrings.ChampionReportLabel}
+                                role="button"
+                                tabIndex={0}
+                              />
+                              <div className={styles.center} aria-hidden="true" title={LocaleStrings.ChampionReportLabel}>{LocaleStrings.ChampionReportLabel}</div>
+                            </div>
+                          </Media>
+                        </Col>
+                      </Row>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
-          }
-          {
-            this.state.cB && this.state.clB && (
-              <ChampionLeaderBoard
-                siteUrl={this.props.siteUrl}
-                context={this.props.context}
-                onClickCancel={() => this.setState({ clB: true, cB: false })}
-              />
-            )
-          }
-          {
-            this.state.cB && this.state.cV && (
-              <ChampionLeaderBoard
-                siteUrl={this.props.siteUrl}
-                context={this.props.context}
-                onClickCancel={() => this.setState({ clB: false, cB: false })}
-              />
-            )
-          }
-          {
-            this.state.enableTOT && (
-              <TOTLandingPage
-                siteUrl={this.props.siteUrl}
-                context={this.props.context}
-                isTOTEnabled={this.state.isTOTEnabled}
-              />
-            )
-          }
-          {
-            this.state.addMember && (
-              <ClbAddMember
-                siteUrl={this.props.siteUrl}
-                context={this.props.context}
-                isAdmin={this.state.clB && !this.state.cV}
-                onClickBack={() => { this.setState({ addMember: false }); }}
-                onHomeCallBack={this.callBackFunction}
-              />
-            )
-          }
-          {
-            this.state.manageApprovals && (
-              <ManageApprovals
-                siteUrl={this.props.siteUrl}
-                context={this.props.context}
-                onClickBack={this.callBackFunction}
-                isPendingChampionApproval={this.state.isChampionApprovalPending}
-                isPendingEventApproval={this.state.isEventApprovalPending}
-              />
-            )
-          }
-          {
-            this.state.cB && this.state.eV && (
-              <EmployeeView
-                siteUrl={this.props.siteUrl}
-                context={this.props.context}
-                onClickCancel={() => this.setState({ eV: true, cB: false })}
-              />
-            )
-          }
-          {
-            this.state.dB && (
-              <DigitalBadge
-                siteUrl={this.props.siteUrl}
-                context={this.props.context}
-                clientId=""
-                description=""
-                theme={ThemeStyle.Light}
-                fontSize={12}
-                clickcallback={() => this.setState({ dB: false })}
-                clickcallchampionview={() =>
-                  this.setState({ cB: false, eV: false, dB: false })
-                }
-              />
-            )
-          }
-        </div >
-      </div >
+              )
+            }
+            {
+              this.state.cB && this.state.clB && (
+                <ChampionLeaderBoard
+                  siteUrl={this.props.siteUrl}
+                  context={this.props.context}
+                  appTitle={this.state.appTitle}
+                  onClickCancel={() => this.setState({ clB: true, cB: false })}
+                  loggedinUserEmail={this.state.loggedinUserEmail}
+                  currentThemeName={this.state.currentThemeName}
+                />
+              )
+            }
+            {
+              this.state.cB && this.state.cV && (
+                <ChampionLeaderBoard
+                  siteUrl={this.props.siteUrl}
+                  context={this.props.context}
+                  appTitle={this.state.appTitle}
+                  onClickCancel={() => this.setState({ clB: false, cB: false })}
+                  loggedinUserEmail={this.state.loggedinUserEmail}
+                  currentThemeName={this.state.currentThemeName}
+                />
+              )
+            }
+            {
+              this.state.enableTOT && (
+                <TOTLandingPage
+                  siteUrl={this.props.siteUrl}
+                  context={this.props.context}
+                  appTitle={this.state.appTitle}
+                  isTOTEnabled={this.state.isTOTEnabled}
+                  currentThemeName={this.state.currentThemeName}
+                />
+              )
+            }
+            {
+              this.state.addMember && (
+                <ClbAddMember
+                  siteUrl={this.props.siteUrl}
+                  context={this.props.context}
+                  appTitle={this.state.appTitle}
+                  isAdmin={this.state.clB && !this.state.cV}
+                  onClickBack={() => { this.setState({ addMember: false }); }}
+                  onHomeCallBack={this.callBackFunction}
+                  currentThemeName={this.state.currentThemeName}
+                />
+              )
+            }
+            {
+              this.state.manageApprovals && (
+                <ManageApprovals
+                  siteUrl={this.props.siteUrl}
+                  context={this.props.context}
+                  appTitle={this.state.appTitle}
+                  onClickBack={this.callBackFunction}
+                  updateAppTitle={this.setState.bind(this)}
+                  isPendingChampionApproval={this.state.isChampionApprovalPending}
+                  isPendingEventApproval={this.state.isEventApprovalPending}
+                  currentThemeName={this.state.currentThemeName}
+                />
+              )
+            }
+            {
+              this.state.cB && this.state.eV && (
+                <EmployeeView
+                  siteUrl={this.props.siteUrl}
+                  context={this.props.context}
+                  appTitle={this.state.appTitle}
+                  onClickCancel={() => this.setState({ eV: true, cB: false })}
+                  currentThemeName={this.state.currentThemeName}
+                />
+              )
+            }
+            {
+              this.state.dB && (
+                <DigitalBadge
+                  siteUrl={this.props.siteUrl}
+                  context={this.props.context}
+                  appTitle={this.state.appTitle}
+                  clickcallback={() => this.setState({ dB: false })}
+                  currentThemeName={this.state.currentThemeName}
+                />
+              )
+            }
+            {
+              this.state.championReport && (
+
+                <ChampionReport
+                  siteUrl={this.props.siteUrl}
+                  context={this.props.context}
+                  appTitle={this.state.appTitle}
+                  loggedinUserEmail={this.state.loggedinUserEmail}
+                  onClickCancel={() => {
+                    this.setState({ championReport: false });
+                  }}
+                />
+              )}
+          </main>
+        </div>
+      </FluentProvider>
     );
   }
 }

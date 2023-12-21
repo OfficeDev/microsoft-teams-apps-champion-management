@@ -1,3 +1,5 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
 :global {
   .ms-Suggestions-none {
     color: #757575;
@@ -36,6 +38,17 @@
       color: #000000;
       background-color: #f6f5f4 !important;
     }
+
+    .ms-Dropdown-item:focus-visible {
+      border: 2px solid rgb(98, 100, 167);
+    }
+
+    input[type="checkbox"]:focus-visible+label::before {
+      border: 2px solid rgb(98, 100, 167);
+      outline: none;
+      height: 36px;
+      margin-top: -0.5px;
+    }
   }
 }
 
@@ -62,6 +75,13 @@
     cursor: pointer;
   }
 
+  .backLabel:focus-visible {
+    box-shadow: none;
+    outline: 2px solid #414156;
+    border-radius: 1px;
+    outline-offset: 4px;
+  }
+
   .border {
     width: 0px;
     height: 14px;
@@ -71,6 +91,26 @@
 
   .addMemberLabel {
     padding-left: 10px;
+  }
+}
+
+.addMembersPathDarkContrast {
+  color: var(--colorNeutralForeground1);
+
+  .backImg {
+    filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
+  }
+
+  .backLabel {
+    color: var(--colorBrandForegroundLink);
+  }
+
+  .backLabel:focus-visible {
+    outline-color: var(--colorPaletteBlueBorderActive);
+  }
+
+  .border {
+    border-color: var(--colorNeutralForeground1);
   }
 }
 
@@ -89,12 +129,20 @@
   }
 }
 
+.updatedMessageDarkContrast {
+  color: var(--colorPaletteGreenForeground1);
+}
+
 .errorMessage {
   color: #e12636;
   text-align: left;
   font: normal normal normal 18px/24px Segoe UI !important;
   letter-spacing: 0px;
   opacity: 1;
+}
+
+.errorMessageDarkContrast {
+  color: var(--colorPaletteRedForeground1);
 }
 
 .pickerLabel {
@@ -107,6 +155,14 @@
 
   .asterisk {
     color: #a4262c;
+  }
+}
+
+.pickerLabelDarkContrast {
+  color: var(--colorNeutralForeground1);
+
+  .asterisk {
+    color: var(--colorPaletteBlueBorderActive);
   }
 }
 
@@ -137,6 +193,34 @@
   }
 }
 
+.addMemberPeoplePickerClassDarkContrast {
+  div[class^="ms-BasePicker-text"] {
+    border-color: var(--colorNeutralForeground1) !important;
+
+    div[class^="ms-PickerPersona-container"] {
+      background-color: var(--colorNeutralBackground1);
+
+      div[class^="ms-Persona-primaryText"] {
+        color: var(--colorNeutralForeground1);
+      }
+
+      button {
+        color: var(--colorNeutralForeground1) !important;
+      }
+
+      button:hover {
+        color: var(--colorNeutralForeground1Hover) !important;
+        background: var(--colorNeutralBackground1Hover) !important;
+      }
+    }
+  }
+
+  input,
+  input::placeholder {
+    color: var(--colorNeutralForeground1);
+  }
+}
+
 .addMemberDropdown {
   div[class^="ms-Dropdown"] {
     width: auto;
@@ -157,6 +241,7 @@
     span[class^="ms-Dropdown-caretDownWrapper"] {
       i {
         color: rgb(138, 138, 138);
+        font-weight: 700;
       }
     }
 
@@ -166,6 +251,17 @@
       }
     }
   }
+}
+
+.labelContent {
+  color: #000;
+  opacity: 1;
+  font: normal normal 600 18px/24px Segoe UI;
+  line-height: 24px;
+}
+
+.labelContentDarkContrast {
+  color: var(--colorNeutralForeground1);
 }
 
 .btnArea {
@@ -198,7 +294,19 @@
       color: #000003;
       opacity: 1;
     }
+  }
 
+  .cancelBtn:focus {
+    box-shadow: none;
+    outline: 2px solid #414156;
+    border-radius: 3px;
+    outline-offset: 2px;
+  }
+
+  .cancelBtn:focus-visible {
+    outline: 2px solid #414156;
+    border-radius: 3px;
+    outline-offset: 2px;
   }
 
   .saveBtn {
@@ -225,6 +333,41 @@
       color: #FFFFFF;
       opacity: 1;
     }
+  }
+
+  .saveBtn:focus {
+    box-shadow: none;
+    outline: 2px solid #414156;
+    border-radius: 3px;
+    outline-offset: 2px;
+  }
+
+  .saveBtn:focus-visible {
+    outline: 2px solid #414156;
+    border-radius: 3px;
+    outline-offset: 2px;
+  }
+}
+
+.btnAreaDarkContrast {
+  .saveBtn {
+    background: var(--colorBrandBackground);
+    border-color: var(--colorBrandBackground);
+
+    .saveBtnLabel {
+      color: var(--colorNeutralForegroundOnBrand);
+    }
+
+    .saveBtnIcon {
+      color: var(--colorNeutralForegroundOnBrand);
+    }
+  }
+
+  .saveBtn:focus,
+  .saveBtn:focus-visible,
+  .cancelBtn:focus,
+  .cancelBtn:focus-visible {
+    outline-color: var(--colorPaletteBlueBorderActive);
   }
 }
 

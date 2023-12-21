@@ -108,15 +108,25 @@ There are three tabs in the Admin Tasks Screen,
 
 ![Quick Start Guide](../Images/ChampionsListTab.png) 
 
-2. Manage Config Settings - Admin can enable Champion Event Approvals, show/hide Region, Country and Group columns.
+2. Manage Config Settings - Admin can do the following on this screen.
 
-    If the "Champion Event Approvals" is enabled, the events submitted by the champions thereafter will go through the admin approval process and the points will be awarded only after the approval. Admin can also configure the Power Automate Flow template in the tenant to send notifications to the CMP Manager at regular intervals if there are any pending event requests available.
+    - Modify App Title. The modified App Title will reflect on the app header and navigation breadcrumbs in all screens.
+    - Show/hide Region, Country and Group columns. The changes reflect in "Add Member" screen while adding new champions.
+    - Admin can enable Champion Event Approvals. If the "Champion Event Approvals" is enabled, the events submitted by the champions thereafter will go through the admin approval process and the points will be awarded only after the approval. Admin can also configure the Power Automate Flow template in the tenant to send notifications to the CMP Manager at regular intervals if there are any pending event requests available.
 
 ![Quick Start Guide](../Images/ConfigSettings.png) 
 
 3. Champion Activities - If the "Champion Event Approvals" is enabled, then all the pending event requests submitted by champions will be listed in this grid. Admin can either Approve/Reject the requests. A bell icon will be shown in the header if there are any pending requests.
 
 ![Quick Start Guide](../Images/ChampionActivitiesTab.png) 
+
+## Champions Report
+
+- Champions Report is available only to admins under "Admin Tools" section.
+- The Report displays a snapshot of all the events recorded by all the champions. 
+- The Report can be filtered based on a champion and a date range.
+
+    ![Quick Start Guide](../Images/CMPReport.png) 
 
 
 ## Tournament of Teams

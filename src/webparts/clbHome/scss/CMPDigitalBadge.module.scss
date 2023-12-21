@@ -1,369 +1,706 @@
-.panelArea {
-  background-color: #FFFFFF !important;
-}
+@import '~@fluentui/react/dist/sass/References.scss';
 
-.digitalBadgePath {
-  display: inline-flex;
-  margin-bottom: 25px;
-  text-align: center;
-  letter-spacing: 0px;
-  color: #33344A;
-  opacity: 1;
+.digitalBadgeWrapper {
+  background-color: #FFFFFF;
 
-  .backImg {
-    width: 7px;
-    height: 12px;
-    margin-right: 10px;
-    margin-top: 6px;
+  .dbMainSpinner {
+    margin-top: 30px;
   }
 
-  .backLabel {
-    padding-right: 10px;
-    cursor: pointer;
-    font: normal normal bold 14px/24px Segoe UI;
-  }
+  .dbPanelHeader {
+    flex: 0 0 auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 2rem;
 
-  .border {
-    width: 0px;
-    height: 14px;
-    border: 1px solid #33344A;
-    margin-top: 5px;
-  }
-
-  .digitalBadgeLabel {
-    padding-left: 10px;
-    font: normal normal bold 18px/23px Segoe UI;
-  }
-}
-
-.introPageBox {
-  display: inline-flex;
-
-  .divChild1 {
-    width: 50%;
-
-    .imgText {
-      font: normal normal 600 21px/30px Segoe UI;
-      text-align: center;
-      letter-spacing: 0px;
-      color: #000000;
-      opacity: 1;
-      margin-bottom: 10px;
-    }
-  }
-
-  .divChild2 {
-    width: 50%;
-    margin-left: 3%;
-    margin-top: 5px;
-
-    p {
-      text-align: left;
-      font: normal normal normal 20px/27px Segoe UI;
-      letter-spacing: 0px;
-      color: #000000;
-      opacity: 1;
-    }
-  }
-}
-
-.badgeList {
-  p {
-    text-align: center;
-    font: normal normal 600 21px/30px Segoe UI;
-    letter-spacing: 0px;
-    color: #000000;
-    opacity: 1;
-    margin-left: 2%;
-    margin-bottom: 5%;
-  }
-
-  .listGrid {
-    overflow: hidden;
-    font-size: 0;
-    position: relative;
-    width: 100%;
-
-    .listGridTile {
-      text-align: center;
-      outline: none;
-      position: relative;
-      float: left;
-      background: #FFFFFF;
-
-      .listGridSizer {
-        padding-bottom: 100%;
-
-        .listGridPadder {
-          position: absolute;
-          left: 2px;
-          top: 2px;
-          right: 2px;
-          bottom: 2px;
-          cursor: pointer;
-
-          .listGridImage {
-            position: absolute;
-            top: 0px;
-            left: 25%;
-            width: 50%;
-            border-radius: 50%;
-          }
-
-          .listGridLabel {
-            background: #464775;
-            color: #FFFFFF;
-            position: absolute;
-            padding: 5px 10px;
-            bottom: 25%;
-            left: 0px;
-            width: 100%;
-            box-sizing: border-box;
-            font: normal normal bold 16px/21px Segoe UI;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-        }
-
-        .disabledBadge {
-          opacity: 0.3;
-          cursor: default;
-        }
-      }
-    }
-
-    .listGridTile:focus::after {
-      content: '';
-      position: absolute;
-      left: 2;
-      right: 2;
-      top: 2;
-      bottom: 2;
-      box-sizing: border-box;
-      border: 1px solid #FFFFFF;
-    }
-  }
-}
-
-.acceptBtn {
-  background-color: #6264A7 !important;
-  border-color: #6264A7 !important;
-  color: #FFFFFF !important;
-
-  .acceptIcon {
-    margin-right: 10px;
-    font-size: 16px;
-    font-weight: bolder;
-    color: #FFFFFF;
-    opacity: 1;
-  }
-}
-
-.acceptBtn:hover {
-  background-color: #6264A7 !important;
-  opacity: 0.9 !important;
-}
-
-.acceptBtn:focus:enabled {
-  outline: none !important;
-  outline-offset: none;
-}
-
-.badgeDetailsHeading {
-  text-align: left;
-  font: normal normal 600 21px/30px Segoe UI;
-  letter-spacing: 0px;
-  color: #000000;
-  opacity: 1;
-  margin-bottom: 30px;
-}
-
-.badgeDetailsContainer {
-  display: inline-flex;
-
-  .badgeBtnArea {
-    display: block;
-    width: 50%;
-
-    .profileArea {
-      width: 100%;
-    }
-
-    .buttonArea {
+    .digitalBadgePath {
       display: inline-flex;
-      width: 100%;
-      margin-left: 20%;
-      margin-top: 10%;
+      margin-bottom: 25px;
+      text-align: center;
+      letter-spacing: 0px;
+      color: #33344A;
+      opacity: 1;
 
-      .applyBtn {
-        background-color: #6264A7 !important;
-        border-color: #6264A7 !important;
-        color: #FFFFFF;
-        border: none !important;
-        padding: 0.4rem !important;
-
-        .acceptIcon {
-          margin-right: 10px;
-          font-size: 16px;
-          font-weight: bolder;
-          color: #FFFFFF;
-          opacity: 1;
-        }
+      .backImg {
+        width: 7px;
+        height: 12px;
+        margin-right: 10px;
+        margin-top: 6px;
       }
 
-      .applyBtn:hover {
-        background-color: #6264A7 !important;
-        opacity: 0.9 !important;
+      .backLabel {
+        padding-right: 10px;
+        cursor: pointer;
+        font: normal normal bold 14px/24px Segoe UI;
       }
 
-      .applyBtn:focus:enabled {
-        outline: none !important;
-        outline-offset: none;
+      .backLabel:focus-visible {
+        box-shadow: none;
+        outline: 2px solid #414156 !important;
+        border-radius: 1px;
+        outline-offset: 4px;
       }
 
-      .downloadArea {
-        display: inline-block;
-        width: 50%;
+      .border {
+        width: 0px;
+        height: 14px;
+        border: 1px solid #33344A;
+        margin-top: 5px;
+      }
 
-        .downloadBtn {
-          background-color: #6264A7 !important;
-          border-color: #6264A7 !important;
-          color: #FFFFFF;
-          border: none !important;
-          padding: 0.4rem !important;
+      .digitalBadgeLabel {
+        padding-left: 10px;
+        font: normal normal bold 18px/23px Segoe UI;
+      }
+    }
+  }
 
-          i {
-            color: #FFFFFF;
-            font-size: 16px;
-            font-weight: bolder;
-            opacity: 1
+  .dbPanelBody {
+    flex: 1 1 auto;
+    overflow: auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+
+    .digitalBadge {
+      margin-top: 0.875rem;
+      margin-bottom: 0.875rem;
+
+      .dbContainer {
+        max-width: 1610px;
+        margin: 0px auto;
+        text-align: center;
+        box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2), 0px 0px 50px 0px rgba(0, 0, 0, 0.1);
+
+        .contentSection {
+          padding: 10px;
+
+          .introPageBox {
+            display: inline-flex;
+
+            .divChild1 {
+              width: 50%;
+
+              .imgText {
+                font: normal normal 600 21px/30px Segoe UI;
+                text-align: center;
+                letter-spacing: 0px;
+                color: #000000;
+                opacity: 1;
+                margin-bottom: 10px;
+              }
+
+              .bannerimage {
+                max-width: 100%;
+              }
+            }
+
+            .divChild2 {
+              width: 50%;
+              margin-left: 3%;
+              margin-top: 5px;
+
+              p {
+                text-align: left;
+                font: normal normal normal 20px/27px Segoe UI;
+                letter-spacing: 0px;
+                color: #000000;
+                opacity: 1;
+
+                h2 {
+                  font-size: inherit;
+                  margin-bottom: 0;
+                  margin-top: 0;
+                  font-weight: inherit;
+                  line-height: inherit;
+                }
+              }
+            }
+          }
+
+          .badgeList {
+            p {
+              text-align: center;
+              font: normal normal 600 21px/30px Segoe UI;
+              letter-spacing: 0px;
+              color: #000000;
+              opacity: 1;
+              margin-left: 2%;
+              margin-bottom: 5%;
+            }
+
+            .listGrid {
+              overflow: hidden;
+              font-size: 0;
+              position: relative;
+              width: 100%;
+
+              .listGridTile {
+                text-align: center;
+                outline: none;
+                position: relative;
+                float: left;
+                background: #FFFFFF;
+
+                .listGridSizer {
+                  padding-bottom: 100%;
+
+                  .listGridPadder {
+                    position: absolute;
+                    left: 2px;
+                    top: 2px;
+                    right: 2px;
+                    bottom: 2px;
+                    cursor: pointer;
+
+                    .listGridImage {
+                      position: absolute;
+                      top: 0px;
+                      left: 25%;
+                      width: 50%;
+                      border-radius: 50%;
+                    }
+
+                    .listGridLabel {
+                      background: #464775;
+                      color: #FFFFFF;
+                      position: absolute;
+                      padding: 5px 10px;
+                      bottom: 25%;
+                      left: 0px;
+                      width: 100%;
+                      box-sizing: border-box;
+                      font: normal normal bold 16px/21px Segoe UI;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                      white-space: nowrap;
+                    }
+                  }
+
+                  .disabledBadge {
+                    opacity: 0.3;
+                    cursor: default;
+                  }
+                }
+              }
+
+              .listGridTile:focus::after {
+                content: '';
+                position: absolute;
+                left: 2;
+                right: 2;
+                top: 2;
+                bottom: 2;
+                box-sizing: border-box;
+                border: 1px solid #FFFFFF;
+              }
+            }
+          }
+
+          .badgeDetailsHeading {
+            text-align: left;
+            font: normal normal 600 21px/30px Segoe UI;
+            letter-spacing: 0px;
+            color: #000000;
+            opacity: 1;
+            margin-bottom: 30px;
+          }
+
+          .badgeDetailsContainer {
+            display: inline-flex;
+
+            p {
+              text-align: left;
+              letter-spacing: 0px;
+              color: #000000;
+              opacity: 1;
+              font: normal normal normal 20px/27px Segoe UI;
+
+              strong {
+                font-weight: 600;
+              }
+
+              a {
+                color: #6264A7;
+              }
+            }
+
+            .badgeBtnArea {
+              display: block;
+              width: 50%;
+
+              .profileArea {
+                width: 100%;
+              }
+
+              .buttonArea {
+                display: inline-flex;
+                width: 100%;
+                margin-left: 20%;
+                margin-top: 10%;
+
+                .applyBtn {
+                  background-color: #6264A7 !important;
+                  border-color: #6264A7 !important;
+                  color: #FFFFFF;
+                  border: none !important;
+                  padding: 0.4rem !important;
+
+                  .acceptIcon {
+                    margin-right: 10px;
+                    font-size: 16px;
+                    font-weight: bolder;
+                    color: #FFFFFF;
+                    opacity: 1;
+                  }
+                }
+
+                .applyBtn:hover {
+                  background-color: #6264A7 !important;
+                  opacity: 0.9 !important;
+                }
+
+                .downloadArea {
+                  display: inline-block;
+                  width: 50%;
+
+                  .downloadBtn {
+                    background-color: #6264A7 !important;
+                    border-color: #6264A7 !important;
+                    color: #FFFFFF;
+                    border: none !important;
+                    padding: 0.4rem !important;
+
+                    i {
+                      color: #FFFFFF;
+                      font-size: 16px;
+                      font-weight: bolder;
+                      opacity: 1
+                    }
+                  }
+
+                  .downloadBtn:hover {
+                    background-color: #6264A7 !important;
+                    opacity: 0.9 !important;
+                  }
+
+                  .downloadBtn:disabled {
+                    background-color: #6264A7 !important;
+                    opacity: 0.9 !important;
+                  }
+                }
+
+                button {
+                  margin: 8px;
+                }
+
+                button:focus::after {
+                  outline: 0px !important;
+                }
+
+                button:focus-visible {
+                  outline: 2px solid #000 !important;
+                  border-radius: 3px;
+                  outline-offset: 2px !important;
+                }
+              }
+
+              @media screen and (max-width: 1057px) {
+                .buttonArea {
+                  display: inline-block;
+                  margin-left: 1%;
+                  margin-top: 10%;
+                }
+              }
+
+              .profileContainer {
+                position: relative;
+                margin-top: 32px;
+
+                .profileImage {
+                  display: block;
+                  margin: 0 auto;
+                  border-radius: 50%;
+                }
+
+                .badgeImage {
+                  @extend .profileImage;
+                }
+
+                .profiletext {
+                  position: absolute;
+                  z-index: 999;
+                  margin: 0 auto;
+                  left: 0;
+                  right: 0;
+                  top: 40%;
+                  text-align: center;
+                  width: 120px;
+                  font-size: 32px;
+                }
+              }
+            }
+
+            .badgeDetailsText {
+              width: 50%;
+            }
+          }
+
+          .noProfileDescription {
+            font: normal normal normal 20px/27px Segoe UI;
+            text-align: center;
+            letter-spacing: 0px;
+            color: #000000;
+            opacity: 1;
+          }
+
+          .navigateBackAndAcceptBtnWrapper {
+            display: flex;
+            justify-content: center;
+            column-gap: 10px;
+            align-items: center;
+            margin-top: 24px;
+
+            .navigateBackBtn {
+              border-color: #33344A;
+              background-color: white;
+
+              i {
+                font-size: 17px;
+                font-weight: bolder;
+                color: #000003;
+                opacity: 1;
+              }
+
+              i+span>span {
+                font: normal normal bold 14px/24px Segoe UI;
+                letter-spacing: 0px;
+                color: #000003;
+                opacity: 1;
+                margin-top: -3px;
+              }
+            }
+
+            .acceptBtn {
+              background-color: #6264A7 !important;
+              border-color: #6264A7 !important;
+              color: #FFFFFF !important;
+
+              .acceptIcon {
+                margin-right: 10px;
+                font-size: 16px;
+                font-weight: bolder;
+                color: #FFFFFF;
+                opacity: 1;
+              }
+
+              span[class~="ms-Button-flexContainer"] {
+                font-weight: 700;
+              }
+
+              &:hover {
+                background-color: #6264A7 !important;
+                opacity: 0.9 !important;
+              }
+            }
+
+            button:focus::after {
+              outline: 0px !important;
+            }
+
+            button:focus-visible {
+              outline: 2px solid #000 !important;
+              border-radius: 3px;
+              outline-offset: 2px !important;
+            }
+
+            .unAuthorizedText {
+              font: normal normal normal 20px/27px Segoe UI;
+              text-align: center;
+              letter-spacing: 0px;
+              color: #e12636;
+              opacity: 1;
+            }
+          }
+
+          .applySpinnerContainer {
+            margin-top: 32px;
+          }
+
+          .messagingContainer {
+            @extend .applySpinnerContainer;
+
+            [class*="ms-MessageBar-innerText"] {
+              font-size: 14px;
+              line-height: 1.5 !important;
+            }
           }
         }
-
-        .downloadBtn:hover {
-          background-color: #6264A7 !important;
-          opacity: 0.9 !important;
-        }
-
-        .downloadBtn:focus:enabled {
-          outline: none !important;
-          outline-offset: none;
-        }
-
-        .downloadBtn:disabled {
-          background-color: #6264A7 !important;
-          opacity: 0.9 !important;
-        }
       }
     }
+  }
+}
 
-    @media screen and (max-width: 1057px) {
-      .buttonArea {
-        display: inline-block;
-        margin-left: 1%;
-        margin-top: 10%;
+.digitalBadgeWrapperDarkContrast {
+  background-color: var(----colorNeutralBackground1);
+
+  .dbPanelHeader {
+
+    .digitalBadgePath {
+      color: var(--colorNeutralForeground1);
+
+      .backImg {
+        filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
+      }
+
+      .backLabel {
+        color: var(--colorBrandForegroundLink);
+      }
+
+      .backLabel:focus-visible {
+        outline-color: var(--colorPaletteBlueBorderActive);
+      }
+
+      .border {
+        border-color: var(--colorNeutralForeground1);
       }
     }
   }
 
-  .badgeDetailsText {
-    width: 50%;
+  .dbPanelBody {
+    .digitalBadge {
+      .dbContainer {
+        box-shadow: 0px 0px 4px 0px rgba(255, 255, 255, 0.2), 0px 0px 50px 0px rgba(255, 255, 255, 0.1);
 
-    p {
-      text-align: left;
-      letter-spacing: 0px;
-      color: #000000;
-      opacity: 1;
-      font: normal normal normal 20px/27px Segoe UI;
+        .contentSection {
+          .introPageBox {
+            .divChild1 {
+              .imgText {
+                color: var(--colorNeutralForeground1);
+              }
+            }
+
+            .divChild2 {
+
+              p {
+                color: var(--colorNeutralForeground1);
+              }
+            }
+          }
+
+          .badgeList {
+            p {
+              color: var(--colorNeutralForeground1);
+            }
+
+            .listGrid {
+              .listGridTile {
+                background: var(----colorNeutralBackground1);
+
+                .listGridSizer {
+                  .listGridPadder {
+                    .listGridLabel {
+                      background: var(--colorBrandBackground);
+                      color: var(--colorNeutralForegroundOnBrand);
+                    }
+                  }
+                }
+              }
+
+              .listGridTile:focus::after {
+                border: 1px solid var(--colorPaletteBlueBorderActive);
+              }
+            }
+          }
+
+          .badgeDetailsHeading {
+            color: var(--colorNeutralForeground1);
+          }
+
+          .badgeDetailsContainer {
+            p {
+              color: var(--colorNeutralForeground1);
+
+              a {
+                color: var(--colorBrandForegroundLink);
+              }
+            }
+
+            .badgeBtnArea {
+              .buttonArea {
+                .applyBtn {
+                  background-color: var(--colorBrandBackground) !important;
+                  border-color: var(--colorBrandBackground) !important;
+                  color: var(--colorNeutralForegroundOnBrand);
+
+                  .acceptIcon {
+                    color: var(--colorNeutralForegroundOnBrand);
+                  }
+                }
+
+                .applyBtn:hover {
+                  background-color: var(--colorBrandBackground) !important;
+                }
+
+                .downloadArea {
+                  .downloadBtn {
+                    background-color: var(--colorBrandBackground) !important;
+                    border-color: var(--colorBrandBackground) !important;
+                    color: var(--colorNeutralForegroundOnBrand);
+
+                    i {
+                      color: var(--colorNeutralForegroundOnBrand);
+                    }
+                  }
+
+                  .downloadBtn:hover {
+                    background-color: var(--colorBrandBackground) !important;
+                  }
+
+                  .downloadBtn:disabled {
+                    background-color: var(--colorBrandBackground) !important;
+                  }
+                }
+
+                button:focus-visible {
+                  outline-color: var(--colorPaletteBlueBorderActive) !important;
+                }
+              }
+            }
+          }
+
+          .noProfileDescription {
+            color: var(--colorNeutralForeground1);
+          }
+
+          .navigateBackAndAcceptBtnWrapper {
+            .acceptBtn {
+              background-color: var(--colorBrandBackground) !important;
+              border-color: var(--colorBrandBackground) !important;
+              color: var(--colorNeutralForegroundOnBrand) !important;
+
+              .acceptIcon {
+                color: var(--colorNeutralForegroundOnBrand);
+              }
+
+              &:hover {
+                background-color: var(--colorBrandBackground) !important;
+              }
+            }
+
+            button:focus-visible {
+              outline-color: var(--colorPaletteBlueBorderActive) !important;
+            }
+
+            .unAuthorizedText {
+              color: var(--colorPaletteRedForeground1);
+            }
+          }
+        }
+      }
     }
   }
+
+}
+
+[id="profileCanvas"],
+[id="profileCanvasDownload"] {
+  display: none;
 }
 
 @media screen and (max-width: 375pt) {
-  .dbPanelBody {
-    padding-left: 4% !important;
-    padding-right: 4% !important;
-  }
+  .digitalBadgeWrapper {
+    .dbPanelHeader {
+      .digitalBadgePath {
+        .backLabel {
+          font: normal normal 700 12px/23px Segoe UI;
+        }
 
-  .digitalBadgePath {
-    .backLabel {
-      font: normal normal 700 12px/23px Segoe UI;
-    }
-
-    .digitalBadgeLabel {
-      font: normal normal 700 14px/23px Segoe UI;
-    }
-  }
-
-  .introPageBox {
-    display: block;
-
-    .divChild1 {
-      width: 100%;
-
-      .imgText {
-        font: normal normal 600 18px/23px Segoe UI;
-      }
-    }
-
-    .divChild2 {
-      width: 100%;
-      margin-top: 10px;
-
-      p {
-        font: normal normal normal 16px/23px Segoe UI;
-      }
-    }
-  }
-
-  .badgeList {
-    p {
-      font: normal normal 600 16px/26px Segoe UI;
-    }
-
-    .listGrid {
-      .listGridTile {
-        .listGridSizer {
-          .listGridPadder {
-            .listGridImage {
-              left: 17.5% !important;
-              width: 65% !important;
-            }
-
-            .listGridLabel {
-              font: normal normal 700 12px/21px Segoe UI !important;
-              bottom: 5% !important;
-            }
-          }
+        .digitalBadgeLabel {
+          font: normal normal 700 14px/23px Segoe UI;
         }
       }
     }
-  }
 
-  .badgeDetailsHeading {
-    font: normal normal 600 16px/21px Segoe UI;
-  }
+    .dbPanelBody {
+      padding-left: 4% !important;
+      padding-right: 4% !important;
 
-  .badgeDetailsContainer {
-    display: block;
+      .digitalBadge {
+        .dbContainer {
+          .contentSection {
+            .introPageBox {
+              display: block;
 
-    .badgeBtnArea {
-      width: 100%;
-      margin-bottom: 20px;
+              .divChild1 {
+                width: 100%;
 
-      .buttonArea {
-        margin-left: unset;
-        justify-content: center;
-        display: inline-flex;
-      }
-    }
+                .imgText {
+                  font: normal normal 600 18px/23px Segoe UI;
+                }
+              }
 
-    .badgeDetailsText {
-      width: 100%;
+              .divChild2 {
+                width: 100%;
+                margin-top: 10px;
 
-      p {
-        font: normal normal normal 16px/21px Segoe UI;
+                p {
+                  font: normal normal normal 16px/23px Segoe UI;
+                }
+              }
+            }
+
+            .badgeList {
+              p {
+                font: normal normal 600 16px/26px Segoe UI;
+              }
+
+              .listGrid {
+                .listGridTile {
+                  .listGridSizer {
+                    .listGridPadder {
+                      .listGridImage {
+                        left: 17.5% !important;
+                        width: 65% !important;
+                      }
+
+                      .listGridLabel {
+                        font: normal normal 700 12px/21px Segoe UI !important;
+                        bottom: 5% !important;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            .badgeDetailsHeading {
+              font: normal normal 600 16px/21px Segoe UI;
+            }
+
+            .badgeDetailsContainer {
+              display: block;
+
+              .badgeBtnArea {
+                width: 100%;
+                margin-bottom: 20px;
+
+                .buttonArea {
+                  margin-left: unset;
+                  justify-content: center;
+                  display: inline-flex;
+                }
+              }
+
+              .badgeDetailsText {
+                width: 100%;
+
+                p {
+                  font: normal normal normal 16px/21px Segoe UI;
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

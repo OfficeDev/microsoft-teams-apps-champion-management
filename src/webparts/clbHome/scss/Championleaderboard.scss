@@ -1,8 +1,543 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+@mixin fontstyles($fontWeight, $fontColor, $fontSize, $lineHeight, $textAlign) {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: $fontColor;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: $fontWeight;
+  font-size: $fontSize;
+  line-height: $lineHeight;
+  letter-spacing: 0;
+  opacity: 1;
+  text-align: $textAlign;
+}
+
 .nonMemberDdCallout {
   .ms-FocusZone {
     .ms-Dropdown-item:hover {
       color: #000000;
       background-color: #f6f5f4 !important;
+    }
+  }
+}
+
+.clb-dashboard-popup {
+  .ms-Dialog-main {
+    width: 75%;
+    max-width: none;
+    min-width: unset;
+    height: 470px;
+    background-color: #FFFFFF;
+
+    .clb-dialog-content {
+      .ms-Dialog-header {
+        .ms-Dialog-title {
+          min-height: 0px;
+          @include fontstyles(600, #242424, 22px, 30px, left);
+        }
+
+        .ms-Button--icon {
+          .ms-Icon {
+            color: #242424;
+            font-weight: 600;
+          }
+
+          &:hover {
+            background-color: rgb(245, 245, 245);
+
+            .ms-Icon {
+              color: #242424;
+            }
+          }
+        }
+      }
+
+      .ms-Dialog-inner {
+        padding: 0px 24px 5px !important;
+
+        .showActivitiesPopupBody {
+          .showActivities-grid-area {
+            .activities-grid-heading {
+              margin-bottom: 10px;
+              @include fontstyles(600, #242424, 14px, 19px, left);
+            }
+
+            .events-table-wrapper-class {
+
+              table {
+                table-layout: fixed;
+                display: flex;
+                flex-flow: column;
+                width: 100%;
+
+                thead {
+                  flex: 0 0 auto;
+
+                  tr {
+                    width: 100%;
+                    display: table;
+                    table-layout: fixed;
+
+                    th {
+                      @include fontstyles(600, #242424, 14px, 19px, left);
+
+                      div[class~="header-div-wrapper"] {
+                        display: flex;
+                        align-items: center;
+
+                        span[class~="header-span-text"] {
+                          width: auto;
+                          overflow: hidden;
+                          white-space: nowrap;
+                          text-overflow: ellipsis;
+                        }
+                      }
+
+                      button[class="sort-header"] {
+                        background: inherit;
+                        font: normal normal 600 16px/24px Segoe UI;
+                        color: #000000;
+                        border: none;
+                        padding-left: 1%;
+                        overflow: hidden;
+                        white-space: nowrap;
+                      }
+
+                      button[class="sort-header"]:focus-visible {
+                        border: 0px 0px 0px 0px;
+                        box-shadow: none;
+                        outline: 2px solid #000000;
+                        border-radius: 3px;
+                        outline-offset: 2px;
+                      }
+
+                      span[class="sort-order"] {
+                        vertical-align: middle;
+                        position: relative;
+                        margin: 4px 3.5px 0px;
+                        display: flex;
+                        width: 20px;
+                      }
+
+                      span[class="dropdown-caret"] {
+                        margin: 0px 0 0px 5px;
+                        color: #000000;
+                        margin-left: 2px;
+                        border-top: 4px dashed;
+                        border-right: 4px solid transparent;
+                        border-left: 4px solid transparent;
+                        position: relative;
+                      }
+
+                      span[class="dropup-caret"] {
+                        color: #000000;
+                        margin: 0;
+                        margin-left: 2px;
+                        border-bottom: 4px dashed;
+                        border-top: 0;
+                        border-right: 4px solid transparent;
+                        border-left: 4px solid transparent;
+                        position: relative;
+                      }
+                    }
+
+                    th:nth-child(1) {
+                      width: 38%;
+                    }
+
+                    th:nth-child(2) {
+                      width: 37%;
+                    }
+                  }
+                }
+
+                tbody {
+                  max-height: 250px;
+                  min-height: 34px;
+                  flex: 1 1 auto;
+                  display: block;
+                  overflow-y: overlay;
+                  overflow-x: hidden;
+
+                  tr {
+                    width: 100%;
+                    display: table;
+                    table-layout: fixed;
+
+                    td {
+                      @include fontstyles(normal, #212121, 14px, 19px, left);
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                      white-space: normal;
+                      padding: 0.5rem;
+
+                      .activities-noRecordsFound {
+                        text-align: center;
+                      }
+                    }
+
+                    td:nth-child(1) {
+                      width: 38.3%;
+                    }
+
+                    td:nth-child(2) {
+                      width: 37.3%;
+                    }
+                  }
+
+                  /* width */
+                  &::-webkit-scrollbar {
+                    width: 3px;
+                    height: 3px;
+                  }
+
+                  /* Track */
+                  &::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                  }
+
+                  /* Handle */
+                  &::-webkit-scrollbar-thumb {
+                    background: gray;
+                  }
+
+                  /* Handle on hover */
+                  &::-webkit-scrollbar-thumb:hover {
+                    background: #000;
+                  }
+
+                }
+              }
+            }
+
+            div[class~="react-bootstrap-table-pagination"] {
+              align-items: center;
+
+              span[class~="react-bootstrap-table-pagination-total"] {
+                color: #000000;
+              }
+
+              div[class~="react-bootstrap-table-pagination-list"] {
+                ul[class~="react-bootstrap-table-page-btns-ul"] {
+                  margin-bottom: 0;
+
+                  li[class~="page-item"] {
+                    a[class~="page-link"] {
+                      color: #000000;
+
+                      &:hover {
+                        color: #000000;
+                      }
+
+                      &:focus {
+                        outline: 2px solid #000;
+                        outline-offset: 1px;
+                        border-radius: 1px;
+                        box-shadow: none;
+                      }
+                    }
+                  }
+
+                  li[class~="active"] {
+
+                    a,
+                    a:hover {
+                      background-color: #6264A7 !important;
+                      border-color: #6264A7 !important;
+                      color: #FFFFFF !important;
+                    }
+
+                    &:focus {
+                      outline: 2px solid #000;
+                      outline-offset: 1px;
+                      border-radius: 1px;
+                      box-shadow: none;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .dashboard-chart-wrapper {
+          padding: 0;
+          box-shadow: none;
+          border-radius: 0;
+          margin-bottom: 0px;
+
+          .dashboard-chart-heading {
+            margin-bottom: 10px;
+            @include fontstyles(600, #242424, 14px, 19px, left);
+          }
+
+          .sidebar-chart {
+            background-color: #fff;
+
+            canvas {
+              background-color: #ffffff;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.clb-dashboard-popup-dark {
+  .ms-Dialog-main {
+    background-color: #292929;
+
+    .clb-dialog-content {
+      .ms-Dialog-header {
+        .ms-Dialog-title {
+          color: #FFF;
+        }
+
+        .ms-Button--icon {
+          .ms-Icon {
+            color: #FFF;
+          }
+
+          &:hover {
+            background-color: rgb(245, 245, 245);
+
+            .ms-Icon {
+              color: #000;
+            }
+          }
+        }
+      }
+
+      .ms-Dialog-inner {
+        .showActivitiesPopupBody {
+          .showActivities-grid-area {
+            .activities-grid-heading {
+              color: #FFF;
+            }
+
+            .events-table-wrapper-class {
+              table {
+                thead {
+                  tr {
+                    th {
+                      color: #fff;
+
+                      button[class="sort-header"] {
+                        color: #fff;
+                      }
+
+                      button[class="sort-header"]:focus-visible {
+                        outline-color: #5caae5;
+                      }
+
+                      span[class="dropdown-caret"] {
+                        color: #fff;
+                      }
+
+                      span[class="dropup-caret"] {
+                        color: #fff;
+                      }
+                    }
+                  }
+                }
+
+                tbody {
+                  tr {
+                    td {
+                      color: #FFF
+                    }
+                  }
+                }
+              }
+            }
+
+            div[class~="react-bootstrap-table-pagination"] {
+              span[class~="react-bootstrap-table-pagination-total"] {
+                color: #fff;
+              }
+
+              div[class~="react-bootstrap-table-pagination-list"] {
+                ul[class~="react-bootstrap-table-page-btns-ul"] {
+                  li[class~="page-item"] {
+                    a[class~="page-link"] {
+                      color: #000000;
+
+                      &:hover {
+                        background-color: #ffffff;
+                        border-color: #ffffff;
+                        color: #000000;
+                      }
+
+                      &:focus {
+                        outline-color: #5caae5;
+                      }
+                    }
+                  }
+
+                  li[class~="active"] {
+
+                    a,
+                    a:hover {
+                      background-color: #7f85f5 !important;
+                      border-color: #7f85f5 !important;
+                      color: #ffffff !important;
+                    }
+
+                    &:focus {
+                      outline-color: #5caae5;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .dashboard-chart-wrapper {
+          .dashboard-chart-heading {
+            color: #FFF;
+          }
+
+          .sidebar-chart {
+            background-color: #000;
+
+            canvas {
+              background-color: #000;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.clb-dashboard-popup-contrast {
+  .ms-Dialog-main {
+    background-color: #000;
+    border: 1px solid #ffffff;
+
+    .clb-dialog-content {
+      .ms-Dialog-header {
+        .ms-Dialog-title {
+          color: #FFF;
+        }
+
+        .ms-Button--icon {
+          .ms-Icon {
+            color: #FFF;
+          }
+
+          &:hover {
+            background-color: rgb(245, 245, 245);
+
+            .ms-Icon {
+              color: #000;
+            }
+          }
+        }
+      }
+
+      .ms-Dialog-inner {
+        .showActivitiesPopupBody {
+          .showActivities-grid-area {
+            .activities-grid-heading {
+              color: #FFF;
+            }
+
+            .events-table-wrapper-class {
+              table {
+                thead {
+                  tr {
+                    th {
+                      color: #fff;
+
+                      button[class="sort-header"] {
+                        color: #fff;
+                      }
+
+                      button[class="sort-header"]:focus-visible {
+                        outline-color: #1aebff;
+                      }
+
+                      span[class="dropdown-caret"] {
+                        color: #fff;
+                      }
+
+                      span[class="dropup-caret"] {
+                        color: #fff;
+                      }
+                    }
+                  }
+                }
+
+                tbody {
+                  tr {
+                    td {
+                      color: #FFF
+                    }
+                  }
+                }
+              }
+            }
+
+            div[class~="react-bootstrap-table-pagination"] {
+              span[class~="react-bootstrap-table-pagination-total"] {
+                color: #fff;
+              }
+
+              div[class~="react-bootstrap-table-pagination-list"] {
+                ul[class~="react-bootstrap-table-page-btns-ul"] {
+                  li[class~="page-item"] {
+                    a[class~="page-link"] {
+                      color: #000000;
+
+                      &:hover {
+                        background-color: #ffffff;
+                        border-color: #ffffff;
+                        color: #000000;
+                      }
+
+                      &:focus {
+                        outline-color: #1aebff;
+                      }
+                    }
+                  }
+
+                  li[class~="active"] {
+
+                    a,
+                    a:hover {
+                      background-color: #1aebff !important;
+                      border-color: #1aebff !important;
+                      color: #000000 !important;
+                    }
+
+                    &:focus {
+                      outline-color: #1aebff;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .dashboard-chart-wrapper {
+          .dashboard-chart-heading {
+            color: #FFF;
+          }
+
+          .sidebar-chart {
+            background-color: #292929;
+
+            canvas {
+              background-color: #292929;
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -18,37 +553,47 @@
     height: auto;
     opacity: 1;
 
-    .profilepic {
-      height: 100px;
-      width: 100px;
-      border-radius: 50%;
-      margin-top: 5rem;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      border-radius: 50%;
-      background-color: #7577b9;
-      border: 4px solid #464775;
-      box-shadow: 0 0 0 3px #fff;
+    .imagePointsArea {
+      margin-top: 2rem;
     }
 
-    .championname {
-      font-size: 16px;
-      font: normal normal bold 18px/24px Segoe UI;
-      font-weight: 600;
-      color: white;
-      margin-top: 0.5rem;
-      text-align: center;
+    .links-wrapper {
+      display: grid;
+      justify-content: center;
+      row-gap: 8px;
+      margin-top: 12px;
+
+      .sidebar-action-link {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        cursor: pointer;
+        padding: 2px;
+        width: 135px;
+        border-radius: 4px;
+
+        .action-img {
+          width: 30px;
+          height: 30px;
+        }
+
+        .action-text {
+          text-align: left;
+          font: normal normal normal 16px/18px Segoe UI;
+          letter-spacing: 0px;
+          color: #FFFFFF;
+          opacity: 1;
+        }
+      }
     }
 
     .pointcircle {
       border-radius: 50%;
       background-color: #6f71af;
-      border: 4px solid #464775;
-      box-shadow: 0 0 0 3px #fff;
+      border: 4px solid #6f71af;
       background: #6f71af 0% 0% no-repeat padding-box;
-      width: 153px;
-      height: 154px;
+      width: 158px;
+      height: 159px;
       border-radius: 102px;
       margin-top: 2.2rem;
       display: block;
@@ -86,7 +631,6 @@
           }
         }
       }
-
     }
 
     .bc-btn,
@@ -106,7 +650,6 @@
     .bc-form-main-area {
       display: unset;
     }
-
 
     .bc-form {
       margin: 1rem;
@@ -166,6 +709,13 @@
         font: normal normal bold 14px/24px Segoe UI;
       }
 
+      .backLabel:focus-visible {
+        box-shadow: none;
+        outline: 2px solid #414156 !important;
+        border-radius: 1px;
+        outline-offset: 4px;
+      }
+
       .ClbBorder {
         width: 0px;
         height: 14px;
@@ -179,10 +729,48 @@
       }
     }
 
+    .ClbPathDarkContrast {
+      color: var(--colorNeutralForeground1);
+
+      .backImg {
+        filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
+      }
+
+      .backLabel {
+        color: var(--colorBrandForegroundLink);
+      }
+
+      .backLabel:focus-visible {
+        outline-color: var(--colorPaletteBlueBorderActive);
+      }
+
+      .ClbBorder {
+        border-color: var(--colorNeutralForeground1);
+      }
+    }
+
+    .events-success-message {
+      font: normal normal normal 16px/21px Segoe UI;
+      text-align: left;
+      padding: 0;
+      color: #000000;
+
+      .tickImage {
+        width: 28px;
+        height: 28px;
+        margin-right: 10px;
+        margin-bottom: 5px;
+        opacity: 1;
+      }
+    }
+
+    .events-success-messageDarkContrast {
+      color: var(--colorPaletteGreenForeground1);
+    }
+
     .paddingTop {
       padding-top: 4%;
     }
-
 
     .table-content {
       margin: 1rem 0rem;
@@ -212,11 +800,8 @@
       }
 
       .gttc-img {
-        height: 31px;
-        width: 31px;
-        border-radius: 50%;
-        display: inline;
         margin: 5px;
+        width: fit-content;
       }
 
       .gttc-img-name {
@@ -235,6 +820,10 @@
         vertical-align: middle;
         width: 75px;
         text-overflow: ellipsis;
+
+        #points2 {
+          color: #f3ca3e;
+        }
 
         #count2 {
           color: #f3ca3e;
@@ -302,6 +891,18 @@
 
       .gttc-tap-data {
         text-align: center;
+      }
+    }
+
+    .topChampCards--DarkContrast {
+      background-color: var(--colorNeutralBackground1);
+
+      .accordion-collapse--DarkContrast {
+        background-color: var(--colorNeutralBackground1);
+
+        td {
+          background-color: #fff;
+        }
       }
     }
 
@@ -389,6 +990,19 @@
   }
 }
 
+.championSideBar {
+  --person-line1-font-size: 18px;
+  --person-line1-font-weight: 600;
+  --person-line1-text-color: var(--colorNeutralForegroundStaticInverted) !important;
+  --person-line1-text-transform: capitalize;
+  --person-line1-text-line-height: 24px;
+}
+
+.accordion-person-card {
+  --person-line1-text-line-height: 32px;
+  --person-avatar-size: 31px;
+}
+
 @media screen and (max-width: 767px) {
   .Championleaderboard {
     .content-tab {
@@ -408,28 +1022,36 @@
 
     .sidenav {
       background: transparent url("../assets/TOTImages/SidebarMobile.svg") 0% 0% no-repeat padding-box;
-      height: 140px;
+      max-height: 200px;
       background-color: #464775;
       min-width: 100%;
       background-repeat: no-repeat;
       background-size: cover;
       background-position: 50%;
-      min-height: unset;
+      min-height: 140px;
 
       .imagePointsArea {
         display: flex;
         justify-content: space-around;
+        align-items: center;
+        margin-top: 0;
       }
 
-      .profilepic {
-        height: 70px;
-        width: 70px;
-        margin-top: 2rem;
+      .links-wrapper {
+        .sidebar-action-link {
+          width: fit-content;
+
+          .action-img {
+            width: 25px;
+            height: 25px;
+          }
+
+          .action-text {
+            font-size: 14px;
+          }
+        }
       }
 
-      .championname {
-        font: normal normal 700 14px/24px Segoe UI;
-      }
 
       .pointcircle {
         width: 120px;
@@ -493,9 +1115,105 @@
           padding-right: 7px;
         }
 
+        .backLabel:focus-visible {
+          box-shadow: none;
+          outline: 2px solid #414156 !important;
+          border-radius: 1px;
+          outline-offset: 4px;
+        }
+
         .ClbLabel {
           font: normal normal 700 14px/23px Segoe UI;
           padding-left: 7px;
+        }
+      }
+    }
+  }
+
+  .clb-dashboard-popup {
+    .ms-Dialog-main {
+      height: 90%;
+      width: 90%;
+
+      .clb-dialog-content {
+        .ms-Dialog-inner {
+          .showActivitiesPopupBody {
+            .showActivities-grid-area {
+              .events-table-wrapper-class {
+                overflow-y: overlay;
+                overflow-x: scroll;
+                max-height: 522px;
+                border: 1px solid;
+
+                table {
+                  table-layout: auto;
+                  display: table-row-group;
+                  flex-flow: unset;
+
+                  thead {
+                    flex: auto;
+
+                    tr {
+                      display: table-row;
+                      table-layout: unset;
+
+                      th {
+                        overflow: visible;
+                        text-overflow: none;
+                        white-space: nowrap;
+                        padding-left: 10px;
+                        position: sticky;
+                        top: 0px;
+                      }
+                    }
+                  }
+
+                  tbody {
+                    flex: unset;
+                    display: table-row-group;
+                    overflow-y: unset;
+                    overflow-x: unset;
+
+                    tr {
+                      display: table-row;
+                      table-layout: fixed;
+
+                      td {
+                        padding-left: 10px;
+                        overflow: visible;
+                        text-overflow: none;
+                        white-space: nowrap;
+                      }
+                    }
+                  }
+                }
+
+                &::-webkit-scrollbar {
+                  height: 3px;
+                }
+
+                /* Track */
+                &::-webkit-scrollbar-track {
+                  background: #f1f1f1;
+                }
+
+                /* Handle */
+                &::-webkit-scrollbar-thumb {
+                  background: gray;
+                }
+
+                /* Handle on hover */
+                &::-webkit-scrollbar-thumb:hover {
+                  background: #000;
+                }
+              }
+
+              div[class~="react-bootstrap-table-pagination"] {
+                flex-wrap: nowrap;
+                margin: 15px 0;
+              }
+            }
+          }
         }
       }
     }

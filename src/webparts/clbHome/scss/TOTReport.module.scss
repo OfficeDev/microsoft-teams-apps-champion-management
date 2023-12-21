@@ -1,7 +1,8 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
 :global {
 
     .totReportComboBoxCallout {
-        width: 350px;
         border-radius: 3px;
 
         .ms-Callout-main {
@@ -17,15 +18,6 @@
             }
         }
     }
-
-    .react-bootstrap-table-pagination {
-        width: 80%;
-
-        div:nth-child(1) {
-            margin-bottom: 15px;
-        }
-    }
-
 }
 
 .container {
@@ -59,6 +51,13 @@
         cursor: pointer;
     }
 
+    .backLabel:focus-visible {
+        box-shadow: none;
+        outline: 2px solid #414156 !important;
+        border-radius: 1px;
+        outline-offset: 4px;
+    }
+
     .border {
         width: 0px;
         height: 14px;
@@ -72,12 +71,12 @@
     }
 }
 
-.totReportDropdown {
-    display: inline-flex;
-    margin-bottom: 30px;
+.totReportComboboxWrapper {
+    display: flex;
+    column-gap: 10px;
+    align-items: flex-start;
 
-    label {
-        margin-right: 10px;
+    .totReportComboboxLabel {
         text-align: left;
         font: normal normal normal 20px/27px Segoe UI;
         letter-spacing: 0.28px;
@@ -85,57 +84,54 @@
         opacity: 1;
     }
 
-    label::after {
-        content: ' :';
+    .totReportDropdown {
+
+        i {
+            padding-top: 2px;
+            color: #888686 !important;
+        }
+
     }
 
-    i {
-        padding-top: 2px;
-        color: #888686 !important;
+    .totReportDropdown>div {
+        background: #FFFFFF;
+        box-shadow: 0px 3px 6px #00000029;
+        width: 350px;
+        height: 40px;
+        border-radius: 3px;
+
+        input {
+            background-color: #ffffff;
+            color: #757575;
+        }
+
+        input:hover {
+            color: #757575;
+        }
+
+        button,
+        button:hover {
+            background-color: #FFFFFF;
+        }
     }
 
-}
-
-.totReportDropdown>div {
-    background: #FFFFFF;
-    box-shadow: 0px 3px 6px #00000029;
-    width: 350px;
-    height: 40px;
-    border-radius: 3px;
-
-    input {
-        background-color: #ffffff;
-        color: #757575;
+    .totReportDropdown>div::after {
+        border: 0.5px solid #888686;
+        border-radius: 3px;
     }
 
-    input:hover {
-        color: #757575;
+    .totReportDropdown>div:hover::after {
+        border-color: #888686;
     }
 
-    button,
-    button:hover {
-        background-color: #FFFFFF;
-    }
-}
+    .dDInfoIconArea {
+        margin-top: 10px;
 
-.totReportDropdown>div::after {
-    border: 0.5px solid #888686;
-    border-radius: 3px;
-}
-
-.totReportDropdown>div:hover::after {
-    border-color: #888686;
-}
-
-.dDInfoIconArea {
-    margin-left: 15px;
-    position: relative;
-    top: 3px;
-
-    .dDInfoIcon {
-        font-size: 20px;
-        color: #888686;
-        cursor: pointer;
+        .dDInfoIcon {
+            font-size: 20px;
+            color: #888686;
+            cursor: pointer;
+        }
     }
 }
 
@@ -223,7 +219,7 @@
 
     .IconArea {
         width: 40px;
-        height: calc(1.5em + .75rem + 2px);
+        height: 38px;
         background-color: #464775;
         border-radius: 0 0.25rem 0.25rem 0;
         box-shadow: 0px 3px 6px #00000029;
@@ -233,14 +229,14 @@
             font-size: 20px;
             cursor: pointer;
             margin-left: 10px;
-            margin-top: 3px;
+            margin-top: 8px;
         }
 
         .searchIcon {
             color: #FFFFFF;
             font-size: 20px;
             margin-left: 10px;
-            margin-top: 3px;
+            margin-top: 8px;
             -webkit-transform: scaleX(-1);
             transform: scaleX(-1);
         }
@@ -266,6 +262,11 @@
         position: relative;
         bottom: 9px;
         box-shadow: none;
+
+        &:focus-visible {
+            outline: 1px solid #000;
+            border-radius: 3px;
+        }
 
         .excelIcon {
             width: 35px;
@@ -353,29 +354,133 @@
                         display: inline-flex;
                         justify-content: center;
                     }
+
+                    mgt-person[class="participant-person-card"] {
+                        --person-line1-text-color: var(--colorNeutralForeground1) !important;
+                        --person-line1-text-line-height: 24px;
+                        --person-line1-font-weight: 400;
+                    }
+                }
+            }
+        }
+    }
+
+    div[class~="react-bootstrap-table-pagination"] {
+        width: 80%;
+
+        button[id="pageDropDown"] {
+            color: #fff;
+            background-color: #6264A7;
+            border-color: #6264A7;
+
+            &:focus {
+                box-shadow: none;
+                outline-offset: 2px;
+                outline: 2px solid #000000;
+                border-radius: 3px;
+            }
+        }
+
+        ul[class~="dropdown-menu"] {
+            background-color: #ffffff;
+            min-width: 5rem;
+            border: 1px solid rgba(0, 0, 0, .15);
+
+            li[class~="dropdown-item"] {
+                background-color: transparent;
+                padding: 0.3rem 1.3rem;
+
+                a {
+                    color: #212529;
+                    background-color: transparent;
+                    padding: 4px 8px;
+                    border-radius: 3px;
+
+                    &:hover {
+                        color: #16181b;
+                        background-color: #e9ecef;
+                    }
+
+                    &:focus-visible {
+                        outline: 1px solid #000;
+                    }
+                }
+
+                &:hover,
+                &:focus {
+                    background-color: transparent;
+                }
+            }
+        }
+
+        div[class~="react-bootstrap-table-pagination-list"] {
+            ul[class~="react-bootstrap-table-page-btns-ul"] {
+                li[class~="page-item"] {
+                    a[class~="page-link"] {
+                        &:hover {
+                            color: #000000;
+                        }
+
+                        &:focus {
+                            outline: 2px solid #000;
+                            outline-offset: 1px;
+                            border-radius: 1px;
+                            box-shadow: none;
+                        }
+                    }
+                }
+
+                li[class~="active"] {
+
+                    a,
+                    a:hover {
+                        background-color: #6264A7 !important;
+                        border-color: #6264A7 !important;
+                        color: #FFFFFF !important;
+                    }
+
+                    &:focus {
+                        outline: 2px solid #000;
+                        outline-offset: 1px;
+                        border-radius: 1px;
+                        box-shadow: none;
+                    }
                 }
             }
         }
     }
 }
 
-@media screen and (max-width: 375pt) {
-    .totReportDropdown {
-        display: block;
-        margin-bottom: 0px;
-        margin-left: 2px;
-
-        label {
-            margin-bottom: 10px;
+@media screen and (min-width: 501px) and (max-width:582px) {
+    .totReportComboboxWrapper {
+        .totReportDropdown>div {
+            width: 275px;
         }
     }
+}
 
-    .dDInfoIconArea {
-        margin-left: 130px;
-        top: -81px;
+@media screen and (max-width: 375pt) {
+    .totReportComboboxWrapper {
+        display: grid;
+        grid-template-columns: 125px auto 50px;
+        row-gap: 10px;
 
-        .dDInfoIcon {
-            font-size: 18px;
+        .totReportComboboxLabel {
+            grid-area: 1 / 1;
+            padding: 0;
+        }
+
+        .dDInfoIconArea {
+            grid-area: 1 / 2;
+            margin-top: 7px;
+
+            .dDInfoIcon {
+                font-size: 18px;
+            }
+        }
+
+        .totReportDropdown {
+            grid-area: 2 / 1;
         }
     }
 

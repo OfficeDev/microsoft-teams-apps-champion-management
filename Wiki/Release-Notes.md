@@ -3,6 +3,7 @@ This page contains the different release details for Champion Management Platfor
 ## Version history
 | Version | Release Date |
 |----|----|
+| 2.5 | Dec 21, 2023 |
 | 2.4 | Dec 6, 2022 |
 | 2.3 | Jul 28, 2022 |
 | 2.2 | May 17, 2022 |
@@ -13,6 +14,19 @@ This page contains the different release details for Champion Management Platfor
 | 1.1 | Apr 1, 2021 |
 
 ## Release notes
+
+### 2.5 (Dec 21, 2023)
+
+Below improvements released,
+
+- New Feature: Ability for Admins to modify App Title from "Manage Config Settings" page under "Admin Settings". The app title is applied to the app header and navigation.
+- New Feature: Champions Report for Admins
+- New Feature: Leaderboard UI improvements
+- New Feature: Champions' names in the app are replaced with Person cards.
+- New Feature: Accessibility compliant UI
+- Bug Fix: When a tournament name has a apostrophe an error shows up "My Dashboard" of "Tournament of Teams module"
+- Removed dependency on 'Sites.Manage.All' API permission. This permission is no longer required to set up the app.
+- Upgraded SPFX version from 1.15 to 1.17.
 
 ### 2.4 (Dec 6, 2022)
 

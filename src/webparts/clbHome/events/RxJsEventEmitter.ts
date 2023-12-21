@@ -15,11 +15,11 @@ export class RxJsEventEmitter {
    */
   public static getInstance(): RxJsEventEmitter {
 
-      if(! window["RxJsEventEmitter"]) {
+    if (!(window as any)["RxJsEventEmitter"]) {
 
-          window["RxJsEventEmitter"] = new RxJsEventEmitter();
-      }
-      return window["RxJsEventEmitter"];
+      (window as any)["RxJsEventEmitter"] = new RxJsEventEmitter();
+    }
+    return (window as any)["RxJsEventEmitter"];
   }
 
   /**
@@ -30,12 +30,12 @@ export class RxJsEventEmitter {
   public emit(name: string, data: Object): void {
     let fnName: string = this._createName(name);
 
-    if (!this.subjects[fnName]) {
+    if (!(this.subjects as any)[fnName]) {
 
-      this.subjects[fnName] = new Subject();
+      (this.subjects as any)[fnName] = new Subject();
     }
 
-    this.subjects[fnName].onNext(data);
+    (this.subjects as any)[fnName].onNext(data);
   }
 
   /**
@@ -48,12 +48,12 @@ export class RxJsEventEmitter {
   public on(name: string, handler: any): void {
     let fnName: string = this._createName(name);
 
-    if (!this.subjects[fnName]) {
+    if (!(this.subjects as any)[fnName]) {
 
-      this.subjects[fnName] = new Subject();
+      (this.subjects as any)[fnName] = new Subject();
     }
 
-    this.subjects[fnName].subscribe(handler);
+    (this.subjects as any)[fnName].subscribe(handler);
   }
 
   /**
@@ -63,10 +63,10 @@ export class RxJsEventEmitter {
   public off(name: string): void {
     let fnName: string = this._createName(name);
 
-    if (this.subjects[fnName]) {
+    if ((this.subjects as any)[fnName]) {
 
-      this.subjects[fnName].dispose();
-      delete this.subjects[fnName];
+      (this.subjects as any)[fnName].dispose();
+      delete (this.subjects as any)[fnName];
 
     }
 
@@ -81,7 +81,7 @@ export class RxJsEventEmitter {
 
     for (let prop in subjects) {
       if (this.hasOwnProp.call(subjects, prop)) {
-        subjects[prop].dispose();
+        (subjects as any)[prop].dispose();
       }
     }
 

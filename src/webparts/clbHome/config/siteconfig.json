@@ -1,6 +1,7 @@
 {
   "inclusionPath": "sites",
   "sitename": "ChampionManagementPlatform",
+  "appTitle": "Champion Management Platform",
   "libraries": [
     {
       "listName": "Digital Badge Assets",
@@ -36,103 +37,43 @@
   ],
   "lists": [
     {
-      "listName": "Member List",
-      "columns": [
-        {
-          "name": "FirstName",
-          "type": "text"
-        },
-        {
-          "name": "LastName",
-          "type": "text"
-        },
-        {
-          "name": "Region",
-          "type": "choice"
-        },
-        {
-          "name": "Country",
-          "type": "choice"
-        },
-        {
-          "name": "Role",
-          "type": "choice"
-        },
-        {
-          "name": "Status",
-          "type": "choice"
-        },
-        {
-          "name": "FocusArea",
-          "type": "choice"
-        },
-        {
-          "name": "Group",
-          "type": "choice"
-        }
-      ]
-    },
-    {
       "listName": "Events List",
-      "columns": [
-        {
-          "name": "Points",
-          "type": "number"
-        },
-        {
-          "name": "Description",
-          "type": "text"
-        },
-        {
-          "name": "IsActive",
-          "type": "boolean"
-        }
+      "fields": [
+        "<Field Type='Number' DisplayName='Points' StaticName='Points' Name='Points' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' />",
+        "<Field Type='Text' DisplayName='Description' StaticName='Description' Name='Description' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' MaxLength='255' Viewable='TRUE' />",
+        "<Field Type='Boolean' DisplayName='IsActive' StaticName='IsActive' Name='IsActive' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' />"
       ]
     },
     {
       "listName": "Event Track Details",
-      "columns": [
-        {
-          "name": "MemberId",
-          "type": "number"
-        },
-        {
-          "name": "EventId",
-          "type": "number"
-        },
-        {
-          "name": "Count",
-          "type": "number"
-        },
-        {
-          "name": "DateofEvent",
-          "type": "dateTime"
-        },
-        {
-          "name": "MemberName",
-          "type": "text"
-        },
-        {
-          "name": "EventName",
-          "type": "text"
-        },
-        {
-          "name": "Status",
-          "type": "text"
-        },
-        {
-          "name": "Notes",
-          "type": "multilineText"
-        }
+      "fields": [
+        "<Field Type='Number' DisplayName='MemberId' StaticName='MemberId' Name='MemberId' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' />",
+        "<Field Type='Number' DisplayName='EventId' StaticName='EventId' Name='EventId' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' />",
+        "<Field Type='Number' DisplayName='Count' StaticName='Count' Name='Count' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' />",
+        "<Field Type='DateTime' DisplayName='DateofEvent' StaticName='DateofEvent' Name='DateofEvent' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' />",
+        "<Field Type='Text' DisplayName='MemberName' StaticName='MemberName' Name='MemberName' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' MaxLength='255' Viewable='TRUE' />",
+        "<Field Type='Text' DisplayName='EventName' StaticName='EventName' Name='EventName' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' MaxLength='255' Viewable='TRUE' />",
+        "<Field Type='Text' DisplayName='Status' StaticName='Status' Name='Status' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' MaxLength='255' Viewable='TRUE' />",
+        "<Field Type='Note' DisplayName='Notes' StaticName='Notes' Name='Notes' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' AppendOnly='FALSE' NumLines='6' RichText='FALSE'/>"
       ]
     },
     {
       "listName": "Config List",
-      "columns": [
-        {
-          "name": "Value",
-          "type": "text"
-        }
+      "fields": [
+        "<Field Type='Text' DisplayName='Value' StaticName='Value' Name='Value' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' MaxLength='255' Viewable='TRUE'/>"
+      ]
+    },
+    {
+      "listName": "Member List",
+      "fields": [
+        "<Field Type='Text' DisplayName='FirstName' StaticName='FirstName' Name='FirstName' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' MaxLength='255' Viewable='TRUE'/>",
+        "<Field Type='Text' DisplayName='LastName' StaticName='LastName' Name='LastName' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' MaxLength='255' Viewable='TRUE'/>",
+        "<Field Type='Choice' DisplayName='Region' StaticName='Region' Name='Region' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' Format='Dropdown' FillInChoice='FALSE'><CHOICES><CHOICE>Africa</CHOICE><CHOICE>Asia</CHOICE><CHOICE>Australia / Pacific</CHOICE><CHOICE>Europe</CHOICE><CHOICE>Middle East</CHOICE><CHOICE>North America / Central America / Caribbean</CHOICE><CHOICE>South America</CHOICE></CHOICES></Field>",
+        "<Field Type='Choice' DisplayName='Country' StaticName='Country' Name='Country' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' Format='Dropdown' FillInChoice='FALSE'><CHOICES><CHOICE>INDIA</CHOICE><CHOICE>USA</CHOICE></CHOICES></Field>",
+        "<Field Type='Choice' DisplayName='Role' StaticName='Role' Name='Role' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' Format='Dropdown' FillInChoice='FALSE'><CHOICES><CHOICE>Manager</CHOICE><CHOICE>Champion</CHOICE></CHOICES></Field>",
+        "<Field Type='Choice' DisplayName='Status' StaticName='Status' Name='Status' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' Format='Dropdown' FillInChoice='FALSE'><CHOICES><CHOICE>Approved</CHOICE><CHOICE>Pending</CHOICE><CHOICE>Rejected</CHOICE></CHOICES></Field>",
+        "<Field Type='MultiChoice' DisplayName='FocusArea' StaticName='FocusArea' Name='FocusArea' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' FillInChoice='FALSE'><CHOICES><CHOICE>Marketing</CHOICE><CHOICE>Teamwork</CHOICE><CHOICE>Business Apps</CHOICE><CHOICE>Virtual Events</CHOICE></CHOICES></Field>",
+        "<Field Type='Choice' DisplayName='Group' StaticName='Group' Name='Group' Required='FALSE' EnforceUniqueValues='FALSE' Indexed='FALSE' Viewable='TRUE' Format='Dropdown' FillInChoice='FALSE'><CHOICES><CHOICE>IT Pro</CHOICE><CHOICE>Sales</CHOICE><CHOICE>Engineering</CHOICE></CHOICES></Field>"
       ]
     }
   ],
@@ -161,19 +102,23 @@
   "configMasterData": [
     {
       "Title": "ChampionEventApprovals",
-      "Value": "Disabled"     
+      "Value": "Disabled"
     },
     {
       "Title": "Region",
-      "Value": "Enabled"     
+      "Value": "Enabled"
     },
     {
       "Title": "Country",
-      "Value": "Enabled"     
+      "Value": "Enabled"
     },
     {
       "Title": "Group",
-      "Value": "Enabled"     
+      "Value": "Enabled"
+    },
+    {
+      "Title": "AppTitle",
+      "Value": "Champion Management Platform"
     }
   ],
   "totLists": [

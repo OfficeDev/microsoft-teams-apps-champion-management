@@ -33,6 +33,8 @@ export interface IClbAddMemberProps {
   onHomeCallBack: () => void;
   siteUrl: string;
   isAdmin: boolean;
+  appTitle: string;
+  currentThemeName?: string;
 }
 export interface ISPLists {
   value: ISPList[];
@@ -141,7 +143,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
-        response.json().then((regions) => {
+        response.json().then((regions: any) => {
           if (!regions.error) {
             this.props.context.spHttpClient
               .get(
@@ -151,7 +153,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
               )
               // tslint:disable-next-line: no-shadowed-variable
               .then((response: SPHttpClientResponse) => {
-                response.json().then((countries) => {
+                response.json().then((countries: any) => {
                   if (!countries.error) {
                     this.setState({
                       regions: regions.Choices,
@@ -171,7 +173,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
-        response.json().then((groups) => {
+        response.json().then((groups: any) => {
           if (!groups.error) {
             this.props.context.spHttpClient
               .get(
@@ -181,7 +183,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
               )
               // tslint:disable-next-line: no-shadowed-variable
               .then((response: SPHttpClientResponse) => {
-                response.json().then((focusAreas) => {
+                response.json().then((focusAreas: any) => {
                   if (!focusAreas.error) {
                     this.setState({
                       groups: groups.Choices,
@@ -193,6 +195,10 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
           }
         });
       });
+
+    //Add Aria required attribute to people picker control
+    const inputElement = this.addMemberPeoplePickerParentRef.current.getElementsByTagName("input")[0];
+    inputElement.setAttribute('aria-label', 'People picker this is a required field');
 
     //Update Aria Label attribute to people picker control
     const peoplePickerElement = this.addMemberPeoplePickerParentRef.current.getElementsByClassName('ms-FocusZone');
@@ -402,7 +408,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                 SPHttpClient.configurations.v1
               )
               .then((responsen: SPHttpClientResponse) => {
-                responsen.json().then((datada) => {
+                responsen.json().then((datada: any) => {
                   let memberDataId = datada.value.find(
                     (d: { Title: string }) =>
                       d.Title.toLowerCase() === datauser.Email.toLowerCase()
@@ -422,10 +428,10 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                       )
                       .then((responseData: SPHttpClientResponse) => {
                         if (responseData.status === 200) {
-                          responseData.json().then(async (data) => {
+                          responseData.json().then(async (data: any) => {
                             // tslint:disable-next-line: no-function-expression
                             var member: any = [];
-                            data.value.forEach(element => {
+                            data.value.forEach((element: any) => {
                               if (element.Email.toLowerCase() === email.toLowerCase())
                                 member.push(element);
                             });
@@ -549,13 +555,13 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
     } //When an option unselected from the dropdown other than "All"
     else {
       this.setState({
-        multiSelectChoices: this.state.multiSelectChoices.filter((key) => key !== item.key && key !== stringsConstants.AllLabel)
+        multiSelectChoices: this.state.multiSelectChoices.filter((key: any) => key !== item.key && key !== stringsConstants.AllLabel)
       });
     }
   }
 
   public options = (optionArray: any) => {
-    let myoptions = [];    
+    let myoptions = [];
     if (optionArray !== undefined) {
       myoptions.push({ key: "All", text: "All" });
       optionArray.forEach((element: any) => {
@@ -569,6 +575,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
     //storing number of dropdowns got enabled
     const enabledDropdownCount = (this.state.countryColumnName !== "" ? 1 : 0) +
       (this.state.regionColumnName !== "" ? 1 : 0) + (this.state.groupColumnName !== "" ? 1 : 0);
+    const isDarkOrContrastTheme = this.props.currentThemeName === stringsConstants.themeDarkMode || this.props.currentThemeName === stringsConstants.themeContrastMode;
     return (
       <>
         {
@@ -576,37 +583,49 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
             <ClbChampionsList
               siteUrl={this.props.siteUrl}
               context={this.props.context}
+              appTitle={this.props.appTitle}
               userAdded={this.state.isUserAdded}
               userStatus={this.state.userStatus}
               onHomeCallBack={this.props.onHomeCallBack}
               configListData={this.state.configListSettings}
               memberListColumnsNames={this.state.memberListColumnNames}
+              currentThemeName={this.props.currentThemeName}
             />
           ) :
-            <div className={`container`}>
-              <div className={styles.addMembersPath}>
+            <div className='container'>
+              <div className={`${styles.addMembersPath}${isDarkOrContrastTheme ? " " + styles.addMembersPathDarkContrast : ""}`}>
                 <img src={require("../assets/CMPImages/BackIcon.png")}
                   className={styles.backImg}
                   alt={LocaleStrings.BackButton}
+                  aria-hidden="true"
                 />
                 <span
                   className={styles.backLabel}
                   onClick={() => { this.props.onClickBack(); }}
-                  title={LocaleStrings.CMPBreadcrumbLabel}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(evt: any) => { if (evt.key === stringsConstants.stringEnter) this.props.onClickBack(); }}
+                  aria-label={this.props.appTitle}
                 >
-                  {LocaleStrings.CMPBreadcrumbLabel}
+                  <span title={this.props.appTitle}>
+                    {this.props.appTitle}
+                  </span>
                 </span>
                 <span className={styles.border}></span>
                 <span className={styles.addMemberLabel}>{this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle}</span>
               </div>
               {this.state.updatedMessage !== "" ?
-                <Label className={styles.updatedMessage}>
+                <Label className={`${styles.updatedMessage}${isDarkOrContrastTheme ? " " + styles.updatedMessageDarkContrast : ""}`} aria-live="polite" role="status" id="updateMessagesId">
                   <img src={require('../assets/TOTImages/tickIcon.png')} alt="tickIcon" className={styles.tickImage} />
                   {this.state.updatedMessage}
                 </Label> : null}
               {this.state.errorMessage !== "" ?
-                <Label className={styles.errorMessage}>{this.state.errorMessage} </Label> : null}
-              <Label className={styles.pickerLabel}>{this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle} <span className={styles.asterisk}>*</span></Label>
+                <Label className={`${styles.errorMessage}${isDarkOrContrastTheme ? " " + styles.errorMessageDarkContrast : ""}`}
+                  aria-live="polite" role="alert">{this.state.errorMessage} </Label> : null}
+              <Label className={`${styles.pickerLabel}${isDarkOrContrastTheme ? " " + styles.pickerLabelDarkContrast : ""}`}
+                tabIndex={0} aria-label={this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle}>
+                {this.props.isAdmin ? LocaleStrings.AddMemberPageTitle : LocaleStrings.NominateMemberPageTitle} <span className={styles.asterisk}>*</span>
+              </Label>
               <div ref={this.addMemberPeoplePickerParentRef}>
                 <PeoplePicker
                   context={this.props.context}
@@ -619,7 +638,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                   resolveDelay={1000}
                   placeholder={LocaleStrings.PeoplePickerPlaceholder}
                   ref={this.addMemberPeoplePickerRef}
-                  peoplePickerCntrlclassName={styles.addMemberPeoplePickerClass}
+                  peoplePickerCntrlclassName={`${styles.addMemberPeoplePickerClass}${isDarkOrContrastTheme ? " " + styles.addMemberPeoplePickerClassDarkContrast : ""}`}
                 />
               </div>
               <br></br>
@@ -630,13 +649,15 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                       <>
                         {this.state.regionColumnName !== "" &&
                           <Col md={enabledDropdownCount < 3 ? 4 : 3} sm={8}>
+                            <span aria-label={LocaleStrings.RegionLabel} className={`${styles.labelContent}${isDarkOrContrastTheme ? " " + styles.labelContentDarkContrast : ""}`}>
+                              {LocaleStrings.RegionLabel}</span>
                             <Dropdown
                               onChange={(_event: any, selectedOption: any) => this.filterUsers("region", selectedOption)}
                               options={this.options(this.state.regions)}
-                              ariaLabel={LocaleStrings.RegionPlaceholder}
+                              ariaLabel={`Select ${this.state.regionColumnName}`}
                               className={styles.addMemberDropdown}
                               calloutProps={{ className: "addMemberDropdownCallout" }}
-                              onRenderPlaceholder={() => <span title={`Select ${this.state.regionColumnName}`}>
+                              onRenderPlaceholder={() => <span title={`Select ${this.state.regionColumnName}`} aria-hidden="true">
                                 Select {this.state.regionColumnName}
                               </span>}
                             />
@@ -644,13 +665,15 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                         }
                         {this.state.countryColumnName !== "" &&
                           <Col md={enabledDropdownCount < 3 ? 4 : 3} sm={8}>
+                            <span aria-label={LocaleStrings.CountryGridHeader} className={`${styles.labelContent}${isDarkOrContrastTheme ? " " + styles.labelContentDarkContrast : ""}`}>
+                              {LocaleStrings.CountryGridHeader}</span>
                             <Dropdown
                               onChange={(event: any, selectedOption: any) => this.filterUsers("country", selectedOption)}
                               options={this.options(this.state.countries)}
-                              ariaLabel={LocaleStrings.CountryPlaceholder}
+                              ariaLabel={`Select ${this.state.countryColumnName}`}
                               className={styles.addMemberDropdown}
                               calloutProps={{ className: "addMemberDropdownCallout" }}
-                              onRenderPlaceholder={() => <span title={`Select ${this.state.countryColumnName}`}>
+                              onRenderPlaceholder={() => <span title={`Select ${this.state.countryColumnName}`} aria-hidden="true">
                                 Select {this.state.countryColumnName}
                               </span>}
                             />
@@ -658,13 +681,15 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                         }
                         {this.state.groupColumnName !== "" &&
                           <Col md={enabledDropdownCount < 3 ? 4 : 3} sm={8}>
+                            <span aria-label={LocaleStrings.GroupGridHeader} className={`${styles.labelContent}${isDarkOrContrastTheme ? " " + styles.labelContentDarkContrast : ""}`}>
+                              {LocaleStrings.GroupGridHeader}</span>
                             <Dropdown
                               onChange={(event: any, selectedOption: any) => this.filterUsers("group", selectedOption)}
                               options={this.options(this.state.groups)}
-                              ariaLabel={LocaleStrings.GroupPlaceholder}
+                              ariaLabel={`Select ${this.state.groupColumnName}`}
                               className={styles.addMemberDropdown}
                               calloutProps={{ className: "addMemberDropdownCallout" }}
-                              onRenderPlaceholder={() => <span title={`Select ${this.state.groupColumnName}`}>
+                              onRenderPlaceholder={() => <span title={`Select ${this.state.groupColumnName}`} aria-hidden="true">
                                 Select {this.state.groupColumnName}
                               </span>}
                             />
@@ -673,6 +698,8 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                       </>
                     }
                     <Col md={enabledDropdownCount < 3 ? 4 : 3} sm={8}>
+                      <span aria-label={LocaleStrings.FocusAreaLabel} className={`${styles.labelContent}${isDarkOrContrastTheme ? " " + styles.labelContentDarkContrast : ""}`}>
+                        {LocaleStrings.FocusAreaLabel}</span>
                       <Dropdown
                         onChange={this.onFocusAreaChange.bind(this)}
                         placeholder={LocaleStrings.FocusAreaPlaceholder}
@@ -681,18 +708,22 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                         multiSelect
                         selectedKeys={this.state.multiSelectChoices}
                         className={styles.addMemberDropdown}
-                        calloutProps={{ className: "addMemberDropdownCallout" }}
+                        calloutProps={{ className: "addMemberDropdownCallout", doNotLayer: true }}
                         onRenderPlaceholder={() =>
-                          <span title={LocaleStrings.FocusAreaPlaceholder}>
+                          <span title={LocaleStrings.FocusAreaPlaceholder} aria-hidden="true">
                             {LocaleStrings.FocusAreaPlaceholder}
                           </span>
                         }
+                        onRenderTitle={(options: any) => {
+                          const selectedAreas = options.map((option: any) => option.text).join(", ");
+                          return (<span aria-hidden="true">{selectedAreas}</span>);
+                        }}
                       />
                     </Col>
                   </> : null
                 }
               </Row>
-              <div className={styles.btnArea}>
+              <div className={`${styles.btnArea}${isDarkOrContrastTheme ? " " + styles.btnAreaDarkContrast : ""}`}>
                 <button
                   className={`btn ${styles.cancelBtn}`}
                   onClick={() => this.props.onClickBack()}
@@ -708,6 +739,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                     this.state.UserDetails.length > 0 ? this.setState({ load: true }) : this.setState({ load: false });
                   }}
                   title={LocaleStrings.SaveButton}
+                  aria-labelledby='updateMessagesId'
                 >
                   <Icon iconName="Save" className={`${styles.saveBtnIcon}`} />
                   <span className={styles.saveBtnLabel}>{LocaleStrings.SaveButton}</span>

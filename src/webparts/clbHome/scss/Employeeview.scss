@@ -1,62 +1,97 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
 .Employeeview {
-    .main {
-        width: 100vw;
-        min-height: 100vh;
-        padding: 0% 4% 0% 4%;
-        background-color: #ffffff;
+  .main {
+    width: 100vw;
+    min-height: 100vh;
+    padding: 0% 4% 0% 4%;
+    background-color: #ffffff;
 
-        .ClbPath {
-            display: inline-flex;
-            margin: 2% 0% 1%;
-            text-align: center;
-            letter-spacing: 0px;
-            color: #33344A;
-            opacity: 1;
+    .ClbPath {
+      display: inline-flex;
+      margin: 2% 0% 1%;
+      text-align: center;
+      letter-spacing: 0px;
+      color: #33344A;
+      opacity: 1;
 
-            .backImg {
-                width: 7px;
-                height: 12px;
-                margin-right: 10px;
-                margin-top: 6px;
-            }
+      .backImg {
+        width: 7px;
+        height: 12px;
+        margin-right: 10px;
+        margin-top: 6px;
+      }
 
-            .backLabel {
-                padding-right: 10px;
-                cursor: pointer;
-                font: normal normal bold 14px/24px Segoe UI;
-            }
+      .backLabel {
+        padding-right: 10px;
+        cursor: pointer;
+        font: normal normal bold 14px/24px Segoe UI;
+      }
 
-            .ClbBorder {
-                width: 0px;
-                height: 14px;
-                border: 1px solid #33344A;
-                margin-top: 5px;
-            }
+      .backLabel:focus-visible {
+        box-shadow: none;
+        outline: 2px solid #414156 !important;
+        border-radius: 1px;
+        outline-offset: 4px;
+      }
 
-            .ClbLabel {
-                padding-left: 10px;
-                font: normal normal bold 18px/23px Segoe UI;
-            }
-        }
+      .ClbBorder {
+        width: 0px;
+        height: 14px;
+        border: 1px solid #33344A;
+        margin-top: 5px;
+      }
 
+      .ClbLabel {
+        padding-left: 10px;
+        font: normal normal bold 18px/23px Segoe UI;
+      }
     }
+  }
+}
+
+.EmployeeviewDarkContrast {
+  .main {
+    background-color: var(--colorNeutralBackground1);
+
+    .ClbPath {
+      color: var(--colorNeutralForeground1);
+
+      .backImg {
+        filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
+      }
+
+      .backLabel {
+        color: var(--colorBrandForegroundLink);
+      }
+
+      .backLabel:focus-visible {
+        outline-color: var(--colorPaletteBlueBorderActive);
+      }
+
+      .ClbBorder {
+        border-color: var(--colorNeutralForeground1);
+      }
+    }
+
+  }
 }
 
 @media screen and (max-width: 375pt) {
-    .Employeeview {
-        display: block !important;
+  .Employeeview {
+    display: block !important;
 
-        .main {
-            .ClbPath {
-                .backLabel {
-                    font: normal normal 700 12px/24px Segoe UI;
-                }
-
-                .ClbLabel {
-                    font: normal normal 700 14px/23px Segoe UI;
-                }
-            }
+    .main {
+      .ClbPath {
+        .backLabel {
+          font: normal normal 700 12px/24px Segoe UI;
         }
+
+        .ClbLabel {
+          font: normal normal 700 14px/23px Segoe UI;
+        }
+      }
     }
+  }
 
 }

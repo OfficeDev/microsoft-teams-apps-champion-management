@@ -1,5 +1,8 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
 .totSideBar {
   display: flex !important;
+
 
   .sideNav {
     background: transparent url("../assets/TOTImages/Sidebar.svg") 0% 0% no-repeat padding-box;
@@ -8,27 +11,8 @@
     height: 100%;
     background-color: #6264a7;
 
-    .profilePic {
-      height: 100px;
-      width: 100px;
-      border-radius: 50%;
-      margin-top: 5rem;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      border-radius: 50%;
-      background-color: #7577b9;
-      border: 4px solid #464775;
-      box-shadow: 0 0 0 3px #fff;
-    }
-
-    .championName {
-      font-size: 16px;
-      font: normal normal bold 18px/24px Segoe UI;
-      font-weight: 600;
-      color: white;
-      margin-top: 0.5rem;
-      text-align: center;
+    .imagePointsArea {
+      margin-top: 2rem;
     }
 
     .pointCircle {
@@ -84,6 +68,7 @@
 
       .globalRank {
         font: normal normal normal 14px/19px Segoe UI;
+        white-space: nowrap;
       }
 
       .bold {
@@ -124,6 +109,14 @@
         display: block;
       }
     }
+  }
+
+  .profileImageSideBar {
+    --person-line1-font-size: 18px;
+    --person-line1-font-weight: 600;
+    --person-line1-text-color: var(--colorNeutralForegroundStaticInverted) !important;
+    --person-line1-text-transform: capitalize;
+    --person-line1-text-line-height: 24px;
   }
 
   .contentTab {
@@ -195,12 +188,11 @@
       .imagePointsArea {
         display: flex;
         justify-content: space-around;
-      }
+        margin-top: 0;
 
-      .profilePic {
-        height: 70px;
-        width: 70px;
-        margin-top: 2rem;
+        div[id="tot-sidebar-person-wrapper"] {
+          margin-top: 1.5rem;
+        }
       }
 
       .championName {

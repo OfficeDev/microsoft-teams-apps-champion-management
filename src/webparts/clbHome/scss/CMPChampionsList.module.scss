@@ -1,3 +1,5 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
 .championListContainer {
   padding-bottom: 5em;
 
@@ -23,6 +25,13 @@
       cursor: pointer;
     }
 
+    .backLabel:focus-visible {
+      box-shadow: none;
+      outline: 2px solid #414156 !important;
+      border-radius: 1px;
+      outline-offset: 4px;
+    }
+
     .border {
       width: 0px;
       height: 14px;
@@ -32,6 +41,26 @@
 
     .championListLabel {
       padding-left: 10px;
+    }
+  }
+
+  .championListPathDarkContrast {
+    color: var(--colorNeutralForeground1);
+
+    .backImg {
+      filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
+    }
+
+    .backLabel {
+      color: var(--colorBrandForegroundLink);
+    }
+
+    .backLabel:focus-visible {
+      outline-color: var(--colorPaletteBlueBorderActive);
+    }
+
+    .border {
+      border-color: var(--colorNeutralForeground1);
     }
   }
 
@@ -50,6 +79,10 @@
     }
   }
 
+  .successMessageDarkContrast {
+    color: var(--colorPaletteGreenForeground1);
+  }
+
 
   .listHeading {
     text-align: left;
@@ -58,6 +91,10 @@
     color: #000000;
     opacity: 1;
     margin-bottom: 26px;
+  }
+
+  .listHeadingDarkContrast {
+    color: var(--colorNeutralForeground1);
   }
 
   .championListTableArea {
@@ -71,14 +108,12 @@
         background-color: #DEDEF3;
         text-align: left;
         font: normal normal bold 18px/24px Segoe UI;
-
       }
 
       tbody.listBody {
         background-color: #F6F5F4;
         text-align: left;
         font: normal normal normal 18px/24px Segoe UI;
-
       }
 
       th,
@@ -89,6 +124,12 @@
         white-space: nowrap;
       }
     }
+  }
+
+  mgt-person[class="champion-person-card"] {
+    --person-line1-text-color: var(--colorNeutralForeground1) !important;
+    --person-line1-text-line-height: 24px;
+    --person-line1-font-weight: 400;
   }
 
   @media screen and (max-width: 375pt) {

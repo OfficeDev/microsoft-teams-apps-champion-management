@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import * as microsoftTeams from '@microsoft/teams-js';
+import { app } from '@microsoft/teams-js-v2';
 import { Component } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
-import BootstrapTable from 'react-bootstrap-table-next';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/Row';
@@ -12,14 +11,14 @@ import { ComboBox, IComboBox, IComboBoxOption } from '@fluentui/react/lib/ComboB
 import { Dialog } from '@fluentui/react/lib/Dialog';
 import { Icon, initializeIcons } from 'office-ui-fabric-react';
 import { SearchBox } from 'office-ui-fabric-react/lib/SearchBox';
-import moment from 'moment';
 import * as constants from '../constants/strings';
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
 import siteconfig from '../config/siteconfig.json';
-import '../scss/Championview.scss';
 import '../scss/Champions.scss';
 import * as _ from "lodash";
 import commonServices from '../Common/CommonServices';
+import ChampionEvents from './ChampionEvents';
+import { Person } from "@microsoft/mgt-react/dist/es6/spfx";
 
 initializeIcons();
 
@@ -32,6 +31,8 @@ interface ChampionsCardsProps {
   context: WebPartContext;
   siteUrl: string;
   callBack?: Function;
+  loggedinUserEmail?: string;
+  currentThemeName?: string;
 }
 interface ChampionsCardsState {
   isLoaded: boolean;
@@ -49,16 +50,20 @@ interface ChampionsCardsState {
   filteredUserActivities: Array<any>;
   userActivitiesPerPage: number;
   pageNumber: number;
-  selectedMemberDetails: Array<any>;
+  selectedMemberDetails: any;
   events: Array<any>;
+  selectedMemberID: string;
+  isExpanded: boolean;
+  cardPersonRefs: any;
 }
 
-export default class ChampionsCards extends Component<
-  ChampionsCardsProps,
-  ChampionsCardsState
-> {
+export default class ChampionsCards extends Component<ChampionsCardsProps, ChampionsCardsState> {
+  private leaderboardFocusAreaComboboxRef: React.RefObject<HTMLDivElement>;
+  private mainComboboxRef: React.RefObject<IComboBox>;
   constructor(props: any) {
     super(props);
+    this.leaderboardFocusAreaComboboxRef = React.createRef();
+    this.mainComboboxRef = React.createRef();
     this.state = {
       isLoaded: false,
       loadCards: 0,
@@ -76,13 +81,13 @@ export default class ChampionsCards extends Component<
       userActivitiesPerPage: 5,
       pageNumber: 1,
       selectedMemberDetails: [],
-      events: []
+      events: [],
+      selectedMemberID: "",
+      isExpanded: false,
+      cardPersonRefs: []
     };
     //Create object for CommonServices class
-    commonServiceManager = new commonServices(
-      this.props.context,
-      this.props.siteUrl
-    );
+    commonServiceManager = new commonServices(this.props.context, this.props.siteUrl);
     currentUserName = this.props.context.pageContext.user.displayName;
     this.onchange = this.onchange.bind(this);
     this._renderListAsync();
@@ -90,36 +95,62 @@ export default class ChampionsCards extends Component<
 
   //Initializes the teams library and calling the methods to load the initial data  
   public _renderListAsync() {
-    microsoftTeams.initialize();
+    app.initialize();
     this.getMemberDetails();
     this.getChoicesFromList();
   }
 
+  // Handle accordion toggle on tab - accessibility
+  private handleAccordionToggle = (event: any, key: any) => {
+    if (event.key === constants.stringEnter) {
+      event.preventDefault();
+      document.getElementById(`accordion-toggle-${key}`).click();
+    }
+  }
+
+  // Set the expand collapse state - accessibility
+  handleToggle = () => {
+    const { isExpanded } = this.state;
+    this.setState({ isExpanded: !isExpanded });
+  };
+
   //This method will be called whenever there is an update to the component
   public componentDidUpdate(prevProps: Readonly<ChampionsCardsProps>, prevState: Readonly<ChampionsCardsState>, snapshot?: any): void {
-    //Calling the methods to refresh the data in the champion cards when the component is re-rendered
-    if (prevProps != this.props) {
-      setTimeout(() => {
-        this._renderListAsync();
-      }, 500);
-    }
 
-    //Set the filteredUsers array based on the filter or search applied
-    if ((prevState.selectedFocusArea != this.state.selectedFocusArea) ||
-      (prevState.search != this.state.search) ||
-      (prevState.users != this.state.users)) {
+    try {
+      //Calling the methods to refresh the data in the champion cards when the component is re-rendered
+      if (prevProps != this.props) {
+        setTimeout(() => {
+          this._renderListAsync();
+        }, 500);
+      }
 
-      if (this.state.selectedFocusArea != constants.AllLabel && this.state.search == "") {
-        this.setState({
-          filteredUsers: this.state.users.filter((user) => user.FocusArea?.toString().includes(this.state.selectedFocusArea))
-        });
-      } else if (this.state.selectedFocusArea == constants.AllLabel && this.state.search == "") {
-        this.setState({
-          filteredUsers: this.state.users
-        });
-      } else if (this.state.selectedFocusArea != constants.AllLabel && this.state.search != "") {
-        this.setState({
-          filteredUsers: this.state.users.filter((user) =>
+      //Set the filteredUsers array based on the filter or search applied
+      if ((prevState.selectedFocusArea != this.state.selectedFocusArea) ||
+        (prevState.search != this.state.search) ||
+        (prevState.users != this.state.users)) {
+        let refLength: number;
+        if (this.state.selectedFocusArea != constants.AllLabel && this.state.search == "") {
+          //Filter the users based on the selected Focus Area and Searched value
+          const filteredUsers = this.state.users.filter((user: any) => user.FocusArea?.toString().includes(this.state.selectedFocusArea));
+          refLength = filteredUsers.length > this.state.loadCards ? this.state.loadCards : filteredUsers.length;
+          //Set the filteredUsers array and cardPersonRefs array
+          this.setState({
+            filteredUsers: filteredUsers,
+            cardPersonRefs: Array.from({ length: refLength }, () => React.createRef())
+          });
+        }
+        else if (this.state.selectedFocusArea == constants.AllLabel && this.state.search == "") {
+          refLength = this.state.users.length > this.state.loadCards ? this.state.loadCards : this.state.users.length;
+          //Set the filteredUsers array and cardPersonRefs array
+          this.setState({
+            filteredUsers: this.state.users,
+            cardPersonRefs: Array.from({ length: refLength }, () => React.createRef())
+          });
+        }
+        else if (this.state.selectedFocusArea != constants.AllLabel && this.state.search != "") {
+          //Filter the users based on the selected Focus Area and Searched value
+          const filteredUsers = this.state.users.filter((user: any) =>
             user.FocusArea?.toString().includes(this.state.selectedFocusArea) &&
             ((user.FirstName &&
               user.FirstName.toLowerCase().includes(this.state.search.toLowerCase())) ||
@@ -131,11 +162,17 @@ export default class ChampionsCards extends Component<
                 user.FocusArea?.toString().toLowerCase().includes(this.state.search.toLowerCase())) ||
               (user.Region &&
                 user.Region.toLowerCase().includes(this.state.search.toLowerCase())) ||
-              (user.Group && user.Group.toLowerCase().includes(this.state.search.toLowerCase()))))
-        });
-      } else if (this.state.selectedFocusArea == constants.AllLabel && this.state.search != "") {
-        this.setState({
-          filteredUsers: this.state.users.filter((user) =>
+              (user.Group && user.Group.toLowerCase().includes(this.state.search.toLowerCase()))));
+          refLength = filteredUsers.length > this.state.loadCards ? this.state.loadCards : filteredUsers.length;
+          //Set the filteredUsers array and cardPersonRefs array
+          this.setState({
+            filteredUsers: filteredUsers,
+            cardPersonRefs: Array.from({ length: refLength }, () => React.createRef())
+          });
+        }
+        else if (this.state.selectedFocusArea == constants.AllLabel && this.state.search != "") {
+          //Filter the users based on the selected Focus Area and Searched value
+          const filteredUsers = this.state.users.filter((user: any) =>
           ((user.FirstName &&
             user.FirstName.toLowerCase().includes(this.state.search.toLowerCase())) ||
             (user.LastName &&
@@ -146,13 +183,74 @@ export default class ChampionsCards extends Component<
               user.FocusArea?.toString().toLowerCase().includes(this.state.search.toLowerCase())) ||
             (user.Region &&
               user.Region.toLowerCase().includes(this.state.search.toLowerCase())) ||
-            (user.Group && user.Group.toLowerCase().includes(this.state.search.toLowerCase()))))
-        });
+            (user.Group && user.Group.toLowerCase().includes(this.state.search.toLowerCase()))));
+          refLength = filteredUsers.length > this.state.loadCards ? this.state.loadCards : filteredUsers.length;
+          //Set the filteredUsers array and cardPersonRefs array
+          this.setState({
+            filteredUsers: filteredUsers,
+            cardPersonRefs: Array.from({ length: refLength }, () => React.createRef())
+          });
+        }
+      }
+      /**Update aria-expanded attribute in combobox for Accessibility in Android and 
+        Add aria-label attribute to combobox label**/
+      if (prevState.users !== this.state.users && this.state.users.length > 0) {
+        const comboboxLabel = this.leaderboardFocusAreaComboboxRef.current.querySelector("#leaderboard-focus-area-listbox-label");
+        //Add aria-label attribute to combobox label
+        comboboxLabel.setAttribute("aria-label", LocaleStrings.SelectedFocusAreaLabel);
+
+        //Update aria-expanded attribute in combobox for Accessibility in Android
+        if (navigator.userAgent.match(/Android/i)) {
+
+          //Outside Click event for Focus area combobox for Accessibility in Android
+          document.addEventListener("click", this.onFocusAreaComboboxOutsideClick);
+
+          //remove aria-expanded attribute from combobox input element
+          const comboboxInput = this.leaderboardFocusAreaComboboxRef.current.querySelector("#leaderboard-focus-area-listbox-input");
+          comboboxInput.removeAttribute("aria-expanded");
+
+          //Update aria-expanded attribute for combobox expand/collapse button
+          const comboboxButton = this.leaderboardFocusAreaComboboxRef.current.querySelector("#leaderboard-focus-area-listboxwrapper").querySelector("button");
+          comboboxButton.setAttribute("aria-expanded", "false");
+
+          //get focus area combobox list wrapper element to set focus and attributes
+          const ulList: any = this.leaderboardFocusAreaComboboxRef?.current?.querySelector("#leaderboard-focus-area-listbox-list");
+          ulList.setAttribute("tabindex", "0");
+          comboboxButton.addEventListener("click", () => {
+            setTimeout(() => {
+              ulList.focus();
+            }, 1000);
+          });
+        }
+      }
+
+      //Update the width of the card text block to break the text in multiple lines
+      if (prevState.cardPersonRefs !== this.state.cardPersonRefs && this.state.cardPersonRefs.length > 0) {
+        setTimeout(() => {
+          for (let ele of this.state.cardPersonRefs) {
+            const cardImgTextBlock = ele?.current?.shadowRoot?.querySelector(".person-root")
+              ?.querySelector("mgt-flyout")?.querySelector(".details-wrapper")?.querySelector(".line1");
+            cardImgTextBlock?.setAttribute("style", "width:195px;overflow-wrap: break-word;text-align: -webkit-auto");
+          }
+        }, 5000);
       }
     }
+    catch (error) {
+      console.error("CMP_ChampionsCards_componentDidUpdate_FailedToComponentUpdate \n", JSON.stringify(error));
+    }
+  }
 
-    if (prevState.userActivities.length !== this.state.userActivities.length || prevState.pageNumber !== this.state.pageNumber) {
-      this.updatefilteredUserActivities();
+  //Remove Document click event listener on Unmount of Component for Accessibility in Android
+  public componentWillUnmount(): void {
+    if (navigator.userAgent.match(/Android/i)) {
+      document.removeEventListener("click", this.onFocusAreaComboboxOutsideClick);
+    }
+  }
+  //Close Focus Area Combobox Callout on click of outside for Accessibility in Android
+  public onFocusAreaComboboxOutsideClick = (evt: any) => {
+    const isComboboxElement = document.getElementById("leaderboard-focus-area-listbox").contains(evt.target);
+    if (!isComboboxElement) {
+      this.mainComboboxRef.current.dismissMenu();
     }
   }
 
@@ -192,10 +290,10 @@ export default class ChampionsCards extends Component<
                   events: activeEvents
                 });
                 for (let i = 0; i < approvedMembers.length; i++) {
-                  filteredMember = eventTrackArray.filter(user => user.MemberId === approvedMembers[i].ID);
+                  filteredMember = eventTrackArray.filter((user: any) => user.MemberId === approvedMembers[i].ID);
                   let eventpoints = _.groupBy(_.orderBy(filteredMember, ['Id'], ['asc']), "EventId");
 
-                  let pointsCompleted: number = filteredMember.reduce((previousValue, currentValue) => { return previousValue + currentValue["Count"]; }, 0);
+                  let pointsCompleted: number = filteredMember.reduce((previousValue: any, currentValue: any) => { return previousValue + currentValue["Count"]; }, 0);
                   championsListArray.push({
                     Points: pointsCompleted,
                     EventPoints: eventpoints,
@@ -212,13 +310,13 @@ export default class ChampionsCards extends Component<
                   });
                 }
                 //Sort by points                
-                championsListArray.sort((a, b) => {
+                championsListArray.sort((a: any, b: any) => {
                   if (a.Points < b.Points) return 1;
                   if (a.Points > b.Points) return -1;
                 });
 
                 //Update ranks for the members
-                championsListArray = championsListArray.map((currentValue, index) => {
+                championsListArray = championsListArray.map((currentValue: any, index: any) => {
                   currentValue.Rank = index + 1;
                   return currentValue;
                 });
@@ -227,7 +325,7 @@ export default class ChampionsCards extends Component<
                   users: championsListArray,
                   isLoaded: true,
                   selectedFocusArea: constants.AllLabel,
-                  loadCards: constants.employeeCardLoadCount,
+                  loadCards: constants.employeeCardLoadCount
                 });
               }
             });
@@ -245,46 +343,6 @@ export default class ChampionsCards extends Component<
 
   }
 
-  //Get the selected member's activities and their user data to show it in the modal popup
-  private getMemberActivities(selectedMember: any, rank: any) {
-    let memberActivitesArray: any = [];
-    let memberDetails: any = [];
-
-    //Filtering the selected member's data from the array of all records from Event Track Details list
-    let selectedMemberEvents = this.state.memberEvents.filter(user => user.MemberId === selectedMember.ID);
-
-    //Creating an array to store the required data for Activities table in the popup screen
-    selectedMemberEvents.forEach((event) => {
-      memberActivitesArray.push({
-        DateofEvent: moment(event["DateofEvent"]).format("MMMM Do, YYYY"),
-        Type: event["EventName"],
-        Points: event["Count"]
-      });
-    });
-
-    //Creating an array to store the user data of the selected member to display it in the popup
-    memberDetails.push({
-      Points: selectedMember.Points,
-      ID: selectedMember.ID,
-      Title: selectedMember.Title,
-      FirstName: selectedMember.FirstName,
-      LastName: selectedMember.LastName,
-      Rank: rank
-    });
-    this.setState({
-      userActivities: memberActivitesArray,
-      selectedMemberDetails: memberDetails
-    });
-  }
-
-  //Filtering the records based on page size for each page from total activities of the member
-  private updatefilteredUserActivities = () => {
-    const filteredData = this.state.userActivities.filter((activity, idx) => {
-      return (idx >= (this.state.userActivitiesPerPage * this.state.pageNumber - this.state.userActivitiesPerPage) && idx < (this.state.pageNumber * this.state.userActivitiesPerPage));
-    });
-    this.setState({ filteredUserActivities: filteredData });
-  }
-
   //Adding the default choice "All"  for dropdown columns
   private options = (optionArray: any) => {
     let myOptions = [];
@@ -299,24 +357,26 @@ export default class ChampionsCards extends Component<
   private onchange = (evt: any, value: string) => {
     if (value) {
       this.setState({
-        search: value
+        search: value,
+        filteredUsers: []
       });
     } else {
-      this.setState({ search: "" });
+      this.setState({ search: "", filteredUsers: [] });
     }
   }
 
   //Setting state variable with the selected Focus Area
   private filterUsersByFocusArea = (ev: React.FormEvent<IComboBox>, option?: IComboBoxOption): void => {
     this.setState({
-      selectedFocusArea: option.key
+      selectedFocusArea: option.key,
+      filteredUsers: []
     });
   }
 
   //Method to execute the deep link API in teams
   public openTask = (selectedTask: string) => {
-    microsoftTeams.initialize();
-    microsoftTeams.executeDeepLink(selectedTask);
+    app.initialize();
+    app.openLink(selectedTask);
   }
 
   //Default image to show in case of any error in loading user profile image
@@ -324,56 +384,97 @@ export default class ChampionsCards extends Component<
     ev.target.src = require("../assets/images/noprofile.png");
   }
 
+  /** On menu open add the attributes to fix the position issue in IOS and 
+   Update aria-expanded attribute in combobox in Android for Accessibility **/
+  private onMenuOpen = (listboxId: string) => {
+    //Update aria-expanded attribute in combobox for Accessibility in Android
+    if (navigator.userAgent.match(/Android/i)) {
+      //remove aria-expanded attribute from combobox input element
+      const comboboxInput = this.leaderboardFocusAreaComboboxRef.current.querySelector("#leaderboard-focus-area-listbox-input");
+      comboboxInput.removeAttribute("aria-expanded");
+
+      //Update aria-expanded attribute for combobox expand/collapse button
+      const comboboxButton = this.leaderboardFocusAreaComboboxRef.current.querySelector("#leaderboard-focus-area-listboxwrapper").querySelector("button");
+      comboboxButton.setAttribute("aria-expanded", "true");
+    }
+
+    //adding option position information to aria attribute to fix the accessibility issue in iOS Voiceover
+    if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i)) {
+      const listBoxElement: any = document.getElementById(listboxId + "-list")?.children;
+      if (listBoxElement?.length > 0) {
+        for (let i = 0; i < listBoxElement?.length; i++) {
+          const buttonId = `${listboxId}-list${i}`;
+          const buttonElement: any = document.getElementById(buttonId);
+          const ariaLabel = `${buttonElement.innerText} ${i + 1} of ${listBoxElement.length}`;
+          buttonElement?.setAttribute("aria-label", ariaLabel);
+        }
+      }
+    }
+
+  }
+
   //Main render method
   public render() {
-    const starStyles = {
-      color: "#f3ca3e"
-    };
-    const activitiesTableHeader = [
-      {
-        dataField: 'DateofEvent',
-        text: 'Date of Events',
-        headerTitle: true,
-        title: true,
-      },
-      {
-        dataField: 'Type',
-        text: 'Type',
-        headerTitle: true,
-        title: true,
-      },
-      {
-        dataField: 'Points',
-        text: 'Points',
-        headerTitle: true,
-        title: true,
-      }
-    ];
+    const isDarkOrContrastTheme = this.props.currentThemeName === constants.themeDarkMode || this.props.currentThemeName === constants.themeContrastMode;
     return (
       <React.Fragment>
         {this.state.isLoaded && this.state.users.length === 0 && (
-          <div className="m-4 card">
-            <b className="card-title p-4 text-center">{LocaleStrings.RecordsNotFound}</b>
+          <div className={`m-4 card${isDarkOrContrastTheme ? " no-results--DarkContrast" : ""}`}>
+            <b
+              className='card-title p-4 text-center'
+              aria-live="polite" role="alert"
+            >
+              {LocaleStrings.RecordsNotFound}</b>
           </div>
         )}
         {this.state.users.length > 0 && (
           <>
-            <div className="championsFilterArea">
+            <div className={`championsFilterArea${isDarkOrContrastTheme ? " championsFilterAreaDarkContrast" : ""}`}>
               <Row xl={2} lg={2} md={2} sm={1} xs={1}>
                 <Col xl={12} lg={12} md={12} sm={12} xs={12}>
-                  <div className="topChampionsLabel">
+                  <h1 tabIndex={0} role="heading"><div className="topChampionsLabel">
                     {LocaleStrings.TopChampionsLabel}
-                  </div>
+                  </div></h1>
                 </Col>
                 <Col xl={5} lg={6} md={12} sm={12} xs={12}>
-                  <div className="championFocusAreaComboboxArea">
+                  <div className="championFocusAreaComboboxArea" ref={this.leaderboardFocusAreaComboboxRef}>
                     <ComboBox
                       label={LocaleStrings.FocusAreaLabel}
                       selectedKey={this.state.selectedFocusArea}
                       options={this.options(this.state.focusAreas)}
                       onChange={this.filterUsersByFocusArea.bind(this)}
                       className="championFocusAreaCombobox"
-                      calloutProps={{ className: "championFocusAreaCallout" }}
+                      ariaLabel={LocaleStrings.FocusAreaLabel}
+                      useComboBoxAsMenuWidth={true}
+                      calloutProps={{
+                        className: "championFocusAreaCallout", directionalHintFixed: true, doNotLayer: true,
+                        preventDismissOnEvent: () => {
+                          //Prevent callout closing in Android on very first time opening it for Accessibility
+                          if (navigator.userAgent.match(/Android/i)) {
+                            return true;
+                          }
+                          else {
+                            return false;
+                          }
+                        }
+                      }}
+                      allowFreeInput={true}
+                      persistMenu={true}
+                      id="leaderboard-focus-area-listbox"
+                      onMenuOpen={() => this.onMenuOpen("leaderboard-focus-area-listbox")}
+                      onMenuDismissed={() => {
+                        //Update aria-expanded attribute in combobox for Accessibility in Android
+                        if (navigator.userAgent.match(/Android/i)) {
+                          //remove aria-expanded attribute from combobox input element
+                          const comboboxInput = this.leaderboardFocusAreaComboboxRef.current.querySelector("#leaderboard-focus-area-listbox-input");
+                          comboboxInput.removeAttribute("aria-expanded");
+
+                          //Update aria-expanded attribute for combobox expand/collapse button
+                          const comboboxButton = this.leaderboardFocusAreaComboboxRef.current.querySelector("#leaderboard-focus-area-listboxwrapper").querySelector("button");
+                          comboboxButton.setAttribute("aria-expanded", "false");
+                        }
+                      }}
+                      componentRef={this.mainComboboxRef}
                     />
                   </div>
                 </Col>
@@ -388,34 +489,33 @@ export default class ChampionsCards extends Component<
                 </Col>
               </Row>
             </div>
-            <div className="gtc-cards">
+            {this.state.filteredUsers.length > 0 && (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i)) &&
+              <div aria-live="polite" role="alert" className={`records-count-label${isDarkOrContrastTheme ? " records-count-labelDarkContrast" : ""}`}>
+                {this.state.filteredUsers.length} {LocaleStrings.championRecordsFoundLabel}
+              </div>
+            }
+            <div className='gtc-cards'>
               <Row xl={3} lg={2} md={1} sm={1} xs={1}>
-                {(this.state.filteredUsers.filter((user, idx) => idx < this.state.loadCards))
-                  .map((member: any, ind = 0) => {
+                {(this.state.filteredUsers.filter((_user: any, idx: number) => idx < this.state.loadCards))
+                  .map((member: any, ind: number) => {
                     return (
                       this.state.isLoaded && (
                         <Col xl={4} lg={6} md={12} sm={12} xs={12}>
                           <div className="cards">
                             <div className="card-img-text-block">
                               <div>
-                                <img
-                                  src={
-                                    "/_layouts/15/userphoto.aspx?size=L&username=" +
-                                    member.Title
-                                  }
-                                  className="profile-img"
-                                  onError={this.addDefaultSrc}
-                                  alt={member.FirstName}
-                                  title={member.FirstName}
+                                <Person
+                                  personQuery={member.Title}
+                                  view={4}
+                                  personCardInteraction={1}
+                                  avatarSize="large"
+                                  ref={this.state.cardPersonRefs[ind]}
                                 />
-                              </div>
-                              <div>
-                                <div className="gtc-name2" title={member.FirstName}>
-                                  {member.FirstName}{' '}{member.LastName}
-                                </div>
-                                <div className="rank-points-block">
-                                  <span className="card-rank" title={`Rank ${ind + 1}`}>Rank <span className="card-rank-value">#{member.Rank}</span></span>
-                                  <span className="card-points" title={`${member.Points ? member.Points : ""} Points`}>
+                                <div
+                                  className={`rank-points-block${this.props.loggedinUserEmail === member.Title ? " highlight-data" : ""}`}
+                                >
+                                  <span className="card-rank" title={`Rank ${member.Rank}`}>{LocaleStrings.RankLabel} <span className="card-rank-value">#{member.Rank}</span></span>
+                                  <span className="card-points" title={`${member.Points ? member.Points : ""} ${LocaleStrings.PointsLabel}`}>
                                     {member.Points}
                                     <Icon iconName="FavoriteStarFill" className="card-points-star" />
                                   </span>
@@ -423,37 +523,42 @@ export default class ChampionsCards extends Component<
                               </div>
                             </div>
 
-                            <div className="card-icon-link-area">
-                              <div className="card-icon-area">
-                                <img
-                                  src={require("../assets/CMPImages/EmployeeChatIcon.svg")}
-                                  alt="Employee Chat Icon"
-                                  className="card-icon"
-                                  title={LocaleStrings.ChatIconLabel}
-                                  onClick={() => this.openTask(`https://teams.microsoft.com/l/chat/0/0?users=${member.Title}`)}
-                                />
-                                <img
-                                  src={require("../assets/CMPImages/CallRequestIcon.svg")}
-                                  alt="Call Request Icon"
-                                  className="card-icon"
+                            <div className={`card-icon-link-area${this.props.loggedinUserEmail === member.Title ? " align-link-end" : ""}`}>
+                              {this.props.loggedinUserEmail !== member.Title &&
+                                <div
+                                  className="request-to-call-link"
                                   title={LocaleStrings.RequestToCallLabel}
                                   onClick={() => this.openTask("https://teams.microsoft.com/l/meeting/new?subject=" +
                                     currentUserName + " / " + member.FirstName + " " + member.LastName + " " + LocaleStrings.MeetupSubject +
                                     "&content=" + LocaleStrings.MeetupBody + "&attendees=" + member.Title)}
-                                />
-                                <a href={`mailto:${member.Title}`}>
-                                  <img
-                                    src={require("../assets/CMPImages/EmployeeMailIcon.svg")}
-                                    alt="Employee Mail Icon"
-                                    className="card-icon"
-                                    title={LocaleStrings.EmailIconLabel}
-                                  />
-                                </a>
-                              </div>
+                                  onKeyDown={(evt: any) => {
+                                    if (evt.key === constants.stringEnter) this.openTask("https://teams.microsoft.com/l/meeting/new?subject=" +
+                                      currentUserName + " / " + member.FirstName + " " + member.LastName + " " + LocaleStrings.MeetupSubject +
+                                      "&content=" + LocaleStrings.MeetupBody + "&attendees=" + member.Title)
+                                  }}
+                                  tabIndex={0}
+                                >
+                                  {LocaleStrings.RequestToCallLabel}
+                                </div>
+                              }
                               <div
-                                className="card-link-area"
+                                className="view-activities-link"
                                 title={LocaleStrings.ViewActivitiesLabel}
-                                onClick={() => { this.setState({ showUserActivities: true }); this.getMemberActivities(member, ind + 1); }}
+                                onClick={() => {
+                                  this.setState({
+                                    showUserActivities: true,
+                                    selectedMemberDetails: member,
+                                    selectedMemberID: member.ID
+                                  })
+                                }}
+                                onKeyDown={(evt: any) => {
+                                  if (evt.key === constants.stringEnter) this.setState({
+                                    showUserActivities: true,
+                                    selectedMemberDetails: member,
+                                    selectedMemberID: member.ID
+                                  })
+                                }}
+                                tabIndex={0}
                               >
                                 {LocaleStrings.ViewActivitiesLabel}
                               </div>
@@ -467,120 +572,69 @@ export default class ChampionsCards extends Component<
                 {
                   (this.state.loadCards < this.state.filteredUsers.length && this.state.isLoaded) &&
                   <Col xl={4} lg={6} md={12} sm={12} xs={12}>
-                    <div
-                      onClick={() => this.setState({ loadCards: this.state.loadCards + constants.employeeCardLoadCount })}
-                      className="cards-show-label"
-                      title={LocaleStrings.ShowMoreLabel}
-                    > {LocaleStrings.ShowMoreLabel} <img src={require("../assets/CMPImages/ShowMoreIcon.svg")} alt="" className="showMoreIcon" /></div>
+                    <div className={`cards-show-label${isDarkOrContrastTheme ? " cards-show-labelDarkContrast" : ""}`}>
+                      <span
+                        onClick={() => {
+                          const cardCount = this.state.loadCards + constants.employeeCardLoadCount;
+                          const refLength = this.state.filteredUsers.length > cardCount ? cardCount : this.state.filteredUsers.length;
+                          this.setState({ loadCards: cardCount, cardPersonRefs: Array.from({ length: refLength }, () => React.createRef()) });
+                        }}
+                        title={LocaleStrings.ShowMoreLabel}
+                        tabIndex={0}
+                        onKeyDown={(evt: any) => {
+                          if (evt.key === constants.stringEnter) {
+                            const cardCount = this.state.loadCards + constants.employeeCardLoadCount;
+                            const refLength = this.state.filteredUsers.length > cardCount ? cardCount : this.state.filteredUsers.length;
+                            this.setState({ loadCards: cardCount, cardPersonRefs: Array.from({ length: refLength }, () => React.createRef()) });
+                          }
+                        }}
+                        className='show-more-text-img-wrapper'
+                      >
+                        <span aria-hidden="true">{LocaleStrings.ShowMoreLabel}</span>
+                        <img src={require("../assets/CMPImages/ShowMoreIcon.svg")} alt="" className="showMoreIcon" aria-hidden={true} />
+                      </span>
+                    </div>
                   </Col>
                 }
               </Row>
+              {this.state.filteredUsers.length > 0 && !(navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i)) &&
+                <span aria-label={`${this.state.filteredUsers.length} ${LocaleStrings.championRecordsFoundLabel}`} aria-live="polite" role="alert" />
+              }
               {this.state.isLoaded && this.state.filteredUsers.length === 0 && (
-                <div className="m-4 card">
-                  <b className="card-title p-4 text-center">{LocaleStrings.RecordsNotFound}</b>
+                <div className={`m-4 card${isDarkOrContrastTheme ? " no-results--DarkContrast" : ""}`}>
+                  <b
+                    className='card-title p-4 text-center'
+                    aria-live="polite" role="alert">
+                    {LocaleStrings.RecordsNotFound}</b>
                 </div>
               )}
               {this.state.showUserActivities &&
                 <Dialog
                   hidden={!this.state.showUserActivities}
-                  onDismiss={() => this.setState({ showUserActivities: false, pageNumber: 1 })}
-                  modalProps={{ isBlocking: false }}
-                  className="showActivitiesPopup"
+                  onDismiss={() => this.setState({ showUserActivities: false })}
+                  modalProps={{
+                    isBlocking: false,
+                    className: `showActivitiesPopup${isDarkOrContrastTheme ? " " + this.props.currentThemeName + "Popup" : ""}`
+                  }}
+                  dialogContentProps={{ showCloseButton: false }}
                 >
                   <div className="chrome-close-icon-area">
                     <Icon
                       iconName="ChromeClose"
                       className="chrome-close-icon"
-                      onClick={() => this.setState({ showUserActivities: false, pageNumber: 1 })}
+                      onClick={() => this.setState({ showUserActivities: false })}
                       tabIndex={0}
+                      onKeyDown={(evt: any) => { if (evt.key === constants.stringEnter) this.setState({ showUserActivities: false }) }}
                     />
                   </div>
-                  <div className="showActivitiesPopupBody">
-                    <Row xl={2} lg={2} md={1} sm={1} xs={1}>
-                      <Col xl={4} lg={4} md={12} sm={12} xs={12}>
-                        <div className="showActivitiesImage-IconArea">
-                          <img
-                            src={
-                              "/_layouts/15/userphoto.aspx?size=L&username=" +
-                              this.state.selectedMemberDetails[0].Title
-                            }
-                            className="showActivities-profile-img"
-                            onError={this.addDefaultSrc}
-                            alt={this.state.selectedMemberDetails[0].FirstName}
-                            title={this.state.selectedMemberDetails[0].FirstName}
-                          />
-                          <div className="showActivities-profile-name">
-                            {this.state.selectedMemberDetails[0].FirstName}{' '}{this.state.selectedMemberDetails[0].LastName}
-                          </div>
-                          <div className="showActivities-rank-points-block">
-                            <span className="showActivities-rank" title={`Rank 1`}>Rank <span className="showActivities-rank-value"># {this.state.selectedMemberDetails[0].Rank}</span></span>
-                            <span className="showActivities-points" title={`#Points`}>
-                              {this.state.selectedMemberDetails[0].Points}
-                              <Icon iconName="FavoriteStarFill" className="showActivities-points-star" />
-                            </span>
-                          </div>
-                          <div className="showActivities-icon-area">
-                            <img
-                              src={require("../assets/CMPImages/EmployeeChatIcon.svg")}
-                              alt="Employee Chat Icon"
-                              className="showActivities-icon"
-                              title={LocaleStrings.ChatIconLabel}
-                              onClick={() => this.openTask(`https://teams.microsoft.com/l/chat/0/0?users=${this.state.selectedMemberDetails[0].Title}`)}
-                            />
-                            <img
-                              src={require("../assets/CMPImages/CallRequestIcon.svg")}
-                              alt="Call Request Icon"
-                              className="showActivities-icon"
-                              title={LocaleStrings.RequestToCallLabel}
-                              onClick={() => this.openTask("https://teams.microsoft.com/l/meeting/new?subject=" +
-                                currentUserName + " / " + this.state.selectedMemberDetails[0].FirstName + " " + this.state.selectedMemberDetails[0].LastName + " " + LocaleStrings.MeetupSubject +
-                                "&content=" + LocaleStrings.MeetupBody + "&attendees=" + this.state.selectedMemberDetails[0].Title)}
-                            />
-                            <a href={`mailto:${this.state.selectedMemberDetails[0].Title}`}>
-                              <img
-                                src={require("../assets/CMPImages/EmployeeMailIcon.svg")}
-                                alt="Employee Mail Icon"
-                                className="showActivities-icon"
-                                title={LocaleStrings.EmailIconLabel}
-                              />
-                            </a>
-                          </div>
-                        </div>
-                      </Col>
-                      <Col xl={8} lg={8} md={12} sm={12} xs={12}>
-                        <div className="showActivities-grid-area">
-                          <div className="activities-grid-heading">{LocaleStrings.ActivitiesLabel}</div>
-                          <BootstrapTable
-                            bootstrap4
-                            keyField={'dateOfEvents'}
-                            data={this.state.filteredUserActivities}
-                            columns={activitiesTableHeader}
-                            table-responsive={true}
-                            noDataIndication={() => (<div className='activities-noRecordsFound'>{LocaleStrings.NoActivitiesinGridLabel}</div>)}
-                          />
-                          {this.state.filteredUserActivities.length > 0 &&
-                            <div className="pagination-area">
-                              <span>
-                                {this.state.pageNumber} of {Math.ceil(this.state.userActivities.length / this.state.userActivitiesPerPage)}
-
-                                <Icon
-                                  iconName="ChevronLeft"
-                                  className="Chevron-Icon"
-                                  onClick={this.state.pageNumber > 1 ? () => { this.setState({ pageNumber: this.state.pageNumber - 1 }); } : null}
-                                />
-
-                                <Icon
-                                  iconName="ChevronRight"
-                                  className="Chevron-Icon"
-                                  onClick={this.state.pageNumber < Math.ceil(this.state.userActivities.length / this.state.userActivitiesPerPage) ? () => { this.setState({ pageNumber: this.state.pageNumber + 1 }); } : null}
-                                />
-                              </span>
-                            </div>
-                          }
-                        </div>
-                      </Col>
-                    </Row>
-                  </div>
+                  <ChampionEvents
+                    context={this.props.context}
+                    filteredAllEvents={this.state.memberEvents}
+                    selectedMemberDetails={this.state.selectedMemberDetails}
+                    parentComponent={constants.ChampionsCardsLabel}
+                    selectedMemberID={this.state.selectedMemberID}
+                    loggedinUserEmail={this.props.loggedinUserEmail}
+                  />
                 </Dialog>
               }</div>
 
@@ -598,39 +652,42 @@ export default class ChampionsCards extends Component<
                           .slice(0, 3)
                           .map((rankedMember: any, ind: number) => {
                             return (
-                              <Card className="topChampCards">
+                              <Card className={`topChampCards${isDarkOrContrastTheme ? " topChampCards--DarkContrast" : ""}`} key={rankedMember.ID}>
                                 <Accordion.Toggle
                                   as={Card.Header}
                                   eventKey={rankedMember.ID}
+                                  tabIndex={0}
+                                  onKeyDown={(event: any) => this.handleAccordionToggle(event, '2')}
+                                  id="accordion-toggle-2"
+                                  role="button"
+                                  aria-expanded={this.state.isExpanded}
+                                  onClick={this.handleToggle}
                                 >
                                   <div className="gttc-row-left">
-                                    <span>
-                                      <img src={"/_layouts/15/userphoto.aspx?size=M&username=" + rankedMember.Title}
-                                        className="gttc-img"
-                                        onError={this.addDefaultSrc}
-                                        alt={rankedMember.FirstName}
+                                    <div className='gttc-img'>
+                                      <Person
+                                        personQuery={rankedMember.Title}
+                                        view={3}
+                                        personCardInteraction={1}
+                                        className="accordion-person-card"
                                       />
-                                      <div className="gttc-img-name">
-                                        {rankedMember.FirstName}
-                                      </div>
-                                    </span>
+                                    </div>
                                   </div>
                                   <div className="gttc-row-right">
                                     <div className="gttc-star">
                                       <Icon
                                         iconName="FavoriteStarFill"
                                         id="points2"
-                                        style={starStyles}
                                       />
                                       <span className="points">{rankedMember.Points}</span>
                                     </div>
                                     <div className="vline"></div>
                                     <div className="gttc-rank">
-                                      {LocaleStrings.RankLabel} <b>{ind + 1}</b>
+                                      {LocaleStrings.RankLabel} <b>{rankedMember.Rank}</b>
                                     </div>
                                   </div>
                                 </Accordion.Toggle>
-                                <Accordion.Collapse eventKey={rankedMember.ID}>
+                                <Accordion.Collapse eventKey={rankedMember.ID} className={`${isDarkOrContrastTheme ? " accordion-collapse--DarkContrast" : ""}`}>
                                   <Card.Body>
                                     <Table>
                                       {Object.keys(rankedMember.EventPoints).length != 0 &&
@@ -651,7 +708,7 @@ export default class ChampionsCards extends Component<
                                               </td>
                                               <td className="gttc-tap-data">
                                                 {
-                                                  rankedMember.EventPoints[e].map((x) => x.Count / x.Count).length
+                                                  rankedMember.EventPoints[e].map((x: any) => x.Count / x.Count).length
                                                 }
                                               </td>
                                             </tr>

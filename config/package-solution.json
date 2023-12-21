@@ -3,7 +3,7 @@
   "solution": {
     "name": "championmanagement",
     "id": "5099a3ef-113f-4baf-bb6a-a73b1dd286f8",
-    "version": "2.4.0.0",
+    "version": "2.5.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
@@ -21,7 +21,11 @@
       },
       {
         "resource": "Microsoft Graph",
-        "scope": "Sites.Manage.All"
+        "scope": "User.Read.All"
+      },
+      {
+        "resource": "Microsoft Graph",
+        "scope": "People.Read"
       }
     ]
   },

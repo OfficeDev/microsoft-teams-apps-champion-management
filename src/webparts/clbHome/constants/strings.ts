@@ -98,6 +98,8 @@ export const ValueColumn = "Value";
 export const IDColumn = "ID";
 export const MinimumPointsColumn = "MinimumPoints";
 export const CountColumn = "Count";
+export const FirstName = "FirstName";
+export const LastName = "LastName";
 
 //Import Tournaments Excel header names
 export const TournamentNameHeader = "TournamentName";
@@ -114,3 +116,53 @@ export const NotesMinCharacterLimit = 25;
 
 //Manage Config Settings
 export const ChampionEventApprovals = "ChampionEventApprovals";
+export const AppTitle = "AppTitle";
+
+//Champion Report
+export const AllChampionsLabel = "All Champions";
+export const AllTime = "All Time";
+export const LastMonth = "Last Month";
+export const Last3Months = "Last 3 Months";
+export const Last6Months = "Last 6 Months";
+export const Last1Year = "Last 1 Year";
+export const SelectaCustomDate = "Select a Custom Date";
+
+export const ChampionReportLabel = "ChampionReport";
+export const ChampionsCardsLabel = "ChampionsCards";
+export const SidebarLabel = "Sidebar";
+export const ChartEventsLimit = 10;
+
+//Champion Events strings
+export const dateOfEventLabel = "DateofEvent";
+export const typeLabel = "Type";
+export const pointsLabel = "Points";
+
+//Accessibility strings
+export const stringEnter = "Enter";
+export const stringSpace = " ";
+export const stringTab = "Tab";
+export const stringEscape = "Escape";
+export const stringArrowRight = "ArrowRight";
+export const stringArrowLeft = "ArrowLeft";
+export const sizePerPageLabel = "Size per page";
+export const digitalBadgeScreen1 = "screen1";
+export const digitalBadgeScreen2 = "screen2";
+export const digitalBadgeScreen3 = "screen3";
+export const sortAscAriaSort = "ascending";
+export const sortDescAriaSort = "descending";
+export const dateOfEventId = "DateOfEvent";
+export const eventTypeId = "EventType";
+export const eventPointsId = "EventPoints";
+
+export const activeTournamentsFoundLabel = "Active tournaments found";
+export const newTournamentsFoundLabel = "New tournaments found";
+
+export const MaxTournamentNameCharacterLimit = 255;
+export const MaxTournamentDescriptionCharacterLimit = 500;
+export const ExceedLimitMessage = "Reached the maximum character limit";
+export const MaxTournamentNameCharacterLimitMessage = " Maximum character limit is 255";
+export const MaxTournamentDescriptionCharacterLimitMessage = " Maximum character limit is 500";
+
+export const themeDefaultMode = "default";
+export const themeDarkMode = "dark";
+export const themeContrastMode = "contrast";

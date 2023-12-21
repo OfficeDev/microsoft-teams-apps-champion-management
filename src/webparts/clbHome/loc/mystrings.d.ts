@@ -9,6 +9,7 @@ declare interface IClbHomeWebPartStrings {
   ActiveTournamentLabel: string;
   ActivitiesCompletedLabel: string;
   ActivitiesLabel: string;
+  AddEventLabel: string;
   AdditionalResourcesContentLabel: string;
   AdditionalResourcesHeaderLabel: string;
   AddMemberLabel: string;
@@ -16,7 +17,7 @@ declare interface IClbHomeWebPartStrings {
   AddMembersToolTip: string;
   AdminTasksLabel: string;
   AdminToolsLabel: string;
-  AppHeaderTitleLabel: string;
+  AllTime: string;
   AppLogoToolTip: string;
   ApplyButton: string;
   ApplyButtonAriaDescription: string;
@@ -24,6 +25,10 @@ declare interface IClbHomeWebPartStrings {
   ApplySpinnerLabel: string;
   ApproveButton: string;
   ApproveChampionSearchboxPlaceholder: string;
+  AppTitleErrorLabel: string;
+  AppTitleInfoIconText: string;
+  AppTitleLabel: string;
+  AppTitlePlaceholderText: string;
   BackButton: string;
   BadgeImageAlt: string;
   BadgePointsTooltip: string;
@@ -35,14 +40,17 @@ declare interface IClbHomeWebPartStrings {
   ChampionLabel: string;
   ChampionLeaderBoardLabel: string;
   ChampionListLabel: string;
+  championRecordsFoundLabel: string;
   ChampionRejectedMessage: string;
+  ChampionReportLabel: string;
+  ChampionReportToolTip: string;
   ChampionRequestSubmitSuccessMessage: string;
   ChampionsListPageTitle: string;
   ChampionsListToolTip: string;
   ChampionsSelectedLabel: string;
   ChampionSubmissionPendingLabel: string;
   ChatIconLabel: string;
-  CMPBreadcrumbLabel: string;
+  ClearButton: string;
   CMPGitHubLinkLabel: string;
   CMPSideBarChampionsLabel: string;
   CMPSideBarGlobalRankLabel: string;
@@ -53,13 +61,13 @@ declare interface IClbHomeWebPartStrings {
   ConfirmLabel: string;
   CountLabel: string;
   CountryGridHeader: string;
-  CountryPlaceholder: string;
   CountValidationMessage: string;
   CreateTournamentButton: string;
   CreateTournamentPageTitle: string;
   CreateTournamentsButton: string;
   CreateTournamentSuccessLabel: string;
   CurrentVersionLabel: string;
+  DashboardLabel: string;
   DateLabel: string;
   DateofEventGridLabel: string;
   DescriptionFieldLabel: string;
@@ -67,6 +75,7 @@ declare interface IClbHomeWebPartStrings {
   DigitalBadgeAppBannerAltText: string;
   DigitalBadgeLabel: string;
   DigitalBadgePageTitle: string;
+  digitalBadgeProfileAriaLabel: string;
   DigitalBadgeSubPageTitle: string;
   DigitalBadgeSuccessMessage: string;
   DigitalMembersToolTip: string;
@@ -96,6 +105,7 @@ declare interface IClbHomeWebPartStrings {
   ErrorMsgTournamentList: string;
   EventApprovalsEnableLabel: string;
   EventApprovedMessage: string;
+  EventChartLabel: string;
   EventLabel: string;
   EventRejectedMessage: string;
   EventsApprovalInfoIconTooltipContent: string;
@@ -104,22 +114,22 @@ declare interface IClbHomeWebPartStrings {
   EventsSelectedLabel: string;
   EventsSubmissionSuccessMessage: string;
   EventsSubmitMessage: string;
-  EventsTrackListLabel: string;
   EventSubmissionPendingMessage: string;
-  EventTrackListToolTip: string;
   EventTypeGridLabel: string;
   EventTypeGridLabelPlaceHolder: string;
   EventTypeLabel: string;
+  EventTypesHeading: string;
   EventTypeValidationMessage: string;
   FeedbackToolTip: string;
+  FilterbyDateLabel: string;
   FirstNameLabel: string;
   FocusAreaGridHeader: string;
   FocusAreaLabel: string;
   FocusAreaPlaceholder: string;
   FormSavingMessage: string;
+  FromLabel: string;
   GetStartedLabel: string;
   GroupGridHeader: string;
-  GroupPlaceholder: string;
   HowtoGetDigitalBadgeText: string;
   ImportRule1: string;
   ImportRule2: string;
@@ -129,8 +139,13 @@ declare interface IClbHomeWebPartStrings {
   ImportRule6: string;
   ImportRule7: string;
   ImportSpinnerMessage: string;
+  Last1Year: string;
+  Last3Months: string;
+  Last6Months: string;
+  LastMonth: string;
   LastNameLabel: string;
   LatestVersionLabel: string;
+  LoadingDigitalBadgeLabel: string;
   LoadingSpinnerLabel: string;
   LogMsgBlankSheet: string;
   LogMsgDone: string;
@@ -181,6 +196,8 @@ declare interface IClbHomeWebPartStrings {
   NoButton: string;
   NoChampionsMessage: string;
   NoCompletedTournamentsMessage: string,
+  NoEventsFoundMessage: string;
+  NoEventsMessage: string;
   NominateMemberLabel: string;
   NominateMemberPageTitle: string;
   NoPendingEventsLabel: string;
@@ -209,10 +226,13 @@ declare interface IClbHomeWebPartStrings {
   PivotHeaderNearMe: string;
   PointsLabel: string;
   PreAcceptDisclaimer: string;
+  PreAcceptDisclaimer1: string;
   PreAcceptDisclaimer2: string;
+  PreAcceptDisclaimer3: string;
   PreAcceptPageTitle: string;
   PreApplyDisclaimer: string;
   PreApplyDisclaimer1: string;
+  PreApplyDisclaimer2: string;
   ProcessingSpinnerLabel: string;
   ProfileImageAlt: string;
   PropertyPaneDescription: string;
@@ -221,10 +241,9 @@ declare interface IClbHomeWebPartStrings {
   RecordEventLabel: string;
   RecordsNotFound: string;
   RefreshIconInfoText: string
-  RegionGridHeader: string;
   RegionLabel: string;
-  RegionPlaceholder: string;
   RejectButton: string;
+  RemoveEventLabel: string;
   RemoveFileLabel: string;
   ReportsDropdownInfoIconText: string,
   RequestToCallLabel: string;
@@ -234,16 +253,19 @@ declare interface IClbHomeWebPartStrings {
   SearchPendingTournaments: string;
   SearchPlaceholder: string,
   SelectActionsErrorMessage: string;
+  SelectaCustomDate: string;
   SelectAllChampions: string;
   SelectAllEvents: string;
   SelectAllLabel: string;
   SelectChampion: string;
   SelectDate: string;
+  SelectedFocusAreaLabel: string;
   SelectEndTournamentMessage: string;
   SelectEvent: string;
   SelectTeamsActionsLabel: string;
   SelectTournamentMessage: string;
   SelectTournamentPlaceHolder: string;
+  ShowHideToggle: string;
   ShowMoreLabel: string;
   SingleTournamentLabel: string;
   SpinnerListCreationMessage: string;
@@ -256,11 +278,14 @@ declare interface IClbHomeWebPartStrings {
   SupportToolTip: string;
   TeamsActionInfoToolTip: string;
   ToggleLabelForMemberListColumns: string;
+  ToggleView: string;
+  ToLabel: string;
   TooltipContentForMemberListFieldsHeading: string;
   Top5ParticipantswithPointsLabel: string;
   Top5TournamentswithParticipantsLabel: string;
   TopChampionsLabel: string;
   TotalActivitiesLabel: string;
+  TotalChampionsLabel: string;
   TotalParticipantsLabel: string;
   TotalPercentageCompletionLabel: string;
   TotalPointsLabel: string;
