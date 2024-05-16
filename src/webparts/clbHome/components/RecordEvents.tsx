@@ -1,24 +1,30 @@
-import { Dialog, DialogType, IDropdownOption, PrimaryButton, Spinner } from '@fluentui/react';
-import { Icon } from '@fluentui/react/lib/Icon';
 import {
-  SPHttpClient,
-  SPHttpClientResponse
-} from "@microsoft/sp-http";
+  Dialog,
+  DialogType,
+  IDropdownOption,
+  PrimaryButton,
+  Spinner,
+} from "@fluentui/react";
+import { Icon } from "@fluentui/react/lib/Icon";
+import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { sp } from "@pnp/sp";
-import * as LocaleStrings from 'ClbHomeWebPartStrings';
-import _ from "lodash";
+import * as LocaleStrings from "ClbHomeWebPartStrings";
 import {
   DatePicker,
-  DayOfWeek, IDatePickerStrings
+  DayOfWeek,
+  IDatePickerStrings,
 } from "office-ui-fabric-react/lib/DatePicker";
 import { Dropdown } from "office-ui-fabric-react/lib/Dropdown";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
 import React, { Component } from "react";
-import BootstrapTable from 'react-bootstrap-table-next';
+import BootstrapTable from "react-bootstrap-table-next";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import { default as commonServices, default as CommonServices } from '../Common/CommonServices';
+import {
+  default as CommonServices,
+  default as commonServices,
+} from "../Common/CommonServices";
 import siteconfig from "../config/siteconfig.json";
 import * as stringConstants from "../constants/strings";
 import "../scss/RecordEvents.scss";
@@ -122,8 +128,10 @@ export interface EventList {
   Id: number;
   Ecount: number;
 }
-export default class RecordEvents extends Component<RecordEventsProps, RecordEventsState>
-{
+export default class RecordEvents extends Component<
+  RecordEventsProps,
+  RecordEventsState
+> {
   constructor(props: RecordEventsProps) {
     super(props);
     sp.setup({
@@ -161,7 +169,7 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
       eventUniqueID: 0,
       isMultilineNotes: false,
       notes: "",
-      eventApprovalConfig: ""
+      eventApprovalConfig: "",
     };
   }
 
@@ -176,8 +184,12 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
       this.props.context,
       this.props.siteUrl
     );
-    let filterQuery = "Title eq '" + stringConstants.ChampionEventApprovals + "'";
-    const configList: any[] = await commonServiceManager.getItemsWithOnlyFilter(stringConstants.ConfigList, filterQuery);
+    let filterQuery =
+      "Title eq '" + stringConstants.ChampionEventApprovals + "'";
+    const configList: any[] = await commonServiceManager.getItemsWithOnlyFilter(
+      stringConstants.ConfigList,
+      filterQuery
+    );
     this.setState({ eventApprovalConfig: configList[0].Value });
   }
 
@@ -188,16 +200,34 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
 
   //When a new event is added modify the collection to show in the grid
   public addDevice(data: ChampList) {
-    if ((data.type == "" || data.type == LocaleStrings.EventTypeGridLabelPlaceHolder)) {
-      this.setState({ showValidationError: true, validationError: LocaleStrings.EventTypeValidationMessage });
+    if (
+      data.type == "" ||
+      data.type == LocaleStrings.EventTypeGridLabelPlaceHolder
+    ) {
+      this.setState({
+        showValidationError: true,
+        validationError: LocaleStrings.EventTypeValidationMessage,
+      });
       this.props.setEventsSubmissionMessage("");
-    }
-    else if ((data.Count > 5 || data.Count < 1)) {
-      this.setState({ showValidationError: true, validationError: LocaleStrings.CountValidationMessage });
+    } else if (data.Count > 5 || data.Count < 1) {
+      this.setState({
+        showValidationError: true,
+        validationError: LocaleStrings.CountValidationMessage,
+      });
       this.props.setEventsSubmissionMessage("");
-    }
-    else {
-      this.setState({ collectionNew: [], showValidationError: false, validationError: "", eventUniqueID: data.id });
+    } else if (data.Notes.length > 200) {
+      this.setState({
+        showValidationError: true,
+        validationError: LocaleStrings.NoteValidationMessage,
+      });
+      this.props.setEventsSubmissionMessage("");
+    } else {
+      this.setState({
+        collectionNew: [],
+        showValidationError: false,
+        validationError: "",
+        eventUniqueID: data.id,
+      });
       const memberEventsData = this.state.collectionNew.concat(data);
       this.props.setEventsSubmissionMessage("");
       this.setState({
@@ -207,7 +237,7 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
         DateOfEvent: new Date(),
         selectedkey: stringConstants.SelectEventType,
         type: "",
-        isMultilineNotes: false
+        isMultilineNotes: false,
       });
     }
   }
@@ -219,12 +249,11 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
     if (this.state.edetails.length == 0)
       this.props.context.spHttpClient
         .get(
-
           "/" +
-          this.state.inclusionpath +
-          "/" +
-          this.state.sitename +
-          "/_api/web/lists/GetByTitle('Events List')/Items",
+            this.state.inclusionpath +
+            "/" +
+            this.state.sitename +
+            "/_api/web/lists/GetByTitle('Events List')/Items",
           SPHttpClient.configurations.v1
         )
         .then(async (response: SPHttpClientResponse) => {
@@ -258,7 +287,10 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
         });
 
     let myOptions = [];
-    myOptions.push({ key: stringConstants.SelectEventType, text: LocaleStrings.EventTypeGridLabelPlaceHolder });
+    myOptions.push({
+      key: stringConstants.SelectEventType,
+      text: LocaleStrings.EventTypeGridLabelPlaceHolder,
+    });
     this.state.edetails.forEach((element: any) => {
       myOptions.push({ key: element, text: element });
     });
@@ -280,75 +312,92 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
     await this.getEventApprovalSetting();
     this.setState({
       showLoader: true,
-      eventUniqueID: 0
+      eventUniqueID: 0,
     });
-    let commonServiceManager: commonServices = new commonServices(this.props.context, this.props.siteUrl);
+    let commonServiceManager: commonServices = new commonServices(
+      this.props.context,
+      this.props.siteUrl
+    );
     let promiseArr = [];
-    for (let link of this.state.collectionNew) {
+
+    //Create an item in "Event Track Details" for each submitted event
+    for (let event of this.state.collectionNew) {
       let tmp: Array<EventList> = null;
       tmp = this.state.edetailsIds;
-      let scount = link.Count * 10;
-      let filteredItem = tmp.filter((i) => i.Id === link.eventid);
-      let seventid = String(link.eventid);
-      let smemberid = String(link.memberid);
-      let sdoe = link.DateOfEvent;
-      let stype = link.type;
-      let oMember = this.state.membersInfo.filter(x => x.Id.toString() == smemberid)[0];
-      let sMemberName = oMember.FirstName + ' ' + oMember.LastName;
-      let seventName = this.state.edetailsIds.filter(x => x.Id.toString() == seventid)[0].Title;
-      let sNotes = link.Notes;
+      let eventPoints = 10;
+      let filteredItem = tmp.filter((i) => i.Id === event.eventid);
+      let seventid = String(event.eventid);
+      let smemberid = String(event.memberid);
+      let sdoe = event.DateOfEvent;
+      let stype = event.type;
+      let oMember = this.state.membersInfo.filter(
+        (x) => x.Id.toString() == smemberid
+      )[0];
+      let sMemberName = oMember.FirstName + " " + oMember.LastName;
+      let seventName = this.state.edetailsIds.filter(
+        (x) => x.Id.toString() == seventid
+      )[0].Title;
+      let sNotes = event.Notes;
 
+      //Assign points for the event based on "Event Details" master list
       if (filteredItem.length !== 0) {
-        scount = link.Count * filteredItem[0].Ecount;
+        eventPoints = filteredItem[0].Ecount;
       }
+
       const listDefinition: any = {
         Title: stype,
         EventId: seventid,
         MemberId: smemberid,
         DateofEvent: sdoe,
-        Count: scount,
+        Count: eventPoints,
         MemberName: sMemberName,
         EventName: seventName,
         Notes: sNotes,
-        Status: this.state.eventApprovalConfig === stringConstants.EnabledStatus ? stringConstants.pendingStatus : stringConstants.approvedStatus
+        Status:
+          this.state.eventApprovalConfig === stringConstants.EnabledStatus
+            ? stringConstants.pendingStatus
+            : stringConstants.approvedStatus,
       };
 
-      //create promise array
-      promiseArr.push(commonServiceManager.createListItem(stringConstants.EventTrackDetailsList, listDefinition));
+      //Create an item each in "Event Track Detail" list to match with the count of the event recorded.
+      for (let i = 0; i < event.Count; i++) {
+        //create promise array
+        promiseArr.push(
+          commonServiceManager.createListItem(
+            stringConstants.EventTrackDetailsList,
+            listDefinition
+          )
+        );
+      }
     }
     this.setState({
       collectionNew: [],
       showValidationError: false,
-      validationError: ""
+      validationError: "",
     });
-    //Wait for all promise statements to execute and return true
-    Promise.all(promiseArr).then(
-      async () => {
+
+    //Wait for all promise statements to execute and return true to show the success messages labels
+    Promise.all(promiseArr)
+      .then(async () => {
         this.props.callBack();
         this.setState({ showLoader: false });
         this.props.setEventsSubmissionMessage(
-          this.state.eventApprovalConfig === stringConstants.EnabledStatus ?
-            LocaleStrings.EventSubmissionPendingMessage :
-            LocaleStrings.EventsSubmissionSuccessMessage
+          this.state.eventApprovalConfig === stringConstants.EnabledStatus
+            ? LocaleStrings.EventSubmissionPendingMessage
+            : LocaleStrings.EventsSubmissionSuccessMessage
         );
         this.props.updateRecordEventsPopupState(false);
-      }
-    ).catch(err => {
-      alert(
-        "Response status " +
-        err.status +
-        " - " +
-        err.statusText
-      );
-    });
+      })
+      .catch((err) => {
+        alert("Response status " + err.status + " - " + err.statusText);
+      });
     this.setState({ collectionNew: [], eventid: 0 });
   }
 
-  //Get Member ID of the current user and the Event Track details from Member List 
+  //Get Member ID of the current user and the Event Track details from Member List
   public async getMemberId() {
     await this.props.context.spHttpClient
       .get(
-
         "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
         SPHttpClient.configurations.v1
       )
@@ -358,10 +407,10 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
             this.props.context.spHttpClient
               .get(
                 "/" +
-                this.state.inclusionpath +
-                "/" +
-                this.state.sitename +
-                "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000",
+                  this.state.inclusionpath +
+                  "/" +
+                  this.state.sitename +
+                  "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000",
                 SPHttpClient.configurations.v1
               )
               .then((response: SPHttpClientResponse) => {
@@ -399,11 +448,14 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
         memberid: localStorage["memberid"],
       });
     }
-  }
+  };
 
   //Method to set event points
   private setPoints(e: any): void {
-    if (!e.target.value || (e.target.value.length <= 1 && parseInt(e.target.value) <= 5)) {
+    if (
+      !e.target.value ||
+      (e.target.value.length <= 1 && parseInt(e.target.value) <= 5)
+    ) {
       this.setState({ points: e.target.value });
     } else {
       this.setState({ points: this.state.points });
@@ -411,8 +463,12 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
   }
 
   //Method to be called when notes text is changed in text field control
-  private onNotesChange(_ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void {
-    const newMultiline = newText.length > stringConstants.NotesMinCharacterLimit;
+  private onNotesChange(
+    _ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
+    newText: string
+  ): void {
+    const newMultiline =
+      newText.length > stringConstants.NotesMinCharacterLimit;
     if (newMultiline) this.setState({ isMultilineNotes: newMultiline });
     else this.setState({ isMultilineNotes: newMultiline });
     this.setState({ notes: newText });
@@ -420,7 +476,6 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
 
   //Component Render Method
   public render() {
-
     //Method to be called for not displaying chevron down icon in events type dropdown
     const onRenderCaretDown = (): JSX.Element => {
       return <span></span>;
@@ -431,14 +486,21 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
         dataField: "id",
         headerAttrs: { hidden: true },
         title: true,
-        formatter: () => <img src={require('../assets/TOTImages/tickIcon.png')}
-          alt={LocaleStrings.SuccessIcon} className="tickImage" />
+        formatter: () => (
+          <img
+            src={require("../assets/TOTImages/tickIcon.png")}
+            alt={LocaleStrings.SuccessIcon}
+            className="tickImage"
+          />
+        ),
       },
       {
         dataField: "DateOfEvent",
         headerAttrs: { hidden: true },
         title: (_cell: any, gridRow: any) => gridRow.DateOfEvent.toDateString(),
-        formatter: (_: any, gridRow: any) => <>{gridRow.DateOfEvent.toDateString()}</>
+        formatter: (_: any, gridRow: any) => (
+          <>{gridRow.DateOfEvent.toDateString()}</>
+        ),
       },
       {
         dataField: "type",
@@ -460,25 +522,47 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
         dataField: "Remove",
         headerAttrs: { hidden: true },
         title: () => LocaleStrings.RemoveEventLabel,
-        formatter: (_: any, gridRow: any) =>
-          <Icon iconName="Delete"
+        formatter: (_: any, gridRow: any) => (
+          <Icon
+            iconName="Delete"
             onClick={() => {
               this.removeDevice(gridRow.Count, gridRow.id);
             }}
             className="event-delete-icon"
+            tabIndex={0}
+            role="button"
+            aria-label="Delete"
+            onKeyDown={(event) => {
+              if (event.key === stringConstants.stringEnter)
+                this.removeDevice(gridRow.Count, gridRow.id);
+            }}
           />
-      }
+        ),
+      },
     ];
-    const isDarkOrContrastTheme = this.props.currentThemeName === stringConstants.themeDarkMode || this.props.currentThemeName === stringConstants.themeContrastMode;
+    const isDarkOrContrastTheme =
+      this.props.currentThemeName === stringConstants.themeDarkMode ||
+      this.props.currentThemeName === stringConstants.themeContrastMode;
     return (
       <Dialog
         hidden={!this.props.showRecordEventPopup}
-        onDismiss={() => !this.state.showLoader && this.props.updateRecordEventsPopupState(false)}
+        onDismiss={() =>
+          !this.state.showLoader &&
+          this.props.updateRecordEventsPopupState(false)
+        }
         modalProps={{
           isBlocking: true,
-          className: `record-events-popup${isDarkOrContrastTheme ? " record-events-popup-" + this.props.currentThemeName : ""}`
+          className: `record-events-popup${
+            isDarkOrContrastTheme
+              ? " record-events-popup-" + this.props.currentThemeName
+              : ""
+          }`,
         }}
-        dialogContentProps={{ type: DialogType.normal, title: LocaleStrings.RecordEventLabel, className: "dialog-content" }}
+        dialogContentProps={{
+          type: DialogType.normal,
+          title: LocaleStrings.RecordEventLabel,
+          className: "dialog-content",
+        }}
       >
         <>
           <Row>
@@ -508,6 +592,7 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
                 calloutProps={{ className: "cvEventTypeDropdown" }}
                 selectedKey={this.state.selectedkey}
                 className="record-events-dropdown"
+                required
               />
             </Col>
             <Col xl={2} lg={2} md={12} sm={12}>
@@ -518,7 +603,7 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
                 type="number"
                 min="1"
                 max="5"
-                className='record-events-count-field'
+                className="record-events-count-field"
               />
             </Col>
             <Col xl={3} lg={3} md={12} sm={12}>
@@ -527,16 +612,35 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
                 placeholder={LocaleStrings.NotesPlaceholder}
                 multiline={this.state.isMultilineNotes}
                 onChange={this.onNotesChange}
-                maxLength={200}
+                //maxLength={200}
                 value={this.state.notes}
-                className='record-events-notes-field'
+                className="record-events-notes-field"
               />
             </Col>
             <Col xl={1} lg={1} md={12} sm={12}>
-              <Icon iconName="CircleAdditionSolid" className="add-event-icon" title={LocaleStrings.AddEventLabel}
+              <Icon
+                iconName="CircleAdditionSolid"
+                className="add-event-icon"
+                title={LocaleStrings.AddEventLabel}
+                tabIndex={0}
+                aria-label={LocaleStrings.AddEventLabel}
+                role="button"
                 onClick={(_e) =>
-                  this.addDevice(
-                    {
+                  this.addDevice({
+                    id: this.state.eventUniqueID + 1,
+                    type: this.state.type,
+                    eventid: this.state.eventid,
+                    memberid: this.state.memberid,
+                    Count: this.state.points,
+                    DateOfEvent: this.state.DateOfEvent,
+                    Notes: this.state.notes,
+                    MemberName: "test",
+                    EventName: "evtest",
+                  })
+                }
+                onKeyDown={(_e) => {
+                  if (_e.key === stringConstants.stringEnter)
+                    this.addDevice({
                       id: this.state.eventUniqueID + 1,
                       type: this.state.type,
                       eventid: this.state.eventid,
@@ -546,17 +650,17 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
                       Notes: this.state.notes,
                       MemberName: "test",
                       EventName: "evtest",
-                    }
-                  )
-                } />
+                    });
+                }}
+              />
             </Col>
           </Row>
-          {this.state.showValidationError &&
-            <div className="error-message">
+          {this.state.showValidationError && (
+            <div role="alert" aria-live="polite" className="error-message">
               {this.state.validationError}
             </div>
-          }
-          {this.state.collectionNew.length > 0 &&
+          )}
+          {this.state.collectionNew.length > 0 && (
             <BootstrapTable
               striped
               bootstrap4
@@ -566,16 +670,18 @@ export default class RecordEvents extends Component<RecordEventsProps, RecordEve
               table-responsive={true}
               wrapperClasses="events-collection-table"
             />
-          }
-          {this.state.showLoader &&
+          )}
+          {this.state.showLoader && (
             <Spinner
               label={LocaleStrings.ProcessingSpinnerLabel}
-              className='submission-spinner'
-              ariaLive="assertive" labelPosition="left" />
-          }
+              className="submission-spinner"
+              ariaLive="assertive"
+              labelPosition="left"
+            />
+          )}
           {this.state.collectionNew !== null &&
             this.state.collectionNew.length !== 0 && (
-              <div className="mb-3 help-text">
+              <div className="mb-3 help-text" role="alert" aria-live="polite">
                 {LocaleStrings.EventsSubmitMessage}
               </div>
             )}

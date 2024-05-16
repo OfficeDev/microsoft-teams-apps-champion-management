@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { app } from '@microsoft/teams-js-v2';
+import { app } from '@microsoft/teams-js';
 import { Component } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';

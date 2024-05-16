@@ -1,5 +1,4 @@
 declare interface IClbHomeWebPartStrings {
-
   AboutContentLabel: string;
   AboutHeaderLabel: string;
   AcceptButtonAriaDescription: string;
@@ -189,13 +188,14 @@ declare interface IClbHomeWebPartStrings {
   NameLabel: string;
   NearMePlaceHolder: string;
   NoActiveParticipantsErrorMessage: string;
-  NoActiveParticipantsMessage; string;
+  NoActiveParticipantsMessage;
+  string;
   NoActiveTournamentMessage: string;
   NoActivitiesinGridLabel: string;
   NoBadgeMessage: string;
   NoButton: string;
   NoChampionsMessage: string;
-  NoCompletedTournamentsMessage: string,
+  NoCompletedTournamentsMessage: string;
   NoEventsFoundMessage: string;
   NoEventsMessage: string;
   NominateMemberLabel: string;
@@ -204,7 +204,7 @@ declare interface IClbHomeWebPartStrings {
   NoProfileImageAlt: string;
   NoProfileImageDescription: string;
   NoRecordsIcon: string;
-  NoRecordsinGridLabel: string,
+  NoRecordsinGridLabel: string;
   NoSearchResults: string;
   NotesLabel: string;
   NotesPlaceholder: string;
@@ -240,18 +240,18 @@ declare interface IClbHomeWebPartStrings {
   RankLabel: string;
   RecordEventLabel: string;
   RecordsNotFound: string;
-  RefreshIconInfoText: string
+  RefreshIconInfoText: string;
   RegionLabel: string;
   RejectButton: string;
   RemoveEventLabel: string;
   RemoveFileLabel: string;
-  ReportsDropdownInfoIconText: string,
+  ReportsDropdownInfoIconText: string;
   RequestToCallLabel: string;
   SaveButton: string;
   SearchActiveTournaments: string;
   SearchLabel: string;
   SearchPendingTournaments: string;
-  SearchPlaceholder: string,
+  SearchPlaceholder: string;
   SelectActionsErrorMessage: string;
   SelectaCustomDate: string;
   SelectAllChampions: string;
@@ -312,9 +312,17 @@ declare interface IClbHomeWebPartStrings {
   VisitLabel: string;
   WelcomeLabel: string;
   YesButton: string;
+  AdminLabel: string;
+  SaveChangesButton: string;
+  MembersUpdatedMessage: string;
+  AddAdminSearchboxPlaceholder: string;
+  NoAdminSelectedMessage: string;
+  AddMemberAsAdminLabel: string;
+  NoteValidationMessage: string;
+  CloseInfoPopoverButton: string;
 }
 
-declare module 'ClbHomeWebPartStrings' {
+declare module "ClbHomeWebPartStrings" {
   const strings: IClbHomeWebPartStrings;
   export = strings;
 }

@@ -12,7 +12,7 @@ import {
   teamsLightTheme, teamsDarkTheme, teamsHighContrastTheme,
   FluentProvider, Theme
 } from '@fluentui/react-components';
-import { app } from "@microsoft/teams-js-v2";
+import { app } from "@microsoft/teams-js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as LocaleStrings from 'ClbHomeWebPartStrings';
 import * as React from "react";
@@ -161,7 +161,7 @@ export default class ClbHome extends React.Component<IClbHomeProps, IClbHomeStat
     //Get current Teams theme to pass into fluent provider
     app.initialize();
     app.getContext().then((ctx: any) => {
-      const theme = ctx.theme || stringsConstants.themeDefaultMode;
+      const theme = ctx.app.theme ?? stringsConstants.themeDefaultMode;
       this.updateCMPTheme(theme);
     });
     app.registerOnThemeChangeHandler((theme: string) => {

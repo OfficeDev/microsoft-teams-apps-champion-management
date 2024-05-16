@@ -4,7 +4,7 @@ import * as LocaleStrings from 'ClbHomeWebPartStrings';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import {
   Popover, PopoverSurface,
-  PopoverTrigger, Link, Text
+  PopoverTrigger, Link, Text, Button
 } from '@fluentui/react-components';
 import React, { Component } from "react";
 import Navbar from "react-bootstrap/Navbar";
@@ -121,7 +121,12 @@ export default class Header extends Component<IHeaderProps, HeaderState> {
                 {LocaleStrings.OverviewLabel} <Link href={Strings.M365CMP} target="_blank">{LocaleStrings.MSAdoptionHubLinkLabel}</Link>
               </Text>
               <Text block as="p">
-                {LocaleStrings.DocumentationLabel} <Link href={Strings.M365CmpApp} target="_blank">{LocaleStrings.CMPGitHubLinkLabel}</Link>
+                {LocaleStrings.DocumentationLabel} <Link href={Strings.M365CmpApp} target="_blank" inline rel="noreferrer"
+                 onKeyDown={(evt: any) => {
+                    if (evt.key === Strings.stringTab)
+                      this.toggleIsCalloutVisible();
+                  }}
+                >{LocaleStrings.CMPGitHubLinkLabel}</Link>
               </Text>
             </PopoverSurface>
           </Popover>

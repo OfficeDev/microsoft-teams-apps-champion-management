@@ -1,24 +1,29 @@
 import {
-  ISPHttpClientOptions, SPHttpClient,
-  SPHttpClientResponse
+  ISPHttpClientOptions,
+  SPHttpClient,
+  SPHttpClientResponse,
 } from "@microsoft/sp-http";
 import { sp } from "@pnp/sp";
 import "@pnp/sp/items";
 import "@pnp/sp/lists";
 import "@pnp/sp/webs";
-import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import * as LocaleStrings from "ClbHomeWebPartStrings";
 import * as _ from "lodash";
 import { Icon, initializeIcons } from "office-ui-fabric-react";
-import { Dropdown, IDropdownOption, IDropdownStyles } from "office-ui-fabric-react/lib/Dropdown";
+import {
+  Dropdown,
+  IDropdownOption,
+  IDropdownStyles,
+} from "office-ui-fabric-react/lib/Dropdown";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
-import { Dialog, DialogType } from '@fluentui/react/lib/Dialog';
+import { Dialog, DialogType } from "@fluentui/react/lib/Dialog";
 import * as React from "react";
 import Button from "react-bootstrap/esm/Button";
 import commonServices from "../Common/CommonServices";
 import siteconfig from "../config/siteconfig.json";
 import * as stringsConstants from "../constants/strings";
 import "../scss/Championleaderboard.scss";
-import { IConfigList } from './ManageConfigSettings';
+import { IConfigList } from "./ManageConfigSettings";
 import RecordEvents from "./RecordEvents";
 import ChampionEvents from "./ChampionEvents";
 import EventsChart from "./EventsChart";
@@ -100,7 +105,10 @@ export interface EventList {
 
 let displayName: string = "";
 
-export default class Sidebar extends React.Component<ISidebarStateProps, IState> {
+export default class Sidebar extends React.Component<
+  ISidebarStateProps,
+  IState
+> {
   constructor(props: ISidebarStateProps) {
     super(props);
     sp.setup({
@@ -140,7 +148,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       showDashBoardPopup: false,
       memberEvents: [],
       selectedMemberID: "",
-      isDesktop: true
+      isDesktop: true,
     };
     this.handleInput = this.handleInput.bind(this);
     this._createorupdateItem = this._createorupdateItem.bind(this);
@@ -149,14 +157,14 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     this.optionsEventsList = this.optionsEventsList.bind(this);
     this.onFocusAreaChange = this.onFocusAreaChange.bind(this);
     this.populateColumnNames = this.populateColumnNames.bind(this);
-    this.updateRecordEventsPopupState = this.updateRecordEventsPopupState.bind(this);
+    this.updateRecordEventsPopupState =
+      this.updateRecordEventsPopupState.bind(this);
 
     //Create object for CommonServices class
     commonServiceManager = new commonServices(
       this.props.context,
       this.props.siteUrl
     );
-
   }
 
   //getting members details from membelist with all columns
@@ -169,20 +177,31 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
       });
     }
     return myoptions;
-  }
+  };
 
   public optionsEventsList() {
     let optionArray: any = [];
     let optionArrayIds: any = [];
     if (this.state.edetails.length == 0)
       this.props.context.spHttpClient
-        .get("/" + this.state.inclusionpath + "/" + this.state.sitename + "/_api/web/lists/GetByTitle('Events List')/Items", SPHttpClient.configurations.v1)
+        .get(
+          "/" +
+            this.state.inclusionpath +
+            "/" +
+            this.state.sitename +
+            "/_api/web/lists/GetByTitle('Events List')/Items",
+          SPHttpClient.configurations.v1
+        )
         .then(async (response: SPHttpClientResponse) => {
           if (response.status === 200) {
             await response.json().then((responseJSON: any) => {
               let i = 0;
               while (i < responseJSON.value.length) {
-                if (responseJSON.value[i] && responseJSON.value[i].hasOwnProperty("Title") && responseJSON.value[i].IsActive) {
+                if (
+                  responseJSON.value[i] &&
+                  responseJSON.value[i].hasOwnProperty("Title") &&
+                  responseJSON.value[i].IsActive
+                ) {
                   optionArray.push(responseJSON.value[i].Title);
                   optionArrayIds.push({
                     Title: responseJSON.value[i].Title,
@@ -227,10 +246,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     this.props.context.spHttpClient
       .get(
         "/" +
-        this.state.inclusionpath +
-        "/" +
-        this.state.sitename +
-        "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Region')",
+          this.state.inclusionpath +
+          "/" +
+          this.state.sitename +
+          "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Region')",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
@@ -239,10 +258,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
             this.props.context.spHttpClient
               .get(
                 "/" +
-                this.state.inclusionpath +
-                "/" +
-                this.state.sitename +
-                "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Country')",
+                  this.state.inclusionpath +
+                  "/" +
+                  this.state.sitename +
+                  "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Country')",
                 SPHttpClient.configurations.v1
               )
               // tslint:disable-next-line:no-shadowed-variable
@@ -263,10 +282,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     this.props.context.spHttpClient
       .get(
         "/" +
-        this.state.inclusionpath +
-        "/" +
-        this.state.sitename +
-        "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Group')",
+          this.state.inclusionpath +
+          "/" +
+          this.state.sitename +
+          "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('Group')",
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
@@ -275,10 +294,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
             this.props.context.spHttpClient
               .get(
                 "/" +
-                this.state.inclusionpath +
-                "/" +
-                this.state.sitename +
-                "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('FocusArea')",
+                  this.state.inclusionpath +
+                  "/" +
+                  this.state.sitename +
+                  "/_api/web/lists/GetByTitle('Member List')/fields/GetByInternalNameOrTitle('FocusArea')",
                 SPHttpClient.configurations.v1
               )
               // tslint:disable-next-line: no-shadowed-variable
@@ -308,56 +327,85 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
   //set css properties to Person card control
   public updatePersonCardCSS() {
     setTimeout(() => {
-      const sidebarPersonWrapper = document.getElementById("sidebar-person-wrapper")?.querySelector("mgt-person")
-        ?.shadowRoot?.querySelector("mgt-flyout")?.querySelector(".vertical");
+      const sidebarPersonWrapper = document
+        .getElementById("sidebar-person-wrapper")
+        ?.querySelector("mgt-person")
+        ?.shadowRoot?.querySelector("mgt-flyout")
+        ?.querySelector(".vertical");
       sidebarPersonWrapper?.setAttribute("style", "row-gap:10px;");
       if (this.state.isDesktop) {
-        sidebarPersonWrapper?.querySelector(".avatar-wrapper")?.setAttribute("style", "width: 100px; height: 100px;");
-        sidebarPersonWrapper?.querySelector(".details-wrapper")?.querySelector(".line1")?.setAttribute("style",
-          "width: 180px;overflow-wrap: break-word;text-align: center;");
-      }
-      else {
-        sidebarPersonWrapper?.querySelector(".avatar-wrapper")?.setAttribute("style", "");
-        sidebarPersonWrapper?.querySelector(".details-wrapper")?.querySelector(".line1")
-          ?.setAttribute("style", "font-size:14px;width: 140px;overflow-wrap: break-word;text-align: center;");
+        sidebarPersonWrapper
+          ?.querySelector(".avatar-wrapper")
+          ?.setAttribute("style", "width: 100px; height: 100px;");
+        sidebarPersonWrapper
+          ?.querySelector(".details-wrapper")
+          ?.querySelector(".line1")
+          ?.setAttribute(
+            "style",
+            "width: 180px;overflow-wrap: break-word;text-align: center;"
+          );
+      } else {
+        sidebarPersonWrapper
+          ?.querySelector(".avatar-wrapper")
+          ?.setAttribute("style", "");
+        sidebarPersonWrapper
+          ?.querySelector(".details-wrapper")
+          ?.querySelector(".line1")
+          ?.setAttribute(
+            "style",
+            "font-size:14px;width: 140px;overflow-wrap: break-word;text-align: center;"
+          );
       }
     }, 5000);
   }
 
-  public async componentDidUpdate(prevProps: Readonly<ISidebarStateProps>, prevState: Readonly<IState>, snapshot?: any) {
+  public async componentDidUpdate(
+    prevProps: Readonly<ISidebarStateProps>,
+    prevState: Readonly<IState>,
+    snapshot?: any
+  ) {
     if (prevProps != this.props) {
       this.componentWillMount();
     }
     if (prevState.multiSelectChoices !== this.state.multiSelectChoices) {
       this.setState({
-        selectedFocusAreas: this.state.multiSelectChoices
+        selectedFocusAreas: this.state.multiSelectChoices,
       });
     }
     //Remove "All" from the array to store it in Members List.
     if (prevState.selectedFocusAreas !== this.state.selectedFocusAreas) {
-      let idx = this.state.selectedFocusAreas.indexOf(stringsConstants.AllLabel);
-      if (idx != -1)
-        this.state.selectedFocusAreas.splice(idx, 1);
+      let idx = this.state.selectedFocusAreas.indexOf(
+        stringsConstants.AllLabel
+      );
+      if (idx != -1) this.state.selectedFocusAreas.splice(idx, 1);
     }
 
-    if (prevState.form !== this.state.form || prevState.isActive !== this.state.isActive) {
+    if (
+      prevState.form !== this.state.form ||
+      prevState.isActive !== this.state.isActive
+    ) {
       if (this.state.form && this.state.isActive) {
         this.setState({
           configListSettings: [],
           memberListColumnNames: [],
           regionColumnName: "",
           countryColumnName: "",
-          groupColumnName: ""
+          groupColumnName: "",
         });
         await this.getConfigListSettings();
         await this.getMemberListColumnNames();
       }
     }
 
-    //update column states with member list column display names 
-    if (prevState.configListSettings !== this.state.configListSettings ||
-      prevState.memberListColumnNames !== this.state.memberListColumnNames) {
-      if (this.state.configListSettings.length > 0 && this.state.memberListColumnNames.length > 0)
+    //update column states with member list column display names
+    if (
+      prevState.configListSettings !== this.state.configListSettings ||
+      prevState.memberListColumnNames !== this.state.memberListColumnNames
+    ) {
+      if (
+        this.state.configListSettings.length > 0 &&
+        this.state.memberListColumnNames.length > 0
+      )
         this.populateColumnNames();
     }
 
@@ -376,7 +424,6 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
   public componentWillMount() {
     this.props.context.spHttpClient
       .get(
-
         "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
         SPHttpClient.configurations.v1
       )
@@ -386,10 +433,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
             this.props.context.spHttpClient
               .get(
                 "/" +
-                this.state.inclusionpath +
-                "/" +
-                this.state.sitename +
-                "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000",
+                  this.state.inclusionpath +
+                  "/" +
+                  this.state.sitename +
+                  "/_api/web/lists/GetByTitle('Member List')/Items?$top=1000",
                 SPHttpClient.configurations.v1
               )
               .then((response: SPHttpClientResponse) => {
@@ -401,7 +448,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                   let memberData =
                     memberDataIds !== undefined ? memberDataIds.ID : 0;
                   this.setState({
-                    selectedMemberID: memberData
+                    selectedMemberID: memberData,
                   });
                   if (memberData === 0)
                     this.setState({
@@ -422,16 +469,23 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                   //get first name and last name from the user profile properties
                   let firstName = "";
                   let lastName = "";
-                  for (let i = 0; i < datauser.UserProfileProperties.length; i++) {
+                  for (
+                    let i = 0;
+                    i < datauser.UserProfileProperties.length;
+                    i++
+                  ) {
                     if (firstName === "" || lastName === "") {
-                      if (datauser.UserProfileProperties[i].Key === "FirstName") {
+                      if (
+                        datauser.UserProfileProperties[i].Key === "FirstName"
+                      ) {
                         firstName = datauser.UserProfileProperties[i].Value;
                       }
-                      if (datauser.UserProfileProperties[i].Key === "LastName") {
+                      if (
+                        datauser.UserProfileProperties[i].Key === "LastName"
+                      ) {
                         lastName = datauser.UserProfileProperties[i].Value;
                       }
-                    }
-                    else {
+                    } else {
                       break;
                     }
                   }
@@ -452,8 +506,8 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     totalchamps = datada.value.filter((x: any) =>
                       (x.Role.toLowerCase() === "champion" ||
                         x.Role.toLowerCase() === "manager") &&
-                        x.Status !== null &&
-                        x.Status !== undefined
+                      x.Status !== null &&
+                      x.Status !== undefined
                         ? x.Status.toLowerCase() === "approved"
                         : false
                     ).length;
@@ -466,10 +520,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                       this.props.context.spHttpClient
                         .get(
                           "/" +
-                          this.state.inclusionpath +
-                          "/" +
-                          this.state.sitename +
-                          "/_api/web/lists/GetByTitle('Event Track Details')/Items?$filter= Status eq 'Approved' or Status eq null or Status eq ''&$top=5000",
+                            this.state.inclusionpath +
+                            "/" +
+                            this.state.sitename +
+                            "/_api/web/lists/GetByTitle('Event Track Details')/Items?$filter= Status eq 'Approved' or Status eq null or Status eq ''&$top=5000",
                           SPHttpClient.configurations.v1
                         )
                         .then((responseeventsdetails: SPHttpClientResponse) => {
@@ -477,7 +531,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                             .json()
                             .then((eventsdatauser: any) => {
                               this.setState({
-                                memberEvents: eventsdatauser.value
+                                memberEvents: eventsdatauser.value,
                               });
                               if (!eventsdatauser.error) {
                                 let memberids: any = _.uniqBy(
@@ -486,10 +540,22 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                 );
                                 let memcount: Array<any> = [];
                                 for (let i = 0; i < memberids.length; i++) {
-                                  if (datada.value.findIndex((v: { ID: any }) => v.ID === memberids[i].MemberId) !== -1) {
+                                  if (
+                                    datada.value.findIndex(
+                                      (v: { ID: any }) =>
+                                        v.ID === memberids[i].MemberId
+                                    ) !== -1
+                                  ) {
                                     let totalUserPoints = 0;
-                                    eventsdatauser.value.filter((z: any) => z.MemberId === memberids[i].MemberId)
-                                      .map((z: any) => { totalUserPoints = totalUserPoints + z.Count; });
+                                    eventsdatauser.value
+                                      .filter(
+                                        (z: any) =>
+                                          z.MemberId === memberids[i].MemberId
+                                      )
+                                      .map((z: any) => {
+                                        totalUserPoints =
+                                          totalUserPoints + z.Count;
+                                      });
 
                                     memcount.push({
                                       id: memberids[i].MemberId,
@@ -501,8 +567,13 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                 //Assign zero points and get data of the approved members who hasn't participated in any event
                                 let tempArray: any = [];
                                 for (let i = 0; i < datada.value.length; i++) {
-                                  if (memcount.findIndex((member: { id: any }) => member.id === datada.value[i].ID) === -1 &&
-                                    datada.value[i].Status === stringsConstants.approvedStatus
+                                  if (
+                                    memcount.findIndex(
+                                      (member: { id: any }) =>
+                                        member.id === datada.value[i].ID
+                                    ) === -1 &&
+                                    datada.value[i].Status ===
+                                      stringsConstants.approvedStatus
                                   ) {
                                     tempArray.push({
                                       id: datada.value[i].ID,
@@ -515,11 +586,10 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                 let rank: number;
 
                                 //Sorting
-                                //Intially sort approved champions in the descending order of points count 
+                                //Intially sort approved champions in the descending order of points count
                                 //if champion doesn't have any points sort them in ascending order of their ids
                                 memcount
                                   .sort((a, b) => {
-
                                     if (a.points < b.points) return 1;
 
                                     if (a.points > b.points) return -1;
@@ -527,7 +597,6 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                                     if (a.id > b.id) return 1;
 
                                     if (a.id < b.id) return -1;
-
                                   })
                                   .map((x: any, ind: number) => {
                                     if (
@@ -562,23 +631,22 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
   //Get settings from config list
   private async getConfigListSettings() {
     try {
-      const configListData: IConfigList[] = await commonServiceManager.getMemberListColumnConfigSettings();
+      const configListData: IConfigList[] =
+        await commonServiceManager.getMemberListColumnConfigSettings();
       if (configListData.length === 3) {
         this.setState({ configListSettings: configListData });
-      }
-      else {
+      } else {
         console.log(
           stringsConstants.CMPErrorMessage +
-          ` while loading the page. There could be a problem with the ${stringsConstants.ConfigList} data.`
+            ` while loading the page. There could be a problem with the ${stringsConstants.ConfigList} data.`
         );
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error("CMP_Sidebar_getConfigListSettings \n", error);
       console.log(
         stringsConstants.CMPErrorMessage +
-        `while retrieving the ${stringsConstants.ConfigList} settings. Below are the details: \n` +
-        JSON.stringify(error),
+          `while retrieving the ${stringsConstants.ConfigList} settings. Below are the details: \n` +
+          JSON.stringify(error)
       );
     }
   }
@@ -586,26 +654,30 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
   //Get memberlist column names from member list
   private async getMemberListColumnNames() {
     try {
-      const columnsDisplayNames: any[] = await commonServiceManager.getMemberListColumnDisplayNames();
+      const columnsDisplayNames: any[] =
+        await commonServiceManager.getMemberListColumnDisplayNames();
       if (columnsDisplayNames.length > 0) {
         this.setState({ memberListColumnNames: columnsDisplayNames });
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error("CMP_Sidebar_getMemberListColumnNames \n", error);
       console.log(
         stringsConstants.CMPErrorMessage +
-        ` while retrieving the ${stringsConstants.MemberList} column data. Below are the details: \n` +
-        JSON.stringify(error),
+          ` while retrieving the ${stringsConstants.MemberList} column data. Below are the details: \n` +
+          JSON.stringify(error)
       );
     }
   }
 
   //populate member list column display names into the states
   private populateColumnNames() {
-    const enabledSettingsArray = this.state.configListSettings.filter((setting) => setting.Value === stringsConstants.EnabledStatus);
+    const enabledSettingsArray = this.state.configListSettings.filter(
+      (setting) => setting.Value === stringsConstants.EnabledStatus
+    );
     for (let setting of enabledSettingsArray) {
-      const columnObject = this.state.memberListColumnNames.find((column) => column.InternalName === setting.Title);
+      const columnObject = this.state.memberListColumnNames.find(
+        (column) => column.InternalName === setting.Title
+      );
       if (columnObject.InternalName === stringsConstants.RegionColumn) {
         this.setState({ regionColumnName: columnObject.Title });
         continue;
@@ -623,14 +695,17 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
   //getting extra symbol, so using default menthod
   public onRenderCaretDown = (): JSX.Element => {
     return <span></span>;
-  }
+  };
 
   //when user raised for become a champion then his state would be champion and pending
   public async _createorupdateItem() {
     let usersave = this.state.currentUser;
     usersave.Country = this.state.memberData.country;
     usersave.Region = this.state.memberData.region;
-    usersave.FocusArea = this.state.selectedFocusAreas.length > 0 ? this.state.selectedFocusAreas : [stringsConstants.TeamWorkLabel];
+    usersave.FocusArea =
+      this.state.selectedFocusAreas.length > 0
+        ? this.state.selectedFocusAreas
+        : [stringsConstants.TeamWorkLabel];
     usersave.Group = this.state.memberData.group;
     usersave.Role = "Champion";
     usersave.Status = "Pending";
@@ -641,10 +716,12 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
 
     let flag = await this._getListData(usersave.Title);
     if (flag == 0) {
-      const url: string = "/" +
+      const url: string =
+        "/" +
         this.state.inclusionpath +
         "/" +
-        this.state.sitename + "/_api/web/lists/GetByTitle('Member List')/items";
+        this.state.sitename +
+        "/_api/web/lists/GetByTitle('Member List')/items";
       if (this.props.context)
         this.props.context.spHttpClient
           .post(url, SPHttpClient.configurations.v1, spHttpClientOptions)
@@ -657,9 +734,9 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
             } else {
               alert(
                 "Response status " +
-                response.status +
-                " - " +
-                response.statusText
+                  response.status +
+                  " - " +
+                  response.statusText
               );
             }
           });
@@ -678,11 +755,14 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
   //Get current user's details from Member List
   private async _getListData(email: any): Promise<any> {
     return this.props.context.spHttpClient
-      .get("/" +
-        this.state.inclusionpath +
+      .get(
         "/" +
-        this.state.sitename +
-        "/_api/web/lists/GetByTitle('Member List')/Items?$filter=Title eq '" + email.toLowerCase() + "'",
+          this.state.inclusionpath +
+          "/" +
+          this.state.sitename +
+          "/_api/web/lists/GetByTitle('Member List')/Items?$filter=Title eq '" +
+          email.toLowerCase() +
+          "'",
         SPHttpClient.configurations.v1
       )
       .then(async (response: SPHttpClientResponse) => {
@@ -734,14 +814,19 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
   }
 
   //Set state variable whenever the Focus Area dropdown is changed
-  public onFocusAreaChange = async (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): Promise<void> => {
+  public onFocusAreaChange = async (
+    event: React.FormEvent<HTMLDivElement>,
+    item: IDropdownOption
+  ): Promise<void> => {
     if (item === undefined) {
       return;
     }
     //Select all the dropdown options when "All" is selected.
     if (item.key === stringsConstants.AllLabel && item.selected) {
       this.setState({
-        multiSelectChoices: this.options(this.state.status).map((option) => option.key as string)
+        multiSelectChoices: this.options(this.state.status).map(
+          (option) => option.key as string
+        ),
       });
     } //Clear all the dropdown options when "All" is unselected
     else if (item.key === stringsConstants.AllLabel) {
@@ -749,24 +834,33 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
     } //When an option selected from the dropdown other than "All"
     else if (item.selected) {
       const newKeys = [item.key as string];
-      if (this.state.multiSelectChoices.length === this.state.status.length - 1) {
+      if (
+        this.state.multiSelectChoices.length ===
+        this.state.status.length - 1
+      ) {
         newKeys.push(stringsConstants.AllLabel);
       }
-      this.setState({ multiSelectChoices: [...this.state.multiSelectChoices, ...newKeys] });
+      this.setState({
+        multiSelectChoices: [...this.state.multiSelectChoices, ...newKeys],
+      });
     } //When an option unselected from the dropdown other than "All"
     else {
       this.setState({
-        multiSelectChoices: this.state.multiSelectChoices.filter((key: any) => key !== item.key && key !== stringsConstants.AllLabel)
+        multiSelectChoices: this.state.multiSelectChoices.filter(
+          (key: any) => key !== item.key && key !== stringsConstants.AllLabel
+        ),
       });
     }
-  }
+  };
 
   private updateRecordEventsPopupState(show: boolean) {
     this.setState({ showRecordEventPopup: show });
   }
 
   public render() {
-    const isDarkOrContrastTheme = this.props.currentThemeName === stringsConstants.themeDarkMode || this.props.currentThemeName === stringsConstants.themeContrastMode;
+    const isDarkOrContrastTheme =
+      this.props.currentThemeName === stringsConstants.themeDarkMode ||
+      this.props.currentThemeName === stringsConstants.themeContrastMode;
     return (
       <div className="Championleaderboard">
         {this.state.isLoaded && (
@@ -779,32 +873,57 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                   personCardInteraction={1}
                   verticalLayout={true}
                   className="championSideBar"
+                  tabIndex={0}
                 />
               </div>
               {!this.state.bc && !this.state.form && (
                 <>
                   <div className="links-wrapper">
-                    <div className="sidebar-action-link"
+                    <div
+                      className="sidebar-action-link"
                       title={LocaleStrings.DashboardLabel}
-                      onClick={() => this.setState({ showDashBoardPopup: true })}
+                      onClick={() =>
+                        this.setState({ showDashBoardPopup: true })
+                      }
+                      role="button"
+                      aria-label={LocaleStrings.DashboardLabel}
+                      tabIndex={0}
+                      onKeyDown={(event) => {
+                        if (event.key === stringsConstants.stringEnter)
+                          this.setState({ showDashBoardPopup: true });
+                      }}
                     >
                       <img
                         src={require("../assets/CMPImages/Dashboard.svg")}
                         alt="dashboard"
                         className="action-img"
                       />
-                      <span className="action-text">{LocaleStrings.DashboardLabel}</span>
+                      <span className="action-text">
+                        {LocaleStrings.DashboardLabel}
+                      </span>
                     </div>
-                    <div className="sidebar-action-link"
+                    <div
+                      role="button"
+                      aria-label={LocaleStrings.RecordEventLabel}
+                      tabIndex={0}
+                      className="sidebar-action-link"
                       title={LocaleStrings.RecordEventLabel}
-                      onClick={() => this.setState({ showRecordEventPopup: true })}
+                      onClick={() =>
+                        this.setState({ showRecordEventPopup: true })
+                      }
+                      onKeyDown={(event) => {
+                        if (event.key === stringsConstants.stringEnter)
+                          this.setState({ showRecordEventPopup: true });
+                      }}
                     >
                       <img
                         src={require("../assets/CMPImages/RecordEvents.svg")}
                         alt="record events"
                         className="action-img"
                       />
-                      <span className="action-text">{LocaleStrings.RecordEventLabel}</span>
+                      <span className="action-text">
+                        {LocaleStrings.RecordEventLabel}
+                      </span>
                     </div>
                   </div>
                   <div>
@@ -812,8 +931,17 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     <div className="pointcircle">
                       <div className="insidecircle">
                         <div className="pointsscale">
-                          <div><Icon iconName="FavoriteStarFill" id="star" className="yellowStar" /></div>
-                          <div className="pointsValueLabel">{this.state.totalUserPointsfromList} {LocaleStrings.CMPSideBarPointsLabel}</div>
+                          <div>
+                            <Icon
+                              iconName="FavoriteStarFill"
+                              id="star"
+                              className="yellowStar"
+                            />
+                          </div>
+                          <div className="pointsValueLabel">
+                            {this.state.totalUserPointsfromList}{" "}
+                            {LocaleStrings.CMPSideBarPointsLabel}
+                          </div>
                         </div>
                         <div className="line" />
                         <div className="globalrank">
@@ -822,8 +950,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                             {LocaleStrings.CMPSideBarGlobalRankLabel}
                           </div>
                           <div>
-                            of{" "}
-                            {this.state.totalUsers + " "}
+                            of {this.state.totalUsers + " "}
                             {LocaleStrings.CMPSideBarChampionsLabel}
                           </div>
                         </div>
@@ -863,7 +990,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                       onClick={() => {
                         this.setState({
                           form: !this.state.form,
-                          isActive: !this.state.isActive
+                          isActive: !this.state.isActive,
                         });
                       }}
                     />
@@ -901,13 +1028,19 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                     }
                     onChange={(evt) => this.handleInput(evt, "Title")}
                   />
-                  {this.state.regionColumnName !== "" &&
+                  {this.state.regionColumnName !== "" && (
                     <>
-                      <label htmlFor="Region" className="bc-label" title={this.state.regionColumnName}>
+                      <label
+                        htmlFor="Region"
+                        className="bc-label"
+                        title={this.state.regionColumnName}
+                      >
                         {this.state.regionColumnName}
                       </label>
                       <Dropdown
-                        onChange={(event: any) => this.filterUsers("region", event)}
+                        onChange={(event: any) =>
+                          this.filterUsers("region", event)
+                        }
                         placeholder={"Select " + this.state.regionColumnName}
                         options={this.options(this.state.regions)}
                         styles={this.dropdownStyles}
@@ -916,10 +1049,14 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                         calloutProps={{ className: "nonMemberDdCallout" }}
                       />
                     </>
-                  }
-                  {this.state.countryColumnName !== "" &&
+                  )}
+                  {this.state.countryColumnName !== "" && (
                     <>
-                      <label htmlFor="Country" className="bc-label" title={this.state.countryColumnName}>
+                      <label
+                        htmlFor="Country"
+                        className="bc-label"
+                        title={this.state.countryColumnName}
+                      >
                         {this.state.countryColumnName}
                       </label>
                       <Dropdown
@@ -934,14 +1071,20 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                         calloutProps={{ className: "nonMemberDdCallout" }}
                       />
                     </>
-                  }
-                  {this.state.groupColumnName !== "" &&
+                  )}
+                  {this.state.groupColumnName !== "" && (
                     <>
-                      <label htmlFor="Group" className="bc-label" title={this.state.groupColumnName}>
+                      <label
+                        htmlFor="Group"
+                        className="bc-label"
+                        title={this.state.groupColumnName}
+                      >
                         {this.state.groupColumnName}
                       </label>
                       <Dropdown
-                        onChange={(event: any) => this.filterUsers("group", event)}
+                        onChange={(event: any) =>
+                          this.filterUsers("group", event)
+                        }
                         placeholder={"Select " + this.state.groupColumnName}
                         options={this.options(this.state.roles)}
                         styles={this.dropdownStyles}
@@ -950,8 +1093,12 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                         calloutProps={{ className: "nonMemberDdCallout" }}
                       />
                     </>
-                  }
-                  <label htmlFor="Focus Area" className="bc-label" title={LocaleStrings.FocusAreaGridHeader}>
+                  )}
+                  <label
+                    htmlFor="Focus Area"
+                    className="bc-label"
+                    title={LocaleStrings.FocusAreaGridHeader}
+                  >
                     {LocaleStrings.FocusAreaGridHeader}
                   </label>
                   <Dropdown
@@ -975,26 +1122,36 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                 </div>
               </div>
             )}
-            {this.state.showRecordEventPopup &&
+            {this.state.showRecordEventPopup && (
               <RecordEvents
                 siteUrl={this.props.siteUrl}
                 context={this.props.context}
                 showRecordEventPopup={this.state.showRecordEventPopup}
                 callBack={this.props.callBack}
                 updateRecordEventsPopupState={this.updateRecordEventsPopupState}
-                setEventsSubmissionMessage={this.props.setEventsSubmissionMessage}
+                setEventsSubmissionMessage={
+                  this.props.setEventsSubmissionMessage
+                }
                 currentThemeName={this.props.currentThemeName}
               />
-            }
-            {this.state.showDashBoardPopup &&
+            )}
+            {this.state.showDashBoardPopup && (
               <Dialog
                 hidden={!this.state.showDashBoardPopup}
                 onDismiss={() => this.setState({ showDashBoardPopup: false })}
                 modalProps={{
                   isBlocking: true,
-                  className: `clb-dashboard-popup${isDarkOrContrastTheme ? " clb-dashboard-popup-" + this.props.currentThemeName : ""}`
+                  className: `clb-dashboard-popup${
+                    isDarkOrContrastTheme
+                      ? " clb-dashboard-popup-" + this.props.currentThemeName
+                      : ""
+                  }`,
                 }}
-                dialogContentProps={{ type: DialogType.normal, title: LocaleStrings.DashboardLabel, className: "clb-dialog-content" }}
+                dialogContentProps={{
+                  type: DialogType.normal,
+                  title: LocaleStrings.DashboardLabel,
+                  className: "clb-dialog-content",
+                }}
               >
                 <Row xl={2} lg={2} md={1} sm={1}>
                   <Col xl={5} lg={5} md={12} sm={12}>
@@ -1003,6 +1160,7 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                       filteredAllEvents={this.state.memberEvents}
                       parentComponent={stringsConstants.SidebarLabel}
                       selectedMemberID={this.state.selectedMemberID}
+                      currentThemeName={this.props.currentThemeName}
                     />
                   </Col>
                   <Col xl={7} lg={7} md={12} sm={12}>
@@ -1017,10 +1175,9 @@ export default class Sidebar extends React.Component<ISidebarStateProps, IState>
                   </Col>
                 </Row>
               </Dialog>
-            }
-          </div >
-        )
-        }
+            )}
+          </div>
+        )}
       </div>
     );
   }

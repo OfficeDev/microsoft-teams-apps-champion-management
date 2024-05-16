@@ -1,16 +1,24 @@
-import { Checkbox, Label, SearchBox, Spinner, SpinnerSize } from '@fluentui/react';
-import { Icon } from '@fluentui/react/lib/Icon';
+import {
+  Checkbox,
+  Label,
+  SearchBox,
+  Spinner,
+  SpinnerSize,
+} from "@fluentui/react";
+import { Icon } from "@fluentui/react/lib/Icon";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { sp } from "@pnp/sp";
-import * as LocaleStrings from 'ClbHomeWebPartStrings';
+import * as LocaleStrings from "ClbHomeWebPartStrings";
 import * as React from "react";
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import ToolkitProvider, { ToolkitContextType } from 'react-bootstrap-table2-toolkit';
-import commonServices from '../Common/CommonServices';
+import BootstrapTable from "react-bootstrap-table-next";
+import paginationFactory from "react-bootstrap-table2-paginator";
+import ToolkitProvider, {
+  ToolkitContextType,
+} from "react-bootstrap-table2-toolkit";
+import commonServices from "../Common/CommonServices";
 import * as stringConstants from "../constants/strings";
 import styles from "../scss/ManageApprovals.module.scss";
-import { IConfigList } from './ManageConfigSettings';
+import { IConfigList } from "./ManageConfigSettings";
 import { Person } from "@microsoft/mgt-react/dist/es6/spfx";
 
 let commonServiceManager: commonServices;
@@ -19,6 +27,7 @@ export interface IClbChampionsListProps {
   context: WebPartContext;
   siteUrl: string;
   setState: Function;
+  currentThemeName: string;
 }
 export interface ISPList {
   Title: string;
@@ -48,7 +57,6 @@ interface IState {
   groupColumnName: string;
 }
 class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
-
   constructor(props: IClbChampionsListProps) {
     super(props);
     sp.setup({
@@ -66,8 +74,7 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
       memberListColumnNames: [],
       regionColumnName: "",
       countryColumnName: "",
-      groupColumnName: ""
-
+      groupColumnName: "",
     };
     //Create object for CommonServices class
     commonServiceManager = new commonServices(
@@ -91,50 +98,64 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
     //Get config list settings and memberlist display names
     await this.getConfigListSettings();
     await this.getMemberListColumnNames();
+
+    //remove tabindex from non-interactive column headers of table
+    const headerCollection = document.getElementsByTagName("th");
+    for (let index = 0; index < headerCollection.length; index++) {
+      const headerTitle = headerCollection[index].getAttribute("title");
+      if(headerTitle === this.state.regionColumnName || headerTitle === this.state.countryColumnName || headerTitle ===this.state.groupColumnName || headerTitle ===LocaleStrings.FocusAreaGridHeader) {
+        headerCollection.item(index).setAttribute("tabIndex","-1");
+      }
+    }
   }
 
   //Component did update life cycle method
-  public componentDidUpdate(prevProps: Readonly<IClbChampionsListProps>, prevState: Readonly<IState>, snapshot?: any): void {
-
-    //update column states with member list column display names 
-    if (prevState.configListSettings !== this.state.configListSettings ||
-      prevState.memberListColumnNames !== this.state.memberListColumnNames) {
-      if (this.state.configListSettings.length > 0 && this.state.memberListColumnNames.length > 0)
+  public componentDidUpdate(
+    prevProps: Readonly<IClbChampionsListProps>,
+    prevState: Readonly<IState>,
+    snapshot?: any
+  ): void {
+    //update column states with member list column display names
+    if (
+      prevState.configListSettings !== this.state.configListSettings ||
+      prevState.memberListColumnNames !== this.state.memberListColumnNames
+    ) {
+      if (
+        this.state.configListSettings.length > 0 &&
+        this.state.memberListColumnNames.length > 0
+      )
         this.populateColumnNames();
     }
     //updating state of the parent component 'ManageApprovals" to show/hide the notification icon
     if (prevState.championList !== this.state.championList) {
       if (this.state.championList.length === 0) {
         this.props.setState({
-          isPendingChampionApproval: false
+          isPendingChampionApproval: false,
         });
-      }
-      else {
+      } else {
         this.props.setState({
-          isPendingChampionApproval: true
+          isPendingChampionApproval: true,
         });
       }
     }
-
   }
 
   //Get settings from config list
   private async getConfigListSettings() {
     try {
-      const configListData: IConfigList[] = await commonServiceManager.getMemberListColumnConfigSettings();
+      const configListData: IConfigList[] =
+        await commonServiceManager.getMemberListColumnConfigSettings();
 
       if (configListData.length === 3) {
         this.setState({ configListSettings: configListData });
-      }
-      else {
+      } else {
         this.setState({
           rejectMessage:
             stringConstants.CMPErrorMessage +
-            ` while loading the page. There could be a problem with the ${stringConstants.ConfigList} data.`
+            ` while loading the page. There could be a problem with the ${stringConstants.ConfigList} data.`,
         });
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error("CMP_ApproveChampion_getConfigListSettings \n", error);
       this.setState({
         rejectMessage:
@@ -148,12 +169,12 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
   //Get memberlist column names from member list
   private async getMemberListColumnNames() {
     try {
-      const columnsDisplayNames: any[] = await commonServiceManager.getMemberListColumnDisplayNames();
+      const columnsDisplayNames: any[] =
+        await commonServiceManager.getMemberListColumnDisplayNames();
       if (columnsDisplayNames.length > 0) {
         this.setState({ memberListColumnNames: columnsDisplayNames });
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error("CMP_AddMember_getMemberListColumnNames \n", error);
       this.setState({
         rejectMessage:
@@ -171,14 +192,21 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
       //Getting the pending items from Member List
       let filterQuery = "Status eq '" + stringConstants.pendingStatus + "'";
       const sortColumn = "Created";
-      const pendingItems: any[] = await commonServiceManager.getItemsSortedWithFilter(stringConstants.MemberList, filterQuery, sortColumn);
+      const pendingItems: any[] =
+        await commonServiceManager.getItemsSortedWithFilter(
+          stringConstants.MemberList,
+          filterQuery,
+          sortColumn
+        );
       this.setState({
         championList: pendingItems,
-        showSpinner: false
+        showSpinner: false,
       });
-    }
-    catch (error) {
-      console.error("CMP_ApproveChampion_getPendingItems \n", JSON.stringify(error));
+    } catch (error) {
+      console.error(
+        "CMP_ApproveChampion_getPendingItems \n",
+        JSON.stringify(error)
+      );
     }
   }
 
@@ -188,15 +216,19 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
       this.setState({
         showSpinner: true,
         rejectMessage: "",
-        approveMessage: ""
+        approveMessage: "",
       });
 
       let updateMemberObject: any = {
-        Status: statusText
+        Status: statusText,
       };
 
       //Update status for pending items in Member List
-      let updateResponse = await commonServiceManager.updateMultipleItems(stringConstants.MemberList, updateMemberObject, selectedIDs);
+      let updateResponse = await commonServiceManager.updateMultipleItems(
+        stringConstants.MemberList,
+        updateMemberObject,
+        selectedIDs
+      );
 
       //Refresh the items shown in the grid
       await this.getPendingItems();
@@ -209,7 +241,7 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
             selectedChampions: [],
             rejectMessage: "",
             isAllSelected: false,
-            showSpinner: false
+            showSpinner: false,
           });
         } else if (statusText === stringConstants.rejectedStatus) {
           this.setState({
@@ -217,32 +249,39 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
             selectedChampions: [],
             approveMessage: "",
             isAllSelected: false,
-            showSpinner: false
+            showSpinner: false,
           });
         }
       } else {
         //If any error occurs during batch update
         this.setState({
-          rejectMessage: stringConstants.CMPErrorMessage + "while approving/rejecting champion request(s).",
+          rejectMessage:
+            stringConstants.CMPErrorMessage +
+            "while approving/rejecting champion request(s).",
           selectedChampions: [],
           isAllSelected: false,
-          showSpinner: false
+          showSpinner: false,
         });
       }
-    }
-    catch (error) {
+    } catch (error) {
       //Refresh the items shown in the grid
       await this.getPendingItems();
 
       this.setState({
-        rejectMessage: stringConstants.CMPErrorMessage + "while approving/rejecting champion request(s). Below are the details: \n" + JSON.stringify(error),
+        rejectMessage:
+          stringConstants.CMPErrorMessage +
+          "while approving/rejecting champion request(s). Below are the details: \n" +
+          JSON.stringify(error),
         selectedChampions: [],
         isAllSelected: false,
-        showSpinner: false
+        showSpinner: false,
       });
-      console.error("CMP_ApproveChampion_updatePendingItems \n", JSON.stringify(error));
+      console.error(
+        "CMP_ApproveChampion_updatePendingItems \n",
+        JSON.stringify(error)
+      );
     }
-  }
+  };
 
   //Update all selected champions to new array
   public selectChampions(isChecked: boolean, key: number, selectAll: boolean) {
@@ -258,8 +297,7 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
     // When "Select All" is unchecked
     else if (selectAll && !isChecked) {
       this.setState({ isAllSelected: false, selectedChampions: [] });
-    }
-    else {
+    } else {
       //When checkbox is checked
       if (isChecked) {
         let selectedEvents = this.state.selectedChampions;
@@ -270,16 +308,17 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
         if (selectedEvents.length === this.state.filteredChampionList.length) {
           this.setState({ isAllSelected: true });
         }
-
       }
       //When checkbox is unchecked
       else {
-        const selectedEvents = this.state.selectedChampions.filter((eventId: any) => {
-          return eventId !== key;
-        });
+        const selectedEvents = this.state.selectedChampions.filter(
+          (eventId: any) => {
+            return eventId !== key;
+          }
+        );
         this.setState({
           isAllSelected: false,
-          selectedChampions: selectedEvents
+          selectedChampions: selectedEvents,
         });
       }
     }
@@ -287,9 +326,13 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
 
   //populate member list column display names into the states
   public populateColumnNames() {
-    const enabledSettingsArray = this.state.configListSettings.filter((setting) => setting.Value === stringConstants.EnabledStatus);
+    const enabledSettingsArray = this.state.configListSettings.filter(
+      (setting) => setting.Value === stringConstants.EnabledStatus
+    );
     for (let setting of enabledSettingsArray) {
-      const columnObject = this.state.memberListColumnNames.find((column) => column.InternalName === setting.Title);
+      const columnObject = this.state.memberListColumnNames.find(
+        (column) => column.InternalName === setting.Title
+      );
       if (columnObject.InternalName === stringConstants.RegionColumn) {
         this.setState({ regionColumnName: columnObject.Title });
         continue;
@@ -308,20 +351,118 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
   private pagination = paginationFactory({
     page: 1,
     sizePerPage: 10,
-    lastPageText: '>>',
-    firstPageText: '<<',
-    nextPageText: '>',
-    prePageText: '<',
     showTotal: true,
     alwaysShowAllBtns: false,
-    paginationTotalRenderer: (from: any, to: any, size: any) => {
-      const resultsFound = size !== 0 ? `Showing ${from} to ${to} of ${size} Results` : ""
+    //customized the render options for pagesize button in the pagination for accessbility
+    sizePerPageRenderer: ({
+      options,
+      currSizePerPage,
+      onSizePerPageChange,
+    }) => (
+      <div className="btn-group" role="group">
+        {options.map((option) => {
+          const isSelect = currSizePerPage === `${option.page}`;
+          return (
+            <button
+              key={option.text}
+              type="button"
+              onClick={() => onSizePerPageChange(option.page)}
+              className={`btn${
+                isSelect ? " sizeperpage-selected" : " sizeperpage"
+              }${
+                this.props.currentThemeName === stringConstants.themeDefaultMode
+                  ? ""
+                  : " selected-darkcontrast"
+              }`}
+              aria-label={
+                isSelect
+                  ? stringConstants.sizePerPageLabel +
+                    option.text +
+                    stringConstants.selectedAriaLabel
+                  : stringConstants.sizePerPageLabel + option.text
+              }
+            >
+              {option.text}
+            </button>
+          );
+        })}
+      </div>
+    ),
+    //customized the render options for page list in the pagination for accessbility
+    pageButtonRenderer: (options: any) => {
+      const handleClick = (e: any) => {
+        e.preventDefault();
+        if (options.disabled) return;
+        options.onPageChange(options.page);
+      };
+      const className = `${options.active ? "active " : ""}${
+        options.disabled ? "disabled " : ""
+      }`;
+      let ariaLabel = "";
+      let pageText = "";
+      switch (options.title) {
+        case "first page":
+          ariaLabel = `Go to ${options.title}`;
+          pageText = "<<";
+          break;
+        case "previous page":
+          ariaLabel = `Go to ${options.title}`;
+          pageText = "<";
+          break;
+        case "next page":
+          ariaLabel = `Go to ${options.title}`;
+          pageText = ">";
+          break;
+        case "last page":
+          ariaLabel = `Go to ${options.title}`;
+          pageText = ">>";
+          break;
+        default:
+          ariaLabel = `Go to page ${options.title}`;
+          pageText = options.title;
+          break;
+      }
       return (
-        <span className="react-bootstrap-table-pagination-total" aria-live="polite" role="alert">
-          &nbsp;{resultsFound}
+        <li
+          key={options.title}
+          className={`${className}page-item${
+            this.props.currentThemeName === stringConstants.themeDefaultMode
+              ? ""
+              : " selected-darkcontrast"
+          }`}
+          role="presentation"
+          title={ariaLabel}
+        >
+          <a
+            className="page-link"
+            href="#"
+            onClick={handleClick}
+            role="button"
+            aria-label={
+              options.active
+                ? ariaLabel + stringConstants.selectedAriaLabel
+                : ariaLabel
+            }
+          >
+            <span aria-hidden="true">{pageText}</span>
+          </a>
+        </li>
+      );
+    },
+    //customized the page total renderer in the pagination for accessbility
+    paginationTotalRenderer: (from, to, size) => {
+      const resultsFound =
+        size !== 0 ? `Showing ${from} to ${to} of ${size} Results` : "";
+      return (
+        <span
+          className="react-bootstrap-table-pagination-total"
+          aria-live="polite"
+          role="status"
+        >
+          {resultsFound}
         </span>
-      )
-    }
+      );
+    },
   });
 
   //Get Table Header Class
@@ -353,46 +494,49 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
     if (!order) {
       return (
         <span className="sort-order">
-          <span className="dropdown-caret">
-          </span>
-          <span className="dropup-caret">
-          </span>
-        </span>);
-    }
-    else if (order === 'asc') {
+          <span className="dropdown-caret"></span>
+          <span className="dropup-caret"></span>
+        </span>
+      );
+    } else if (order === "asc") {
       return (
         <span className="sort-order">
-          <span className="dropup-caret">
-          </span>
-        </span>);
-    }
-    else if (order === 'desc') {
+          <span className="dropup-caret"></span>
+        </span>
+      );
+    } else if (order === "desc") {
       return (
         <span className="sort-order">
-          <span className="dropdown-caret">
-          </span>
-        </span>);
+          <span className="dropdown-caret"></span>
+        </span>
+      );
     }
     return null;
-  }
-
+  };
 
   // format the cell for Champion Name
-  championFormatter = (cell: any, gridRow: any, rowIndex: any, formatExtraData: any) => {
+  championFormatter = (
+    cell: any,
+    gridRow: any,
+    rowIndex: any,
+    formatExtraData: any
+  ) => {
     return (
       <Person
         personQuery={gridRow.Title}
         view={3}
         personCardInteraction={1}
-        className='champion-person-card'
+        className="champion-person-card"
       />
     );
-  }
+  };
 
   public render() {
     //storing number of dropdowns got enabled
-    const enabledColumnCount = (this.state.countryColumnName !== "" ? 1 : 0) +
-      (this.state.regionColumnName !== "" ? 1 : 0) + (this.state.groupColumnName !== "" ? 1 : 0);
+    const enabledColumnCount =
+      (this.state.countryColumnName !== "" ? 1 : 0) +
+      (this.state.regionColumnName !== "" ? 1 : 0) +
+      (this.state.groupColumnName !== "" ? 1 : 0);
     const championsTableHeader: any = [
       {
         dataField: "ID",
@@ -405,7 +549,9 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
               className={styles.selectAllCheckbox}
               checked={this.state.isAllSelected}
               ariaLabel={LocaleStrings.SelectAllChampions}
-              disabled={this.state.showSpinner || this.state.championList.length === 0}
+              disabled={
+                this.state.showSpinner || this.state.championList.length === 0
+              }
             />
           );
         },
@@ -425,7 +571,7 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
             />
           );
         },
-        searchable: false
+        searchable: false,
       },
       {
         dataField: "FirstName",
@@ -434,7 +580,7 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
         formatter: this.championFormatter,
         searchable: true,
         sort: true,
-        sortCaret: this.customSortCaret
+        sortCaret: this.customSortCaret,
       },
       {
         dataField: "Title",
@@ -443,7 +589,7 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
         title: true,
         searchable: true,
         sort: true,
-        sortCaret: this.customSortCaret
+        sortCaret: this.customSortCaret,
       },
       {
         dataField: "Region",
@@ -451,7 +597,7 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
         headerTitle: true,
         title: true,
         searchable: false,
-        hidden: this.state.regionColumnName === ""
+        hidden: this.state.regionColumnName === "",
       },
       {
         dataField: "Country",
@@ -459,7 +605,7 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
         headerTitle: true,
         title: true,
         searchable: false,
-        hidden: this.state.countryColumnName === ""
+        hidden: this.state.countryColumnName === "",
       },
       {
         dataField: "Group",
@@ -467,136 +613,178 @@ class ApproveChampion extends React.Component<IClbChampionsListProps, IState> {
         headerTitle: true,
         title: true,
         searchable: false,
-        hidden: this.state.groupColumnName === ""
+        hidden: this.state.groupColumnName === "",
       },
       {
         dataField: "FocusArea",
         text: LocaleStrings.FocusAreaGridHeader,
         headerTitle: true,
         title: true,
-        searchable: false
-      }
+        searchable: false,
+      },
     ];
     return (
       <div className={styles.approvalsContainer}>
-        {this.state.approveMessage &&
-          <Label className={styles.approveMessage + ' col-xl-5 col-lg-5 col-md-6 col-sm-8 col-xs-9'} aria-live="polite" role="alert">
+        {this.state.approveMessage && (
+          <Label
+            className={
+              styles.approveMessage +
+              " col-xl-5 col-lg-5 col-md-6 col-sm-8 col-xs-9"
+            }
+            aria-live="polite"
+            role="alert"
+          >
             <img
-              src={require('../assets/TOTImages/tickIcon.png')}
+              src={require("../assets/TOTImages/tickIcon.png")}
               alt={LocaleStrings.SuccessIcon}
               className={styles.tickImage}
             />
             {this.state.approveMessage}
           </Label>
-        }
-        {this.state.rejectMessage &&
-          <Label className={styles.rejectMessage + ' col-xl-5 col-lg-5 col-md-6 col-sm-8 col-xs-9'} aria-live="polite" role="alert">
+        )}
+        {this.state.rejectMessage && (
+          <Label
+            className={
+              styles.rejectMessage +
+              " col-xl-5 col-lg-5 col-md-6 col-sm-8 col-xs-9"
+            }
+            aria-live="polite"
+            role="alert"
+          >
             {this.state.rejectMessage}
           </Label>
-        }
+        )}
         <ToolkitProvider
           bootstrap4
           keyField="ID"
           data={this.state.championList}
           columns={championsTableHeader}
-          search={
-            {
-              afterSearch: (newResult: ISPList[]) => {
-                this.setState({
-                  filteredChampionList: newResult,
-                  isAllSelected: newResult.length === this.state.selectedChampions.length ? true : false
-                });
-              }
-            }
-          }
+          search={{
+            afterSearch: (newResult: ISPList[]) => {
+              this.setState({
+                filteredChampionList: newResult,
+                isAllSelected:
+                  newResult.length === this.state.selectedChampions.length
+                    ? true
+                    : false,
+              });
+            },
+          }}
         >
-          {
-            (props: ToolkitContextType) => (
-              <div>
-                {this.state.championList.length > 0 &&
-                  <>
-                    <div className={'col-xl-5 col-lg-5 col-md-6 col-sm-7 col-xs-9' + " " + styles.searchboxPadding}>
-                      <SearchBox
-                        placeholder={LocaleStrings.ApproveChampionSearchboxPlaceholder}
-                        onChange={(_, searchedText) => props.searchProps.onSearch(searchedText)}
-                        className={styles.approvalsSearchbox}
-                      />
-                    </div>
-                    {this.state.selectedChampions.length > 0 &&
-                      <Label className={styles.selectedRowText}>
-                        {this.state.selectedChampions.length} {LocaleStrings.ChampionsSelectedLabel}
-                      </Label>
+          {(props: ToolkitContextType) => (
+            <div>
+              {this.state.championList.length > 0 && (
+                <>
+                  <div
+                    className={
+                      "col-xl-5 col-lg-5 col-md-6 col-sm-7 col-xs-9" +
+                      " " +
+                      styles.searchboxPadding
                     }
-                  </>
-                }
-                <div>
-                  <BootstrapTable
-                    striped
-                    {...props.baseProps}
-                    table-responsive={true}
-                    pagination={this.pagination}
-                    wrapperClasses={styles.approvalsTableWrapper}
-                    headerClasses={this.getTableHeaderClass(enabledColumnCount)}
-                    bodyClasses={this.getTableBodyClass(enabledColumnCount)}
-                    noDataIndication={() => (
-                      <div className={styles.noRecordsArea}>
-                        {this.state.showSpinner ?
-                          <Spinner
-                            label={LocaleStrings.ProcessingSpinnerLabel}
-                            size={SpinnerSize.large}
-                          /> :
-                          <>
-                            <img
-                              src={require('../assets/CMPImages/Norecordsicon.svg')}
-                              alt={LocaleStrings.NoRecordsIcon}
-                              className={styles.noRecordsImg}
-                              aria-hidden={true}
-                            />
-                            <span className={styles.noRecordsLabels} aria-live='polite' role="alert" tabIndex={0}>
-                              {this.state.championList.length === 0 ?
-                                LocaleStrings.NoChampionsMessage
-                                :
-                                LocaleStrings.NoSearchResults
-                              }
-                            </span>
-                          </>
-                        }
-                      </div>
-                    )}
-                  />
-                </div>
+                  >
+                    <SearchBox
+                      placeholder={
+                        LocaleStrings.ApproveChampionSearchboxPlaceholder
+                      }
+                      onChange={(_, searchedText) =>
+                        props.searchProps.onSearch(searchedText)
+                      }
+                      className={styles.approvalsSearchbox}
+                    />
+                  </div>
+                  {this.state.selectedChampions.length > 0 && (
+                    <Label className={styles.selectedRowText}>
+                      {this.state.selectedChampions.length}{" "}
+                      {LocaleStrings.ChampionsSelectedLabel}
+                    </Label>
+                  )}
+                </>
+              )}
+              <div>
+                <BootstrapTable
+                  striped
+                  {...props.baseProps}
+                  table-responsive={true}
+                  pagination={this.pagination}
+                  wrapperClasses={styles.approvalsTableWrapper}
+                  headerClasses={this.getTableHeaderClass(enabledColumnCount)}
+                  bodyClasses={this.getTableBodyClass(enabledColumnCount)}
+                  noDataIndication={() => (
+                    <div className={styles.noRecordsArea}>
+                      {this.state.showSpinner ? (
+                        <Spinner
+                          label={LocaleStrings.ProcessingSpinnerLabel}
+                          size={SpinnerSize.large}
+                        />
+                      ) : (
+                        <>
+                          <img
+                            src={require("../assets/CMPImages/Norecordsicon.svg")}
+                            alt={LocaleStrings.NoRecordsIcon}
+                            className={styles.noRecordsImg}
+                            aria-hidden={true}
+                          />
+                          <span
+                            className={styles.noRecordsLabels}
+                            aria-live="polite"
+                            role="alert"
+                            tabIndex={0}
+                          >
+                            {this.state.championList.length === 0
+                              ? LocaleStrings.NoChampionsMessage
+                              : LocaleStrings.NoSearchResults}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  )}
+                />
               </div>
-            )
-          }
+            </div>
+          )}
         </ToolkitProvider>
-        {this.state.showSpinner && this.state.championList.length > 0 &&
+        {this.state.showSpinner && this.state.championList.length > 0 && (
           <Spinner
             label={LocaleStrings.ProcessingSpinnerLabel}
             size={SpinnerSize.large}
           />
-        }
-        {this.state.championList.length > 0 &&
+        )}
+        {this.state.championList.length > 0 && (
           <div className={styles.manageApprovalsBtnArea}>
             <button
               className={`btn ${styles.approveBtn}`}
-              onClick={e => this.updatePendingItems(stringConstants.approvedStatus, this.state.selectedChampions)}
+              onClick={(e) =>
+                this.updatePendingItems(
+                  stringConstants.approvedStatus,
+                  this.state.selectedChampions
+                )
+              }
               title={LocaleStrings.ApproveButton}
               disabled={this.state.selectedChampions.length === 0}
             >
               <Icon iconName="Completed" className={styles.approveBtnIcon} />
-              <span className={styles.approveBtnLabel}>{LocaleStrings.ApproveButton}</span>
+              <span className={styles.approveBtnLabel}>
+                {LocaleStrings.ApproveButton}
+              </span>
             </button>
             <button
               className={"btn " + styles.rejectBtn}
-              onClick={e => this.updatePendingItems(stringConstants.rejectedStatus, this.state.selectedChampions)}
+              onClick={(e) =>
+                this.updatePendingItems(
+                  stringConstants.rejectedStatus,
+                  this.state.selectedChampions
+                )
+              }
               title={LocaleStrings.RejectButton}
               disabled={this.state.selectedChampions.length === 0}
             >
               <Icon iconName="ErrorBadge" className={styles.rejectBtnIcon} />
-              <span className={styles.rejectBtnLabel}>{LocaleStrings.RejectButton}</span>
+              <span className={styles.rejectBtnLabel}>
+                {LocaleStrings.RejectButton}
+              </span>
             </button>
           </div>
-        }
+        )}
       </div>
     );
   }
