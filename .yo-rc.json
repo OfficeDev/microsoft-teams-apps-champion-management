@@ -9,7 +9,7 @@
     "isDomainIsolated": false,
     "componentType": "webpart",
     "sdkVersions": {
-      "@microsoft/teams-js": "2.9.1"
+      "@microsoft/teams-js": "2.21.0"
     },
     "nodeVersion": "16.18.0",
     "@microsoft/microsoft-graph-client": "3.0.2"

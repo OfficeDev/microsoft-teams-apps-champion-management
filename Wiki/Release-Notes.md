@@ -3,6 +3,7 @@ This page contains the different release details for Champion Management Platfor
 ## Version history
 | Version | Release Date |
 |----|----|
+| 2.6 | May 20, 2024 |
 | 2.5 | Dec 21, 2023 |
 | 2.4 | Dec 6, 2022 |
 | 2.3 | Jul 28, 2022 |
@@ -14,6 +15,16 @@ This page contains the different release details for Champion Management Platfor
 | 1.1 | Apr 1, 2021 |
 
 ## Release notes
+
+### 2.6 (May 20, 2024)
+
+Below improvements released,
+
+- New Feature: Ability for Admins to add/modify other Admins to the app from "Add Member" module.
+- Upgraded Teams JS to version 2.21.0
+- Updated "Record Event" feature. Events recorded with count greater than '1' will be entered as separate records in the sharepoint list. This is to fix the discrepancy in the report.
+- Fixed accessbility issues
+
 
 ### 2.5 (Dec 21, 2023)
 

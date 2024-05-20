@@ -1,7 +1,7 @@
-@import '~@fluentui/react/dist/sass/References.scss';
+@import "~@fluentui/react/dist/sass/References.scss";
 
 @mixin fontstyles($fontWeight, $fontColor, $fontSize, $lineHeight, $textAlign) {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: $fontColor;
   font-style: normal;
   font-variant: normal;
@@ -28,7 +28,7 @@
     max-width: none;
     min-width: unset;
     height: 470px;
-    background-color: #FFFFFF;
+    background-color: #ffffff;
 
     .clb-dialog-content {
       .ms-Dialog-header {
@@ -64,7 +64,6 @@
             }
 
             .events-table-wrapper-class {
-
               table {
                 table-layout: fixed;
                 display: flex;
@@ -206,7 +205,6 @@
                   &::-webkit-scrollbar-thumb:hover {
                     background: #000;
                   }
-
                 }
               }
             }
@@ -240,12 +238,11 @@
                   }
 
                   li[class~="active"] {
-
                     a,
                     a:hover {
-                      background-color: #6264A7 !important;
-                      border-color: #6264A7 !important;
-                      color: #FFFFFF !important;
+                      background-color: #6264a7 !important;
+                      border-color: #6264a7 !important;
+                      color: #ffffff !important;
                     }
 
                     &:focus {
@@ -292,12 +289,12 @@
     .clb-dialog-content {
       .ms-Dialog-header {
         .ms-Dialog-title {
-          color: #FFF;
+          color: #fff;
         }
 
         .ms-Button--icon {
           .ms-Icon {
-            color: #FFF;
+            color: #fff;
           }
 
           &:hover {
@@ -314,7 +311,7 @@
         .showActivitiesPopupBody {
           .showActivities-grid-area {
             .activities-grid-heading {
-              color: #FFF;
+              color: #fff;
             }
 
             .events-table-wrapper-class {
@@ -322,7 +319,7 @@
                 thead {
                   tr {
                     th {
-                      color: #fff;
+                      //color: #fff;
 
                       button[class="sort-header"] {
                         color: #fff;
@@ -333,11 +330,11 @@
                       }
 
                       span[class="dropdown-caret"] {
-                        color: #fff;
+                        color: #0a0a0a;
                       }
 
                       span[class="dropup-caret"] {
-                        color: #fff;
+                        color: #0a0a0a;
                       }
                     }
                   }
@@ -346,13 +343,30 @@
                 tbody {
                   tr {
                     td {
-                      color: #FFF
+                      color: #fff;
                     }
                   }
                 }
               }
             }
-
+            //added
+            div[class~="react-bootstrap-table"] {
+              border: 10px solid #33344a;
+              border-radius: 0px 0px 8px 8px !important;
+              table {
+                tr[class~="table-header-darkcontrast"] {
+                  //background: var(--colorNeutralBackgroundStatic);
+                  background-color: #1aebff !important;
+                  border-color: #1aebff !important;
+                  color: #000000 !important;
+                }
+              }
+            }
+            div[class~="table-darkcontrast"] {
+              border: 1px solid var(--colorCompoundBrandForeground1Hover);
+              border-radius: 0px 0px 8px 8px !important;
+            }
+            //
             div[class~="react-bootstrap-table-pagination"] {
               span[class~="react-bootstrap-table-pagination-total"] {
                 color: #fff;
@@ -377,7 +391,6 @@
                   }
 
                   li[class~="active"] {
-
                     a,
                     a:hover {
                       background-color: #7f85f5 !important;
@@ -397,7 +410,7 @@
 
         .dashboard-chart-wrapper {
           .dashboard-chart-heading {
-            color: #FFF;
+            color: #fff;
           }
 
           .sidebar-chart {
@@ -421,12 +434,12 @@
     .clb-dialog-content {
       .ms-Dialog-header {
         .ms-Dialog-title {
-          color: #FFF;
+          color: #fff;
         }
 
         .ms-Button--icon {
           .ms-Icon {
-            color: #FFF;
+            color: #fff;
           }
 
           &:hover {
@@ -443,7 +456,7 @@
         .showActivitiesPopupBody {
           .showActivities-grid-area {
             .activities-grid-heading {
-              color: #FFF;
+              color: #fff;
             }
 
             .events-table-wrapper-class {
@@ -451,7 +464,7 @@
                 thead {
                   tr {
                     th {
-                      color: #fff;
+                      //color: #fff;
 
                       button[class="sort-header"] {
                         color: #fff;
@@ -462,11 +475,11 @@
                       }
 
                       span[class="dropdown-caret"] {
-                        color: #fff;
+                        color: 0a0a0a;
                       }
 
                       span[class="dropup-caret"] {
-                        color: #fff;
+                        color: #0a0a0a;
                       }
                     }
                   }
@@ -475,13 +488,29 @@
                 tbody {
                   tr {
                     td {
-                      color: #FFF
+                      color: #fff;
                     }
                   }
                 }
               }
             }
-
+            //added
+            div[class~="react-bootstrap-table"] {
+              border: 10px solid #33344a;
+              border-radius: 0px 0px 8px 8px !important;
+              table {
+                tr[class~="table-header-darkcontrast"] {
+                  //background: var(--colorNeutralBackgroundStatic);
+                  background-color: #1aebff !important;
+                  border-color: #1aebff !important;
+                  color: #000000 !important;
+                }
+              }
+            }
+            div[class~="table-darkcontrast"] {
+              border: 1px solid var(--colorCompoundBrandForeground1Hover);
+              border-radius: 0px 0px 8px 8px !important;
+            }
             div[class~="react-bootstrap-table-pagination"] {
               span[class~="react-bootstrap-table-pagination-total"] {
                 color: #fff;
@@ -506,7 +535,6 @@
                   }
 
                   li[class~="active"] {
-
                     a,
                     a:hover {
                       background-color: #1aebff !important;
@@ -526,7 +554,7 @@
 
         .dashboard-chart-wrapper {
           .dashboard-chart-heading {
-            color: #FFF;
+            color: #fff;
           }
 
           .sidebar-chart {
@@ -546,7 +574,8 @@
   display: flex !important;
 
   .sidenav {
-    background: transparent url("../assets/CMPImages/Sidebar.svg") 0% 0% no-repeat padding-box;
+    background: transparent url("../assets/CMPImages/Sidebar.svg") 0% 0%
+      no-repeat padding-box;
     background-color: #6264a7;
     width: 212px;
     min-height: 100vh;
@@ -581,7 +610,7 @@
           text-align: left;
           font: normal normal normal 16px/18px Segoe UI;
           letter-spacing: 0px;
-          color: #FFFFFF;
+          color: #ffffff;
           opacity: 1;
         }
       }
@@ -644,7 +673,7 @@
     }
 
     .bc-btn:active {
-      background-color: #6264a7
+      background-color: #6264a7;
     }
 
     .bc-form-main-area {
@@ -693,7 +722,7 @@
       margin-bottom: 2%;
       text-align: center;
       letter-spacing: 0px;
-      color: #33344A;
+      color: #33344a;
       opacity: 1;
 
       .backImg {
@@ -719,7 +748,7 @@
       .ClbBorder {
         width: 0px;
         height: 14px;
-        border: 1px solid #33344A;
+        border: 1px solid #33344a;
         margin-top: 5px;
       }
 
@@ -733,7 +762,8 @@
       color: var(--colorNeutralForeground1);
 
       .backImg {
-        filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
+        filter: brightness(0) saturate(100%) invert(86%) sepia(100%)
+          saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
       }
 
       .backLabel {
@@ -787,14 +817,14 @@
         width: 100%;
         float: left;
         padding-top: 1px;
-        background-color: #BDBDE6;
+        background-color: #bdbde6;
       }
 
       .gttc-row-right {
         cursor: pointer;
         float: right;
         width: 250px;
-        background-color: #6264A7;
+        background-color: #6264a7;
         padding: 8px 8px 6.5px 8px;
         color: #fff;
       }
@@ -993,7 +1023,9 @@
 .championSideBar {
   --person-line1-font-size: 18px;
   --person-line1-font-weight: 600;
-  --person-line1-text-color: var(--colorNeutralForegroundStaticInverted) !important;
+  --person-line1-text-color: var(
+    --colorNeutralForegroundStaticInverted
+  ) !important;
   --person-line1-text-transform: capitalize;
   --person-line1-text-line-height: 24px;
 }
@@ -1013,7 +1045,6 @@
       }
     }
   }
-
 }
 
 @media screen and (max-width: 375pt) {
@@ -1021,7 +1052,8 @@
     display: block !important;
 
     .sidenav {
-      background: transparent url("../assets/TOTImages/SidebarMobile.svg") 0% 0% no-repeat padding-box;
+      background: transparent url("../assets/TOTImages/SidebarMobile.svg") 0% 0%
+        no-repeat padding-box;
       max-height: 200px;
       background-color: #464775;
       min-width: 100%;
@@ -1051,7 +1083,6 @@
           }
         }
       }
-
 
       .pointcircle {
         width: 120px;
@@ -1092,7 +1123,6 @@
         z-index: 9999;
         overflow-y: scroll;
       }
-
 
       .bc-form {
         position: absolute;

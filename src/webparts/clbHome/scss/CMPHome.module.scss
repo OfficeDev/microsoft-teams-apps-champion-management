@@ -91,6 +91,10 @@
           letter-spacing: 0px;
           color: #FFFFFF;
           opacity: 1;
+
+          @media screen and (max-width: 652px) {
+            font-size: 18px;
+          }
         }
 
       }

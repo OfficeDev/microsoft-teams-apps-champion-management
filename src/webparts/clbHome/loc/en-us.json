@@ -396,5 +396,11 @@
   "championRecordsFoundLabel": "Champion records found",
   "_championRecordsFoundLabel.comment": "Label to display number of champion records found",
   "digitalBadgeProfileAriaLabel": "Open the Outlook web application in a new browser tab or window",
-  "_digitalBadgeProfileAriaLabel.comment": "This string is used as a aria label to change profile picture"
+  "_digitalBadgeProfileAriaLabel.comment": "This string is used as a aria label to change profile picture",
+  "AddMemberAsAdminLabel": "Add Member as Admin",
+  "_AddMemberAsAdminLabel.comment": "This string is used as a aria label to add member as admin label",
+  "NoteValidationMessage": "Notes should not exceed 200 characters",
+  "_NoteValidationMessage.comment": "This string displayed as error message",
+  "CloseInfoPopoverButton": "Close",
+  "_CloseInfoPopoverButton.comment": "This string is used as a label for Close button in info popover"
 }

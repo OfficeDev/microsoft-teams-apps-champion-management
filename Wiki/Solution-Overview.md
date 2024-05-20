@@ -61,10 +61,10 @@ Leader board encourages the employees to get connected to the Champions in their
 
     ![Quick Start Guide](../Images/EmpView.png)     
      
-## Add Members 
+## Add Member 
 
-1. Admin and current Champions of the program can add/nominate an employee to be a champion (Add members / Nominate Members) 
-    - An Admin can add employee as a Champion.
+1. Admin and current Champions of the program can add/nominate an employee to be a champion (Add member / Nominate Member) 
+    - An Admin can add employee as a Champion or as an Admin.
     - Where as an existing Champion can nominate their peers, admin will review and approve the nomination.
 Additional responsibility falls on the admin to maintain the Member list in SharePoint. *The approval process stays with the Admin only.*
 

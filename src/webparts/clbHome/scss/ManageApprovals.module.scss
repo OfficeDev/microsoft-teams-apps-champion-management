@@ -1,4 +1,4 @@
-@import '~@fluentui/react/dist/sass/References.scss';
+@import "~@fluentui/react/dist/sass/References.scss";
 
 .manageApprovalsContainer {
   padding-bottom: 1em;
@@ -10,7 +10,7 @@
     text-align: center;
     font: normal normal bold 14px/24px Segoe UI;
     letter-spacing: 0px;
-    color: #33344A;
+    color: #33344a;
     opacity: 1;
 
     .backImg {
@@ -35,7 +35,7 @@
     .border {
       width: 0px;
       height: 14px;
-      border: 1px solid #33344A;
+      border: 1px solid #33344a;
       margin-top: 5px;
     }
 
@@ -45,22 +45,21 @@
   }
 
   .manageApprovalsPivot {
-
     div[role="tablist"] {
-      border-bottom: 2px solid #BDBEE3;
+      border-bottom: 2px solid #bdbee3;
       margin-bottom: 25px;
 
       button[class^="ms-Button"] {
         width: 33.33%;
         height: 40px;
-        background-color: #F5F5F5;
+        background-color: #f5f5f5;
         text-align: center;
         font: normal normal normal 18px/22px Segoe UI;
         letter-spacing: 0px;
         color: #636363;
         opacity: 1;
         white-space: break-spaces;
-        border: 2px solid #F5F5F5;
+        border: 2px solid #f5f5f5;
         border-top-left-radius: 3px;
         border-top-right-radius: 3px;
         border-bottom-left-radius: 0;
@@ -84,14 +83,27 @@
 
       button[aria-selected="true"],
       button[aria-selected="true"]:hover {
-        background-color: #BDBEE3;
+        background-color: #bdbee3;
         color: #000000;
-        border: 2px solid #BDBEE3;
+        border: 2px solid #bdbee3;
+      }
+      button[class^="ms-Button"]:focus-visible {
+        border: 0px 0px 0px 0px;
+        box-shadow: none;
+        outline: 3px solid #bdbee3;
+        border-radius: 3px;
+        outline-offset: 3px;
+      }
+
+      button[class^="ms-Button"]:focus {
+        box-shadow: none;
+          outline: 3px solid #bdbee3;
+        border-radius: 3px;
+        outline-offset: 3px;
       }
     }
 
     .approvalsContainer {
-
       .approveMessage {
         text-align: left;
         font: normal normal normal 18px/24px Segoe UI !important;
@@ -204,8 +216,8 @@
               table-layout: fixed;
 
               th {
-                background-color: #6166A2;
-                padding: .55rem .75rem .55rem .75rem;
+                background-color: #6166a2;
+                padding: 0.55rem 0.75rem 0.55rem 0.75rem;
                 text-align: left;
                 font: normal normal normal 18px/24px Segoe UI;
                 color: #fff;
@@ -255,7 +267,7 @@
 
                     div[class~="ms-Checkbox-checkbox"] {
                       border-color: #616161 !important;
-                      background: #FFFFFF;
+                      background: #ffffff;
                       width: 18px;
                       height: 18px;
                     }
@@ -277,14 +289,14 @@
                     background: rgb(98, 100, 167);
 
                     i {
-                      color: #FFFFFF;
+                      color: #ffffff;
                     }
                   }
 
                   &:hover {
                     div[class~="ms-Checkbox-checkbox"] {
                       i {
-                        color: #FFFFFF;
+                        color: #ffffff;
                       }
                     }
                   }
@@ -412,7 +424,7 @@
               table-layout: fixed;
 
               td {
-                padding: .55rem .75rem .55rem .75rem;
+                padding: 0.55rem 0.75rem 0.55rem 0.75rem;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -441,16 +453,16 @@
                 }
 
                 mgt-person[class="champion-person-card"] {
-                  --person-line1-text-color: var(--colorNeutralForeground1) !important;
+                  --person-line1-text-color: var(
+                    --colorNeutralForeground1
+                  ) !important;
                   --person-line1-text-line-height: 24px;
                   --person-line1-font-weight: 400;
                 }
               }
 
               td:nth-child(1) {
-
                 .selectItemCheckbox {
-
                   label {
                     margin-top: 2px;
                     margin-bottom: 0.3rem;
@@ -479,14 +491,14 @@
                     background: rgb(98, 100, 167);
 
                     i {
-                      color: #FFFFFF;
+                      color: #ffffff;
                     }
                   }
 
                   &:hover {
                     div[class~="ms-Checkbox-checkbox"] {
                       i {
-                        color: #FFFFFF;
+                        color: #ffffff;
                       }
                     }
                   }
@@ -639,84 +651,201 @@
         }
       }
 
+      // div[class~="react-bootstrap-table-pagination"] {
+      //   button[id="pageDropDown"] {
+      //     color: #fff;
+      //     background-color: #6264a7;
+      //     border-color: #6264a7;
+
+      //     &:focus {
+      //       box-shadow: none;
+      //       outline-offset: 2px;
+      //       outline: 2px solid #000000;
+      //       border-radius: 3px;
+      //     }
+      //   }
+
+      //   ul[class~="dropdown-menu"] {
+      //     background-color: #ffffff;
+      //     min-width: 5rem;
+      //     border: 1px solid rgba(0, 0, 0, 0.15);
+
+      //     li[class~="dropdown-item"] {
+      //       background-color: transparent;
+      //       padding: 0.3rem 1.3rem;
+
+      //       a {
+      //         color: #212529;
+      //         background-color: transparent;
+      //         padding: 4px 8px;
+      //         border-radius: 3px;
+
+      //         &:hover {
+      //           color: #16181b;
+      //           background-color: #e9ecef;
+      //         }
+
+      //         &:focus-visible {
+      //           outline: 1px solid #000;
+      //         }
+      //       }
+
+      //       &:hover,
+      //       &:focus {
+      //         background-color: transparent;
+      //       }
+      //     }
+      //   }
+
+      //   div[class~="react-bootstrap-table-pagination-list"] {
+      //     ul[class~="react-bootstrap-table-page-btns-ul"] {
+      //       li[class~="page-item"] {
+      //         a[class~="page-link"] {
+      //           &:hover {
+      //             color: #000000;
+      //           }
+
+      //           &:focus {
+      //             outline: 2px solid #000;
+      //             outline-offset: 1px;
+      //             border-radius: 1px;
+      //             box-shadow: none;
+      //           }
+      //         }
+      //       }
+
+      //       li[class~="active"] {
+      //         a,
+      //         a:hover {
+      //           background-color: #6264a7 !important;
+      //           border-color: #6264a7 !important;
+      //           color: #ffffff !important;
+      //         }
+
+      //         &:focus {
+      //           outline: 2px solid #000;
+      //           outline-offset: 1px;
+      //           border-radius: 1px;
+      //           box-shadow: none;
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
       div[class~="react-bootstrap-table-pagination"] {
-        button[id="pageDropDown"] {
-          color: #fff;
-          background-color: #6264A7;
-          border-color: #6264A7;
+        margin-top: 50px !important;
+
+        @media screen and (max-width: 750px) {
+          display: block;
+        }
+
+        div[class~="btn-group"] {
+          margin-top: 5px;
+        }
+
+        button[class~="sizeperpage-selected"] {
+          background-color: #464775;
+          border-color: #464775;
+          color: white;
+        }
+
+        button[class~="selected-darkcontrast"] {
+          background-color: highlight;
+          border-color: var(--colorCompoundBrandForeground1Hover);
+          color: var(--colorNeutralForeground1Static);
+
+          &:hover {
+            background-color: highlight;
+            border-color: var(--colorBrandForegroundLinkHover);
+          }
+        }
+
+        button[class~="sizeperpage"] {
+          color: #464775;
+          background-color: white;
+          border-color: #dee2e6;
+
+          &:focus-visible {
+            box-shadow: none;
+            border-radius: 3px;
+            outline: 2px solid var(--colorBrandForeground2Pressed);
+            background-color: #e9ecef;
+          }
 
           &:focus {
             box-shadow: none;
-            outline-offset: 2px;
-            outline: 2px solid #000000;
-            border-radius: 3px;
           }
         }
 
-        ul[class~="dropdown-menu"] {
-          background-color: #ffffff;
-          min-width: 5rem;
-          border: 1px solid rgba(0, 0, 0, .15);
+        span[class~="react-bootstrap-table-pagination-total"] {
+          text-align: left;
+          font: normal normal normal 16px/21px Segoe UI;
+          letter-spacing: 0px;
+          color: var(--colorNeutralForeground1);
+          opacity: 1;
+          display: inline-flex;
+          margin-left: 2%;
+          vertical-align: middle;
+        }
 
-          li[class~="dropdown-item"] {
-            background-color: transparent;
-            padding: 0.3rem 1.3rem;
+        ul[class~="pagination react-bootstrap-table-page-btns-ul"] {
+          margin-top: 5px;
+
+          li {
+            a {
+              color: #6264a7;
+            }
+
+            a:focus-visible {
+              box-shadow: none;
+              border-radius: 3px;
+              outline: 2px solid var(--colorBrandForeground2Pressed);
+            }
+
+            a:focus {
+              box-shadow: none;
+            }
+          }
+
+          li[class="active page-item"] {
+            opacity: 1;
 
             a {
-              color: #212529;
-              background-color: transparent;
-              padding: 4px 8px;
-              border-radius: 3px;
-
-              &:hover {
-                color: #16181b;
-                background-color: #e9ecef;
-              }
-
-              &:focus-visible {
-                outline: 1px solid #000;
-              }
+              background-color: #464775;
+              border-color: #464775;
+              color: white;
             }
 
-            &:hover,
-            &:focus {
-              background-color: transparent;
+            a:focus-visible {
+              border: 0px 0px 0px 0px;
+              box-shadow: none;
+              outline: 2px solid var(--colorBrandForeground2Pressed);
+              border-radius: 3px;
+              outline-offset: 2px;
+            }
+
+            a:focus {
+              box-shadow: none;
             }
           }
-        }
 
-        div[class~="react-bootstrap-table-pagination-list"] {
-          ul[class~="react-bootstrap-table-page-btns-ul"] {
-            li[class~="page-item"] {
-              a[class~="page-link"] {
-                &:hover {
-                  color: #000000;
-                }
-
-                &:focus {
-                  outline: 2px solid #000;
-                  outline-offset: 1px;
-                  border-radius: 1px;
-                  box-shadow: none;
-                }
-              }
+          li[class="active page-item selected-darkcontrast"] {
+            a[class~="page-link"] {
+              background-color: highlight;
+              border-color: var(--colorCompoundBrandForeground1Hover);
+              color: var(--colorNeutralForegroundInverted);
             }
 
-            li[class~="active"] {
+            a[class~="page-link"]:hover {
+              background-color: highlight;
+              border-color: var(--colorBrandForegroundLink);
+            }
+          }
 
-              a,
-              a:hover {
-                background-color: #6264A7 !important;
-                border-color: #6264A7 !important;
-                color: #FFFFFF !important;
-              }
-
-              &:focus {
-                outline: 2px solid #000;
-                outline-offset: 1px;
-                border-radius: 1px;
-                box-shadow: none;
-              }
+          li[class~="selected-darkcontrast"] {
+            a[class~="page-link"]:hover {
+              background-color: highlight;
+              border-color: var(--colorBrandForegroundLink);
             }
           }
         }
@@ -729,7 +858,7 @@
           display: inline-flex;
           width: 108px;
           height: 38px;
-          border-color: #33344A;
+          border-color: #33344a;
           background-color: white;
           border-radius: 2px;
           margin-left: 15px;
@@ -771,8 +900,8 @@
           display: inline-flex;
           width: 108px;
           height: 38px;
-          background: #6166A2;
-          border-color: #6166A2;
+          background: #6166a2;
+          border-color: #6166a2;
           border-radius: 2px;
           padding-left: 15px;
           margin-bottom: 1%;
@@ -782,14 +911,14 @@
             text-align: center;
             font: normal normal bold 14px/24px Segoe UI;
             letter-spacing: 0px;
-            color: #FFFFFF;
+            color: #ffffff;
           }
 
           .approveBtnIcon {
             margin-right: 10px;
             font-size: 17px;
             font-weight: bolder;
-            color: #FFFFFF;
+            color: #ffffff;
             opacity: 1;
           }
         }
@@ -862,7 +991,6 @@
         .subLabel {
           font-weight: 300;
         }
-
 
         div[class^="ms-Toggle-innerContainer"] {
           margin-top: 3px;
@@ -1000,7 +1128,7 @@
           opacity: 1;
         }
 
-        i+span>span {
+        i + span > span {
           font: normal normal bold 16px/24px Segoe UI;
           letter-spacing: 0px;
           color: #fff;
@@ -1031,7 +1159,8 @@
     color: var(--colorNeutralForeground1);
 
     .backImg {
-      filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
+      filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%)
+        hue-rotate(190deg) brightness(109%) contrast(97%);
     }
 
     .backLabel {
@@ -1048,7 +1177,6 @@
   }
 
   .manageApprovalsPivot {
-
     div[role="tablist"] {
       border-bottom-color: var(--colorCompoundBrandBackground);
 
@@ -1062,10 +1190,22 @@
         color: var(--colorNeutralForeground1Selected);
         border-color: var(--colorCompoundBrandBackground);
       }
+
+      button[role="tab"]:focus {
+        outline: 2px solid var(--colorCompoundBrandBackground);
+        border-radius: 3px;
+        outline-offset: 2px;
+        background-color: #e1e1f2;
+      }
+      button[role="tab"]:focus-visible {
+        outline: 2px solid var(--colorCompoundBrandBackground);
+        border-radius: 3px;
+        outline-offset: 2px;
+        background-color: #e1e1f2;
+      }
     }
 
     .approvalsContainer {
-
       .approveMessage {
         color: var(--colorNeutralForeground1);
       }
@@ -1131,7 +1271,6 @@
       }
 
       .approvalsTableWrapper {
-
         table {
           color: var(--colorNeutralForeground1);
 
@@ -1202,9 +1341,7 @@
               }
 
               td:nth-child(1) {
-
                 .selectItemCheckbox {
-
                   label {
                     div[class~="ms-Checkbox-checkbox"] {
                       border-color: var(--colorNeutralForeground1) !important;
@@ -1245,74 +1382,203 @@
         }
       }
 
+      // div[class~="react-bootstrap-table-pagination"] {
+      //   button[id="pageDropDown"] {
+      //     color: var(--colorNeutralForeground1Selected);
+      //     background-color: var(--colorCompoundBrandBackground);
+      //     border-color: var(--colorCompoundBrandBackground);
+
+      //     &:focus {
+      //       outline-color: var(--colorPaletteBlueBorderActive);
+      //     }
+      //   }
+
+      //   ul[class~="dropdown-menu"] {
+      //     background-color: var(--colorNeutralBackground1);
+      //     border-color: var(--colorNeutralForeground1);
+
+      //     li[class~="dropdown-item"] {
+      //       a {
+      //         color: var(--colorNeutralForeground1);
+
+      //         &:hover {
+      //           color: #000000;
+      //           background-color: var(--colorNeutralForeground2LinkHover);
+      //         }
+
+      //         &:focus-visible {
+      //           outline-color: var(--colorPaletteBlueBorderActive);
+      //         }
+      //       }
+      //     }
+      //   }
+
+      //   div[class~="react-bootstrap-table-pagination-list"] {
+      //     ul[class~="react-bootstrap-table-page-btns-ul"] {
+      //       li[class~="page-item"] {
+      //         a[class~="page-link"] {
+      //           &:hover {
+      //             background-color: var(--colorNeutralForeground2LinkHover);
+      //             border-color: var(--colorNeutralForeground2LinkHover);
+      //             color: #000000;
+      //           }
+
+      //           &:focus {
+      //             outline-color: var(--colorPaletteBlueBorderActive);
+      //           }
+      //         }
+      //       }
+
+      //       li[class~="active"] {
+      //         a,
+      //         a:hover {
+      //           background-color: var(
+      //             --colorCompoundBrandBackground
+      //           ) !important;
+      //           border-color: var(--colorCompoundBrandBackground) !important;
+      //           color: var(--colorNeutralForeground1Selected) !important;
+      //         }
+
+      //         &:focus {
+      //           outline-color: var(--colorPaletteBlueBorderActive);
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
       div[class~="react-bootstrap-table-pagination"] {
-        button[id="pageDropDown"] {
-          color: var(--colorNeutralForeground1Selected);
-          background-color: var(--colorCompoundBrandBackground);
-          border-color: var(--colorCompoundBrandBackground);
+        margin-top: 50px !important;
+
+        @media screen and (max-width: 750px) {
+          display: block;
+        }
+
+        div[class~="btn-group"] {
+          margin-top: 5px;
+        }
+
+        button[class~="sizeperpage-selected"] {
+          background-color: #464775;
+          border-color: #464775;
+          color: white;
+
+          &:focus-visible {
+            border: 0px 0px 0px 0px;
+            box-shadow: none;
+            outline: 2px solid var(--colorBrandForeground2Pressed);
+            border-radius: 3px;
+            outline-offset: 2px;
+          }
 
           &:focus {
-            outline-color: var(--colorPaletteBlueBorderActive);
+            box-shadow: none;
           }
         }
 
-        ul[class~="dropdown-menu"] {
-          background-color: var(--colorNeutralBackground1);
-          border-color: var(--colorNeutralForeground1);
+        button[class~="selected-darkcontrast"] {
+          background-color: highlight;
+          border-color: var(--colorCompoundBrandForeground1Hover);
+          color: var(--colorNeutralForeground1Static);
 
-          li[class~="dropdown-item"] {
+          &:hover {
+            background-color: highlight;
+            border-color: var(--colorBrandForegroundLinkHover);
+          }
+        }
+
+        button[class~="sizeperpage"] {
+          color: #464775;
+          background-color: white;
+          border-color: #dee2e6;
+
+          &:focus-visible {
+            box-shadow: none;
+            border-radius: 3px;
+            outline: 2px solid var(--colorBrandForeground2Pressed);
+            background-color: #e9ecef;
+          }
+
+          &:focus {
+            box-shadow: none;
+          }
+        }
+
+        span[class~="react-bootstrap-table-pagination-total"] {
+          text-align: left;
+          font: normal normal normal 16px/21px Segoe UI;
+          letter-spacing: 0px;
+          color: var(--colorNeutralForeground1);
+          opacity: 1;
+          display: inline-flex;
+          margin-left: 2%;
+          vertical-align: middle;
+        }
+
+        ul[class~="pagination react-bootstrap-table-page-btns-ul"] {
+          margin-top: 5px;
+
+          li {
             a {
-              color: var(--colorNeutralForeground1);
+              color: #6264a7;
+            }
 
-              &:hover {
-                color: #000000;
-                background-color: var(--colorNeutralForeground2LinkHover);
-              }
+            a:focus-visible {
+              box-shadow: none;
+              border-radius: 3px;
+              outline: 2px solid var(--colorBrandForeground2Pressed);
+            }
 
-              &:focus-visible {
-                outline-color: var(--colorPaletteBlueBorderActive);
-              }
+            a:focus {
+              box-shadow: none;
             }
           }
-        }
 
-        div[class~="react-bootstrap-table-pagination-list"] {
-          ul[class~="react-bootstrap-table-page-btns-ul"] {
-            li[class~="page-item"] {
-              a[class~="page-link"] {
-                &:hover {
-                  background-color: var(--colorNeutralForeground2LinkHover);
-                  border-color: var(--colorNeutralForeground2LinkHover);
-                  color: #000000;
-                }
+          li[class="active page-item"] {
+            opacity: 1;
 
-                &:focus {
-                  outline-color: var(--colorPaletteBlueBorderActive);
-                }
-              }
+            a {
+              background-color: #464775;
+              border-color: #464775;
+              color: white;
             }
 
-            li[class~="active"] {
+            a:focus-visible {
+              border: 0px 0px 0px 0px;
+              box-shadow: none;
+              outline: 2px solid var(--colorBrandForeground2Pressed);
+              border-radius: 3px;
+              outline-offset: 2px;
+            }
 
-              a,
-              a:hover {
-                background-color: var(--colorCompoundBrandBackground) !important;
-                border-color: var(--colorCompoundBrandBackground) !important;
-                color: var(--colorNeutralForeground1Selected) !important;
-              }
+            a:focus {
+              box-shadow: none;
+            }
+          }
 
-              &:focus {
-                outline-color: var(--colorPaletteBlueBorderActive);
-              }
+          li[class="active page-item selected-darkcontrast"] {
+            a[class~="page-link"] {
+              background-color: highlight;
+              border-color: var(--colorCompoundBrandForeground1Hover);
+              color: var(--colorNeutralForegroundInverted);
+            }
+
+            a[class~="page-link"]:hover {
+              background-color: highlight;
+              border-color: var(--colorBrandForegroundLink);
+            }
+          }
+
+          li[class~="selected-darkcontrast"] {
+            a[class~="page-link"]:hover {
+              background-color: highlight;
+              border-color: var(--colorBrandForegroundLink);
             }
           }
         }
       }
-
       .manageApprovalsBtnArea {
-
         .rejectBtn {
-          background: #FFFFFF;
+          background: #ffffff;
           border-color: #000000;
 
           .rejectBtnLabel {
@@ -1335,7 +1601,6 @@
           .approveBtnIcon {
             color: var(--colorNeutralForegroundOnBrand);
           }
-
         }
 
         .rejectBtn:focus,
@@ -1360,7 +1625,6 @@
       }
 
       .configSettingsToggleBtn {
-
         .toggleBtnLabel {
           color: var(--colorNeutralForeground1);
         }
@@ -1465,7 +1729,7 @@
           color: var(--colorNeutralForegroundOnBrand);
         }
 
-        i+span>span {
+        i + span > span {
           color: var(--colorNeutralForegroundOnBrand);
         }
 
@@ -1482,7 +1746,7 @@
   }
 }
 
-@media screen and (max-width:767px) {
+@media screen and (max-width: 767px) {
   .manageApprovalsContainer {
     .manageApprovalsPivot {
       div[role="tablist"] {
@@ -1494,7 +1758,7 @@
   }
 }
 
-@media screen and (max-width:375pt) {
+@media screen and (max-width: 375pt) {
   .manageApprovalsContainer {
     .manageApprovalsPivot {
       div[role="tablist"] {
@@ -1504,7 +1768,6 @@
       }
 
       .approvalsContainer {
-
         .approvalsTableWrapper {
           overflow-y: overlay;
           overflow-x: scroll;
@@ -1592,7 +1855,6 @@
       .configSettingsContainer {
         .appTitleSetting {
           div[class~="ms-TextField-wrapper"] {
-
             .appNameInputLabel {
               min-width: 115px;
               max-width: 115px;

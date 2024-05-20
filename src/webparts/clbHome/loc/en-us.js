@@ -311,6 +311,14 @@ define([], function () {
     "ViewDashBoardLabel": "View Dashboard",
     "VisitLabel": "Visit the Champion Management Platform pages to learn more:",
     "WelcomeLabel": "Welcome",
-    "YesButton": "Yes"
+    "YesButton": "Yes",
+    "AdminLabel": "Admin",
+    "SaveChangesButton": "Save Changes",
+    "MembersUpdatedMessage": "Members Updated Successfully!",	
+    "AddAdminSearchboxPlaceholder": "Search by Member Name",
+    "NoAdminSelectedMessage": "No Admin Selected",
+    "AddMemberAsAdminLabel": "Add Member as Admin",
+    "NoteValidationMessage":"Notes should not exceed 200 characters",
+    "CloseInfoPopoverButton":"Close"
   }
 });

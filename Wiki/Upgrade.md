@@ -1,6 +1,6 @@
-### Upgrade to version 2.5 from 2.4, 2.3, 2.2, 2.1, 2.0, 1.3 and 1.2
+### Upgrade to version 2.6 from 2.5, 2.4, 2.3, 2.2, 2.1, 2.0, 1.3 and 1.2
 
-If you are already having version 2.4, 2.3, 2.2, 2.1, 2.0, 1.3 or 1.2 installed on your tenant follow the below steps to upgrade to version 2.5 with a global admin account:
+If you are already having version 2.5, 2.4, 2.3, 2.2, 2.1, 2.0, 1.3 or 1.2 installed on your tenant follow the below steps to upgrade to version 2.6 with a global admin account:
 
  NOTE: If you are using/seeing modern app catalog refer to the go to the [Modern App Catalog](#modern-app-catalog) section.
 
@@ -19,6 +19,7 @@ If you are already having version 2.4, 2.3, 2.2, 2.1, 2.0, 1.3 or 1.2 installed 
 1. Select the package and click "Sync to Teams" from the ribbon and wait for the "Successfully synced to teams solution" message to appear.
 
     ![SyncToTeams](../Images/SyncToTeams.png) 
+``` NOTE: If you are upgrading from v2.5 skip the steps from 5 to 10 ```
 
 1. Repeat steps 1-3 to deploy a new package file "mgt-spfx-vv3.sppkg" to the App catalog. 
 The package can be downloaded from "sharepoint/solution" folder.This package is required for the person card feature when hover over a champion name in the app.
@@ -60,17 +61,14 @@ If you already had "Tournament of Teams" enabled before the upgrade, click on "E
 
     ![Upgrade](../Images/Upgrade_Modern_AppCatalog1.png) 
 
-1. After uploading the package, select "Enable this app and add it to all sites" and click on "Enable App"
+1. After uploading the package, select "Enable this app and add it to all sites", "Add to Teams" and click on "Enable App"
 
     ![Upgrade](../Images/Modern_AppCatalog2.png)
 
 1. Skip this step.
 
     ![Upgrade](../Images/Modern_AppCatalog3.png)
-
-1. Once done, click on "Add to Teams" to make this app available in Teams. Some times you may see an error after clicking "Add to Teams". You can still wait for few minutes and check the app to confirm if you see the new features.
-
-    ![Upgrade](../Images/Modern_AppCatalog4.png)
+``` NOTE: If you are upgrading from v2.5 you are all set and skip rest of the steps ```
 
 1. Repeat steps 1-2 to deploy a new package file "mgt-spfx-vv3.sppkg" to the App catalog by selecting "Enable this app and it to all sites" option. This package can be downloaded from "sharepoint/solution" folder. This package is required for the person card feature when hover over a champion name in the app.
 
@@ -78,7 +76,7 @@ If you already had "Tournament of Teams" enabled before the upgrade, click on "E
 
 ``` Continue with steps 6 to 10 from the previous section.```
 
-### Upgrade to version 2.5 from 1.1
+### Upgrade to version 2.6 from 1.1
 
 If you are already having 1.1 installed on your tenant and want to upgrade to 2.5 the existing app and SharePoint site 'ChampionManagementSite' have to be deleted. 
 

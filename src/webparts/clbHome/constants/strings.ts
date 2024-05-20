@@ -166,3 +166,8 @@ export const MaxTournamentDescriptionCharacterLimitMessage = " Maximum character
 export const themeDefaultMode = "default";
 export const themeDarkMode = "dark";
 export const themeContrastMode = "contrast";
+
+export const ManagerString = "Manager";
+export const ChampionString = "Champion";
+
+export const selectedAriaLabel = " Selected";
