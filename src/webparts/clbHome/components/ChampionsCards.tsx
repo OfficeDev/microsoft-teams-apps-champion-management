@@ -525,9 +525,11 @@ export default class ChampionsCards extends Component<ChampionsCardsProps, Champ
 
                             <div className={`card-icon-link-area${this.props.loggedinUserEmail === member.Title ? " align-link-end" : ""}`}>
                               {this.props.loggedinUserEmail !== member.Title &&
-                                <div
+                                <span
                                   className="request-to-call-link"
                                   title={LocaleStrings.RequestToCallLabel}
+                                  aria-label={LocaleStrings.RequestToCallLabel}
+                                  role="button"
                                   onClick={() => this.openTask("https://teams.microsoft.com/l/meeting/new?subject=" +
                                     currentUserName + " / " + member.FirstName + " " + member.LastName + " " + LocaleStrings.MeetupSubject +
                                     "&content=" + LocaleStrings.MeetupBody + "&attendees=" + member.Title)}
@@ -539,11 +541,13 @@ export default class ChampionsCards extends Component<ChampionsCardsProps, Champ
                                   tabIndex={0}
                                 >
                                   {LocaleStrings.RequestToCallLabel}
-                                </div>
+                                </span>
                               }
-                              <div
+                              <span
                                 className="view-activities-link"
                                 title={LocaleStrings.ViewActivitiesLabel}
+                                aria-label={LocaleStrings.ViewActivitiesLabel}
+                                role="button"
                                 onClick={() => {
                                   this.setState({
                                     showUserActivities: true,
@@ -561,7 +565,7 @@ export default class ChampionsCards extends Component<ChampionsCardsProps, Champ
                                 tabIndex={0}
                               >
                                 {LocaleStrings.ViewActivitiesLabel}
-                              </div>
+                              </span>
 
                             </div>
                           </div>

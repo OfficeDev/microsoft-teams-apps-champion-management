@@ -54,8 +54,8 @@ export interface IProfileImage {
 export default class DigitalBadge extends React.Component<IDigitalBadgeProps, IDigitalBadgeState> {
   private columnCount = 0;
   private rowHeight = 0;
-  private ROWS_PER_PAGE = 3;
-  private MAX_ROW_HEIGHT = 300;
+  private ROWS_PER_PAGE = 100;
+  private MAX_ROW_HEIGHT = 250;
   private commonServiceManager: commonServices;
 
   constructor(props: IDigitalBadgeProps) {
@@ -97,7 +97,7 @@ export default class DigitalBadge extends React.Component<IDigitalBadgeProps, ID
   }
 
   //Component Life cycle method, gets called while the component is getting mounted
-  public componentDidMount(): void {
+  public componentDidMount(): void {    
     this._renderListAsync();
   }
 
@@ -417,7 +417,7 @@ export default class DigitalBadge extends React.Component<IDigitalBadgeProps, ID
                           <List
                             className={dbStyles.listGrid}
                             items={this.state.allBadgeImages}
-                            renderedWindowsAhead={6}
+                            renderedWindowsAhead={6}               
                             getItemCountForPage={this.getItemCountForPageService}
                             getPageHeight={() => this.commonServiceManager.getPageHeight(this.rowHeight, this.ROWS_PER_PAGE)}
                             onRenderCell={this.onRenderCell}

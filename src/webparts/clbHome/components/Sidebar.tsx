@@ -505,7 +505,9 @@ export default class Sidebar extends React.Component<
                     let totalchamps: number = 0;
                     totalchamps = datada.value.filter((x: any) =>
                       (x.Role.toLowerCase() === "champion" ||
-                        x.Role.toLowerCase() === "manager") &&
+                        x.Role.toLowerCase() === "manager" ||
+                        x.Role.toLowerCase() === "admin"
+                      ) &&
                       x.Status !== null &&
                       x.Status !== undefined
                         ? x.Status.toLowerCase() === "approved"
@@ -514,7 +516,9 @@ export default class Sidebar extends React.Component<
                     if (
                       this.state.isMember === true &&
                       (memberDataIds.Role == "Champion" ||
-                        memberDataIds.Role === "Manager") &&
+                       memberDataIds.Role === stringsConstants.ManagerString||
+                       memberDataIds.Role === stringsConstants.AdminString
+                      ) &&
                       memberDataIds.Status === "Approved"
                     )
                       this.props.context.spHttpClient

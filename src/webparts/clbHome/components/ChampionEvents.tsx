@@ -151,8 +151,12 @@ export default class ChampionEvents extends Component<
     if (!order) {
       return (
         <span className="sort-order" id={id} aria-label={ariaLabel}>
-          <span className="dropdown-caret"></span>
-          <span className="dropup-caret"></span>
+          <span className="dropdown-caret">
+            <Icon iconName="CaretSolidDown" />
+          </span>
+          <span className="dropup-caret">
+            <Icon iconName="CaretSolidUp" />
+          </span>
         </span>
       );
     } else if (order === "asc") {
@@ -217,7 +221,9 @@ export default class ChampionEvents extends Component<
 
       return (
         <span className="sort-order">
-          <span className="dropup-caret"></span>
+          <span className="dropup-caret">
+            <Icon iconName="CaretSolidUp" />
+          </span>
         </span>
       );
     } else if (order === "desc") {
@@ -282,7 +288,9 @@ export default class ChampionEvents extends Component<
 
       return (
         <span className="sort-order">
-          <span className="dropdown-caret"></span>
+          <span className="dropdown-caret">
+            <Icon iconName="CaretSolidDown" />
+          </span>
         </span>
       );
     }

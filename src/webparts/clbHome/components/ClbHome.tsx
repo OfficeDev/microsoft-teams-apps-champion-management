@@ -291,7 +291,7 @@ export default class ClbHome extends React.Component<IClbHomeProps, IClbHomeStat
                                 LastName: adminUser.DisplayName.split(
                                   " "
                                 )[1],
-                                Role: "Manager",
+                                Role: stringsConstants.AdminString,
                                 Status: "Approved",
                                 Group: "IT Pro",
                                 FocusArea: ['All'],
@@ -749,7 +749,7 @@ export default class ClbHome extends React.Component<IClbHomeProps, IClbHomeStat
                 );
                 if (dataexists) {
                   if (dataexists.Status === "Approved") {
-                    if (dataexists.Role === "Manager") {
+                    if (dataexists.Role ===stringsConstants.ManagerString || dataexists.Role === stringsConstants.AdminString) {
                       this.setState({ clB: true });
                     } else if (dataexists.Role === "Champion") {
                       this.setState({ cV: true });
@@ -757,7 +757,8 @@ export default class ClbHome extends React.Component<IClbHomeProps, IClbHomeStat
                   } else if (
                     dataexists.Role === "Employee" ||
                     dataexists.Role === "Champion" ||
-                    dataexists.Role === "Manager"
+                    dataexists.Role === stringsConstants.ManagerString ||
+                    dataexists.Role === stringsConstants.AdminString
                   ) {
                     this.setState({ eV: true });
                   }

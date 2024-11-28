@@ -4,6 +4,7 @@ const gulp = require('gulp');
 const build = require('@microsoft/sp-build-web');
 build.addSuppression(`Warning - [sass] The local CSS class 'ms-Grid' is not camelCase and will not be type-safe.`);
 build.addSuppression(`Warning - [spfx-serve] Placeholder {tenantDomain} was found in server.json but OS variable SPFX_SERVE_TENANT_DOMAIN is not set. Either set the environment variable or update the serve.json initial page url.`);
+build.addSuppression(`Warning - [webpack] autoprefixer: start value has mixed support, consider using flex-start instead`);
 // Font loader configuration for webfonts
 const fontLoaderConfig = {
   test: /\.(woff|woff2|eot|ttf)$/,

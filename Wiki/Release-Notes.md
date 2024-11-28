@@ -3,6 +3,7 @@ This page contains the different release details for Champion Management Platfor
 ## Version history
 | Version | Release Date |
 |----|----|
+| 2.7 | Dec 02, 2024 |
 | 2.6 | May 20, 2024 |
 | 2.5 | Dec 21, 2023 |
 | 2.4 | Dec 6, 2022 |
@@ -15,6 +16,15 @@ This page contains the different release details for Champion Management Platfor
 | 1.1 | Apr 1, 2021 |
 
 ## Release notes
+
+### 2.7 (Dec 02, 2024)
+
+Below improvements released,
+
+- New Feature: Admins will now be added with "Role" as "Admin" instead of "Manager" in the "MemberList" SharePoint list for consistency in the backend and the UI. Old members added with "Manager" will still continue to work
+- Bug Fix: Fixed a bug where Digital Badge shows up blank when there are more than 12 badges in Teams client
+- Fixed accessibility issues
+
 
 ### 2.6 (May 20, 2024)
 
