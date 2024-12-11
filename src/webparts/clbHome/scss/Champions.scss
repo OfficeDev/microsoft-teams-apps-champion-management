@@ -461,23 +461,18 @@
 
                                         span[class="dropdown-caret"] {
                                             margin: 0px 0 0px 5px;
-                                            color: #000000;
                                             margin-left: 2px;
-                                            border-top: 4px dashed;
-                                            border-right: 4px solid transparent;
-                                            border-left: 4px solid transparent;
-                                            position: relative;
+                                            font-size: 8px;
+                                            line-height: 0.5;
+                                            height: 4px;
                                         }
 
                                         span[class="dropup-caret"] {
-                                            color: #000000;
                                             margin: 0;
                                             margin-left: 2px;
-                                            border-bottom: 4px dashed;
-                                            border-top: 0;
-                                            border-right: 4px solid transparent;
-                                            border-left: 4px solid transparent;
-                                            position: relative;
+                                            font-size: 8px;
+                                            line-height: 0.5;
+                                            height: 4px;
                                         }
                                     }
 

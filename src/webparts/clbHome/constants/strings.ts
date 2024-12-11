@@ -168,6 +168,7 @@ export const themeDarkMode = "dark";
 export const themeContrastMode = "contrast";
 
 export const ManagerString = "Manager";
+export const AdminString = "Admin";
 export const ChampionString = "Champion";
 
 export const selectedAriaLabel = " Selected";

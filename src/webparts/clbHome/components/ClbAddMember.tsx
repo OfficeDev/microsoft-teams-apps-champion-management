@@ -291,7 +291,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
       let filterQuery = "Status eq '" + stringsConstants.approvedStatus + "'";
       const sortColumn = "Role";
       const membersData: any[] = await commonServiceManager.getItemsSortedWithFilter(stringsConstants.MemberList, filterQuery, sortColumn);
-      const adminMembers: any[] = membersData.filter((member) => member.Role === stringsConstants.ManagerString);
+      const adminMembers: any[] = membersData.filter((member) => member.Role === stringsConstants.ManagerString || member.Role === stringsConstants.AdminString);
 
       this.setState({ membersList: membersData, selectedMembers: adminMembers.map((member) => member.ID)});
     } catch (error) {
@@ -583,7 +583,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
                         Country: this.state.memberData.country,
                         Role:
                           this.props.isAdmin && this.state.isChampionAdmin
-                            ? stringsConstants.ManagerString
+                            ? stringsConstants.AdminString
                             : stringsConstants.ChampionString,
                         Status: this.props.isAdmin
                           ? stringsConstants.approvedStatus
@@ -974,7 +974,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
     const updateMemberData = this.state.memberData.map((member: any) => {
       if (member.ID === key) {
         member.Role = isChecked
-          ? stringsConstants.ManagerString
+          ? stringsConstants.AdminString
           : stringsConstants.ChampionString;
         member.Status = isChecked
           ? stringsConstants.approvedStatus
@@ -982,7 +982,7 @@ class ClbAddMember extends React.Component<IClbAddMemberProps, IState> {
       }
       return member;
     });
-    let disableSaveBtn = !this.state.membersList.some((member: any) => member.Role === stringsConstants.ManagerString);
+    let disableSaveBtn = !this.state.membersList.some((member: any) => (member.Role === stringsConstants.ManagerString || member.Role === stringsConstants.AdminString));
     if (isChecked) {
       this.setState((prevState) => ({
         selectedMembers: [...prevState.selectedMembers, key],

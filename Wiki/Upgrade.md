@@ -1,6 +1,6 @@
-### Upgrade to version 2.6 from 2.5, 2.4, 2.3, 2.2, 2.1, 2.0, 1.3 and 1.2
+### Upgrade to version 2.7 from 2.6 - 1.2
 
-If you are already having version 2.5, 2.4, 2.3, 2.2, 2.1, 2.0, 1.3 or 1.2 installed on your tenant follow the below steps to upgrade to version 2.6 with a global admin account:
+If you are already having version in between 2.6 - 1.2 installed on your tenant follow the below steps to upgrade to version 2.6 with a global admin account:
 
  NOTE: If you are using/seeing modern app catalog refer to the go to the [Modern App Catalog](#modern-app-catalog) section.
 
@@ -68,17 +68,18 @@ If you already had "Tournament of Teams" enabled before the upgrade, click on "E
 1. Skip this step.
 
     ![Upgrade](../Images/Modern_AppCatalog3.png)
-``` NOTE: If you are upgrading from v2.5 you are all set and skip rest of the steps ```
 
-1. Repeat steps 1-2 to deploy a new package file "mgt-spfx-vv3.sppkg" to the App catalog by selecting "Enable this app and it to all sites" option. This package can be downloaded from "sharepoint/solution" folder. This package is required for the person card feature when hover over a champion name in the app.
 
+1. ``` NOTE: This step is applicable only if you upgrade the app from 2.4 or older  ```
+
+Repeat steps 1-2 to deploy a new package file "mgt-spfx-vv3.sppkg" to the App catalog by selecting "Enable this app and it to all sites" option. This package can be downloaded from "sharepoint/solution" folder. This package is required for the person card feature when hovering over a champion name in the app.
     ![Quick Start Guide](../Images/GraphtoolkitModern.png)     
 
 ``` Continue with steps 6 to 10 from the previous section.```
 
-### Upgrade to version 2.6 from 1.1
+### Upgrade to version 2.7 from 1.1
 
-If you are already having 1.1 installed on your tenant and want to upgrade to 2.5 the existing app and SharePoint site 'ChampionManagementSite' have to be deleted. 
+If you are already having 1.1 installed on your tenant and want to upgrade to the latest the existing app and SharePoint site 'ChampionManagementSite' have to be deleted. 
 
 If you have current members and events you will want to export those list items and import re-import them into the respective list areas. We have expanded our lists to have some additional data as well so you may need to populate additional fields. 
 

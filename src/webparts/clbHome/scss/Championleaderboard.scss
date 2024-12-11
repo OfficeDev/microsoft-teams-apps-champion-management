@@ -121,23 +121,18 @@
 
                       span[class="dropdown-caret"] {
                         margin: 0px 0 0px 5px;
-                        color: #000000;
                         margin-left: 2px;
-                        border-top: 4px dashed;
-                        border-right: 4px solid transparent;
-                        border-left: 4px solid transparent;
-                        position: relative;
+                        font-size: 8px;
+                        line-height: 0.5;
+                        height: 4px;
                       }
 
                       span[class="dropup-caret"] {
-                        color: #000000;
                         margin: 0;
                         margin-left: 2px;
-                        border-bottom: 4px dashed;
-                        border-top: 0;
-                        border-right: 4px solid transparent;
-                        border-left: 4px solid transparent;
-                        position: relative;
+                        font-size: 8px;
+                        line-height: 0.5;
+                        height: 4px;
                       }
                     }
 
@@ -238,6 +233,7 @@
                   }
 
                   li[class~="active"] {
+
                     a,
                     a:hover {
                       background-color: #6264a7 !important;
@@ -349,10 +345,12 @@
                 }
               }
             }
+
             //added
             div[class~="react-bootstrap-table"] {
               border: 10px solid #33344a;
               border-radius: 0px 0px 8px 8px !important;
+
               table {
                 tr[class~="table-header-darkcontrast"] {
                   //background: var(--colorNeutralBackgroundStatic);
@@ -362,10 +360,12 @@
                 }
               }
             }
+
             div[class~="table-darkcontrast"] {
               border: 1px solid var(--colorCompoundBrandForeground1Hover);
               border-radius: 0px 0px 8px 8px !important;
             }
+
             //
             div[class~="react-bootstrap-table-pagination"] {
               span[class~="react-bootstrap-table-pagination-total"] {
@@ -391,6 +391,7 @@
                   }
 
                   li[class~="active"] {
+
                     a,
                     a:hover {
                       background-color: #7f85f5 !important;
@@ -494,10 +495,12 @@
                 }
               }
             }
+
             //added
             div[class~="react-bootstrap-table"] {
               border: 10px solid #33344a;
               border-radius: 0px 0px 8px 8px !important;
+
               table {
                 tr[class~="table-header-darkcontrast"] {
                   //background: var(--colorNeutralBackgroundStatic);
@@ -507,10 +510,12 @@
                 }
               }
             }
+
             div[class~="table-darkcontrast"] {
               border: 1px solid var(--colorCompoundBrandForeground1Hover);
               border-radius: 0px 0px 8px 8px !important;
             }
+
             div[class~="react-bootstrap-table-pagination"] {
               span[class~="react-bootstrap-table-pagination-total"] {
                 color: #fff;
@@ -535,6 +540,7 @@
                   }
 
                   li[class~="active"] {
+
                     a,
                     a:hover {
                       background-color: #1aebff !important;
@@ -574,8 +580,7 @@
   display: flex !important;
 
   .sidenav {
-    background: transparent url("../assets/CMPImages/Sidebar.svg") 0% 0%
-      no-repeat padding-box;
+    background: transparent url("../assets/CMPImages/Sidebar.svg") 0% 0% no-repeat padding-box;
     background-color: #6264a7;
     width: 212px;
     min-height: 100vh;
@@ -762,8 +767,7 @@
       color: var(--colorNeutralForeground1);
 
       .backImg {
-        filter: brightness(0) saturate(100%) invert(86%) sepia(100%)
-          saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
+        filter: brightness(0) saturate(100%) invert(86%) sepia(100%) saturate(3%) hue-rotate(190deg) brightness(109%) contrast(97%);
       }
 
       .backLabel {
@@ -1023,9 +1027,7 @@
 .championSideBar {
   --person-line1-font-size: 18px;
   --person-line1-font-weight: 600;
-  --person-line1-text-color: var(
-    --colorNeutralForegroundStaticInverted
-  ) !important;
+  --person-line1-text-color: var(--colorNeutralForegroundStaticInverted) !important;
   --person-line1-text-transform: capitalize;
   --person-line1-text-line-height: 24px;
 }
@@ -1052,8 +1054,7 @@
     display: block !important;
 
     .sidenav {
-      background: transparent url("../assets/TOTImages/SidebarMobile.svg") 0% 0%
-        no-repeat padding-box;
+      background: transparent url("../assets/TOTImages/SidebarMobile.svg") 0% 0% no-repeat padding-box;
       max-height: 200px;
       background-color: #464775;
       min-width: 100%;
