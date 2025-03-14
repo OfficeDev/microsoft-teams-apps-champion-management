@@ -1,3 +1,13 @@
+> [!IMPORTANT]
+> Dear Users,
+We want to inform you of an important update regarding the Champion Management Platform app template. As of 03/31/2025, we will be pausing direct support and feature development for these app templates.
+During this pause:
+> - We will not be able to respond to support requests submitted via GitHub, however community responses may still be available from other community members.
+> - No new features or updates will be released for these app templates.
+> 
+> We understand the importance of these tools to your operations and encourage you to continue using the existing versions as they are.
+Thank you for your understanding, and we appreciate your continued support of these app templates. If there are any changes to this status in the future, we will be sure to communicate them promptly.
+
 # Champion Management Platform 
 
 | [Documentation](https://github.com/OfficeDev/microsoft-teams-apps-champion-management/wiki) | [Solution Overview](https://github.com/OfficeDev/microsoft-teams-apps-champion-management/wiki/Solution-Overview) | [Architecture](https://github.com/OfficeDev/microsoft-teams-apps-champion-management/wiki/Architecture) | [Deployment Guide](https://github.com/OfficeDev/microsoft-teams-apps-champion-management/wiki/Deployment-Guide) | 
